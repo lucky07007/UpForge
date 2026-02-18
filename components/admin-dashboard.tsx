@@ -317,8 +317,11 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
                           {startup.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {startup.founders.split(",")[0]}
+                          {Array.isArray(startup.founders)
+                            ? startup.founders[0]
+                            : startup.founders?.split(",")[0]}
                         </p>
+
                       </div>
                     </td>
                     <td className="px-4 py-3">
