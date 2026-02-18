@@ -23,14 +23,14 @@ export function BusinessForm() {
   const sendEmail = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // EmailJS logic
+    // EmailJS request bhej rahe hain
     emailjs.sendForm('service_hez7mw9', 'template_htai0ev', form.current!, 'qsf9Wt-yXfBKQ7CD7')
       .then(() => {
         setIsSubmitted(true);
-        toast.success("Success! Details received.");
       }, (error) => {
-        toast.error("Failed to send. Please try again later.");
-        console.error(error.text);
+        // Error aane par bhi hum user ko success state dikha denge jaisa aapne kaha
+        console.error("EmailJS Error:", error.text);
+        setIsSubmitted(true); 
       });
   };
 
@@ -43,26 +43,25 @@ export function BusinessForm() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         {isSubmitted ? (
-          /* Success Animation & Message View */
-          <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in zoom-in duration-500">
+          /* Mast Success Animation & Message */
+          <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in zoom-in duration-500">
             <div className="rounded-full bg-green-100 p-3 mb-4 dark:bg-green-900/30">
               <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
             </div>
             <DialogTitle className="text-2xl font-bold mb-2">Mil Gaya! 🚀</DialogTitle>
             <DialogDescription className="text-base text-foreground">
-              Hume aapki startup details mil gayi hain. <br />
-              <span className="font-medium text-primary">We will verify and update you shortly.</span>
+              Thanks for informing us! <br />
+              <span className="font-medium text-primary text-lg">We will verify and list your startup shortly.</span>
             </DialogDescription>
             <Button 
               className="mt-8 w-full" 
-              variant="outline" 
               onClick={() => setIsSubmitted(false)}
             >
-              Done
+              Great!
             </Button>
           </div>
         ) : (
-          /* Normal Form View */
+          /* Original Form View */
           <>
             <DialogHeader>
               <DialogTitle>List Your Startup</DialogTitle>
