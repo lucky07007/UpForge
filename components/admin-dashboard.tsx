@@ -21,6 +21,7 @@ interface StartupForm {
   slug: string
   description: string
   website: string
+  logo_url: string // Added for Logo URL support
   founders: string
   founded_year: string
   category: string
@@ -32,6 +33,7 @@ const emptyForm: StartupForm = {
   slug: "",
   description: "",
   website: "",
+  logo_url: "", // Initialized empty
   founders: "",
   founded_year: "",
   category: "",
@@ -64,7 +66,10 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
       slug: startup.slug,
       description: startup.description,
       website: startup.website || "",
-      founders: startup.founders,
+      logo_url: startup.logo_url || "", // Load existing logo URL
+      founders: Array.isArray(startup.founders) 
+        ? startup.founders.join(", ") 
+        : startup.founders || "",
       founded_year: startup.founded_year?.toString() || "",
       category: startup.category,
       is_featured: startup.is_featured,
@@ -75,8 +80,12 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this startup?")) return
     const supabase = createClient()
-    await supabase.from("startups").delete().eq("id", id)
-    router.refresh()
+    const { error } = await supabase.from("startups").delete().eq("id", id)
+    if (error) {
+      alert("Error deleting record: " + error.message)
+    } else {
+      router.refresh()
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,26 +95,36 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
 
     const payload = {
       name: form.name,
-      slug: form.slug || form.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+      slug: form.slug || generateSlug(form.name),
       description: form.description,
       website: form.website || null,
+      logo_url: form.logo_url || null, // Include Logo URL in database payload
       founders: form.founders,
       founded_year: form.founded_year ? parseInt(form.founded_year) : null,
       category: form.category,
       is_featured: form.is_featured,
+      updated_at: new Date().toISOString(),
     }
 
-    if (editingId) {
-      await supabase.from("startups").update(payload).eq("id", editingId)
-    } else {
-      await supabase.from("startups").insert(payload)
-    }
+    try {
+      let error
+      if (editingId) {
+        ({ error } = await supabase.from("startups").update(payload).eq("id", editingId))
+      } else {
+        ({ error } = await supabase.from("startups").insert([payload]))
+      }
 
-    setIsSubmitting(false)
-    setShowForm(false)
-    setForm(emptyForm)
-    setEditingId(null)
-    router.refresh()
+      if (error) throw error
+
+      setShowForm(false)
+      setForm(emptyForm)
+      setEditingId(null)
+      router.refresh()
+    } catch (error: any) {
+      alert("Error saving to database: " + error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const generateSlug = (name: string) => {
@@ -114,7 +133,6 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <div>
@@ -129,7 +147,6 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8">
-        {/* Actions */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-foreground">Startups</h2>
@@ -143,7 +160,6 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
           </Button>
         </div>
 
-        {/* Form */}
         {showForm && (
           <div className="mt-6 rounded-lg border border-border bg-card p-6">
             <div className="flex items-center justify-between">
@@ -159,7 +175,6 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
                 className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
-                <span className="sr-only">Close form</span>
               </button>
             </div>
 
@@ -205,13 +220,12 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="founders">Founders</Label>
+                  <Label htmlFor="logo_url">Logo URL</Label>
                   <Input
-                    id="founders"
-                    required
-                    placeholder="Comma-separated names"
-                    value={form.founders}
-                    onChange={(e) => setForm((f) => ({ ...f, founders: e.target.value }))}
+                    id="logo_url"
+                    placeholder="https://example.com/logo.png"
+                    value={form.logo_url}
+                    onChange={(e) => setForm((f) => ({ ...f, logo_url: e.target.value }))}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -228,6 +242,16 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="founders">Founders</Label>
+                  <Input
+                    id="founders"
+                    required
+                    placeholder="Comma-separated names"
+                    value={form.founders}
+                    onChange={(e) => setForm((f) => ({ ...f, founders: e.target.value }))}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
                   <Label htmlFor="website">Website</Label>
                   <Input
                     id="website"
@@ -237,6 +261,9 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
                     onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
                   />
                 </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="founded_year">Founded Year</Label>
                   <Input
@@ -247,26 +274,21 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
                     onChange={(e) => setForm((f) => ({ ...f, founded_year: e.target.value }))}
                   />
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Switch
-                  id="is_featured"
-                  checked={form.is_featured}
-                  onCheckedChange={(checked) =>
-                    setForm((f) => ({ ...f, is_featured: checked }))
-                  }
-                />
-                <Label htmlFor="is_featured">Mark as Top Startup</Label>
+                <div className="flex items-center gap-3 pt-6">
+                  <Switch
+                    id="is_featured"
+                    checked={form.is_featured}
+                    onCheckedChange={(checked) =>
+                      setForm((f) => ({ ...f, is_featured: checked }))
+                    }
+                  />
+                  <Label htmlFor="is_featured">Mark as Top Startup</Label>
+                </div>
               </div>
 
               <div className="flex gap-3 pt-2">
                 <Button type="submit" size="sm" disabled={isSubmitting}>
-                  {isSubmitting
-                    ? "Saving..."
-                    : editingId
-                      ? "Update Startup"
-                      : "Add Startup"}
+                  {isSubmitting ? "Saving..." : editingId ? "Update" : "Add Startup"}
                 </Button>
                 <Button
                   type="button"
@@ -285,92 +307,59 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
           </div>
         )}
 
-        {/* Table */}
         <div className="mt-6 rounded-lg border border-border bg-card">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Startup
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Category
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Actions
-                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">Startup</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">Category</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase text-muted-foreground">Status</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {startups.map((startup) => (
-                  <tr
-                    key={startup.id}
-                    className="border-b border-border last:border-0"
-                  >
+                  <tr key={startup.id} className="border-b border-border last:border-0">
                     <td className="px-4 py-3">
-                      <div>
-                        <p className="text-sm font-medium text-card-foreground">
-                          {startup.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {Array.isArray(startup.founders)
-                            ? startup.founders[0]
-                            : startup.founders?.split(",")[0]}
-                        </p>
-
+                      <div className="flex items-center gap-3">
+                        {startup.logo_url && (
+                          <img src={startup.logo_url} alt="" className="h-8 w-8 rounded object-contain" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium">{startup.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {Array.isArray(startup.founders) ? startup.founders[0] : startup.founders?.split(",")[0]}
+                          </p>
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                      <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium">
                         {startup.category}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       {startup.is_featured ? (
                         <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-                          <Award className="h-3 w-3" />
-                          Featured
+                          <Award className="h-3 w-3" /> Featured
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">
-                          Listed
-                        </span>
+                        <span className="text-xs text-muted-foreground">Listed</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => handleEdit(startup)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                          aria-label={`Edit ${startup.name}`}
-                        >
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-1">
+                        <button onClick={() => handleEdit(startup)} className="p-1.5 hover:bg-secondary rounded">
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
-                        <button
-                          onClick={() => handleDelete(startup.id)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                          aria-label={`Delete ${startup.name}`}
-                        >
+                        <button onClick={() => handleDelete(startup.id)} className="p-1.5 hover:bg-destructive/10 text-destructive rounded">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>
                   </tr>
                 ))}
-                {startups.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-8 text-center text-sm text-muted-foreground"
-                    >
-                      No startups yet. Add your first one above.
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
