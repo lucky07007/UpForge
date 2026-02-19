@@ -16,7 +16,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        // This explicit type definition fixes the 'any' type error
+        // Adding this exact type fixes the build error
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // This call is necessary to trigger the session refresh logic
+  // This ensures the session is checked and the setAll method above is triggered
   await supabase.auth.getUser()
 
   return response
