@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useRouter } from "next/navigation"
 import emailjs from '@emailjs/browser'
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { CheckCircle2, Loader2, ShieldCheck, Sparkles, Lock } from "lucide-react"
+import { CheckCircle2, Loader2, ShieldCheck, Plus, Lock, Users } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
@@ -23,6 +23,17 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const messages = ["Connect", "Join Us", "Trust+", "Verify"];
+  const colors = ["bg-primary", "bg-blue-600", "bg-emerald-600", "bg-indigo-600"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) => (prev + 1) % messages.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
 
   const sendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,20 +57,35 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setIsSubmitted(false); }}>
       <DialogTrigger asChild>
-        <motion.button
-          initial={{ width: isMobile ? 44 : 160 }}
-          whileHover={{ width: 180 }}
-          className="group relative flex h-11 items-center justify-center overflow-hidden rounded-full bg-primary px-4 text-primary-foreground shadow-lg shadow-primary/20"
-        >
-          <Sparkles className="h-5 w-5 shrink-0" />
-          <motion.span 
-            initial={{ opacity: isMobile ? 0 : 1 }}
-            whileHover={{ opacity: 1 }}
-            className="ml-2 whitespace-nowrap text-sm font-bold uppercase tracking-tighter"
+        {isMobile ? (
+          <motion.button
+            animate={{ 
+              width: [50, 140, 140, 50],
+              scale: [1, 1.05, 1.05, 1]
+            }}
+            transition={{ 
+              duration: 4, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+            className={`relative flex h-12 items-center justify-start overflow-hidden rounded-full px-3.5 text-white shadow-lg transition-colors duration-1000 ${colors[step]}`}
           >
-            Connect
-          </motion.span>
-        </motion.button>
+            <div className="flex shrink-0 items-center justify-center">
+              <Plus className="h-6 w-6" />
+            </div>
+            <motion.span 
+              animate={{ opacity: [0, 1, 1, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="ml-3 whitespace-nowrap text-sm font-bold uppercase tracking-tight"
+            >
+              {messages[step]}
+            </motion.span>
+          </motion.button>
+        ) : (
+          <Button className="group h-12 gap-2 rounded-full px-8 font-black shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+            Join the Ecosystem
+          </Button>
+        )}
       </DialogTrigger>
       
       <DialogContent className="sm:max-w-[480px] overflow-hidden border-white/5 bg-background/95 backdrop-blur-3xl p-0 shadow-2xl">
@@ -70,30 +96,31 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
               <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <CheckCircle2 className="h-10 w-10" />
               </div>
-              <DialogTitle className="text-3xl font-black tracking-tighter">Application Filed</DialogTitle>
-              <DialogDescription className="mt-2 text-base text-muted-foreground">Verification in progress. We will contact you shortly.</DialogDescription>
+              <DialogTitle className="text-3xl font-black tracking-tighter">Request Received</DialogTitle>
+              <DialogDescription className="mt-2 text-base text-muted-foreground">Network verification is in progress. Check your email soon.</DialogDescription>
               <Button className="mt-10 h-14 w-full rounded-xl font-bold" onClick={handleFinalize}>Return to Home</Button>
             </motion.div>
           ) : (
             <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8">
               <DialogHeader className="mb-8">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                  <Lock className="h-3 w-3" /> Secure Portal
+                  <Lock className="h-3 w-3" /> Encrypted Listing
                 </div>
-                <DialogTitle className="text-4xl font-black tracking-tighter">Forge Listing</DialogTitle>
-                <DialogDescription className="text-muted-foreground">Official business verification form.</DialogDescription>
+                <DialogTitle className="text-4xl font-black tracking-tighter">Venture Portal</DialogTitle>
+                <DialogDescription className="text-muted-foreground">Official business application for UpForge Network.</DialogDescription>
               </DialogHeader>
               <form ref={form} onSubmit={sendEmail} className="grid gap-4">
                 <Input name="from_name" placeholder="Founder Name" className="h-14 bg-white/5" required />
                 <Input name="business_name" placeholder="Startup Name" className="h-14 bg-white/5" required />
                 <Input name="reply_to" type="email" placeholder="Work Email" className="h-14 bg-white/5" required />
                 <Textarea name="message" placeholder="Pitch Summary..." className="min-h-[100px] bg-white/5" required />
-                <Button type="submit" disabled={isLoading} className="mt-4 h-16 rounded-xl text-lg font-black transition-transform hover:scale-[1.02]">
+                <Button type="submit" disabled={isLoading} className="mt-4 h-16 rounded-xl text-lg font-black shadow-lg">
                   {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Verify & Join"}
                 </Button>
-                <p className="text-center text-[10px] text-muted-foreground uppercase tracking-widest mt-2">
-                  <ShieldCheck className="inline h-3 w-3 mr-1" /> Verified Institutional Network
-                </p>
+                <div className="flex items-center justify-center gap-4 mt-4 text-[10px] text-muted-foreground uppercase tracking-widest">
+                  <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> Verified</span>
+                  <span className="flex items-center gap-1"><Users className="h-3 w-3" /> 500+ Listed</span>
+                </div>
               </form>
             </motion.div>
           )}
