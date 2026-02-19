@@ -16,7 +16,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        // Adding the explicit type below fixes the build failure
+        // This specific type definition fixes the build error
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
@@ -34,7 +34,6 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // This ensures the session is refreshed and user stays logged in
   await supabase.auth.getUser()
 
   return response
