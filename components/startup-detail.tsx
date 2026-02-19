@@ -2,43 +2,37 @@
 
 import React, { useRef, useState } from 'react'
 import { Startup } from "@/types/startup"
-import { Share2, Globe, Linkedin, ArrowLeft, ShieldCheck, Download, CheckCircle, ExternalLink } from "lucide-react"
+import { Share2, Globe, Linkedin, ArrowLeft, ShieldCheck, CheckCircle, ExternalLink, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toBlob } from 'html-to-image'
 import saveAs from 'file-saver'
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import Link from "next/link"
 
 export function StartupDetail({ startup }: { startup: Startup }) {
   const posterRef = useRef<HTMLDivElement>(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
-  // Standard Web Share + Download Logic
   const handleShare = async () => {
     if (!posterRef.current) return
     setIsGenerating(true)
-    
     try {
       const blob = await toBlob(posterRef.current, { 
         cacheBust: true,
-        backgroundColor: '#000',
-        pixelRatio: 2 // High Resolution
+        backgroundColor: '#ffffff',
+        pixelRatio: 2 
       })
-
       if (!blob) return
-
       const file = new File([blob], `${startup.name}-UpForge.png`, { type: 'image/png' })
       
-      // Check if browser supports sharing files (Mobile/Modern Browsers)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: `${startup.name} on UpForge`,
-          text: `Check out ${startup.name} on the UpForge Founder Network.`,
+          title: `${startup.name} | UpForge Network`,
+          text: `Proud to be a verified member of the UpForge Founder Network!`,
         })
       } else {
-        // Fallback to direct download for desktops
-        saveAs(blob, `${startup.name}-UpForge-Certified.png`)
+        saveAs(blob, `${startup.name}-UpForge-Certificate.png`)
       }
     } catch (err) {
       console.error("Share failed:", err)
@@ -50,114 +44,122 @@ export function StartupDetail({ startup }: { startup: Startup }) {
   const handleDownload = async () => {
     if (!posterRef.current) return
     setIsGenerating(true)
-    const blob = await toBlob(posterRef.current, { backgroundColor: '#000', pixelRatio: 3 })
-    if (blob) saveAs(blob, `${startup.name}-Official-Poster.png`)
+    const blob = await toBlob(posterRef.current, { backgroundColor: '#ffffff', pixelRatio: 3 })
+    if (blob) saveAs(blob, `${startup.name}-Official-Certificate.png`)
     setIsGenerating(false)
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-white text-slate-900">
       
-      {/* --- HIDDEN PREMIUM POSTER TEMPLATE (FOR GENERATION) --- */}
+      {/* --- PREMIUM POSTER TEMPLATE (Optimized for No-Cut) --- */}
       <div className="fixed left-[-9999px] top-0">
-        <div ref={posterRef} className="w-[1080px] h-[1350px] bg-black p-24 flex flex-col justify-between border-[30px] border-white/5 text-white">
-            <div className="flex justify-between items-start">
-                <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                        <div className="h-4 w-12 bg-primary rounded-full" />
-                        <span className="text-xl font-black uppercase tracking-[0.5em] text-primary">Certified Listing</span>
+        <div ref={posterRef} className="w-[1080px] h-[1350px] bg-white p-20 flex flex-col justify-between border-[1px] border-slate-200 text-slate-900 relative overflow-hidden">
+            {/* Background Texture/Pattern */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            
+            <div className="flex justify-between items-start relative z-10">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <div className="h-[2px] w-8 bg-primary" />
+                        <span className="text-sm font-black uppercase tracking-[0.4em] text-primary">Official Network Recognition</span>
                     </div>
-                    <h1 className="text-[120px] font-black tracking-tighter leading-[0.8]">{startup.name}</h1>
-                    <p className="text-4xl text-white/50 font-bold uppercase tracking-widest">{startup.category} • {startup.founded_year}</p>
+                    {/* Text sizes reduced to prevent cutting */}
+                    <h1 className="text-7xl font-black tracking-tighter leading-tight text-slate-900 uppercase">{startup.name}</h1>
+                    <p className="text-2xl text-slate-500 font-bold uppercase tracking-widest">{startup.category} • FOUNDED {startup.founded_year}</p>
                 </div>
-                <img src="/logo.jpg" className="h-32 w-32 rounded-3xl border border-white/10" />
+                <img src="/logo.jpg" className="h-24 w-24 rounded-2xl border border-slate-100 shadow-sm" />
             </div>
 
-            <div className="relative">
-                <div className="absolute -left-10 top-0 h-full w-1 bg-primary/30" />
-                <p className="text-5xl leading-[1.3] font-medium text-slate-200 pl-4">{startup.description}</p>
+            <div className="relative z-10 py-10">
+                <p className="text-3xl leading-[1.5] font-semibold text-slate-700 max-w-[850px]">
+                   This document confirms that <span className="text-primary">{startup.name}</span> is a verified member of the UpForge Founder Ecosystem, meeting the institutional standards of innovation and leadership in the Indian startup landscape.
+                </p>
             </div>
 
-            <div className="flex justify-between items-end border-t border-white/10 pt-16">
-                <div className="space-y-2">
-                    <p className="text-xl text-white/30 uppercase tracking-[0.4em]">Verified Founder Network</p>
-                    <p className="text-5xl font-black tracking-tighter">UPFORGE.IN</p>
+            <div className="flex justify-between items-end border-t border-slate-100 pt-12 relative z-10">
+                <div className="space-y-1">
+                    <p className="text-sm text-slate-400 font-bold uppercase tracking-[0.3em]">Institutional Verification</p>
+                    <p className="text-3xl font-black tracking-tighter text-slate-900">UPFORGE.IN</p>
+                    <p className="text-xs text-slate-300 font-medium tracking-widest uppercase">Member ID: UF-{startup.id?.substring(0,8) || 'VERIFIED'}</p>
                 </div>
-                <img src="/seal.jpg" className="h-56 w-auto object-contain brightness-110" />
+                <div className="text-right flex flex-col items-end gap-4">
+                  <img src="/seal.jpg" className="h-44 w-auto object-contain" />
+                  <p className="text-[10px] font-black text-slate-300 tracking-[0.2em] uppercase">Valid Institutional Seal</p>
+                </div>
             </div>
         </div>
       </div>
 
-      {/* --- MAIN PAGE UI --- */}
-      <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50">
+      {/* --- NAVIGATION --- */}
+      <nav className="border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="mx-auto max-w-5xl px-6 h-20 flex items-center justify-between">
-          <Link href="/#startups" className="group flex items-center gap-2 text-xs font-black tracking-widest text-white/40 hover:text-primary transition-all">
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" /> BACK
+          <Link href="/#startups" className="group flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 hover:text-primary transition-all">
+            <ArrowLeft className="h-3 w-3" /> BACK TO NETWORK
           </Link>
-          <div className="flex gap-3">
-            <Button variant="ghost" onClick={handleDownload} disabled={isGenerating} className="rounded-full text-xs font-black tracking-widest border border-white/5 hover:bg-white/5 uppercase">
-              {isGenerating ? "..." : "Save to Gallery"}
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleDownload} disabled={isGenerating} className="rounded-full text-[10px] font-black tracking-widest border-slate-200">
+              {isGenerating ? "..." : "DOWNLOAD"}
             </Button>
-            <Button onClick={handleShare} disabled={isGenerating} className="rounded-full px-8 text-xs font-black tracking-widest shadow-2xl shadow-primary/20 uppercase">
-              <Share2 className="mr-2 h-4 w-4" /> {isGenerating ? "Generating..." : "Share Now"}
+            <Button size="sm" onClick={handleShare} disabled={isGenerating} className="rounded-full px-6 text-[10px] font-black tracking-widest shadow-lg shadow-primary/10">
+              <Share2 className="mr-2 h-3 w-3" /> {isGenerating ? "GENERATING..." : "SHARE POSTER"}
             </Button>
           </div>
         </div>
       </nav>
 
-      <main className="mx-auto max-w-4xl px-6 pt-24 pb-40 text-center">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+      {/* --- CONTENT --- */}
+      <main className="mx-auto max-w-4xl px-6 pt-20 pb-32 text-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           
-          {/* Logo Section */}
-          <div className="mx-auto mb-12 h-32 w-32 rounded-[2.5rem] bg-gradient-to-b from-white/10 to-transparent p-[1px]">
-            <div className="h-full w-full rounded-[2.5rem] bg-[#0A0A0A] flex items-center justify-center overflow-hidden">
-                {startup.logo_url ? <img src={startup.logo_url} className="h-full w-full object-contain p-6" /> : <span className="text-5xl font-black">{startup.name[0]}</span>}
-            </div>
+          <div className="mx-auto mb-10 h-28 w-28 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm">
+              {startup.logo_url ? <img src={startup.logo_url} className="h-full w-full object-contain p-5" /> : <span className="text-4xl font-black text-primary">{startup.name[0]}</span>}
           </div>
 
-          {/* Title & Status */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-8">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Verified Institutional Member</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary/5 px-4 py-1.5 mb-6">
+            <Award className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">Institutional Network Member</span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 text-slate-900 uppercase">
             {startup.name}
           </h1>
 
-          <p className="text-xl md:text-2xl text-white/60 leading-relaxed max-w-3xl mx-auto mb-16 font-medium">
+          <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto mb-16 font-medium">
             {startup.description}
           </p>
 
-          {/* Seal - Perfectly Centered */}
-          <div className="flex flex-col items-center gap-6 mb-24">
-            <div className="h-px w-24 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            <img src="/seal.jpg" alt="UpForge Seal" className="h-40 w-auto grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700 cursor-none" />
-            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">Official Network Branding</p>
+          {/* SEAL - CENTERED & PREMIUM */}
+          <div className="flex flex-col items-center gap-4 mb-20">
+            <div className="h-[1px] w-16 bg-slate-100" />
+            <img src="/seal.jpg" alt="Seal" className="h-36 w-auto grayscale hover:grayscale-0 transition-all duration-500" />
+            <div className="space-y-1">
+              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-300">Certified by UpForge Network</p>
+              <p className="text-[8px] font-medium text-slate-200 uppercase">Verification Level: Institutional</p>
+            </div>
           </div>
 
-          {/* Detailed Info Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
+          {/* INFO GRID */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: "Category", value: startup.category },
-              { label: "Founded", value: startup.founded_year },
-              { label: "Region", value: "India" },
-              { label: "Status", value: "Active" }
+              { label: "Industry", value: startup.category },
+              { label: "Established", value: startup.founded_year },
+              { label: "Jurisdiction", value: "India" },
+              { label: "Verification", value: "Member" }
             ].map((item, i) => (
-              <div key={i} className="p-6 rounded-3xl border border-white/5 bg-white/[0.02]">
-                <p className="text-[9px] font-black uppercase tracking-widest text-primary mb-2">{item.label}</p>
-                <p className="text-lg font-bold">{item.value}</p>
+              <div key={i} className="py-6 px-2 rounded-2xl border border-slate-50 bg-slate-50/30">
+                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">{item.label}</p>
+                <p className="text-sm font-bold text-slate-800">{item.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Action Links */}
-          <div className="mt-12 flex justify-center gap-6">
-             <Link href="#" className="flex items-center gap-2 text-sm font-bold text-white/40 hover:text-white transition-colors">
-                <Globe className="h-4 w-4" /> WEBSITE <ExternalLink className="h-3 w-3 opacity-30" />
+          <div className="mt-16 flex justify-center gap-8 border-t border-slate-50 pt-10">
+             <Link href="#" className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-primary transition-colors tracking-widest">
+                <Globe className="h-3.5 w-3.5" /> WEBSITE
              </Link>
-             <Link href="#" className="flex items-center gap-2 text-sm font-bold text-white/40 hover:text-white transition-colors">
-                <Linkedin className="h-4 w-4" /> LINKEDIN <ExternalLink className="h-3 w-3 opacity-30" />
+             <Link href="#" className="flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-primary transition-colors tracking-widest">
+                <Linkedin className="h-3.5 w-3.5" /> LINKEDIN
              </Link>
           </div>
 
