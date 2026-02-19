@@ -16,7 +16,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        // This specific type definition fixes the build error
+        // Adding the explicit type below fixes the build failure
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
@@ -35,6 +35,5 @@ export async function updateSession(request: NextRequest) {
   )
 
   await supabase.auth.getUser()
-
   return response
 }
