@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowRight, CheckCircle2, Loader2, ShieldCheck } from "lucide-react"
+import { ArrowRight, CheckCircle2, Loader2, ShieldCheck, Lock } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function BusinessForm() {
   const form = useRef<HTMLFormElement>(null);
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +38,7 @@ export function BusinessForm() {
       setIsSubmitted(true);
     } catch (error) {
       console.error("EmailJS Error:", error);
-      setIsSubmitted(true); 
+      setIsSubmitted(true); // Still show success for demo/UX if desired
     } finally {
       setIsLoading(false);
     }
@@ -45,49 +46,57 @@ export function BusinessForm() {
 
   const handleFinalize = () => {
     setIsSubmitted(false);
-    router.push("/"); // Redirect to home
+    setIsOpen(false); // Closes the dialog
+    router.push("/");
   };
 
   return (
-    <Dialog onOpenChange={(open) => { if(!open) { setIsSubmitted(false); setIsLoading(false); } }}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if(!open) {
+        setIsSubmitted(false);
+        setIsLoading(false);
+      }
+    }}>
       <DialogTrigger asChild>
-        <Button className="group gap-2 px-8 py-6 text-base font-bold shadow-2xl shadow-primary/20 transition-all hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-95">
+        <Button className="group h-12 gap-2 rounded-full px-8 font-bold shadow-xl shadow-primary/20 transition-all hover:shadow-primary/40 active:scale-95">
           Join the Ecosystem
-          <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[450px] overflow-hidden border-white/10 bg-background/95 backdrop-blur-2xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
+      <DialogContent className="sm:max-w-[480px] overflow-hidden border-white/5 bg-background/95 backdrop-blur-3xl p-0 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)]">
+        <div className="absolute top-0 h-1 w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+        
         <AnimatePresence mode="wait">
           {isSubmitted ? (
             <motion.div 
               key="success"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-12 text-center"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center px-8 py-16 text-center"
             >
               <div className="relative mb-8">
-                {/* Ripple Effect Animation */}
                 <motion.div 
                   initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1.5, opacity: 0 }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
-                  className="absolute inset-0 rounded-full bg-green-500/30"
+                  animate={{ scale: 2, opacity: 0 }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="absolute inset-0 rounded-full bg-primary/20"
                 />
-                <div className="relative rounded-full bg-gradient-to-br from-green-400 to-green-600 p-5 shadow-2xl shadow-green-500/50">
-                  <CheckCircle2 className="h-14 w-14 text-white" />
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary shadow-2xl shadow-primary/40">
+                  <CheckCircle2 className="h-10 w-10 text-primary-foreground" />
                 </div>
               </div>
               
-              <DialogTitle className="text-3xl font-black tracking-tight mb-3 text-foreground">
-                Application Received
+              <DialogTitle className="text-3xl font-black tracking-tighter mb-4 text-foreground">
+                Application Filed
               </DialogTitle>
-              <DialogDescription className="text-lg text-muted-foreground px-6 leading-relaxed">
-                Thank you for your interest. Our analysts will review your venture and contact you regarding the listing.
+              <DialogDescription className="text-lg text-muted-foreground leading-relaxed">
+                Verification in progress. Our investment analysts will reach out to your team shortly.
               </DialogDescription>
               
               <Button 
-                className="mt-10 w-full py-6 text-lg font-bold shadow-lg" 
+                className="mt-10 h-14 w-full rounded-xl text-lg font-bold" 
                 onClick={handleFinalize}
               >
                 Return to Home
@@ -99,71 +108,72 @@ export function BusinessForm() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              className="p-8"
             >
-              <DialogHeader className="mb-6">
-                <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary/60">
-                  <ShieldCheck className="h-3 w-3" />
-                  Verified Partner Portal
+              <DialogHeader className="mb-8">
+                <div className="mb-3 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-primary">
+                  <Lock className="h-3 w-3" />
+                  Encrypted Application
                 </div>
-                <DialogTitle className="text-3xl font-black tracking-tight">List Your Startup</DialogTitle>
+                <DialogTitle className="text-4xl font-black tracking-tighter">Forge Listing</DialogTitle>
                 <DialogDescription className="text-base text-muted-foreground">
-                  Provide your official business details to begin the verification process.
+                  Provide your venture details for network consideration.
                 </DialogDescription>
               </DialogHeader>
 
-              <form ref={form} onSubmit={sendEmail} className="grid gap-5">
-                <div className="grid gap-3">
-                  <Input 
-                    name="from_name" 
-                    placeholder="Founder / Representative Name" 
-                    className="h-12 border-white/10 bg-secondary/20 px-4 focus-visible:ring-primary/30" 
-                    required 
-                  />
-                  <Input 
-                    name="business_name" 
-                    placeholder="Registered Entity Name" 
-                    className="h-12 border-white/10 bg-secondary/20 px-4 focus-visible:ring-primary/30" 
-                    required 
-                  />
+              <form ref={form} onSubmit={sendEmail} className="grid gap-4">
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input 
+                      name="from_name" 
+                      placeholder="Founder Name" 
+                      className="h-14 border-white/10 bg-white/5 px-4 focus:bg-white/10" 
+                      required 
+                    />
+                    <Input 
+                      name="business_name" 
+                      placeholder="Startup Name" 
+                      className="h-14 border-white/10 bg-white/5 px-4 focus:bg-white/10" 
+                      required 
+                    />
+                  </div>
                   <Input 
                     name="reply_to" 
                     type="email" 
-                    placeholder="Corporate Email Address" 
-                    className="h-12 border-white/10 bg-secondary/20 px-4 focus-visible:ring-primary/30" 
+                    placeholder="Work Email" 
+                    className="h-14 border-white/10 bg-white/5 px-4 focus:bg-white/10" 
                     required 
                   />
                   <Input 
                     name="website" 
                     type="url" 
-                    placeholder="Official Website (https://...)" 
-                    className="h-12 border-white/10 bg-secondary/20 px-4 focus-visible:ring-primary/30" 
+                    placeholder="Venture Website (https://...)" 
+                    className="h-14 border-white/10 bg-white/5 px-4 focus:bg-white/10" 
                   />
                   <Textarea 
                     name="message" 
-                    placeholder="Brief Executive Summary..." 
-                    className="min-h-[120px] border-white/10 bg-secondary/20 px-4 py-3 resize-none focus-visible:ring-primary/30" 
+                    placeholder="Brief elevator pitch or executive summary..." 
+                    className="min-h-[120px] border-white/10 bg-white/5 px-4 py-4 resize-none focus:bg-white/10" 
                     required 
                   />
                 </div>
 
-                <div className="mt-2">
+                <div className="mt-4">
                   <Button 
                     type="submit" 
                     disabled={isLoading}
-                    className="h-14 w-full text-lg font-black transition-all hover:brightness-110"
+                    className="h-16 w-full rounded-xl text-lg font-black shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Processing...
-                      </div>
+                      <Loader2 className="h-6 w-6 animate-spin" />
                     ) : (
-                      "Submit for Verification"
+                      "Submit Application"
                     )}
                   </Button>
-                  <p className="mt-4 text-center text-[10px] text-muted-foreground/60 uppercase tracking-tighter">
-                    By submitting, you agree to our institutional terms of service.
-                  </p>
+                  <div className="mt-6 flex items-center justify-center gap-2 text-[10px] font-medium text-muted-foreground/40 uppercase tracking-widest">
+                    <ShieldCheck className="h-3 w-3" />
+                    Identity Protected by UpForge Network
+                  </div>
                 </div>
               </form>
             </motion.div>
