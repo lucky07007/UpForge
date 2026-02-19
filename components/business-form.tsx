@@ -27,20 +27,25 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
   const [step, setStep] = useState(0);
 
   const isHomePage = pathname === "/";
+  // The trigger for animation: Must be on Home AND Popup must be Closed
+  const shouldAnimate = isHomePage && !isOpen;
+
   const states = [
     { label: "Connect", color: "bg-white text-black", icon: <Plus className="h-5 w-5" /> },
     { label: "Grow", color: "bg-primary text-primary-foreground", icon: <ArrowUpRight className="h-5 w-5" /> }
   ];
 
   useEffect(() => {
-    // Only cycle steps if we are on the homepage and the dialog is closed
-    if (!isHomePage || isOpen) return;
+    if (!shouldAnimate) {
+      setStep(0); // Reset to "+" icon when not animating
+      return;
+    }
 
     const interval = setInterval(() => {
       setStep((prev) => (prev + 1) % states.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [isHomePage, isOpen]);
+  }, [shouldAnimate]);
 
   const sendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,13 +71,15 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
       <DialogTrigger asChild>
         {isMobile ? (
           <motion.button
+            // DYNAMIC ANIMATION LOGIC:
+            // If shouldAnimate is true, run expansion array. 
+            // If false (Popup open or not on Home), stay static at 52px.
             animate={{ 
-              // Only expand if on homepage AND form is closed
-              width: (isHomePage && !isOpen) ? [52, 130, 130, 52] : 52,
+              width: shouldAnimate ? [52, 130, 130, 52] : 52,
             }}
             transition={{ 
               duration: 4, 
-              repeat: Infinity, 
+              repeat: shouldAnimate ? Infinity : 0, 
               repeatDelay: 2,
               ease: "easeInOut" 
             }}
@@ -81,11 +88,13 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
             <div className="flex shrink-0 items-center justify-center">
               {states[step].icon}
             </div>
+            
             <AnimatePresence>
-              {(isHomePage && !isOpen) && (
+              {shouldAnimate && (
                 <motion.span 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: [0, 1, 1, 0] }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 4, repeat: Infinity, repeatDelay: 2 }}
                   className="ml-3 text-sm font-bold uppercase tracking-widest"
                 >
@@ -110,7 +119,7 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
               <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <CheckCircle2 className="h-10 w-10" />
               </div>
-              <DialogTitle className="text-3xl font-black tracking-tighter">Application Logged</DialogTitle>
+              <DialogTitle className="text-3xl font-black tracking-tighter text-foreground">Application Logged</DialogTitle>
               <DialogDescription className="mt-2 text-base text-muted-foreground">Your venture is now in the verification queue.</DialogDescription>
               <Button className="mt-10 h-14 w-full rounded-xl font-bold" onClick={handleFinalize}>Return to Home</Button>
             </motion.div>
@@ -120,7 +129,7 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
                 <div className="mx-auto mb-2 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-primary">
                   <Lock className="h-3 w-3" /> Secure Submission
                 </div>
-                <DialogTitle className="text-4xl font-black tracking-tighter">Forge Listing</DialogTitle>
+                <DialogTitle className="text-4xl font-black tracking-tighter text-foreground">Forge Listing</DialogTitle>
                 <DialogDescription className="text-muted-foreground text-sm">Submit your startup for network-wide visibility.</DialogDescription>
               </DialogHeader>
 
@@ -131,10 +140,9 @@ export function BusinessForm({ isMobile = false }: { isMobile?: boolean }) {
                 </div>
                 <Input name="reply_to" type="email" placeholder="Work Email" className="h-14 bg-white/5 border-white/10" required />
                 
-                {/* Added Website Field */}
                 <div className="relative">
                   <Input name="website" type="url" placeholder="Venture Website (https://...)" className="h-14 bg-white/5 border-white/10 pl-10" required />
-                  <Globe className="absolute left-3 top-4.5 h-4 w-4 text-muted-foreground/50" />
+                  <Globe className="absolute left-3 top-5 h-4 w-4 text-muted-foreground/50" />
                 </div>
 
                 <Textarea name="message" placeholder="Elevator Pitch..." className="min-h-[100px] bg-white/5 border-white/10" required />
