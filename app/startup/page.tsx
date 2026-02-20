@@ -31,12 +31,12 @@ export const metadata: Metadata = {
 export default async function StartupsPage() {
   const supabase = await createClient()
 
-  // Featured (Editorial Picks)
-  const { data: featured } = await supabase
+  // Home page ki tarah '*' use karke saara data fetch kar rahe hain
+  const { data, error } = await supabase
     .from("startups")
-    .select("*")
-    .eq("is_featured", true)
-    .order("created_at", { ascending: false })
+    .select("*") 
+    .order("is_sponsored", { ascending: false })
+    .order("name", { ascending: true })
 
   if (error) {
     console.error("Startup fetch error:", error)
@@ -73,7 +73,7 @@ export default async function StartupsPage() {
             </p>
 
             <p className="mt-6 text-sm uppercase tracking-[0.3em] text-zinc-400">
-              {total} Startups Listed
+              {total} {total === 1 ? "Startup" : "Startups"} Listed
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export default async function StartupsPage() {
                   href={`/startup/${startup.slug}`}
                   className="group"
                 >
-                  <div className="relative bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
+                  <div className="relative bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center aspect-square">
 
                     {startup.is_sponsored && (
                       <div className="absolute top-3 right-3 text-amber-500">
@@ -103,10 +103,10 @@ export default async function StartupsPage() {
                       <img
                         src={startup.logo_url}
                         alt={`${startup.name} logo`}
-                        className="max-h-12 object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                        className="max-h-12 w-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
                       />
                     ) : (
-                      <span className="text-sm text-zinc-500">
+                      <span className="text-sm font-medium text-zinc-500">
                         {startup.name}
                       </span>
                     )}
@@ -115,8 +115,8 @@ export default async function StartupsPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-zinc-500 py-20">
-              No startups listed yet.
+            <div className="text-center text-zinc-500 py-20 border border-dashed border-zinc-200 rounded-3xl">
+              No startups listed yet. Check back later.
             </div>
           )}
 
