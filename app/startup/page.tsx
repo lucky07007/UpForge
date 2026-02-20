@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server"
 import { SearchBar } from "@/components/search-bar"
 import Link from "next/link"
 import { Crown } from "lucide-react"
-import { Metadata } from "next"
+import type { StartupDirectoryItem } from "@/types/startup"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Startup Directory | UpForge",
@@ -22,17 +23,26 @@ export const metadata: Metadata = {
     url: "https://upforge.in/startup",
     type: "website",
   },
+  alternates: {
+    canonical: "https://upforge.in/startup",
+  },
 }
 
 export default async function StartupsPage() {
   const supabase = await createClient()
 
-  const { data: startups } = await supabase
+  const { data, error } = await supabase
     .from("startups")
     .select("id, name, slug, logo_url, is_sponsored")
+    .order("is_sponsored", { ascending: false })
     .order("name", { ascending: true })
 
-  const total = startups?.length || 0
+  if (error) {
+    console.error("Startup fetch error:", error)
+  }
+
+  const startups: StartupDirectoryItem[] = data ?? []
+  const total = startups.length
 
   return (
     <div className="relative min-h-screen bg-[#FAFAF9] text-zinc-900 overflow-hidden">
@@ -67,31 +77,47 @@ export default async function StartupsPage() {
           </div>
 
           {/* ================= SEARCH ================= */}
-          <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm mb-24">
-            <SearchBar initialData={startups || []} />
+          <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm mb-24 backdrop-blur-sm">
+            <SearchBar initialData={startups} />
           </div>
 
           {/* ================= LOGO GRID ================= */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10">
-            {startups?.map((startup) => (
-              <Link key={startup.id} href={`/startup/${startup.slug}`}>
-                <div className="relative bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 flex items-center justify-center group">
+          {startups.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10">
+              {startups.map((startup) => (
+                <Link
+                  key={startup.id}
+                  href={`/startup/${startup.slug}`}
+                  className="group"
+                >
+                  <div className="relative bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
 
-                  {startup.is_sponsored && (
-                    <div className="absolute top-3 right-3 text-amber-500">
-                      <Crown className="h-4 w-4" />
-                    </div>
-                  )}
+                    {startup.is_sponsored && (
+                      <div className="absolute top-3 right-3 text-amber-500">
+                        <Crown className="h-4 w-4" />
+                      </div>
+                    )}
 
-                  <img
-                    src={startup.logo_url}
-                    alt={`${startup.name} logo`}
-                    className="max-h-12 object-contain grayscale group-hover:grayscale-0 transition-all"
-                  />
-                </div>
-              </Link>
-            ))}
-          </div>
+                    {startup.logo_url ? (
+                      <img
+                        src={startup.logo_url}
+                        alt={`${startup.name} logo`}
+                        className="max-h-12 object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                      />
+                    ) : (
+                      <span className="text-sm text-zinc-500">
+                        {startup.name}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-zinc-500 py-20">
+              No startups listed yet.
+            </div>
+          )}
 
           {/* ================= SPONSOR CTA ================= */}
           <div className="mt-32 text-center bg-black text-white py-20 rounded-3xl">
@@ -99,9 +125,10 @@ export default async function StartupsPage() {
               Want Priority Visibility?
             </h3>
 
-            <p className="text-zinc-400 max-w-xl mx-auto mb-10">
-              Featured startups appear in the Sponsored Spotlight on our homepage
-              and receive social media promotion.
+            <p className="text-zinc-400 max-w-xl mx-auto mb-10 leading-relaxed">
+              Sponsored startups appear at the top of the directory,
+              receive homepage spotlight placement,
+              and get promoted through our social media channels.
             </p>
 
             <Link
@@ -117,7 +144,7 @@ export default async function StartupsPage() {
 
       {/* FOOTER STRIP */}
       <div className="border-t border-zinc-200 py-16 text-center text-xs uppercase tracking-[0.35em] text-zinc-500">
-        UpForge · Independent · Structured · Founder First · 2026
+        UpForge · Independent · Structured · Founder First · {new Date().getFullYear()}
       </div>
     </div>
   )
