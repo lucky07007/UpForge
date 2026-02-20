@@ -9,7 +9,11 @@ export interface Startup {
   founded_year: number
   category?: string
   location?: string
+
+  // Promotion flags
   is_sponsored?: boolean
+  is_featured?: boolean   // ✅ ADDED THIS
+
   created_at?: string
 }
 
@@ -23,4 +27,5 @@ export interface StartupDirectoryItem {
   slug: string
   logo_url: string
   is_sponsored?: boolean
+  is_featured?: boolean   // ✅ optional but good for listing
 }
