@@ -1,37 +1,31 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-/**
- * IMPORTANT:
- * Do NOT store this client globally.
- * Always create a new client inside each request (especially with Fluid compute).
- */
+type CookieToSet = {
+  name: string
+  value: string
+  options: CookieOptions
+}
+
 export async function createClient() {
   const cookieStore = await cookies()
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
     {
       cookies: {
-        getAll() {
+        getAll(): ReturnType<typeof cookieStore.getAll> {
           return cookieStore.getAll()
         },
 
-        setAll(
-          cookiesToSet: {
-            name: string
-            value: string
-            options: CookieOptions
-          }[]
-        ) {
+        setAll(cookiesToSet: CookieToSet[]): void {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
+            cookiesToSet.forEach((cookie: CookieToSet) => {
+              cookieStore.set(cookie.name, cookie.value, cookie.options)
+            })
           } catch {
-            // This usually happens if called from a Server Component.
-            // Safe to ignore if middleware handles session refresh.
+            // Safe to ignore in Server Components
           }
         },
       },
