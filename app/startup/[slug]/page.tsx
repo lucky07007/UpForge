@@ -11,8 +11,8 @@ interface PageProps {
 }
 
 /**
- * GENERATE METADATA
- * Optimized for high-level SEO, professional backlinking, and premium social sharing.
+ * DYNAMIC METADATA
+ * Optimized for search authority, credibility, and strong social previews.
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
@@ -25,33 +25,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .single()
 
   if (!startup) {
-    return { 
-      title: "Startup Not Found | UpForge Institutional Network",
-      description: "The requested startup profile could not be located in the UpForge verified directory."
+    return {
+      title: "Startup Not Found | UpForge",
+      description:
+        "The requested startup profile could not be found in the UpForge founder registry.",
     }
   }
 
-  const siteTitle = `${startup.name} | Verified Startup Profile`
-  const siteDescription = startup.description || `View the official verification and startup profile of ${startup.name} on UpForge.`
   const profileUrl = `https://www.upforge.in/startup/${slug}`
+  const title = `${startup.name} | Official Startup Profile | UpForge`
+  const description =
+    startup.description ||
+    `View the verified public startup profile of ${startup.name} on UpForge.`
 
   return {
-    title: siteTitle,
-    description: siteDescription,
+    title,
+    description,
     alternates: {
       canonical: profileUrl,
     },
     openGraph: {
-      title: `${startup.name} - UpForge Official Feature`,
-      description: siteDescription,
+      title,
+      description,
       url: profileUrl,
-      siteName: "UpForge Institutional Network",
+      siteName: "UpForge",
       images: [
         {
           url: startup.logo_url || "/og-image.jpg",
           width: 1200,
           height: 630,
-          alt: `${startup.name} Recognition Cover`,
+          alt: `${startup.name} Official Profile`,
         },
       ],
       locale: "en_IN",
@@ -59,28 +62,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title: siteTitle,
-      description: siteDescription,
+      title,
+      description,
       images: [startup.logo_url || "/og-image.jpg"],
     },
     robots: {
       index: true,
       follow: true,
-      nocache: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
     },
   }
 }
 
 /**
- * STARTUP PAGE
- * Server-side data fetching with structured data for professional SEO.
+ * STARTUP PROFILE PAGE
+ * Public registry record of a verified startup.
  */
 export default async function StartupPage({ params }: PageProps) {
   const { slug } = await params
@@ -96,33 +91,54 @@ export default async function StartupPage({ params }: PageProps) {
     notFound()
   }
 
-  // JSON-LD Structured Data for Search Engines
+  const profileUrl = `https://www.upforge.in/startup/${slug}`
+
+  /**
+   * STRUCTURED DATA (JSON-LD)
+   * Enhanced for Google rich results & knowledge graph association
+   */
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": startup.name,
-    "description": startup.description,
-    "url": startup.website || `https://www.upforge.in/startup/${slug}`,
-    "logo": startup.logo_url,
-    "foundingDate": startup.founded_year?.toString(),
-    "knowsAbout": startup.category,
-    "memberOf": {
+    name: startup.name,
+    description: startup.description,
+    url: startup.website || profileUrl,
+    logo: startup.logo_url,
+    foundingDate: startup.founded_year?.toString(),
+    industry: startup.category,
+    areaServed: "India",
+    sameAs: [
+      startup.linkedin_url,
+      startup.twitter_url,
+      startup.instagram_url,
+    ].filter(Boolean),
+    memberOf: {
       "@type": "Organization",
-      "name": "UpForge Institutional Network"
-    }
+      name: "UpForge Founder Registry",
+      url: "https://www.upforge.in",
+    },
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      {/* Inject Structured Data for SEO */}
+    <div className="flex min-h-screen flex-col bg-[#FAFAF9]">
+
+      {/* Structured Data Injection */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       <Navbar />
-      
+
       <main className="flex-1">
+
+        {/* Sponsor Banner (If Applicable) */}
+        {startup.is_sponsored && (
+          <div className="bg-black text-white text-center py-3 text-xs uppercase tracking-[0.3em]">
+            Sponsored Startup · Featured by UpForge
+          </div>
+        )}
+
         <StartupDetail startup={startup as Startup} />
       </main>
 
