@@ -31,20 +31,12 @@ export const metadata: Metadata = {
 export default async function StartupsPage() {
   const supabase = await createClient()
 
-  // 🔥 Stable & production-safe query (same behaviour as home)
-  const { data: startupsData, error } = await supabase
+  const { data: startups } = await supabase
     .from("startups")
     .select("*")
-    .order("is_sponsored", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false })
+    .order("name", { ascending: true })
 
-  if (error) {
-    console.error("Startup fetch error:", error)
-  }
-
-  // ✅ Safe typing (no more `as any`)
-  const startups: StartupDirectoryItem[] = startupsData ?? []
-  const total = startups.length
+  const total = startups?.length || 0
 
   return (
     <div className="relative min-h-screen bg-[#FAFAF9] text-zinc-900 overflow-hidden">
