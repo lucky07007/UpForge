@@ -2,13 +2,25 @@ export interface Startup {
   id: string
   name: string
   slug: string
+  logo_url: string
   description: string
-  logo_url: string | null
-  website: string | null
-  founders: string | string[] | null
-  founded_year: number | null
-  category: string
-  is_featured: boolean
-  created_at: string
-  updated_at: string
+  website: string
+  founders: string
+  founded_year: number
+  category?: string
+  location?: string
+  is_sponsored?: boolean
+  created_at?: string
+}
+
+/**
+ * Lightweight type for directory/search pages
+ * Only includes fields required for listing
+ */
+export interface StartupDirectoryItem {
+  id: string
+  name: string
+  slug: string
+  logo_url: string
+  is_sponsored?: boolean
 }
