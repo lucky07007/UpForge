@@ -1,121 +1,101 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { ShieldCheck, Flame, Globe2, Users } from "lucide-react"
-
 export default function AboutPage() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white to-slate-50 py-32 px-6 min-h-screen">
+    <section className="min-h-screen bg-[#F8F8F6] text-zinc-900 py-40 px-6">
 
-      {/* Background Effects */}
-      <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-indigo-200 rounded-full blur-3xl opacity-20 pointer-events-none" />
-      <div className="absolute bottom-[-300px] right-[-200px] w-[700px] h-[700px] bg-purple-200 rounded-full blur-3xl opacity-20 pointer-events-none" />
-
-      <div className="relative mx-auto max-w-6xl">
+      <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center max-w-3xl mx-auto mb-24"
-        >
-          <p className="text-xs font-black uppercase tracking-[0.5em] text-indigo-600 mb-6">
-            Our Identity
+        <div className="max-w-4xl mx-auto text-center mb-32">
+          <p className="text-xs uppercase tracking-[0.4em] text-zinc-500 mb-8">
+            Upforge Registry
           </p>
 
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-            Forging India’s{" "}
-            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Next Generation
-            </span>{" "}
-            of Builders
+          <h1 className="text-6xl md:text-7xl font-light leading-[1.05] tracking-tight">
+            About
+            <span className="block font-semibold">
+              Upforge.
+            </span>
           </h1>
 
-          <p className="mt-8 text-slate-600 text-lg leading-relaxed">
-            UpForge is not a media company. Not a listing website.
-            It is a verified ecosystem where independent founders,
-            operators, and emerging startups build visibility,
-            trust, and long-term momentum.
+          <p className="mt-12 text-lg text-zinc-600 leading-relaxed">
+            Upforge is an independent founder registry built to document,
+            structure, and elevate emerging Indian startups.
+            It is not a media platform. It is not a marketplace.
+            It is a public record of serious builders.
           </p>
-        </motion.div>
+        </div>
 
-        {/* CORE PILLARS */}
-        <div className="grid md:grid-cols-2 gap-10">
+        {/* CORE PRINCIPLES */}
+        <div className="grid md:grid-cols-2 gap-20">
 
-          {[
-            {
-              icon: Flame,
-              title: "Built for Builders",
-              desc: "Every startup listed here is independently driven. We prioritize clarity, founder transparency, and real-world execution over hype.",
-              color: "text-indigo-600"
-            },
-            {
-              icon: ShieldCheck,
-              title: "Verified Network",
-              desc: "Profiles are structured for authenticity — helping founders build digital credibility and long-term brand equity.",
-              color: "text-emerald-600"
-            },
-            {
-              icon: Users,
-              title: "Independent First",
-              desc: "We spotlight founders before they become headlines — empowering early-stage teams with discoverability and organic distribution.",
-              color: "text-purple-600"
-            },
-            {
-              icon: Globe2,
-              title: "Long-Term Vision",
-              desc: "UpForge aims to become India’s most trusted independent founder network — not through noise, but through signal.",
-              color: "text-indigo-500"
-            }
-          ].map((item, i) => {
-            const Icon = item.icon
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
-                viewport={{ once: true }}
-                className="group backdrop-blur-xl bg-white/70 rounded-3xl p-10 border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
-              >
-                <Icon className={`h-8 w-8 mb-6 ${item.color}`} />
-                <h3 className="text-xl font-bold text-slate-900 mb-4">
-                  {item.title}
-                </h3>
-                <p className="text-slate-600 leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            )
-          })}
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">
+              Built for Builders
+            </h3>
+            <p className="text-zinc-600 leading-relaxed">
+              Every listed startup represents independent execution.
+              We prioritize clarity, structured documentation,
+              and long-term visibility over short-term hype.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">
+              Structured Credibility
+            </h3>
+            <p className="text-zinc-600 leading-relaxed">
+              Profiles are designed as institutional records —
+              ensuring founders build digital credibility
+              that compounds over time.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">
+              Independent First
+            </h3>
+            <p className="text-zinc-600 leading-relaxed">
+              We spotlight founders before headlines do.
+              Discoverability is structured around substance,
+              not social noise.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">
+              Long-Term Vision
+            </h3>
+            <p className="text-zinc-600 leading-relaxed">
+              Upforge aims to become India’s most trusted
+              independent founder network —
+              defined by quality, structure, and permanence.
+            </p>
+          </div>
 
         </div>
 
-        {/* FINAL STATEMENT */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="mt-32 text-center max-w-3xl mx-auto"
-        >
-          <h3 className="text-3xl font-bold text-slate-900 mb-6">
+        {/* CLOSING STATEMENT */}
+        <div className="mt-32 max-w-3xl mx-auto text-center">
+          <h3 className="text-3xl font-semibold mb-8">
             This is not a directory.
-            <span className="block text-indigo-600 mt-2">
-              It is a signal.
-            </span>
           </h3>
 
-          <p className="text-slate-600 leading-relaxed text-lg">
-            A signal that serious founders are building.
-            A signal that India’s startup ecosystem is evolving.
-            A signal that credibility matters more than noise.
+          <p className="text-zinc-600 leading-relaxed text-lg">
+            It is a signal that serious founders are building.
+            A structured record of India’s emerging companies.
+            A quiet infrastructure layer beneath the ecosystem.
           </p>
-        </motion.div>
+        </div>
 
       </div>
+
+      {/* FOOTER STRIP */}
+      <div className="border-t border-zinc-200 py-16 text-center text-xs uppercase tracking-[0.35em] text-zinc-500 mt-40">
+        Upforge · Independent Founder Registry · India
+      </div>
+
     </section>
   )
 }
