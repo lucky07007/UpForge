@@ -1,34 +1,20 @@
 import { createClient } from "@/lib/supabase/server"
-import { StartupCard } from "@/components/startup-card"
 import { WhyUpforge } from "@/components/why-upforge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowRight, Sparkles, Clock, Crown } from "lucide-react"
+import { ArrowRight, Crown } from "lucide-react"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "UpForge | India’s Independent Founder Network",
   description:
-    "UpForge is India’s premium founder registry. Discover verified startups, rising builders, and sponsored spotlight companies.",
-  keywords: [
-    "Indian startups",
-    "startup directory India",
-    "founder registry",
-    "startup listing platform",
-    "sponsored startup promotion",
-  ],
-  openGraph: {
-    title: "UpForge – India’s Independent Founder Network",
-    description:
-      "A curated public ledger of serious builders. Verified startups. Real founders.",
-    type: "website",
-  },
+    "UpForge is India’s premium founder registry. Discover verified startups and sponsored spotlight companies.",
 }
 
 export default async function Home() {
   const supabase = await createClient()
 
-  // Sponsored (Top Priority – Monetization Engine)
+  // SAME QUERY (unchanged)
   const { data: sponsored } = await supabase
     .from("startups")
     .select("*")
@@ -36,32 +22,22 @@ export default async function Home() {
     .limit(6)
     .order("created_at", { ascending: false })
 
-  // Featured (Editorial Picks)
-  const { data: featured } = await supabase
-    .from("startups")
-    .select("*")
-    .eq("is_featured", true)
-    .limit(6)
-    .order("created_at", { ascending: false })
-
-  // Recent
-  const { data: recent } = await supabase
-    .from("startups")
-    .select("*")
-    .limit(6)
-    .order("created_at", { ascending: false })
-
   return (
-    <div className="relative bg-[#FAFAF9] text-zinc-900 antialiased overflow-hidden">
+    <div className="relative bg-[#FAFAF9] text-zinc-900 overflow-hidden">
 
-      {/* PREMIUM GRID BACKGROUND */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.25] pointer-events-none" />
+      {/* Premium Soft Grid + Fade */}
+      <div className="absolute inset-0 
+        bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] 
+        bg-[size:80px_80px] opacity-[0.15] pointer-events-none" 
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white opacity-60 pointer-events-none" />
 
       {/* ================= HERO ================= */}
-      <section className="relative pt-44 pb-36 px-6 text-center">
+      <section className="relative pt-44 pb-32 px-6 text-center">
         <div className="max-w-5xl mx-auto">
 
-          <div className="text-xs tracking-[0.35em] uppercase text-zinc-500 mb-8">
+          <div className="text-xs tracking-[0.4em] uppercase text-zinc-500 mb-8">
             UPFORGE · VERIFIED FOUNDER REGISTRY
           </div>
 
@@ -73,8 +49,8 @@ export default async function Home() {
           </h1>
 
           <p className="mt-10 text-lg text-zinc-600 max-w-2xl mx-auto leading-relaxed">
-            Discover serious founders. Sponsor visibility.  
-            Build reputation in the new digital economy.
+            Discover serious founders. Sponsor visibility.
+            Build long-term credibility.
           </p>
 
           <div className="mt-14 flex justify-center gap-5 flex-wrap">
@@ -97,26 +73,39 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ================= SPONSORED SECTION ================= */}
+      {/* ================= SPONSORED OF THE WEEK ================= */}
       {sponsored && sponsored.length > 0 && (
-        <section className="relative py-24 px-6 max-w-7xl mx-auto">
+        <section className="relative py-24 px-6 max-w-6xl mx-auto">
+
           <div className="flex items-center gap-3 mb-12">
             <Crown className="h-5 w-5 text-amber-500" />
             <h2 className="text-xs tracking-[0.35em] uppercase font-semibold">
-              Sponsored Spotlight
+              Sponsored of the Week
             </h2>
           </div>
 
-          {/* LOGO-FIRST GRID */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
+          {/* Small Clean Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {sponsored.map((startup) => (
               <Link key={startup.id} href={`/startup/${startup.slug}`}>
-                <div className="bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-                  <img
-                    src={startup.logo_url}
-                    alt={`${startup.name} logo`}
-                    className="max-h-12 object-contain grayscale hover:grayscale-0 transition-all"
-                  />
+                <div className="group bg-white/70 backdrop-blur-sm border border-zinc-200 rounded-xl px-5 py-4 
+                                hover:shadow-lg hover:-translate-y-1 transition-all duration-300 
+                                flex items-center gap-3">
+
+                  {/* Small colorful logo */}
+                  {startup.logo_url && (
+                    <img
+                      src={startup.logo_url}
+                      alt={`${startup.name} logo`}
+                      className="h-8 w-8 object-contain"
+                    />
+                  )}
+
+                  {/* Small name */}
+                  <span className="text-sm font-medium text-zinc-800 group-hover:text-black transition-colors">
+                    {startup.name}
+                  </span>
+
                 </div>
               </Link>
             ))}
@@ -124,79 +113,20 @@ export default async function Home() {
         </section>
       )}
 
-      {/* ================= FEATURED ================= */}
-      <section className="relative py-24 px-6 max-w-7xl mx-auto border-t border-zinc-200">
-        <div className="flex items-center gap-3 mb-12">
-          <Sparkles className="h-5 w-5 text-zinc-500" />
-          <h2 className="text-xs tracking-[0.35em] uppercase font-semibold">
-            Editorial Picks
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
-          {featured?.map((startup) => (
-            <Link key={startup.id} href={`/startup/${startup.slug}`}>
-              <div className="bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-lg transition flex items-center justify-center">
-                <img
-                  src={startup.logo_url}
-                  alt={`${startup.name} logo`}
-                  className="max-h-12 object-contain grayscale hover:grayscale-0 transition"
-                />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= RECENT ================= */}
-      <section className="relative py-24 px-6 max-w-7xl mx-auto border-t border-zinc-200">
-        <div className="flex justify-between items-center mb-12">
-          <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-zinc-400" />
-            <h2 className="text-xs tracking-[0.35em] uppercase font-semibold">
-              Recently Added
-            </h2>
-          </div>
-
-          <Link
-            href="/startup"
-            className="group text-xs uppercase tracking-[0.3em] text-zinc-500 hover:text-black flex items-center gap-2 transition-colors"
-          >
-            View Full Registry
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
-          {recent?.map((startup) => (
-            <Link key={startup.id} href={`/startup/${startup.slug}`}>
-              <div className="bg-white border border-zinc-200 rounded-2xl p-8 hover:shadow-md transition flex items-center justify-center">
-                <img
-                  src={startup.logo_url}
-                  alt={`${startup.name} logo`}
-                  className="max-h-12 object-contain grayscale hover:grayscale-0 transition"
-                />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= WHY UPFORGE ================= */}
-      <div className="relative bg-white border-y border-zinc-200">
-        <div className="max-w-7xl mx-auto px-6 py-32">
+      {/* ================= WHY ================= */}
+      <div className="relative bg-white border-y border-zinc-200 mt-20">
+        <div className="max-w-6xl mx-auto px-6 py-28">
           <WhyUpforge />
         </div>
       </div>
 
-      {/* ================= SPONSOR CTA ================= */}
-      <section className="relative py-28 text-center bg-gradient-to-r from-zinc-900 to-black text-white">
+      {/* ================= CTA ================= */}
+      <section className="relative py-28 text-center bg-black text-white">
         <h3 className="text-3xl font-semibold mb-6">
-          Get Visible. Get Sponsored.
+          Get Premium Visibility
         </h3>
         <p className="text-zinc-400 max-w-xl mx-auto mb-10">
-          Don’t get lost in the noise. Feature your startup in our Sponsored
-          Spotlight and get promoted across our social channels.
+          Sponsor your startup and appear in our weekly spotlight.
         </p>
 
         <Link href="/sponsor">
@@ -206,7 +136,7 @@ export default async function Home() {
         </Link>
       </section>
 
-      {/* ================= FOOTER STRIP ================= */}
+      {/* ================= FOOTER ================= */}
       <div className="py-10 text-center text-[10px] tracking-[0.4em] uppercase text-zinc-400">
         UpForge · Independent · Curated · Founder First · 2026
       </div>
