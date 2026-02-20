@@ -33,7 +33,7 @@ export default async function StartupsPage() {
 
   const { data, error } = await supabase
     .from("startups")
-    .select("id, name, slug, logo_url, is_sponsored")
+    .select("*")
     .order("is_sponsored", { ascending: false })
     .order("name", { ascending: true })
 
