@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { SearchBar } from "@/components/search-bar"
 import Link from "next/link"
 import { Crown, Search } from "lucide-react"
 import type { StartupDirectoryItem } from "@/types/startup"
-import { useEffect } from "react"
 
 export default function StartupsPage() {
   const supabase = createClient()
@@ -132,6 +131,7 @@ export default function StartupsPage() {
                       {startup.name}
                     </h3>
 
+                    {/* This block caused the error and is now fixed by the type update */}
                     {startup.short_description && (
                       <p className="text-xs text-[#4a4a4a] mt-1 line-clamp-2">
                         {startup.short_description}
