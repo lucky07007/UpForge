@@ -1,68 +1,85 @@
 "use client"
 
 import React from 'react'
-import { BusinessForm } from "@/components/business-form"
-import { ShieldCheck, Lock } from "lucide-react"
+import { ApplicationForm } from "@/components/application-form"
+import { ShieldCheck, Lock, Sparkles, CheckCircle, Globe, Zap } from "lucide-react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 export default function ApplyPage() {
   return (
-    <div className="relative min-h-screen bg-[#0F172A] flex items-center justify-center overflow-hidden">
-      {/* 1. Background elements - Matches Hero/Security vibe */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(79,70,229,0.15)_0%,transparent_70%)]" />
-        <div className="absolute inset-0 opacity-[0.05] [mask-image:radial-gradient(ellipse_at_center,white,transparent)] pointer-events-none">
-          <svg width="100%" height="100%">
-            <rect width="100%" height="100%" fill="url(#apply-grid)" />
-            <defs>
-              <pattern id="apply-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" />
-              </pattern>
-            </defs>
-          </svg>
+    <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row overflow-hidden">
+      {/* Sidebar: Premium Benefits & Trust */}
+      <div className="relative w-full md:w-[40%] bg-indigo-950 p-8 md:p-12 flex flex-col justify-between border-r border-white/10">
+        <div className="absolute inset-0 opacity-20">
+          <Image 
+            src="/seal.jpg" 
+            alt="Institutional Seal" 
+            fill 
+            className="object-cover mix-blend-overlay"
+          />
+        </div>
+        
+        <div className="relative z-10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/20 border border-indigo-400/30 mb-8">
+            <ShieldCheck className="h-6 w-6 text-indigo-400" />
+          </div>
+          <h1 className="text-4xl font-black tracking-tighter text-white uppercase leading-none mb-4">
+            Join the <br /> <span className="text-indigo-400">Ecosystem</span>
+          </h1>
+          <p className="text-indigo-200/60 text-sm font-medium max-w-xs leading-relaxed">
+            Institutional-grade verification for India's most ambitious independent builders.
+          </p>
+
+          <div className="mt-12 space-y-6">
+            <BenefitItem 
+              icon={<Sparkles className="text-amber-400" />}
+              title="Sponsored Visibility"
+              desc="Featured placement across the network for maximum reach."
+            />
+            <BenefitItem 
+              icon={<Globe className="text-blue-400" />}
+              title="Verified Badge"
+              desc="Instant trust for investors and potential collaborators."
+            />
+            <BenefitItem 
+              icon={<Zap className="text-indigo-400" />}
+              title="Registry Priority"
+              desc="Get listed in our institutional grade founder ledger."
+            />
+          </div>
+        </div>
+
+        <div className="relative z-10 pt-8 border-t border-white/10">
+          <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-white/30">
+            Institutional Verification Ledger v2.0
+          </span>
         </div>
       </div>
 
-      {/* 2. The Shared Component 
-         'forceOpen' ensures the form is visible as a proper page overlay immediately.
-      */}
-      <BusinessForm forceOpen={true} />
-
-      {/* 3. Aesthetic Background Content while the popup is active */}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-0 text-center space-y-6 px-6"
-      >
-        <div className="flex justify-center mb-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
-            <Lock className="h-8 w-8 text-indigo-400 opacity-50" />
+      {/* Main Content: The Form */}
+      <div className="flex-1 bg-white p-8 md:p-20 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">Startup Application</h2>
+            <p className="text-zinc-500 mt-2">Complete the registry details below. All data is encrypted.</p>
           </div>
-        </div>
-        
-        <div className="space-y-2">
-          <h1 className="text-2xl font-black tracking-tighter text-white uppercase opacity-40">
-            UPFORGE <span className="text-indigo-500">Secure</span>
-          </h1>
-          <div className="flex items-center justify-center gap-2 text-indigo-300/30">
-            <ShieldCheck className="h-4 w-4" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
-              Establishing Encrypted Connection
-            </span>
-          </div>
-        </div>
 
-        <p className="text-slate-500 text-xs font-medium max-w-xs mx-auto leading-relaxed opacity-60">
-          The founder registry portal is active. Please complete the form to submit your startup for verification.
-        </p>
-      </motion.div>
+          {/* Pass proper IDs if available, or handle within the component */}
+          <ApplicationForm userEmail="" userId="" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
-      {/* Security footer decoration */}
-      <div className="absolute bottom-12 left-0 right-0 text-center pointer-events-none">
-        <span className="text-[9px] font-bold uppercase tracking-[0.5em] text-white/10">
-          Institutional Grade Verification Ledger
-        </span>
+function BenefitItem({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
+  return (
+    <div className="flex gap-4">
+      <div className="mt-1">{icon}</div>
+      <div>
+        <h4 className="text-white font-bold text-sm uppercase tracking-wider">{title}</h4>
+        <p className="text-indigo-200/40 text-xs mt-1 leading-relaxed">{desc}</p>
       </div>
     </div>
   )
