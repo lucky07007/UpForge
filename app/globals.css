@@ -3,9 +3,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* UpForge Legacy Palette - High Contrast, High Trust */
-  --background: oklch(0.99 0.002 45); /* Soft Canvas White */
-  --foreground: oklch(0.18 0.02 260); /* Deep Ledger Slate */
+  /* UpForge Legacy Palette */
+  --background: oklch(0.99 0.002 45); 
+  --foreground: oklch(0.18 0.02 260); 
   
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.02 260);
@@ -13,22 +13,15 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 260);
   
-  /* Primary: UpForge Navy */
   --primary: oklch(0.28 0.05 260); 
   --primary-foreground: oklch(0.98 0.005 260);
   
-  /* Gold: The "Sponsor" Accent */
-  --gold: oklch(0.75 0.12 85);
-  --gold-foreground: oklch(0.25 0.05 85);
-
-  /* Secondary & Muted */
   --secondary: oklch(0.94 0.01 260);
   --secondary-foreground: oklch(0.35 0.05 260);
   
   --muted: oklch(0.96 0.005 260);
   --muted-foreground: oklch(0.45 0.02 260);
   
-  /* Accent: Success Emerald */
   --accent: oklch(0.55 0.15 160); 
   --accent-foreground: oklch(1 0 0);
   
@@ -43,44 +36,41 @@
 }
 
 .dark {
-  /* Professional Night - Deep Deep Navy, not pure black */
   --background: oklch(0.12 0.015 260);
   --foreground: oklch(0.98 0.005 260);
-  
   --card: oklch(0.15 0.02 260);
   --card-foreground: oklch(0.98 0.005 260);
-  
   --primary: oklch(0.98 0.005 260);
   --primary-foreground: oklch(0.12 0.015 260);
-  
   --secondary: oklch(0.18 0.02 260);
   --secondary-foreground: oklch(0.98 0.005 260);
-  
   --muted: oklch(0.18 0.02 260);
   --muted-foreground: oklch(0.65 0.02 260);
-  
   --border: oklch(0.22 0.02 260);
-  --ring: oklch(0.98 0.005 260);
 }
 
 @theme inline {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui;
-  --font-display: var(--font-display), serif;
-  
+  /* Mapping variables to utility names so Tailwind recognizes bg-card, text-foreground, etc. */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   --color-primary: var(--primary);
-  --color-gold: var(--gold);
-  --color-gold-foreground: var(--gold-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-border: var(--border);
+  
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui;
+  --font-display: var(--font-display), serif;
   
   --radius-xl: var(--radius);
   --radius-2xl: calc(var(--radius) + 0.5rem);
   
-  /* Legacy Animations */
   --animate-page-in: pageIn 0.8s cubic-bezier(0.2, 1, 0.2, 1);
-  --animate-float: float 6s ease-in-out infinite;
 }
 
 @keyframes pageIn {
@@ -88,40 +78,25 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
 @layer base {
   * {
-    @apply border-border outline-none selection:bg-primary/10 selection:text-primary;
+    @apply border-border outline-none;
   }
   body {
     @apply bg-background text-foreground antialiased font-sans;
-    font-feature-settings: "ss01", "ss03", "cv01";
-  }
-  h1, h2, h3, h4 {
-    @apply font-display tracking-tight font-semibold text-primary;
   }
 }
 
 @layer components {
-  /* The "Legacy Card" - subtly floating with a high-end shadow */
+  /* Fixed: Using var() directly or ensured theme mapping above */
   .legacy-card {
-    @apply bg-white dark:bg-card border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] 
+    background-color: var(--card);
+    color: var(--card-foreground);
+    @apply border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] 
            hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl;
   }
 
-  /* Glassmorphism for Overlays */
   .glass {
     @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-white/20 dark:border-white/10;
-  }
-
-  /* Button Legacy Style */
-  .btn-premium {
-    @apply px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-full 
-           hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20;
   }
 }
