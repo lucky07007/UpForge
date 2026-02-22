@@ -5,175 +5,142 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, ShieldCheck } from "lucide-react"
+import { Menu, X, ShieldCheck, Fingerprint } from "lucide-react"
 
 export function Navbar() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
 
-  // Scroll glass effect
   React.useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Close menu on route change
   React.useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [pathname])
 
-  // Lock scroll when menu open
   React.useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto"
   }, [isMobileMenuOpen])
 
   const navLinks = [
-    { name: "Registry", href: "/startup" },
+    { name: "The Registry", href: "/startup" },
     { name: "Sponsorship", href: "/sponsor" },
-    { name: "The Network", href: "/about" },
-    { name: "Docs", href: "/docs" },
+    { name: "Intelligence", href: "/about" },
+    { name: "Verification", href: "/docs" },
   ]
 
   return (
     <>
-      {/* ================= HEADER ================= */}
       <header
-        className={`fixed top-0 z-[60] w-full transition-all duration-500 ${
+        className={`fixed top-0 z-[60] w-full transition-all duration-700 ${
           isScrolled
-            ? "bg-white/80 backdrop-blur-xl border-b border-gray-100 py-4 shadow-[0_5px_30px_-15px_rgba(0,0,0,0.08)]"
-            : "bg-transparent py-6"
+            ? "bg-[#FDFCFB]/90 backdrop-blur-xl border-b border-[#1e3a5f]/5 py-4 shadow-[0_10px_40px_-15px_rgba(30,58,95,0.05)]"
+            : "bg-transparent py-8"
         }`}
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-8">
 
-          {/* LOGO */}
-          <Link href="/" className="group flex items-center gap-4">
-            <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-[#1e3a5f]/10 bg-white p-1 shadow-sm transition-transform group-hover:scale-105">
+          {/* LOGO: Institutional Badge Style */}
+          <Link href="/" className="group flex items-center gap-5">
+            <div className="relative h-12 w-12 overflow-hidden border border-[#1e3a5f]/10 bg-white p-2 transition-transform duration-500 group-hover:rotate-[360deg]">
               <Image
                 src="/logo.jpg"
-                alt="UpForge"
+                alt="UpForge Logo"
                 fill
-                className="object-cover p-1.5"
+                className="object-contain p-1 grayscale group-hover:grayscale-0 transition-all"
                 priority
               />
             </div>
 
-            <div className="flex flex-col leading-none">
-              <span className="text-lg font-bold tracking-tight text-[#1e3a5f] uppercase">
+            <div className="flex flex-col">
+              <span className="text-xl font-display font-bold tracking-tight text-[#0F172A] uppercase">
                 UPFORGE
               </span>
-              <div className="flex items-center gap-1">
-                <ShieldCheck className="h-2.5 w-2.5 text-[#c6a43f]" />
-                <span className="text-[9px] uppercase tracking-[0.3em] text-gray-400 font-bold">
-                  Verified Registry
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#C6A43F] animate-pulse" />
+                <span className="text-[8px] uppercase tracking-[0.4em] text-[#4a4a4a] font-black">
+                  Official Ledger
                 </span>
               </div>
             </div>
           </Link>
 
-          {/* DESKTOP NAV */}
-          <div className="hidden md:flex items-center gap-10">
-            <div className="flex items-center gap-8">
+          {/* DESKTOP: Minimalist Navigation */}
+          <div className="hidden md:flex items-center gap-12">
+            <div className="flex items-center gap-10">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href
-
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`relative text-[11px] uppercase tracking-[0.18em] font-bold transition-all duration-300 ${
-                      isActive ? "text-[#1e3a5f]" : "text-gray-400 hover:text-[#1e3a5f]"
+                    className={`relative text-[10px] uppercase tracking-[0.25em] font-bold transition-all duration-300 ${
+                      isActive ? "text-[#0F172A]" : "text-[#4a4a4a] hover:text-[#C6A43F]"
                     }`}
                   >
                     {link.name}
-
-                    {/* Animated underline */}
-                    <span
-                      className={`absolute left-0 -bottom-2 h-[2px] bg-[#c6a43f] transition-all duration-300 ${
-                        isActive ? "w-full" : "w-0 group-hover:w-full"
-                      }`}
-                    />
+                    {isActive && (
+                      <span className="absolute -bottom-1 left-0 w-full h-[1px] bg-[#C6A43F]" />
+                    )}
                   </Link>
                 )
               })}
             </div>
 
             <Link href="/apply">
-              <Button className="h-11 px-8 bg-[#1e3a5f] hover:bg-black text-white rounded-full text-[11px] font-bold uppercase tracking-widest shadow-xl shadow-[#1e3a5f]/20 transition-all hover:-translate-y-0.5">
+              <Button className="h-12 px-8 bg-[#0F172A] hover:bg-[#C6A43F] text-white rounded-none text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 shadow-xl border border-[#0F172A]">
                 Join Registry
               </Button>
             </Link>
           </div>
 
-          {/* MOBILE BUTTON */}
+          {/* MOBILE TOGGLE */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="md:hidden p-2 text-[#1e3a5f] hover:bg-gray-100 rounded-full transition-colors"
+            className="md:hidden p-3 text-[#0F172A] border border-[#0F172A]/10 rounded-none bg-white/50 backdrop-blur-sm"
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-5 w-5" />
           </button>
         </nav>
       </header>
 
-      {/* ================= MOBILE MENU ================= */}
+      {/* MOBILE OVERLAY: Editorial Style */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[100] bg-white animate-in fade-in slide-in-from-bottom-5 duration-500">
-
-          {/* Mobile Header */}
-          <div className="flex justify-between items-center p-6 border-b border-gray-50">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center">
-                <span className="text-white text-[10px] font-bold">UF</span>
-              </div>
-              <span className="text-xs font-bold tracking-widest uppercase">
-                Navigation
-              </span>
-            </div>
-
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="h-12 w-12 flex items-center justify-center rounded-full bg-gray-50 text-[#1e3a5f] active:scale-90 transition-transform"
-            >
+        <div className="fixed inset-0 z-[100] bg-[#FDFCFB] animate-in fade-in duration-500">
+          <div className="flex justify-between items-center p-8 border-b border-[#1e3a5f]/5">
+            <span className="text-[10px] font-bold tracking-[0.5em] uppercase text-[#C6A43F]">Menu Selection</span>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="p-4 bg-[#0F172A] text-white">
               <X className="h-6 w-6" />
             </button>
           </div>
 
-          {/* Mobile Links */}
-          <div className="flex flex-col justify-center h-[70vh] px-10">
-            <div className="space-y-10">
+          <div className="flex flex-col justify-center h-[75vh] px-12">
+            <div className="space-y-12">
               {navLinks.map((link, i) => (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block group"
+                  className="group block"
                 >
-                  <span
-                    className="text-[10px] text-[#c6a43f] font-bold tracking-[0.4em] uppercase mb-2 block"
-                  >
-                    0{i + 1}
-                  </span>
-
-                  <span className="text-4xl font-serif italic text-[#1e3a5f] group-hover:pl-4 transition-all duration-300">
+                  <span className="text-[10px] font-mono text-[#C6A43F] block mb-2">0{i + 1} //</span>
+                  <span className="text-5xl font-display font-light text-[#0F172A] group-hover:italic transition-all duration-500">
                     {link.name}
                   </span>
                 </Link>
               ))}
             </div>
 
-            {/* CTA */}
-            <div className="mt-20 pt-10 border-t border-gray-50">
+            <div className="mt-20 pt-10 border-t border-[#1e3a5f]/10">
               <Link href="/apply" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full h-16 bg-[#1e3a5f] text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-black">
-                  Apply for Listing
+                <Button className="w-full h-20 bg-[#0F172A] text-white rounded-none text-xs font-bold uppercase tracking-[0.3em]">
+                  Submit Application
                 </Button>
               </Link>
-
-              <p className="text-center mt-6 text-[10px] text-gray-400 tracking-[0.3em] uppercase">
-                UpForge · Founder First · 2026
-              </p>
             </div>
           </div>
         </div>
