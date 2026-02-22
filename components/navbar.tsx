@@ -1,3 +1,4 @@
+// components/navbar.tsx
 "use client"
 
 import * as React from "react"
@@ -5,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, ShieldCheck } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -35,7 +36,6 @@ export function Navbar() {
         }`}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-8">
-
           <Link href="/" className="group flex items-center gap-4">
             <div className="relative h-11 w-11 overflow-hidden border border-[#0F172A]/10 bg-white p-2 transition-all group-hover:shadow-lg">
               <Image
@@ -88,7 +88,7 @@ export function Navbar() {
         </nav>
       </header>
 
-      {/* MOBILE MENU */}
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-[100] bg-[#FDFCFB] animate-in fade-in duration-300">
           <div className="flex justify-between items-center p-8 border-b border-[#1e3a5f]/5">
