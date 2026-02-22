@@ -84,11 +84,11 @@ export default async function Home() {
           <div className="mt-12 flex items-center justify-center gap-8 text-sm text-[#4a4a4a]">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-[#1e3a5f]" />
-              <span>3,000+ Startups</span>
+              <span>3.4K + Startups</span>
             </div>
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-[#1e3a5f]" />
-              <span>10,000+ Monthly Visitors</span>
+              <span>70K + Visits</span>
             </div>
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-[#1e3a5f]" />
