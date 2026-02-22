@@ -1,3 +1,4 @@
+/* app/globals.css */
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
@@ -71,11 +72,31 @@
   --radius-2xl: calc(var(--radius) + 0.5rem);
   
   --animate-page-in: pageIn 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee2: marquee 30s linear infinite;
+  --animate-float: float 20s ease-in-out infinite;
+  --animate-slide: slide 8s infinite linear;
 }
 
+/* Custom Keyframes */
 @keyframes pageIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate3d(1, 1, 1, 0deg); }
+  50% { transform: translateY(-20px) rotate3d(1, 1, 1, 5deg); }
+}
+
+@keyframes slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 @layer base {
@@ -88,7 +109,6 @@
 }
 
 @layer components {
-  /* Fixed: Using var() directly or ensured theme mapping above */
   .legacy-card {
     background-color: var(--card);
     color: var(--card-foreground);
