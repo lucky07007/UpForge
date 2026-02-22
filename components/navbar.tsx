@@ -13,11 +13,20 @@ export function Navbar() {
   const [isResourcesOpen, setIsResourcesOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
 
-  // Close mobile menu when route changes
+  // Close mobile menu on route change
   React.useEffect(() => {
     setIsMobileMenuOpen(false)
     setIsResourcesOpen(false)
   }, [pathname])
+
+  // Scroll lock when mobile menu open
+  React.useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+  }, [isMobileMenuOpen])
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -46,7 +55,7 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-[#0f1e2f]/80 backdrop-blur-2xl">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6" aria-label="Main navigation">
+      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
         {/* Brand */}
         <Link href="/" className="flex items-center gap-4 group">
@@ -86,7 +95,6 @@ export function Navbar() {
                   {isActive && (
                     <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#c6a43f] rounded-full" />
                   )}
-                  <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#c6a43f] rounded-full scale-x-0 transition-transform group-hover:scale-x-100" />
                 </Link>
               )
             })}
@@ -108,8 +116,9 @@ export function Navbar() {
                   }`}
                 />
               </button>
+
               {isResourcesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-[#0c1622] border border-white/10 shadow-2xl py-2 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-[#0c1622] border border-white/10 shadow-2xl py-2">
                   {resourceLinks.map((link) => {
                     const isActive = pathname === link.href
                     return (
@@ -143,8 +152,6 @@ export function Navbar() {
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="md:hidden p-2.5 text-white bg-white/10 border border-white/10 rounded-lg hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
-          aria-label="Toggle menu"
-          aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? (
             <X className="h-6 w-6 text-[#c6a43f]" />
@@ -153,62 +160,72 @@ export function Navbar() {
           )}
         </button>
 
-        {/* Mobile Menu Overlay */}
+        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-20 z-40 bg-[#0c1622] md:hidden animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="flex flex-col items-center gap-8 py-16 px-6">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.href
-                return (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={`text-2xl uppercase tracking-[0.2em] font-black transition-colors ${
-                      isActive ? "text-[#c6a43f]" : "text-white hover:text-[#c6a43f]"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                )
-              })}
+          <div className="fixed inset-0 z-40 md:hidden">
+            
+            {/* Dark Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-              {/* Mobile Resources Section */}
-              <div className="w-full max-w-xs">
-                <p className="text-center text-[10px] uppercase tracking-[0.3em] text-[#c6a43f] mb-4">
-                  Resources
-                </p>
-                <div className="flex flex-col gap-4">
-                  {resourceLinks.map((link) => {
-                    const isActive = pathname === link.href
-                    return (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        className={`text-center text-lg uppercase tracking-wider font-medium transition-colors ${
-                          isActive ? "text-[#c6a43f]" : "text-white/70 hover:text-white"
-                        }`}
-                      >
-                        {link.name}
-                      </Link>
-                    )
-                  })}
+            {/* Menu Panel */}
+            <div className="relative mt-20 min-h-[calc(100vh-5rem)] bg-[#0c1622] border-t border-white/10">
+              <div className="flex flex-col items-center gap-8 py-16 px-6">
+                
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={`text-2xl uppercase tracking-[0.2em] font-black transition-colors ${
+                        isActive ? "text-[#c6a43f]" : "text-white hover:text-[#c6a43f]"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  )
+                })}
+
+                <div className="w-full max-w-xs">
+                  <p className="text-center text-[10px] uppercase tracking-[0.3em] text-[#c6a43f] mb-4">
+                    Resources
+                  </p>
+                  <div className="flex flex-col gap-4">
+                    {resourceLinks.map((link) => {
+                      const isActive = pathname === link.href
+                      return (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          className={`text-center text-lg uppercase tracking-wider font-medium transition-colors ${
+                            isActive ? "text-[#c6a43f]" : "text-white/70 hover:text-white"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
+
+                <div className="h-px w-24 bg-white/10 my-4" />
+
+                <Link href="/apply" className="w-full max-w-xs">
+                  <Button className="w-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-[#0f1e2f] rounded-xl text-sm font-bold uppercase tracking-widest shadow-xl shadow-[#c6a43f]/20">
+                    Join the Ecosystem
+                  </Button>
+                </Link>
+
+                <Link
+                  href="/apply"
+                  className="text-[10px] uppercase tracking-[0.3em] text-[#c6a43f]/80 font-bold border-b border-[#c6a43f]/30 pb-1"
+                >
+                  Connect then Grow
+                </Link>
               </div>
-
-              <div className="h-px w-24 bg-white/10 my-4" />
-
-              <Link href="/apply" className="w-full max-w-xs">
-                <Button className="w-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-[#0f1e2f] rounded-xl text-sm font-bold uppercase tracking-widest shadow-xl shadow-[#c6a43f]/20">
-                  Join the Ecosystem
-                </Button>
-              </Link>
-
-              <Link
-                href="/apply"
-                className="text-[10px] uppercase tracking-[0.3em] text-[#c6a43f]/80 font-bold border-b border-[#c6a43f]/30 pb-1"
-              >
-                Connect then Grow
-              </Link>
             </div>
           </div>
         )}
