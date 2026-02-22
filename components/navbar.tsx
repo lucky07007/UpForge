@@ -79,14 +79,18 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - UPDATED FOR VISIBILITY */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
+          className="md:hidden p-2.5 text-white bg-white/10 border border-white/10 rounded-lg hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
           aria-label="Toggle menu"
           aria-expanded={isMobileMenuOpen}
         >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6 text-[#c6a43f]" />
+          ) : (
+            <Menu className="h-6 w-6 text-white" />
+          )}
         </button>
 
         {/* Mobile Menu Overlay */}
