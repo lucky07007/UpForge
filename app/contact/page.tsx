@@ -78,8 +78,8 @@ export default function ContactPage() {
                 <div>
                   <h4 className="text-sm font-semibold uppercase tracking-wider mb-1">Email us</h4>
                   <p className="text-zinc-500 mb-2 text-sm">Our team usually responds within 24 hours.</p>
-                  <a href="mailto:hello@upforge.in" className="text-lg font-medium hover:text-indigo-600 transition-colors">
-                    hello@upforge.in
+                  <a href="mailto:info@upforge.in" className="text-lg font-medium hover:text-indigo-600 transition-colors">
+                    info@upforge.in
                   </a>
                 </div>
               </div>
@@ -104,8 +104,7 @@ export default function ContactPage() {
                 <div>
                   <h4 className="text-sm font-semibold uppercase tracking-wider mb-1">Headquarters</h4>
                   <p className="text-zinc-500 text-sm leading-relaxed">
-                    Indiranagar, Bangalore<br />
-                    Karnataka, India
+                    Delhi, India<br />
                   </p>
                 </div>
               </div>
