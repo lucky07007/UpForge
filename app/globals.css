@@ -4,54 +4,27 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* UpForge Legacy Palette */
-  --background: oklch(0.99 0.002 45); 
-  --foreground: oklch(0.18 0.02 260); 
+  --background: #faf9f7;
+  --foreground: #1e1b1b;
   
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 260);
+  --card: #ffffff;
+  --card-foreground: #1e1b1b;
   
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 260);
+  --primary: #1e3a5f;
+  --primary-foreground: #ffffff;
   
-  --primary: oklch(0.28 0.05 260); 
-  --primary-foreground: oklch(0.98 0.005 260);
+  --secondary: #c6a43f;
+  --secondary-foreground: #1e1b1b;
   
-  --secondary: oklch(0.94 0.01 260);
-  --secondary-foreground: oklch(0.35 0.05 260);
+  --muted: #f0eeea;
+  --muted-foreground: #6b6b6b;
   
-  --muted: oklch(0.96 0.005 260);
-  --muted-foreground: oklch(0.45 0.02 260);
+  --border: #e5e2dc;
   
-  --accent: oklch(0.55 0.15 160); 
-  --accent-foreground: oklch(1 0 0);
-  
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(0.99 0.002 25);
-  
-  --border: oklch(0.91 0.01 260);
-  --input: oklch(0.91 0.01 260);
-  --ring: oklch(0.28 0.05 260);
-  
-  --radius: 0.85rem;
-}
-
-.dark {
-  --background: oklch(0.12 0.015 260);
-  --foreground: oklch(0.98 0.005 260);
-  --card: oklch(0.15 0.02 260);
-  --card-foreground: oklch(0.98 0.005 260);
-  --primary: oklch(0.98 0.005 260);
-  --primary-foreground: oklch(0.12 0.015 260);
-  --secondary: oklch(0.18 0.02 260);
-  --secondary-foreground: oklch(0.98 0.005 260);
-  --muted: oklch(0.18 0.02 260);
-  --muted-foreground: oklch(0.65 0.02 260);
-  --border: oklch(0.22 0.02 260);
+  --radius: 0.5rem;
 }
 
 @theme inline {
-  /* Mapping variables to utility names so Tailwind recognizes bg-card, text-foreground, etc. */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -62,61 +35,45 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
   --color-border: var(--border);
   
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui;
-  --font-display: var(--font-display), serif;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, serif;
   
-  --radius-xl: var(--radius);
-  --radius-2xl: calc(var(--radius) + 0.5rem);
-  
-  --animate-page-in: pageIn 0.8s cubic-bezier(0.2, 1, 0.2, 1);
-  --animate-marquee: marquee 30s linear infinite;
-  --animate-marquee2: marquee 30s linear infinite;
-  --animate-float: float 20s ease-in-out infinite;
-  --animate-slide: slide 8s infinite linear;
+  --animate-fade-in: fadeIn 0.5s ease-out;
+  --animate-slide-up: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-float: float 6s ease-in-out infinite;
 }
 
-/* Custom Keyframes */
-@keyframes pageIn {
-  from { opacity: 0; transform: translateY(12px); }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
-}
-
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate3d(1, 1, 1, 0deg); }
-  50% { transform: translateY(-20px) rotate3d(1, 1, 1, 5deg); }
-}
-
-@keyframes slide {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
 }
 
 @layer base {
   * {
-    @apply border-border outline-none;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground antialiased font-sans;
   }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
 }
 
 @layer components {
-  .legacy-card {
-    background-color: var(--card);
-    color: var(--card-foreground);
-    @apply border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] 
-           hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl;
-  }
-
-  .glass {
-    @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-white/20 dark:border-white/10;
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1;
   }
 }
