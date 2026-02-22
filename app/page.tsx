@@ -1,59 +1,74 @@
+// app/page.tsx
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowRight, Crown, ShieldCheck, Activity, Globe, Landmark } from "lucide-react"
+import { ArrowRight, ShieldCheck, Activity, Globe, Landmark, BarChart3 } from "lucide-react"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "UpForge | The Institutional Registry for Indian Founders",
-  description: "The definitive ledger of high-growth startups and verified founders in India.",
+  description: "The definitive ledger of high-growth startups and verified founders in India. Join the legacy.",
+  openGraph: {
+    title: "UpForge – India's Founder Registry",
+    description: "Where the most ambitious builders are permanently archived.",
+    images: [{ url: "/og-home.jpg", width: 1200, height: 630 }],
+  },
 }
 
 export default async function Home() {
   const supabase = await createClient()
 
-  // Data fetching (keep same as before)
-  const { data: sponsorOfWeek } = await supabase.from("startups").select("*").eq("is_sponsored", true).order("created_at", { ascending: false }).limit(1)
-  const { data: sponsored } = await supabase.from("startups").select("*").eq("is_sponsored", true).order("created_at", { ascending: false }).limit(3)
+  const { data: sponsorOfWeek } = await supabase
+    .from("startups")
+    .select("*")
+    .eq("is_sponsored", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+  const { data: sponsored } = await supabase
+    .from("startups")
+    .select("*")
+    .eq("is_sponsored", true)
+    .order("created_at", { ascending: false })
+    .limit(3)
 
   return (
     <div className="relative bg-[#FDFCFB] text-[#0F172A]">
-      
-      {/* 1. ANIMATED LIVE TICKER (Makes it feel alive) */}
+      {/* 3D floating element – subtle depth */}
+      <div className="fixed top-40 right-[-5%] w-[600px] h-[600px] opacity-20 pointer-events-none animate-float">
+        <div className="w-full h-full bg-gradient-to-br from-[#1e3a5f] to-[#C6A43F] rounded-full blur-3xl transform rotate-3d" />
+      </div>
+
+      {/* Registry Live Feed Ticker */}
       <div className="pt-24 pb-2 bg-[#0F172A] text-[#C6A43F] overflow-hidden whitespace-nowrap border-b border-[#C6A43F]/20">
         <div className="animate-marquee inline-block text-[10px] uppercase tracking-[0.4em] font-bold">
-          NEW REGISTRY ENTRY: ZETTA LABS • FUNDING NEWS: NESTBOX SECURES SERIES A • UPFORGE VERIFICATION ENGINE ACTIVE • 3,402 TOTAL ENTITIES ARCHIVED • &nbsp;
+          NEW VERIFIED ENTRY: NIRVANA AI • FUNDING: $12M SERIES A • UPFORGE VERIFICATION ENGINE v2.0 ACTIVE • 3,402 TOTAL ENTITIES • &nbsp;
         </div>
         <div className="animate-marquee2 absolute top-24 inline-block text-[10px] uppercase tracking-[0.4em] font-bold">
-          NEW REGISTRY ENTRY: ZETTA LABS • FUNDING NEWS: NESTBOX SECURES SERIES A • UPFORGE VERIFICATION ENGINE ACTIVE • 3,402 TOTAL ENTITIES ARCHIVED • &nbsp;
+          NEW VERIFIED ENTRY: NIRVANA AI • FUNDING: $12M SERIES A • UPFORGE VERIFICATION ENGINE v2.0 ACTIVE • 3,402 TOTAL ENTITIES • &nbsp;
         </div>
       </div>
 
-      {/* 2. HERO WITH TYPOGRAPHIC DEPTH */}
+      {/* Hero */}
       <section className="relative pt-32 pb-24 px-8 overflow-hidden">
-        {/* Subtle Background 3D element */}
-        <div className="absolute top-20 right-[-10%] w-[600px] h-[600px] bg-[#1e3a5f]/5 rounded-full blur-[120px] pointer-events-none" />
-        
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-end justify-between gap-12">
             <div className="max-w-4xl">
               <div className="flex items-center gap-3 mb-8">
                 <div className="h-[1px] w-12 bg-[#C6A43F]" />
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#C6A43F]">The 2026 Archive</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#C6A43F]">Est. 2026 · Registry Edition</span>
               </div>
               <h1 className="text-6xl md:text-9xl font-display font-medium tracking-tighter leading-[0.9]">
                 Forge Your <br />
                 <span className="italic font-serif text-[#1e3a5f] font-light">Digital Pedigree.</span>
               </h1>
             </div>
-            
             <div className="pb-4">
-               <p className="text-lg text-[#4a4a4a] max-w-sm font-light leading-relaxed mb-8 border-l-2 border-[#C6A43F]/20 pl-6">
-                Not a list, but a legacy. We provide the institutional-grade visibility that serious founders deserve.
+              <p className="text-lg text-[#4a4a4a] max-w-sm font-light leading-relaxed mb-8 border-l-2 border-[#C6A43F]/20 pl-6">
+                Not a list, but a legacy. Institutional-grade visibility for founders who demand permanence.
               </p>
               <Link href="/apply">
                 <Button className="h-16 px-10 bg-[#0F172A] text-white rounded-none hover:bg-[#C6A43F] transition-all group">
-                  Submit Application <ArrowRight className="ml-4 group-hover:translate-x-2 transition-transform" />
+                  Apply for Registry <ArrowRight className="ml-4 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -61,7 +76,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 3. BENTO-STYLE METRICS (Modern Professional Touch) */}
+      {/* Bento Metrics + Live Graph */}
       <section className="max-w-7xl mx-auto px-8 pb-32">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2 bg-white border border-[#0F172A]/5 p-12 flex flex-col justify-between h-[300px] hover:shadow-xl transition-all">
@@ -75,14 +90,36 @@ export default async function Home() {
             <Globe className="h-8 w-8 text-[#C6A43F]" />
             <div className="text-2xl font-display font-light">Global Access, <br />India Heart.</div>
           </div>
-          <div className="bg-[#F3F1EE] p-12 flex flex-col justify-between h-[300px]">
+          <div className="bg-[#F3F1EE] p-12 flex flex-col justify-between h-[300px] relative overflow-hidden">
             <Landmark className="h-8 w-8 text-[#0F172A]" />
             <div className="text-[10px] uppercase tracking-widest font-black">Registry Grade</div>
+            {/* Mini graph animation */}
+            <div className="absolute bottom-4 right-4 flex items-end gap-1">
+              <div className="w-1 h-6 bg-[#C6A43F] animate-pulse" />
+              <div className="w-1 h-10 bg-[#C6A43F] animate-pulse delay-100" />
+              <div className="w-1 h-8 bg-[#C6A43F] animate-pulse delay-200" />
+              <div className="w-1 h-12 bg-[#C6A43F] animate-pulse delay-300" />
+            </div>
+          </div>
+        </div>
+        {/* Registry Growth Graph (simulated) */}
+        <div className="mt-12 bg-white border border-[#0F172A]/5 p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-[#4a4a4a]">Registry Growth (Monthly Verified Entries)</h3>
+            <BarChart3 className="h-5 w-5 text-[#C6A43F]" />
+          </div>
+          <div className="h-32 flex items-end gap-2">
+            {[40, 55, 48, 70, 85, 102, 118, 135, 160, 190, 210, 240].map((height, i) => (
+              <div key={i} className="flex-1 bg-[#1e3a5f] hover:bg-[#C6A43F] transition-all" style={{ height: `${height/2}%` }} />
+            ))}
+          </div>
+          <div className="flex justify-between mt-2 text-[8px] font-mono text-[#4a4a4a]">
+            <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span>
           </div>
         </div>
       </section>
 
-      {/* 4. FEATURED SECTION WITH "GLASS" CARDS */}
+      {/* Featured Entries */}
       <section className="max-w-7xl mx-auto px-8 pb-32">
         <h2 className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#4a4a4a] mb-16 flex items-center gap-4">
           Verified Registry Entries <span className="h-[1px] flex-1 bg-[#0F172A]/10" />
@@ -93,7 +130,7 @@ export default async function Home() {
             <Link key={startup.id} href={`/startup/${startup.slug}`} className="group">
               <div className="relative bg-white border border-[#0F172A]/5 p-10 hover:border-[#C6A43F]/40 transition-all">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-                   <ShieldCheck className="h-5 w-5 text-[#C6A43F]" />
+                  <ShieldCheck className="h-5 w-5 text-[#C6A43F]" />
                 </div>
                 <img src={startup.logo_url || "/placeholder-logo.svg"} className="h-16 w-16 grayscale group-hover:grayscale-0 transition-all mb-12" alt={startup.name} />
                 <h3 className="text-2xl font-display font-bold mb-4">{startup.name}</h3>
@@ -108,19 +145,18 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5. THE ULTIMATE CTA */}
+      {/* Final CTA */}
       <section className="py-32 bg-[#FDFCFB] border-t border-[#0F172A]/5 relative overflow-hidden">
-         <div className="max-w-4xl mx-auto text-center px-8">
-            <h2 className="text-5xl md:text-7xl font-display font-bold mb-8">Ready to be <br /><span className="italic font-serif font-light text-[#C6A43F]">Recognized?</span></h2>
-            <p className="text-[#4a4a4a] text-xl font-light mb-12">Join the ledger that defines India's startup prestige.</p>
-            <Link href="/sponsor">
-               <Button className="h-20 px-16 bg-[#0F172A] text-white rounded-none text-xs font-bold uppercase tracking-[0.4em] hover:bg-[#1e3a5f] transition-all">
-                 Apply for Placement
-               </Button>
-            </Link>
-         </div>
+        <div className="max-w-4xl mx-auto text-center px-8">
+          <h2 className="text-5xl md:text-7xl font-display font-bold mb-8">Ready to be <br /><span className="italic font-serif font-light text-[#C6A43F]">Recognized?</span></h2>
+          <p className="text-[#4a4a4a] text-xl font-light mb-12">Join the ledger that defines India's startup prestige.</p>
+          <Link href="/sponsor">
+            <Button className="h-20 px-16 bg-[#0F172A] text-white rounded-none text-xs font-bold uppercase tracking-[0.4em] hover:bg-[#1e3a5f] transition-all">
+              Apply for Placement
+            </Button>
+          </Link>
+        </div>
       </section>
-
     </div>
   )
 }
