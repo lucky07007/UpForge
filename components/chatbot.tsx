@@ -6,6 +6,14 @@ import { X, Send, Sparkles, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 
+const suggestedQuestions = [
+  "What is UpForge?",
+  "How to get listed?",
+  "Sponsorship pricing?",
+  "Verification process?",
+  "Benefits for founders?",
+]
+
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
   const [showNudge, setShowNudge] = useState(false)
@@ -16,7 +24,7 @@ export function Chatbot() {
   ])
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Nudge logic: Show after 30s, hide after 4s
+  // Nudge logic
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!isOpen) {
@@ -31,10 +39,11 @@ export function Chatbot() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [messages])
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return
+  const handleSend = async (text?: string) => {
+    const messageText = text || input
+    if (!messageText.trim() || isLoading) return
 
-    const userMessage = { role: "user", content: input }
+    const userMessage = { role: "user", content: messageText }
     setMessages(prev => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
@@ -46,7 +55,6 @@ export function Chatbot() {
         body: JSON.stringify({ messages: [...messages, userMessage] }),
       })
       const data = await res.json()
-      // Handle both success and error responses
       const reply = data.message || data.error || "Sorry, I couldn't process that request."
       setMessages(prev => [...prev, { role: "assistant", content: reply }])
     } catch (err) {
@@ -58,7 +66,7 @@ export function Chatbot() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-      {/* Nudge Bubble with Robot */}
+      {/* Nudge Bubble */}
       <AnimatePresence>
         {showNudge && !isOpen && (
           <motion.div
@@ -92,7 +100,7 @@ export function Chatbot() {
               </div>
               <div className="flex items-center gap-4 z-10">
                 <div className="relative h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center">
-                  <Image src="/robot.svg" alt="Robot" fill className="object-contain p-2" />
+                  <Image src="/robot.jpg" alt="Robot" fill className="object-contain p-2" />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg tracking-tight">UpForge Intelligence</h3>
@@ -149,6 +157,21 @@ export function Chatbot() {
               )}
             </div>
 
+            {/* Suggested Questions */}
+            {messages.length === 1 && (
+              <div className="px-6 pb-2 flex flex-wrap gap-2">
+                {suggestedQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSend(q)}
+                    className="text-xs bg-white border border-[#1e3a5f]/10 hover:border-[#c6a43f]/30 rounded-full px-3 py-1.5 text-[#1e1b1b] transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Input */}
             <div className="p-6 bg-white border-t border-[#1e3a5f]/10">
               <div className="relative flex items-center gap-2">
@@ -160,7 +183,7 @@ export function Chatbot() {
                   className="flex-1 bg-[#fbf9f6] border border-[#1e3a5f]/10 rounded-2xl py-4 px-6 text-sm text-[#1e1b1b] placeholder:text-[#4a4a4a]/50 focus:ring-2 focus:ring-[#c6a43f]/20 outline-none transition-all"
                 />
                 <Button
-                  onClick={handleSend}
+                  onClick={() => handleSend()}
                   disabled={isLoading}
                   size="icon"
                   className="h-12 w-12 rounded-2xl bg-[#c6a43f] hover:bg-[#b08c2e] text-[#0f1e2f] shadow-lg hover:shadow-[#c6a43f]/30 transition-all"
@@ -173,7 +196,7 @@ export function Chatbot() {
         )}
       </AnimatePresence>
 
-      {/* Floating Button with Robot */}
+      {/* Floating Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
         className="h-16 w-16 rounded-[2rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.3)] hover:scale-110 active:scale-95 transition-all bg-[#0f1e2f] border border-[#c6a43f]/20 relative overflow-hidden"
