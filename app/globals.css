@@ -1,95 +1,127 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Institutional Core Palette */
-  --background: #0B1420;
-  --foreground: #EAEAEA;
+  /* UpForge Legacy Palette - High Contrast, High Trust */
+  --background: oklch(0.99 0.002 45); /* Soft Canvas White */
+  --foreground: oklch(0.18 0.02 260); /* Deep Ledger Slate */
+  
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 260);
+  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 260);
+  
+  /* Primary: UpForge Navy */
+  --primary: oklch(0.28 0.05 260); 
+  --primary-foreground: oklch(0.98 0.005 260);
+  
+  /* Gold: The "Sponsor" Accent */
+  --gold: oklch(0.75 0.12 85);
+  --gold-foreground: oklch(0.25 0.05 85);
 
-  --card: #111C2A;
-  --card-foreground: #EAEAEA;
+  /* Secondary & Muted */
+  --secondary: oklch(0.94 0.01 260);
+  --secondary-foreground: oklch(0.35 0.05 260);
+  
+  --muted: oklch(0.96 0.005 260);
+  --muted-foreground: oklch(0.45 0.02 260);
+  
+  /* Accent: Success Emerald */
+  --accent: oklch(0.55 0.15 160); 
+  --accent-foreground: oklch(1 0 0);
+  
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.99 0.002 25);
+  
+  --border: oklch(0.91 0.01 260);
+  --input: oklch(0.91 0.01 260);
+  --ring: oklch(0.28 0.05 260);
+  
+  --radius: 0.85rem;
+}
 
-  --primary: #C6A43F;        /* Registry Gold */
-  --primary-foreground: #0B1420;
-
-  --secondary: #162231;
-  --secondary-foreground: #CFCFCF;
-
-  --muted: #1A2635;
-  --muted-foreground: #8A94A6;
-
-  --accent: #1E3A5F;         /* Institutional Blue */
-  --accent-foreground: #FFFFFF;
-
-  --destructive: #7F1D1D;
-  --destructive-foreground: #FFFFFF;
-
-  --border: #1F2A3A;
-  --input: #1F2A3A;
-  --ring: #C6A43F;
-
-  --radius: 14px;
+.dark {
+  /* Professional Night - Deep Deep Navy, not pure black */
+  --background: oklch(0.12 0.015 260);
+  --foreground: oklch(0.98 0.005 260);
+  
+  --card: oklch(0.15 0.02 260);
+  --card-foreground: oklch(0.98 0.005 260);
+  
+  --primary: oklch(0.98 0.005 260);
+  --primary-foreground: oklch(0.12 0.015 260);
+  
+  --secondary: oklch(0.18 0.02 260);
+  --secondary-foreground: oklch(0.98 0.005 260);
+  
+  --muted: oklch(0.18 0.02 260);
+  --muted-foreground: oklch(0.65 0.02 260);
+  
+  --border: oklch(0.22 0.02 260);
+  --ring: oklch(0.98 0.005 260);
 }
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui;
+  --font-display: var(--font-display), serif;
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
   --color-accent: var(--accent);
   --color-border: var(--border);
+  
   --radius-xl: var(--radius);
-  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 0.5rem);
+  
+  /* Legacy Animations */
+  --animate-page-in: pageIn 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
 @layer base {
   * {
-    @apply border-border outline-none;
+    @apply border-border outline-none selection:bg-primary/10 selection:text-primary;
   }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     @apply bg-background text-foreground antialiased font-sans;
+    font-feature-settings: "ss01", "ss03", "cv01";
   }
-
   h1, h2, h3, h4 {
-    @apply tracking-tight font-semibold;
-    letter-spacing: -0.02em;
-  }
-
-  a {
-    @apply transition-colors duration-200;
+    @apply font-display tracking-tight font-semibold text-primary;
   }
 }
 
 @layer components {
-  .container-registry {
-    @apply max-w-7xl mx-auto px-6;
+  /* The "Legacy Card" - subtly floating with a high-end shadow */
+  .legacy-card {
+    @apply bg-white dark:bg-card border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] 
+           hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-2xl;
   }
 
-  .section-spacing {
-    @apply py-24 md:py-32;
+  /* Glassmorphism for Overlays */
+  .glass {
+    @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-white/20 dark:border-white/10;
   }
 
-  .registry-card {
-    @apply bg-card border border-border rounded-2xl transition-all duration-300 hover:border-primary/40 hover:shadow-xl;
-  }
-
-  .registry-badge {
-    @apply inline-flex items-center gap-2 px-3 py-1 text-[10px] uppercase tracking-[0.25em] font-semibold rounded-full bg-primary/10 text-primary border border-primary/20;
-  }
-
-  .gold-button {
-    @apply bg-primary text-primary-foreground hover:opacity-90 transition-all rounded-full uppercase tracking-wider font-semibold;
-  }
-
-  .institutional-outline {
-    @apply border border-border hover:border-primary/40 transition-colors;
-  }
-
-  .focus-ring {
-    @apply focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  /* Button Legacy Style */
+  .btn-premium {
+    @apply px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-full 
+           hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20;
   }
 }
