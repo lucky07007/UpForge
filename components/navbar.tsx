@@ -79,7 +79,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Menu Button - UPDATED FOR VISIBILITY */}
+        {/* Mobile Menu Button - Visibility and contrast improved */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="md:hidden p-2.5 text-white bg-white/10 border border-white/10 rounded-lg hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center"
@@ -93,34 +93,36 @@ export function Navbar() {
           )}
         </button>
 
-        {/* Mobile Menu Overlay */}
+        {/* Mobile Menu Overlay - Readability fixes applied here */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-20 z-40 bg-[#0f1e2f]/95 backdrop-blur-xl md:hidden">
-            <div className="flex flex-col items-center gap-8 py-12 px-6">
+          <div className="fixed inset-0 top-20 z-40 bg-[#0c1622] md:hidden animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex flex-col items-center gap-8 py-16 px-6">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`text-xl uppercase tracking-wider font-medium transition-colors ${
-                      isActive ? "text-[#c6a43f]" : "text-white/70 hover:text-white"
+                    className={`text-2xl uppercase tracking-[0.2em] font-black transition-colors ${
+                      isActive ? "text-[#c6a43f]" : "text-white hover:text-[#c6a43f]"
                     }`}
                   >
                     {link.name}
                   </Link>
                 )
               })}
-              <div className="h-px w-16 bg-white/20" />
+              
+              <div className="h-px w-24 bg-white/10 my-4" />
+              
               <Link href="/apply" className="w-full max-w-xs">
-                <Button className="w-full h-12 bg-[#c6a43f] hover:bg-[#b08c2e] text-[#0f1e2f] rounded-full text-sm font-semibold uppercase tracking-wider">
+                <Button className="w-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-[#0f1e2f] rounded-xl text-sm font-bold uppercase tracking-widest shadow-xl shadow-[#c6a43f]/20">
                   Join the Ecosystem
                 </Button>
               </Link>
-              {/* Original mobile link preserved with updated colors */}
+
               <Link
                 href="/apply"
-                className="text-xs uppercase tracking-[0.2em] text-[#c6a43f] border-b border-[#c6a43f] pb-0.5"
+                className="text-[10px] uppercase tracking-[0.3em] text-[#c6a43f]/80 font-bold border-b border-[#c6a43f]/30 pb-1"
               >
                 Connect then Grow
               </Link>
