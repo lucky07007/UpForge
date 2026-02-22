@@ -49,19 +49,19 @@ export default function AboutPage() {
         {/* STATS BANNER - Optional trust signal */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24 max-w-4xl mx-auto">
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">100+</div>
+            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">3000+</div>
             <div className="text-xs uppercase tracking-wider text-[#4a4a4a] mt-2">Verified Startups</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">50+</div>
+            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">500+</div>
             <div className="text-xs uppercase tracking-wider text-[#4a4a4a] mt-2">Sponsored</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">5K+</div>
+            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">10K+</div>
             <div className="text-xs uppercase tracking-wider text-[#4a4a4a] mt-2">Monthly Visitors</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">2024</div>
+            <div className="text-3xl md:text-4xl font-light text-[#1e3a5f]">2025</div>
             <div className="text-xs uppercase tracking-wider text-[#4a4a4a] mt-2">Founded</div>
           </div>
         </div>
