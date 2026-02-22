@@ -1,112 +1,95 @@
-@import 'tailwindcss';
-
-/* Note: 'tw-animate-css' and 'tailwindcss-animate' are now handled 
-  via your package.json dependencies and the Tailwind v4 engine. 
-  No manual @import is needed for them here.
-*/
-
-@custom-variant dark (&:is(.dark *));
+@import "tailwindcss";
 
 :root {
-  /* Premium Light Theme - Bloomberg-inspired High Trust */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.12 0.015 255);
-  --card: oklch(0.99 0.002 255);
-  --card-foreground: oklch(0.12 0.015 255);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0.015 255);
-  
-  /* Founder Indigo - Bold and Authentic */
-  --primary: oklch(0.45 0.22 265);
-  --primary-foreground: oklch(0.99 0.002 255);
-  
-  /* Refined Grays and Accents */
-  --secondary: oklch(0.96 0.005 255);
-  --secondary-foreground: oklch(0.25 0.04 255);
-  --muted: oklch(0.97 0.005 255);
-  --muted-foreground: oklch(0.45 0.02 255);
-  --accent: oklch(0.65 0.22 180); /* Verification Emerald */
-  --accent-foreground: oklch(1 0 0);
-  
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(0.99 0.002 255);
-  
-  --border: oklch(0.93 0.01 255);
-  --input: oklch(0.93 0.01 255);
-  --ring: oklch(0.45 0.22 265);
-  
-  /* Modern Founder Radius */
-  --radius: 1rem;
-}
+  /* Institutional Core Palette */
+  --background: #0B1420;
+  --foreground: #EAEAEA;
 
-.dark {
-  /* Deep Slate - Professional Night Mode */
-  --background: oklch(0.14 0.02 255);
-  --foreground: oklch(0.98 0.005 255);
-  --card: oklch(0.17 0.02 255);
-  --card-foreground: oklch(0.98 0.005 255);
-  --primary: oklch(0.55 0.2 265);
-  --primary-foreground: oklch(0.14 0.02 255);
-  --secondary: oklch(0.22 0.02 255);
-  --secondary-foreground: oklch(0.98 0.005 255);
-  --muted: oklch(0.22 0.02 255);
-  --muted-foreground: oklch(0.65 0.02 255);
-  --border: oklch(0.25 0.02 255);
+  --card: #111C2A;
+  --card-foreground: #EAEAEA;
+
+  --primary: #C6A43F;        /* Registry Gold */
+  --primary-foreground: #0B1420;
+
+  --secondary: #162231;
+  --secondary-foreground: #CFCFCF;
+
+  --muted: #1A2635;
+  --muted-foreground: #8A94A6;
+
+  --accent: #1E3A5F;         /* Institutional Blue */
+  --accent-foreground: #FFFFFF;
+
+  --destructive: #7F1D1D;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #1F2A3A;
+  --input: #1F2A3A;
+  --ring: #C6A43F;
+
+  --radius: 14px;
 }
 
 @theme inline {
-  --font-sans: 'Inter', ui-sans-serif, system-ui;
-  --font-display: 'Bricolage Grotesque', sans-serif;
-  
+  --font-sans: "Inter", ui-sans-serif, system-ui;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-accent: var(--accent);
   --color-border: var(--border);
-  
   --radius-xl: var(--radius);
-  --radius-2xl: calc(var(--radius) + 0.5rem);
-  
-  /* Premium Animations */
-  --animate-page-in: pageIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-reveal: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes pageIn {
-  from { opacity: 0; filter: blur(8px); transform: translateY(10px); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0); }
-}
-
-@keyframes reveal {
-  from { clip-path: inset(100% 0 0 0); }
-  to { clip-path: inset(0 0 0 0); }
+  --radius-2xl: calc(var(--radius) + 6px);
 }
 
 @layer base {
   * {
     @apply border-border outline-none;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground antialiased font-sans;
   }
+
   h1, h2, h3, h4 {
-    @apply font-display tracking-tight font-black;
+    @apply tracking-tight font-semibold;
+    letter-spacing: -0.02em;
+  }
+
+  a {
+    @apply transition-colors duration-200;
   }
 }
 
 @layer components {
-  /* Global Page Transition Class */
-  .page-transition-wrapper {
-    @apply animate-page-in;
-  }
-  
-  /* Trust Seal Glassmorphism */
-  .glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
+  .container-registry {
+    @apply max-w-7xl mx-auto px-6;
   }
 
-  /* High-Trust Focus States */
+  .section-spacing {
+    @apply py-24 md:py-32;
+  }
+
+  .registry-card {
+    @apply bg-card border border-border rounded-2xl transition-all duration-300 hover:border-primary/40 hover:shadow-xl;
+  }
+
+  .registry-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 text-[10px] uppercase tracking-[0.25em] font-semibold rounded-full bg-primary/10 text-primary border border-primary/20;
+  }
+
+  .gold-button {
+    @apply bg-primary text-primary-foreground hover:opacity-90 transition-all rounded-full uppercase tracking-wider font-semibold;
+  }
+
+  .institutional-outline {
+    @apply border border-border hover:border-primary/40 transition-colors;
+  }
+
   .focus-ring {
-    @apply focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 outline-none;
+    @apply focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 }
