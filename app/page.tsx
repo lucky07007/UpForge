@@ -3,163 +3,129 @@ import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Metadata } from "next"
+import { RegistryMetrics } from "@/components/registry-metrics"
+import { RegistryPrinciples } from "@/components/registry-principles"
 
 export const metadata: Metadata = {
-  title: "UpForge | India’s Independent Founder Registry",
-  description:
-    "A public registry of verified founders and startups in India. Signal over hype. Credibility as infrastructure.",
+  title: "UpForge | India's Independent Founder Registry",
+  description: "A structured public registry of verified founders and startups in India, built for long-term credibility and signal transparency.",
+  openGraph: {
+    title: "UpForge | India's Independent Founder Registry",
+    description: "A structured public registry of verified founders and startups in India, built for long-term credibility and signal transparency.",
+    url: "https://upforge.in",
+    siteName: "UpForge",
+    images: [
+      {
+        url: "/og-registry.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UpForge | India's Independent Founder Registry",
+    description: "A structured public registry of verified founders and startups in India, built for long-term credibility and signal transparency.",
+  },
 }
 
 export default async function Home() {
   const supabase = await createClient()
 
-  const { count: totalStartups } = await supabase
+  const { count: verifiedCount } = await supabase
     .from("startups")
     .select("*", { count: "exact", head: true })
-
-  const { count: totalSponsored } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true })
-    .eq("is_sponsored", true)
-
-  const { data: verifiedStartups } = await supabase
-    .from("startups")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(8)
+    .eq("status", "verified")
 
   return (
-    <div className="bg-white text-gray-900">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Hero */}
-        <section className="pt-32 pb-24 text-center">
-          <h1 className="text-5xl md:text-6xl font-light tracking-tight text-gray-900 max-w-4xl mx-auto">
-            India’s Independent Founder Registry.
-          </h1>
-          <p className="mt-6 text-lg text-gray-500 max-w-2xl mx-auto">
-            A public registry of verified founders and startups. Built for long‑term reputation,
-            signal, and credibility. No hype. No noise.
-          </p>
-          <div className="mt-10 flex justify-center gap-4">
+      <div className="bg-[#0B1420] min-h-screen">
+        {/* Registry Header */}
+        <section className="pt-32 pb-16 px-6 border-b border-[#1E2A3A]">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="max-w-3xl">
+              <span className="text-[#BFA14A] text-xs uppercase tracking-[0.2em] font-medium">
+                ESTABLISHED 2025
+              </span>
+              
+              <h1 className="text-5xl md:text-6xl font-light text-[#EAEAEA] mt-6 leading-tight">
+                India's Independent
+                <span className="block font-medium">Founder Registry</span>
+              </h1>
+              
+              <p className="text-xl text-[#9CA3AF] mt-6 max-w-2xl">
+                A structured public registry for verified founders and startups.
+                Built for long-term credibility and signal integrity.
+              </p>
+
+              <div className="flex gap-4 mt-10">
+                <Link href="/apply">
+                  <Button className="h-12 px-8 bg-transparent border border-[#BFA14A] text-[#BFA14A] hover:bg-[#BFA14A] hover:text-[#0B1420] transition-all duration-200 text-sm uppercase tracking-[0.1em] font-medium rounded-none">
+                    Apply for Verification
+                  </Button>
+                </Link>
+                
+                <Link href="/registry">
+                  <Button className="h-12 px-8 bg-[#1E2A3A] text-[#EAEAEA] hover:bg-[#2A3747] transition-all duration-200 text-sm uppercase tracking-[0.1em] font-medium rounded-none">
+                    Explore Registry
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Registry Principles */}
+        <section className="py-24 px-6 border-b border-[#1E2A3A]">
+          <div className="max-w-[1200px] mx-auto">
+            <RegistryPrinciples />
+          </div>
+        </section>
+
+        {/* Registry Metrics */}
+        <section className="py-24 px-6 border-b border-[#1E2A3A]">
+          <div className="max-w-[1200px] mx-auto">
+            <RegistryMetrics verifiedCount={verifiedCount || 0} />
+          </div>
+        </section>
+
+        {/* Verified Entries Preview */}
+        <section className="py-24 px-6">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="flex justify-between items-end mb-16">
+              <div>
+                <h2 className="text-[#EAEAEA] text-2xl font-light">Recent Verifications</h2>
+                <p className="text-[#9CA3AF] text-sm mt-2">Newly added founder profiles</p>
+              </div>
+              <Link 
+                href="/registry" 
+                className="text-[#BFA14A] text-sm uppercase tracking-[0.2em] hover:opacity-80 transition-opacity"
+              >
+                View All
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1px] bg-[#1E2A3A]" />
+          </div>
+        </section>
+
+        {/* CTA - Verification */}
+        <section className="py-24 px-6 bg-[#050A12] border-t border-[#1E2A3A]">
+          <div className="max-w-[1200px] mx-auto text-center">
+            <h2 className="text-[#EAEAEA] text-3xl font-light mb-4">
+              Submit for Verification
+            </h2>
+            <p className="text-[#9CA3AF] text-lg max-w-xl mx-auto mb-10">
+              Join India's most structured registry of verified founders and startups.
+            </p>
             <Link href="/apply">
-              <Button className="px-8 h-12 bg-gray-900 text-white hover:bg-gray-800 text-sm font-medium">
+              <Button className="h-14 px-10 bg-[#BFA14A] text-[#0B1420] hover:bg-[#D4B55C] transition-all duration-200 text-sm uppercase tracking-[0.2em] font-medium rounded-none">
                 Apply for Verification
               </Button>
             </Link>
-            <Link href="/startup">
-              <Button
-                variant="outline"
-                className="px-8 h-12 border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"
-              >
-                Explore Registry
-              </Button>
-            </Link>
           </div>
         </section>
-
-        {/* Trust markers */}
-        <section className="py-20 border-t border-gray-100">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                Public Registry
-              </div>
-              <p className="text-sm text-gray-600">Open, transparent, and accessible to all.</p>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                Verified Identities
-              </div>
-              <p className="text-sm text-gray-600">Founder and company information is validated.</p>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                Structured Profiles
-              </div>
-              <p className="text-sm text-gray-600">Consistent, comparable, and rich data.</p>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                Long‑Term Signal
-              </div>
-              <p className="text-sm text-gray-600">Designed for durability, not fleeting trends.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Registry statistics */}
-        <section className="py-20 border-t border-gray-100">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-light text-gray-900">
-                {totalStartups?.toLocaleString()}+
-              </div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mt-2">
-                Verified Startups
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-light text-gray-900">10,000+</div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mt-2">
-                Monthly Observers
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-light text-gray-900">
-                {totalSponsored?.toLocaleString()}+
-              </div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mt-2">
-                Sponsored Profiles
-              </div>
-            </div>
-            <div>
-              <div className="text-3xl font-light text-gray-900">2025</div>
-              <div className="text-xs uppercase tracking-wider text-gray-400 mt-2">
-                Founded
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Recently verified startups */}
-        {verifiedStartups && verifiedStartups.length > 0 && (
-          <section className="py-20 border-t border-gray-100">
-            <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-8">
-              Recently Verified
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {verifiedStartups.map((startup) => (
-                <Link
-                  key={startup.id}
-                  href={`/startup/${startup.slug}`}
-                  className="group block p-5 border border-gray-100 hover:border-gray-200 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={startup.logo_url || "/placeholder-logo.svg"}
-                      className="h-10 w-10 object-contain"
-                      alt={startup.name}
-                    />
-                    <h3 className="font-medium text-gray-900 group-hover:text-gray-600 transition-colors">
-                      {startup.name}
-                    </h3>
-                  </div>
-                  {startup.short_description && (
-                    <p className="text-sm text-gray-500 mt-3 line-clamp-2">
-                      {startup.short_description}
-                    </p>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Footer note */}
-        <div className="py-12 text-center text-xs text-gray-400 border-t border-gray-100">
-          UpForge · India’s Independent Founder Registry · Est. 2025
-        </div>
       </div>
-    </div>
   )
 }
