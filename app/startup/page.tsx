@@ -1,14 +1,11 @@
-// app/startup/page.tsx
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { SearchBar } from "@/components/search-bar";
 import Link from "next/link";
-import { Crown, Search, Sparkles } from "lucide-react";
+import { Crown, Search } from "lucide-react";
 import type { StartupDirectoryItem } from "@/types/startup";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 
 export default function StartupsPage() {
   const supabase = createClient();
@@ -45,33 +42,34 @@ export default function StartupsPage() {
 
   return (
     <div className="relative bg-white text-black min-h-screen">
-      <Navbar />
-      <main className="relative pt-20">
-        <section className="py-16 sm:py-20 px-4 sm:px-6">
+      {/* Navbar and Footer are now in global layout. Calling them here causes double spacing/rendering */}
+
+      <main className="relative pt-2">
+        <section className="pt-4 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center max-w-3xl mx-auto mb-12">
               <div className="flex items-center justify-center gap-3 mb-6">
-                <span className="h-px w-10 bg-black/20 hidden sm:block"></span>
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">
+                <span className="h-px w-10 bg-[#c6a43f]/20 hidden sm:block"></span>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#c6a43f]">
                   UPFORGE · FOUNDER DIRECTORY
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold tracking-tighter leading-[0.9] mb-6">
-                Startup <span className="text-gray-500 italic font-medium">Registry.</span>
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tighter leading-[0.9] mb-6 text-slate-900">
+                Startup <span className="text-slate-400 italic font-medium">Registry.</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-                Search and discover verified Indian startups—curated for serious founders and investors.
+              <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                Search and discover verified Indian startups—curated for serious founders and investors within the UpForge ecosystem.
               </p>
 
               <div className="mt-8 flex items-center justify-center gap-3">
-                <div className="h-px w-8 bg-black/10" />
-                <p className="text-xs uppercase tracking-[0.3em] text-gray-400 font-medium">
-                  {total} {total === 1 ? "Startup" : "Startups"} Listed
+                <div className="h-px w-8 bg-slate-100" />
+                <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold">
+                  {total} {total === 1 ? "Profile" : "Profiles"} Documented
                 </p>
-                <div className="h-px w-8 bg-black/10" />
+                <div className="h-px w-8 bg-slate-100" />
               </div>
             </div>
 
@@ -83,9 +81,9 @@ export default function StartupsPage() {
             {/* Directory Grid */}
             {loading ? (
               <div className="text-center py-20">
-                <div className="inline-flex items-center gap-3 text-gray-400">
-                  <div className="h-4 w-4 rounded-full border-2 border-[#1e3a5f] border-t-transparent animate-spin" />
-                  <span className="text-sm uppercase tracking-wider">Loading directory...</span>
+                <div className="inline-flex items-center gap-3 text-slate-400">
+                  <div className="h-4 w-4 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Accessing Registry...</span>
                 </div>
               </div>
             ) : filteredStartups.length > 0 ? (
@@ -96,63 +94,70 @@ export default function StartupsPage() {
                     href={`/startup/${startup.slug}`}
                     className="group"
                   >
-                    <div className="bg-white border border-black/5 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all h-full flex flex-col items-center text-center relative">
+                    <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all h-full flex flex-col items-center text-center relative hover:-translate-y-1">
                       {startup.is_sponsored && (
-                        <div className="absolute top-3 right-3">
+                        <div className="absolute top-4 right-4">
                           <Crown className="h-4 w-4 text-[#c6a43f]" />
                         </div>
                       )}
 
                       {startup.logo_url ? (
-                        <img
-                          src={startup.logo_url}
-                          alt={`${startup.name} logo`}
-                          className="h-16 w-16 object-contain rounded-xl bg-white border border-black/5 p-2 mb-3"
-                        />
+                        <div className="h-20 w-20 rounded-2xl border border-slate-100 bg-white flex items-center justify-center p-3 mb-4 shadow-sm group-hover:border-[#c6a43f]/30 transition-colors">
+                          <img
+                            src={startup.logo_url}
+                            alt={`${startup.name} logo`}
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
                       ) : (
-                        <div className="h-16 w-16 flex items-center justify-center bg-[#1e3a5f]/5 rounded-xl mb-3 border border-black/5">
-                          <span className="text-2xl font-semibold text-[#1e3a5f]/30">
+                        <div className="h-20 w-20 flex items-center justify-center bg-slate-50 rounded-2xl mb-4 border border-slate-100 group-hover:border-[#c6a43f]/30 transition-colors">
+                          <span className="text-3xl font-bold text-slate-200">
                             {startup.name.charAt(0)}
                           </span>
                         </div>
                       )}
 
-                      <h3 className="font-bold text-black group-hover:text-[#1e3a5f] transition-colors line-clamp-1">
+                      <h3 className="font-bold text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-1 text-sm uppercase tracking-tight">
                         {startup.name}
                       </h3>
 
                       {startup.short_description && (
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                        <p className="text-[11px] text-slate-400 mt-2 line-clamp-2 leading-relaxed">
                           {startup.short_description}
                         </p>
                       )}
 
                       {startup.is_sponsored && (
-                        <span className="mt-2 text-[10px] uppercase tracking-wider text-[#c6a43f] font-medium">
-                          Sponsored
-                        </span>
+                        <div className="mt-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#c6a43f]/5 border border-[#c6a43f]/10">
+                          <span className="text-[9px] uppercase tracking-widest text-[#c6a43f] font-black">
+                            Featured
+                          </span>
+                        </div>
                       )}
                     </div>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 border border-dashed border-black/10 rounded-2xl bg-white">
-                <div className="inline-flex items-center justify-center p-3 rounded-full bg-black/5 mb-4">
-                  <Search className="h-6 w-6 text-black/20" />
+              <div className="text-center py-20 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                <div className="inline-flex items-center justify-center p-4 rounded-full bg-white border border-slate-100 mb-4 shadow-sm">
+                  <Search className="h-6 w-6 text-slate-300" />
                 </div>
-                <p className="text-gray-400 uppercase tracking-widest text-xs">
-                  No startups found
+                <p className="text-slate-400 uppercase tracking-widest text-[10px] font-bold">
+                  Entry not found in registry
                 </p>
-                <p className="text-sm text-gray-400 mt-2">
-                  Try adjusting your search
+                <p className="text-xs text-slate-400 mt-2">
+                  Please refine your search parameters
                 </p>
               </div>
             )}
           </div>
         </section>
+
+        <div className="py-12 text-center text-[10px] tracking-[0.5em] uppercase text-slate-400 font-bold border-t border-slate-100">
+          UpForge Intelligence Group · Institutional Grade · 2026
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }
