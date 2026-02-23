@@ -1,10 +1,12 @@
 // app/about/page.tsx
 import { Shield, Users, TrendingUp, Award } from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export default function AboutPage() {
   return (
     <div className="relative bg-white text-black min-h-screen">
-      {/* Navbar and Footer are in global layout. Calling them here causes double rendering */}
+      <Navbar />
       
       <main className="relative pt-2">
         <section className="py-16 sm:py-24 px-4 sm:px-6">
@@ -119,6 +121,8 @@ export default function AboutPage() {
           UpForge Intelligence Group · Institutional Grade · 2026
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
