@@ -1,30 +1,28 @@
 // app/about/page.tsx
-import { Shield, Users, TrendingUp, Award, BookOpen } from "lucide-react";
-import Link from "next/link";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { Shield, Users, TrendingUp, Award } from "lucide-react";
 
 export default function AboutPage() {
   return (
     <div className="relative bg-white text-black min-h-screen">
-      <Navbar />
-      <main className="relative pt-20">
-        <section className="py-20 sm:py-24 px-4 sm:px-6">
+      {/* Navbar and Footer are in global layout. Calling them here causes double rendering */}
+      
+      <main className="relative pt-2">
+        <section className="py-16 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             {/* HEADER */}
-            <div className="max-w-4xl mx-auto text-center mb-16">
+            <div className="max-w-4xl mx-auto text-center mb-20">
               <div className="flex items-center justify-center gap-3 mb-6">
-                <span className="h-px w-10 bg-black/20 hidden sm:block"></span>
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">
+                <span className="h-px w-10 bg-[#c6a43f]/20 hidden sm:block"></span>
+                <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#c6a43f]">
                   UPFORGE REGISTRY
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold tracking-tighter leading-[0.9] mb-6">
-                About <span className="text-gray-500 italic font-medium">UpForge.</span>
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-display font-black tracking-tighter leading-[0.85] mb-8 text-slate-900">
+                About <span className="text-slate-400 italic font-medium">UpForge.</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">
+              <p className="text-lg sm:text-xl text-slate-500 max-w-3xl mx-auto leading-relaxed">
                 Upforge is an independent founder registry built to document,
                 structure, and elevate emerging Indian startups.
                 It is not a media platform. It is not a marketplace.
@@ -33,25 +31,25 @@ export default function AboutPage() {
 
               {/* Decorative divider */}
               <div className="flex items-center justify-center gap-3 mt-12">
-                <div className="h-px w-12 bg-black/10" />
-                <div className="h-1 w-1 rounded-full bg-[#c6a43f]" />
-                <div className="h-px w-12 bg-black/10" />
+                <div className="h-px w-12 bg-slate-100" />
+                <div className="h-1.5 w-1.5 rounded-full bg-[#c6a43f]" />
+                <div className="h-px w-12 bg-slate-100" />
               </div>
             </div>
 
             {/* STATS BANNER - Trust signals */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-24 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-32 max-w-5xl mx-auto">
               {[
                 { value: "3,200+", label: "Verified Startups" },
                 { value: "850+", label: "Sponsored" },
                 { value: "15,000+", label: "Monthly Visitors" },
                 { value: "2025", label: "Founded" },
               ].map((stat, idx) => (
-                <div key={idx} className="text-center group">
-                  <div className="text-4xl md:text-5xl font-black text-[#1e3a5f] group-hover:text-[#c6a43f] transition-colors">
+                <div key={idx} className="text-center group p-8 rounded-[2rem] border border-transparent hover:border-slate-50 hover:bg-slate-50/50 transition-all duration-500">
+                  <div className="text-4xl md:text-5xl font-black text-slate-900 group-hover:text-[#c6a43f] transition-colors tracking-tighter">
                     {stat.value}
                   </div>
-                  <div className="text-xs uppercase tracking-wider text-gray-400 mt-2">
+                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-3">
                     {stat.label}
                   </div>
                 </div>
@@ -59,7 +57,7 @@ export default function AboutPage() {
             </div>
 
             {/* CORE PRINCIPLES */}
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-32">
               {[
                 {
                   icon: Users,
@@ -84,42 +82,43 @@ export default function AboutPage() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="group bg-white p-8 rounded-2xl border border-black/5 shadow-sm hover:shadow-lg transition-all duration-300"
+                  className="group bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500"
                 >
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="p-4 rounded-2xl bg-[#1e3a5f]/10 text-[#1e3a5f] group-hover:scale-110 transition-transform">
-                      <item.icon className="h-7 w-7" />
+                  <div className="flex items-center gap-5 mb-8">
+                    <div className="p-4 rounded-2xl bg-slate-50 text-slate-900 group-hover:bg-slate-950 group-hover:text-white transition-all duration-500 shadow-sm">
+                      <item.icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-2xl font-bold text-black">{item.title}</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">{item.title}</h3>
                   </div>
-                  <p className="text-gray-500 leading-relaxed">{item.desc}</p>
+                  <p className="text-slate-500 leading-relaxed text-sm font-medium">{item.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* CLOSING STATEMENT */}
-            <div className="mt-32 max-w-4xl mx-auto text-center">
-              <div className="relative inline-block">
-                <h3 className="text-4xl md:text-5xl font-display font-bold tracking-tighter text-black mb-6">
-                  This is not a directory.
-                </h3>
-              </div>
+            <div className="max-w-4xl mx-auto text-center">
+              <h3 className="text-4xl md:text-6xl font-display font-black tracking-tighter text-slate-900 mb-8 uppercase">
+                This is not a <span className="text-slate-400 italic">Directory.</span>
+              </h3>
 
-              <p className="text-gray-400 leading-relaxed text-lg max-w-2xl mx-auto">
+              <p className="text-slate-500 leading-relaxed text-lg max-w-2xl mx-auto font-medium">
                 It is a signal that serious founders are building.
                 A structured record of India’s emerging companies.
                 A quiet infrastructure layer beneath the ecosystem.
               </p>
 
               {/* Decorative element */}
-              <div className="mt-12 flex justify-center">
-                <div className="h-1 w-20 bg-[#c6a43f]/30 rounded-full" />
+              <div className="mt-16 flex justify-center">
+                <div className="h-1 w-24 bg-[#c6a43f]/20 rounded-full" />
               </div>
             </div>
           </div>
         </section>
+
+        <div className="py-12 text-center text-[10px] tracking-[0.5em] uppercase text-slate-400 font-bold border-t border-slate-100">
+          UpForge Intelligence Group · Institutional Grade · 2026
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }
