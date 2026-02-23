@@ -290,31 +290,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ========== TEMPLATES ========== */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
-              Jumpstart with templates
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { name: "Investor Brief", type: "Briefing", icon: "📄" },
-                { name: "Startup Plan", type: "Planning", icon: "📊" },
-                { name: "Sponsor Checklist", type: "Checklist", icon: "✅" },
-                { name: "Weekly Review", type: "Reports", icon: "📈" },
-              ].map((t, i) => (
-                <Link key={i} href={`/templates/${t.name.toLowerCase().replace(" ", "-")}`}>
-                  <div className="bg-white p-6 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition group">
-                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{t.icon}</div>
-                    <div className="font-medium">{t.name}</div>
-                    <div className="text-xs text-gray-400">{t.type}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <div className="py-6 text-center text-[10px] tracking-[0.4em] uppercase text-[#4a4a4a] border-t border-[#1e3a5f]/10">
           UpForge Intelligence Group · Institutional Grade · 2026
         </div>
