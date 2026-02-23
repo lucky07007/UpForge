@@ -1,33 +1,48 @@
 "use client"
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 
-const words = ["Legacy", "Founder Dream", "Venture Vision", "Digital Future"]
+const words = [
+  "Bharat's Legacy", 
+  "Founder's Dream", 
+  "Venture Vision", 
+  "Independent Future", 
+  "Next Unicorn"
+]
 
 export function CyclingText() {
-  const [index, setIndex] = useState(0)
+  const [displayText, setDisplayText] = useState("")
+  const [wordIndex, setWordIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [speed, setSpeed] = useState(150)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % words.length)
-    }, 3000)
-    return () => clearInterval(timer)
-  }, [])
+    const handleTyping = () => {
+      const currentWord = words[wordIndex]
+      
+      if (isDeleting) {
+        setDisplayText(currentWord.substring(0, displayText.length - 1))
+        setSpeed(50)
+      } else {
+        setDisplayText(currentWord.substring(0, displayText.length + 1))
+        setSpeed(150)
+      }
+
+      if (!isDeleting && displayText === currentWord) {
+        setTimeout(() => setIsDeleting(true), 1500)
+      } else if (isDeleting && displayText === "") {
+        setIsDeleting(false)
+        setWordIndex((prev) => (prev + 1) % words.length)
+      }
+    }
+
+    const timer = setTimeout(handleTyping, speed)
+    return () => clearTimeout(timer)
+  }, [displayText, isDeleting, wordIndex, speed])
 
   return (
-    <span className="relative inline-block min-w-[280px] text-gray-500 italic font-medium text-left">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={words[index]}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.5 }}
-          className="inline-block"
-        >
-          {words[index]}
-        </motion.span>
-      </AnimatePresence>
+    <span className="relative inline-block min-w-[300px] text-slate-500 italic font-medium">
+      {displayText}
+      <span className="ml-1 inline-block w-[3px] h-[1em] bg-[#c6a43f] animate-pulse align-middle" />
     </span>
   )
 }
