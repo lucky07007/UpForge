@@ -1,8 +1,10 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Chatbot } from "@/components/chatbot";
+import { GlobalHero } from "@/components/global-hero"; // Import the new component
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -26,10 +28,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${bricolage.variable}`}>
       <body className="bg-white text-black antialiased flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow pt-16">
+        
+        {/* Added wrapper to handle fixed Navbar offset and the Hero */}
+        <div className="pt-16"> 
+          <GlobalHero />
+        </div>
+
+        <main className="flex-grow">
           {children}
         </main>
-        {/* Footer removed from global layout to prevent doubling */}
+        
         <Chatbot />
       </body>
     </html>
