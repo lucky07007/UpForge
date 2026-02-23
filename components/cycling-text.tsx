@@ -1,13 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 
-const words = [
-  "Bharat's Legacy", 
-  "Founder's Dream", 
-  "Venture Vision", 
-  "Independent Future", 
-  "Next Unicorn"
-]
+const words = ["Empire", "Startup", "Network", "Legacy", "Future"]
 
 export function CyclingText() {
   const [displayText, setDisplayText] = useState("")
@@ -40,7 +34,7 @@ export function CyclingText() {
   }, [displayText, isDeleting, wordIndex, speed])
 
   return (
-    <span className="relative inline-block min-w-[300px] text-slate-500 italic font-medium">
+    <span className="text-[#c6a43f] italic font-medium">
       {displayText}
       <span className="ml-1 inline-block w-[3px] h-[1em] bg-[#c6a43f] animate-pulse align-middle" />
     </span>
