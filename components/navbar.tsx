@@ -19,28 +19,22 @@ export function Navbar() {
   }, []);
 
   const links = [
-    { name: "Home", href: "/" },
-    { name: "Registry", href: "/startup" },
-    { name: "Sponsor", href: "/sponsor" },
-    { name: "Verification", href: "/docs" },
+    { name: "Startups", href: "/startups" },
+    { name: "Investors", href: "/investors" },
+    { name: "Sponsors", href: "/sponsors" },
+    { name: "About", href: "/about" },
   ];
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        scrolled ? "py-4" : "py-6"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm" : "bg-white/80 backdrop-blur-md"
+      } border-b border-black/5`}
     >
-      <nav
-        className={`max-w-5xl mx-auto px-6 flex items-center justify-between transition-all duration-500 ${
-          scrolled
-            ? "bg-white/80 backdrop-blur-xl py-2 px-4 rounded-full border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
-            : ""
-        }`}
-      >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="relative h-8 w-8 overflow-hidden rounded-lg bg-black p-1.5 transition-transform duration-500 group-hover:rotate-[10deg]">
+          <div className="relative h-7 w-7 overflow-hidden rounded-lg bg-black p-1.5 transition-transform duration-500 group-hover:rotate-[10deg]">
             <Image
               src="/logo.jpg"
               alt="UpForge"
@@ -49,41 +43,37 @@ export function Navbar() {
               priority
             />
           </div>
-          <span className="text-lg font-display font-bold tracking-tighter text-black">
-            UpForge
+          <span className="text-xl font-bold tracking-tight">
+            UpForge<span className="text-[#1e3a5f]">.</span>
           </span>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-10">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           {links.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative text-[13px] font-medium tracking-wide transition-colors duration-300 ${
-                  isActive
-                    ? "text-black"
-                    : "text-gray-500 hover:text-black"
+                className={`transition-colors duration-200 ${
+                  isActive ? "text-[#1e3a5f]" : "text-black hover:text-[#1e3a5f]"
                 }`}
               >
                 {link.name}
-                {isActive && (
-                  <span className="absolute -bottom-1 left-0 w-1 h-1 bg-black rounded-full mx-auto right-0" />
-                )}
               </Link>
             );
           })}
-        </div>
+        </nav>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:block">
-          <Link href="/apply">
-            <Button className="premium-button rounded-full px-6 h-9 border-black text-black bg-transparent hover:bg-black hover:text-white text-[12px] font-bold uppercase tracking-tighter transition-all duration-300">
-              Join Registry
-            </Button>
+        {/* Desktop Right Actions */}
+        <div className="hidden md:flex items-center gap-3">
+          <Link href="/login" className="text-sm font-medium text-black hover:text-[#1e3a5f] transition">
+            Log in
           </Link>
+          <Button asChild size="sm" className="rounded-full bg-[#1e3a5f] hover:bg-[#14304a] px-5">
+            <Link href="/signup">Get Started</Link>
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -93,12 +83,12 @@ export function Navbar() {
         >
           <Menu className="h-5 w-5" />
         </button>
-      </nav>
+      </div>
 
       {/* Mobile Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-[100] bg-white animate-in fade-in duration-300 flex flex-col">
-          <div className="flex justify-between items-center p-8">
+          <div className="flex justify-between items-center p-8 border-b border-black/5">
             <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">
               Navigation
             </span>
@@ -113,7 +103,7 @@ export function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-5xl font-display font-bold tracking-tighter text-black hover:translate-x-2 transition-transform duration-300"
+                className="text-4xl font-display font-bold tracking-tighter text-black hover:translate-x-2 transition-transform duration-300"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 {link.name}
@@ -121,10 +111,15 @@ export function Navbar() {
             ))}
           </div>
 
-          <div className="mt-auto p-10">
-            <Link href="/apply" onClick={() => setIsOpen(false)}>
-              <Button className="w-full rounded-full h-16 bg-black text-white text-lg font-bold">
-                Apply for Registry
+          <div className="mt-auto p-10 space-y-4">
+            <Link href="/login" onClick={() => setIsOpen(false)}>
+              <Button variant="outline" className="w-full rounded-full h-14 border-black/20 text-black text-base font-medium">
+                Log in
+              </Button>
+            </Link>
+            <Link href="/signup" onClick={() => setIsOpen(false)}>
+              <Button className="w-full rounded-full h-14 bg-[#1e3a5f] hover:bg-[#14304a] text-white text-base font-medium">
+                Get Started
               </Button>
             </Link>
           </div>
