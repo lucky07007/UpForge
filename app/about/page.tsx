@@ -42,9 +42,9 @@ export default function AboutPage() {
             {/* STATS BANNER - Trust signals */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-24 max-w-4xl mx-auto">
               {[
-                { value: "3,000+", label: "Verified Startups" },
-                { value: "500+", label: "Sponsored" },
-                { value: "10,000+", label: "Monthly Visitors" },
+                { value: "3,200+", label: "Verified Startups" },
+                { value: "850+", label: "Sponsored" },
+                { value: "15,000+", label: "Monthly Visitors" },
                 { value: "2025", label: "Founded" },
               ].map((stat, idx) => (
                 <div key={idx} className="text-center group">
