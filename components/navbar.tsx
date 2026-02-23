@@ -12,20 +12,14 @@ export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
 
-  // Detect scroll
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent body scroll when menu open
   React.useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
   }, [isOpen]);
 
   const links = [
@@ -45,7 +39,6 @@ export function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <div className="relative h-10 w-10 overflow-hidden transition-transform duration-500 group-hover:scale-110">
@@ -68,13 +61,18 @@ export function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative transition-colors duration-200 ${
+                  className={`relative pb-1 transition-all duration-300 ${
                     isActive
                       ? "text-[#1e3a5f]"
                       : "text-black hover:text-[#1e3a5f]"
                   }`}
                 >
                   {link.name}
+
+                  {/* 🔥 Active Underline Glow */}
+                  {isActive && (
+                    <span className="absolute left-0 bottom-0 w-full h-[2px] bg-[#1e3a5f] rounded-full shadow-[0_0_8px_rgba(30,58,95,0.6)]" />
+                  )}
                 </Link>
               );
             })}
@@ -97,26 +95,18 @@ export function Navbar() {
             </Button>
           </div>
 
-          {/* ✅ FIXED MOBILE HAMBURGER */}
+          {/* Mobile Hamburger */}
           <button
             onClick={() => setIsOpen(true)}
+            className="md:hidden flex items-center justify-center h-11 w-11 rounded-lg hover:bg-black/5 active:scale-95 transition"
             aria-label="Open menu"
-            className="
-              md:hidden
-              flex items-center justify-center
-              h-11 w-11   /* Proper 44px touch target */
-              rounded-lg
-              transition-all duration-200
-              hover:bg-black/5
-              active:scale-95
-            "
           >
-            <Menu className="h-6 w-6 text-black" strokeWidth={2} />
+            <Menu className="h-6 w-6 text-black" />
           </button>
         </div>
       </header>
 
-      {/* ✅ MOBILE DRAWER */}
+      {/* Mobile Drawer */}
       <div
         className={`fixed inset-0 z-[100] transition-all duration-300 ${
           isOpen
@@ -124,13 +114,13 @@ export function Navbar() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Background Overlay */}
+        {/* Overlay */}
         <div
           onClick={() => setIsOpen(false)}
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         />
 
-        {/* Drawer Panel */}
+        {/* Panel */}
         <div
           className={`absolute top-0 right-0 h-full w-full bg-black text-white transform transition-transform duration-300 ${
             isOpen ? "translate-x-0" : "translate-x-full"
@@ -153,35 +143,41 @@ export function Navbar() {
             <button
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-center h-11 w-11 rounded-lg hover:bg-white/10 active:scale-95 transition"
-              aria-label="Close menu"
             >
               <X className="h-6 w-6" />
             </button>
           </div>
 
-          {/* Links */}
+          {/* 🔥 Mobile Links with Active Glow */}
           <div className="flex flex-col px-6 pt-12 space-y-8">
-            {links.map((link, i) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="text-3xl font-bold hover:text-[#c6a43f] transition-all duration-300"
-                style={{
-                  transitionDelay: `${i * 60}ms`,
-                }}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {links.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`relative text-3xl font-bold transition-all duration-300 ${
+                    isActive
+                      ? "text-[#c6a43f]"
+                      : "text-white hover:text-[#c6a43f]"
+                  }`}
+                >
+                  {link.name}
+
+                  {isActive && (
+                    <span className="absolute left-0 -bottom-2 w-16 h-[3px] bg-[#c6a43f] rounded-full shadow-[0_0_10px_rgba(198,164,63,0.8)]" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Bottom Buttons */}
+          {/* 🔥 FIXED LOGIN BUTTON VISIBILITY */}
           <div className="absolute bottom-8 left-6 right-6 space-y-4">
             <Link href="/login" onClick={() => setIsOpen(false)}>
               <Button
-                variant="outline"
-                className="w-full rounded-full h-14 border-white/20 text-white hover:bg-white/5"
+                className="w-full rounded-full h-14 bg-white text-black hover:bg-gray-200"
               >
                 Log in
               </Button>
