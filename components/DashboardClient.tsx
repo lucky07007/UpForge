@@ -2,8 +2,6 @@
 "use client"
 
 import { useState } from "react"
-import { Clock } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 interface Startup {
@@ -11,150 +9,86 @@ interface Startup {
   name: string
   slug: string
   logo_url?: string
-  short_description?: string
   website?: string
-}
-
-interface Comment {
-  author: string
-  text: string
 }
 
 export default function DashboardClient({
   latestStartup,
-  comments,
 }: {
   latestStartup: Startup | null
-  comments: Comment[]
+  comments: any[]
   teamCount: number
 }) {
   const router = useRouter()
   
-  // State to handle the embedded website URL
+  // Defaulting the view to Internadda
   const [activeUrl, setActiveUrl] = useState<string>("https://internadda.com")
 
-  const navItems = [
-    "Startups",
-    "Investments",
-    "Sponsors",
-    "Analytics",
-    "Portfolio",
-    "Insights",
-    "News",
-    "Resources",
-  ]
-
-  // Hardcoded Featured Startups for the list
+  // The simplified list of 5-6 startups as requested
   const featuredStartups = [
     { name: "Internadda", url: "https://internadda.com" },
-    { name: "Brand Wala", url: "https://brandwala.com" }, // Updated per your preferences
+    { name: "Brand Wala", url: "https://brandwala.com" },
     { name: "Skillpoint", url: "https://skillpoint.in" },
     { name: "Hozaak", url: "https://hozaak.com" },
     { name: "IFL Institute", url: "https://iflinstitute.com" },
   ]
 
   return (
-    <div className="grid grid-cols-[220px_1fr_240px] h-[500px] text-xs">
-      {/* Left Sidebar */}
-      <div className="bg-gray-50/80 border-r border-black/5 p-4 space-y-6">
-        <div className="font-bold text-lg">UpForge</div>
-        <div className="space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item}
-              href={`/${item.toLowerCase()}`}
-              className="block px-2 py-1.5 rounded hover:bg-black/5"
-            >
-              {item}
-            </Link>
-          ))}
-          <Link href="/startup" className="block px-2 py-1.5 text-gray-400 hover:text-black">
-            More &gt;
-          </Link>
-        </div>
-        <div className="pt-4 border-t border-black/5">
-          {/* Admin Redirection */}
-          <button 
-            onClick={() => router.push('/admin')}
-            className="flex items-center gap-2 hover:opacity-70 transition"
-          >
-            <div className="w-6 h-6 rounded-full bg-black/10"></div>
-            <span className="font-mono">Admin</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Center Main Feed - Now with Embed Container */}
-      <div className="bg-white p-0 relative overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-black/5 bg-white/90 backdrop-blur z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-400">
-            <Clock className="h-3 w-3" />
-            <span>9:00 AM - IST</span>
-          </div>
-          {latestStartup && (
-            <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full border border-blue-100">
-              Latest: {latestStartup.name}
-            </span>
-          )}
-        </div>
-        
-        {/* Iframe for Website Preview */}
-        <div className="flex-1 w-full bg-gray-100">
-          <iframe 
-            src={activeUrl}
-            className="w-full h-full border-none"
-            title="Startup Website Preview"
-          />
-        </div>
-      </div>
-
-      {/* Right Sidebar - Replaced Team with Featured Startups */}
-      <div className="bg-gray-50/80 border-l border-black/5 p-4 space-y-4 text-[11px]">
-        <div className="space-y-2">
-          <div className="font-bold">Mission & Vision</div>
-          <div className="text-gray-500">Empower global startups</div>
-          <div className="text-gray-500">Provide trusted sponsorship</div>
-        </div>
-        
-        <div className="bg-white p-3 rounded border border-black/5">
-          Welcome to UpForge! Explore startups, connect with founders, and sponsor innovation.
-        </div>
-
-        <div>
-          <div className="font-bold mb-3 uppercase tracking-wider text-[10px] opacity-60">Featured Startups</div>
+    <div className="flex h-[600px] w-full bg-white text-xs overflow-hidden border border-black/5 rounded-xl">
+      {/* LEFT SIDEBAR: Simplified to Startups & Admin only */}
+      <div className="w-[240px] bg-gray-50/80 border-r border-black/5 flex flex-col">
+        <div className="p-6">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">
+            Featured Startups
+          </h2>
+          
           <div className="space-y-2">
             {featuredStartups.map((startup) => (
               <button
                 key={startup.name}
                 onClick={() => setActiveUrl(startup.url)}
-                className={`w-full text-left p-2.5 rounded-lg border transition-all ${
+                className={`w-full text-left px-4 py-3 rounded-xl transition-all border ${
                   activeUrl === startup.url 
-                  ? 'bg-white border-black/10 shadow-sm font-bold' 
-                  : 'border-transparent hover:bg-black/5 text-gray-600'
+                  ? 'bg-white border-black/10 shadow-sm font-bold text-black' 
+                  : 'border-transparent hover:bg-black/5 text-gray-500'
                 }`}
               >
                 {startup.name}
               </button>
             ))}
-            
-            <Link 
-              href="/startup" 
-              className="block text-center p-2 mt-2 text-blue-600 hover:underline font-medium border border-blue-100 rounded-lg bg-blue-50/50"
+
+            <button 
+              onClick={() => router.push('/startup')}
+              className="w-full text-center p-3 mt-4 text-[#1e3a5f] font-bold hover:underline border border-dashed border-[#1e3a5f]/20 rounded-xl"
             >
               More Startups →
-            </Link>
+            </button>
           </div>
         </div>
 
-        {/* Testimonials section remains for social proof */}
-        <div className="pt-4 border-t border-black/5 space-y-3">
-          {comments.slice(0, 2).map((comment, idx) => (
-            <div key={idx} className="bg-white/50 p-2 rounded italic text-[10px] text-gray-500">
-              <span className="font-bold uppercase text-[9px] not-italic block mb-1">{comment.author.split(" ")[0]}</span>
-              "{comment.text.substring(0, 60)}..."
+        {/* BOTTOM SECTION: Admin only */}
+        <div className="mt-auto p-6 border-t border-black/5">
+          <button 
+            onClick={() => router.push('/admin')}
+            className="flex items-center gap-3 w-full p-2 hover:bg-black/5 rounded-lg transition"
+          >
+            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white font-bold text-[10px]">
+              A
             </div>
-          ))}
+            <span className="font-bold text-gray-700">Admin Panel</span>
+          </button>
         </div>
+      </div>
+
+      {/* RIGHT SIDE: Full Website Workspace */}
+      <div className="flex-1 bg-white relative">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+        <iframe 
+          src={activeUrl}
+          className="w-full h-full border-none shadow-inner"
+          title="Startup Preview"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        />
       </div>
     </div>
   )
