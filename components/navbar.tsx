@@ -25,7 +25,7 @@ export function Navbar() {
   const links = [
     { name: "Home", href: "/" },
     { name: "Startups", href: "/startup" },
-    { name: "Sponsors", href: "/sponsors" },
+    { name: "Sponsors", href: "/sponsor" },
     { name: "About", href: "/about" },
   ];
 
