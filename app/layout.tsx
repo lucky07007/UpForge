@@ -1,9 +1,7 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { Chatbot } from "@/components/chatbot";
 
 const inter = Inter({ 
@@ -31,8 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-grow pt-16">
           {children}
         </main>
-        <Footer />
-        {/* This ensures the chatbot is globally accessible */}
+        {/* Footer removed from global layout to prevent doubling */}
         <Chatbot />
       </body>
     </html>
