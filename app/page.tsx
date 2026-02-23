@@ -431,29 +431,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ================= CTA ================= */}
-        <section className="py-20 text-center bg-[#1e3a5f] text-white relative overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-5 pointer-events-none"
-            style={{
-              backgroundImage: `repeating-linear-gradient(45deg, #fff 0px, #fff 2px, transparent 2px, transparent 8px)`,
-            }}
-          />
-          <div className="relative max-w-3xl mx-auto px-6">
-            <h3 className="text-3xl md:text-4xl font-light mb-4">
-              Get Featured on <span className="font-semibold">UpForge</span>
-            </h3>
-            <p className="text-white/70 mb-8 text-lg">
-              Increase visibility, build trust, and reach serious builders across India.
-            </p>
-
-            <Link href="/sponsor">
-              <Button className="rounded-full px-10 h-14 bg-[#c6a43f] text-white hover:bg-[#b08c2e] text-sm uppercase tracking-widest font-semibold shadow-xl border-0">
-                Sponsor Your Startup
-              </Button>
-            </Link>
-          </div>
-        </section>
 
         <div className="py-6 text-center text-[10px] tracking-[0.4em] uppercase text-[#4a4a4a] border-t border-[#1e3a5f]/10">
           UpForge · Founder First · 2026
