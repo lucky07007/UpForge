@@ -34,8 +34,8 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Naked Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        {/* Logo + Text */}
+        <Link href="/" className="flex items-center gap-2 group">
           <div className="relative h-10 w-10 overflow-hidden transition-transform duration-500 group-hover:scale-110">
             <Image
               src="/logo.jpg"
@@ -45,6 +45,7 @@ export function Navbar() {
               priority
             />
           </div>
+          <span className="text-xl font-bold text-black">UpForge</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -90,17 +91,25 @@ export function Navbar() {
           className="md:hidden p-2 text-black hover:text-[#1e3a5f] transition-colors"
           aria-label="Open menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-6 w-6" />
         </button>
       </div>
 
-      {/* Mobile Drawer with Footer matching background */}
+      {/* Mobile Drawer */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] bg-[#1e3a5f] animate-in fade-in duration-300 flex flex-col text-white">
-          <div className="flex justify-between items-center p-6 border-b border-white/10">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-300">
-              Navigation
-            </span>
+        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex flex-col">
+          <div className="flex justify-between items-center p-6 border-b border-white/20">
+            <div className="flex items-center gap-2">
+              <div className="relative h-8 w-8">
+                <Image
+                  src="/logo.jpg"
+                  alt="UpForge Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-lg font-bold text-white">UpForge</span>
+            </div>
             <button
               onClick={() => setIsOpen(false)}
               className="p-2 text-white hover:text-[#c6a43f] transition-colors"
@@ -116,8 +125,8 @@ export function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-4xl font-display font-bold tracking-tighter text-white hover:text-[#c6a43f] transition-colors duration-300"
-                style={{ animationDelay: `${i * 50}ms` }}
+                className="text-3xl font-bold text-white hover:text-[#c6a43f] transition-all duration-300"
+                style={{ animationDelay: `${i * 100}ms` }}
               >
                 {link.name}
               </Link>
@@ -128,13 +137,13 @@ export function Navbar() {
             <Link href="/login" onClick={() => setIsOpen(false)}>
               <Button
                 variant="outline"
-                className="w-full rounded-full h-14 border-white/20 text-white text-base font-medium hover:bg-white/5"
+                className="w-full rounded-full h-14 border-white/20 text-white hover:bg-white/5"
               >
                 Log in
               </Button>
             </Link>
             <Link href="/signup" onClick={() => setIsOpen(false)}>
-              <Button className="w-full rounded-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-black text-base font-medium">
+              <Button className="w-full rounded-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-black">
                 Get Started
               </Button>
             </Link>
