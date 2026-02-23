@@ -16,6 +16,12 @@ import {
   Award,
   Star,
   BarChart3,
+  Shield,
+  Zap,
+  Globe,
+  Briefcase,
+  Rocket,
+  HeartHandshake,
 } from "lucide-react"
 import { Metadata } from "next"
 import DashboardClient from "@/components/DashboardClient"
@@ -87,7 +93,6 @@ function Footer() {
 export default async function Home() {
   const supabase = await createClient()
 
-  // Fetch latest startup with error handling
   let latestStartup = null
   try {
     const { data } = await supabase
@@ -95,14 +100,13 @@ export default async function Home() {
       .select("*")
       .order("created_at", { ascending: false })
       .limit(1)
-      .maybeSingle() // Use maybeSingle instead of single to avoid error when no rows
+      .maybeSingle()
     latestStartup = data
   } catch (error) {
     console.error("Failed to fetch latest startup:", error)
   }
 
-  // Fetch team members count with error handling
-  let teamCount = 4 // default
+  let teamCount = 4
   try {
     const { count } = await supabase
       .from("team_members")
@@ -117,19 +121,16 @@ export default async function Home() {
       author: "FLORENT MERIAN",
       role: "DYNAMICSCREEN",
       text: "UpForge helps me track the most promising startups. I feel more connected to the ecosystem than ever.",
-      image: "/founders/florent-merian.jpg",
     },
     {
       author: "HAMPUS PERSSON",
       role: "VAAM",
       text: "The dashboard is intuitive, clean, and makes startup sponsorship extremely easy.",
-      image: "/founders/hampus-persson.jpg",
     },
     {
       author: "ERIC FETTNER",
       role: "THE JOB SAUCE",
       text: "The platform gives me exactly what I need to make quick, informed decisions without clutter.",
-      image: "/founders/eric-fettner.jpg",
     },
   ]
 
@@ -138,10 +139,10 @@ export default async function Home() {
       <Header />
 
       <main className="relative pt-20">
-        {/* HERO SECTION */}
+        {/* ========== HERO ========== */}
         <section className="pt-12 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* LEFT TEXT */}
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start gap-3">
@@ -178,19 +179,69 @@ export default async function Home() {
                   <div className="w-3 h-3 rounded-full bg-green-400"></div>
                   <span className="ml-2 font-mono truncate">UpForge — Dashboard</span>
                 </div>
-
-                <DashboardClient
-                  latestStartup={latestStartup}
-                  comments={comments}
-                  teamCount={teamCount}
-                />
+                <DashboardClient latestStartup={latestStartup} comments={comments} teamCount={teamCount} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* CONNECT, SPONSOR, TRACK SECTION */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6 bg-white">
+        {/* ========== TRUST BADGES ========== */}
+        <section className="py-8 sm:py-12 px-4 sm:px-6 bg-gray-50/50 border-y border-black/5">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest text-gray-400 mb-6">Trusted by innovators from</p>
+            <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 opacity-60">
+              <span className="text-sm font-semibold text-gray-600">IIT Delhi</span>
+              <span className="text-sm font-semibold text-gray-600">IIM Ahmedabad</span>
+              <span className="text-sm font-semibold text-gray-600">Sequoia Capital</span>
+              <span className="text-sm font-semibold text-gray-600">Accel</span>
+              <span className="text-sm font-semibold text-gray-600">Peak XV</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ========== HOW IT WORKS ========== */}
+        <section className="py-20 sm:py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
+                How UpForge works
+              </h2>
+              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+                Three simple steps to amplify your startup journey.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+              {[
+                {
+                  icon: <Users className="h-8 w-8" />,
+                  title: "1. Create Profile",
+                  desc: "List your startup with verified details and get discovered by investors.",
+                },
+                {
+                  icon: <Crown className="h-8 w-8" />,
+                  title: "2. Get Sponsored",
+                  desc: "Boost visibility with premium sponsorship and social media features.",
+                },
+                {
+                  icon: <TrendingUp className="h-8 w-8" />,
+                  title: "3. Track Growth",
+                  desc: "Monitor engagement, connections, and sponsorship performance.",
+                },
+              ].map((step, i) => (
+                <div key={i} className="text-center p-6 rounded-2xl bg-white border border-black/5 shadow-sm hover:shadow-lg transition">
+                  <div className="w-16 h-16 mx-auto bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-4 text-[#1e3a5f]">
+                    {step.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                  <p className="text-gray-500">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========== CONNECT, SPONSOR, TRACK (ENHANCED) ========== */}
+        <section className="py-20 sm:py-24 px-4 sm:px-6 bg-gray-50/30">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl md:text-6xl font-display font-bold tracking-tighter mb-4">
@@ -203,58 +254,65 @@ export default async function Home() {
 
             {/* Interactive Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
-              <Link href="/connect" className="group">
-                <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="w-14 h-14 bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#1e3a5f] group-hover:text-white transition-colors">
-                    <Users className="h-7 w-7 text-[#1e3a5f] group-hover:text-white" />
+              {[
+                {
+                  href: "/connect",
+                  icon: <Users className="h-7 w-7" />,
+                  title: "Connect",
+                  desc: "Find and network with verified founders, investors, and mentors in the ecosystem.",
+                  color: "bg-[#1e3a5f]",
+                  lightColor: "bg-[#1e3a5f]/10",
+                  textColor: "text-[#1e3a5f]",
+                },
+                {
+                  href: "/sponsor",
+                  icon: <Crown className="h-7 w-7" />,
+                  title: "Sponsor",
+                  desc: "Boost your startup's visibility with premium placement and social media promotion.",
+                  color: "bg-[#c6a43f]",
+                  lightColor: "bg-[#c6a43f]/10",
+                  textColor: "text-[#c6a43f]",
+                },
+                {
+                  href: "/track",
+                  icon: <TrendingUp className="h-7 w-7" />,
+                  title: "Track",
+                  desc: "Monitor startup growth, engagement metrics, and sponsorship performance in real-time.",
+                  color: "bg-green-600",
+                  lightColor: "bg-green-100",
+                  textColor: "text-green-600",
+                },
+              ].map((item, i) => (
+                <Link key={i} href={item.href} className="group">
+                  <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                    <div className={`w-14 h-14 ${item.lightColor} rounded-2xl flex items-center justify-center mb-6 group-hover:${item.color} group-hover:text-white transition-colors`}>
+                      <div className={`${item.textColor} group-hover:text-white transition-colors`}>
+                        {item.icon}
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
+                    <p className="text-gray-500 mb-6">{item.desc}</p>
+                    <div className={`flex items-center ${item.textColor} font-medium`}>
+                      <span>Learn more</span>
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold mb-3">Connect</h3>
-                  <p className="text-gray-500 mb-6">Find and network with verified founders, investors, and mentors in the ecosystem.</p>
-                  <div className="flex items-center text-[#1e3a5f] font-medium">
-                    <span>Discover network</span>
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </Link>
-
-              <Link href="/sponsor" className="group">
-                <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="w-14 h-14 bg-[#c6a43f]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#c6a43f] group-hover:text-white transition-colors">
-                    <Crown className="h-7 w-7 text-[#c6a43f] group-hover:text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3">Sponsor</h3>
-                  <p className="text-gray-500 mb-6">Boost your startup's visibility with premium placement and social media promotion.</p>
-                  <div className="flex items-center text-[#c6a43f] font-medium">
-                    <span>View sponsorship</span>
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </Link>
-
-              <Link href="/track" className="group">
-                <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors">
-                    <TrendingUp className="h-7 w-7 text-green-600 group-hover:text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3">Track</h3>
-                  <p className="text-gray-500 mb-6">Monitor startup growth, engagement metrics, and sponsorship performance in real-time.</p>
-                  <div className="flex items-center text-green-600 font-medium">
-                    <span>View analytics</span>
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              ))}
             </div>
 
-            {/* Trust Dashboard */}
-            <div className="bg-gray-50 rounded-3xl p-8 md:p-12 border border-black/5">
+            {/* Trust Dashboard with Metrics */}
+            <div className="bg-white rounded-3xl p-8 md:p-12 border border-black/5 shadow-xl">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
-                  <h3 className="text-2xl font-bold mb-4">Trusted by India's top founders</h3>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-medium mb-4">
+                    <Shield className="h-3 w-3" /> Trusted by India's best
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Real impact, real numbers</h3>
                   <p className="text-gray-500 mb-8">
                     Our platform processes hundreds of sponsorships and connections every month. Here's a snapshot of our ecosystem growth.
                   </p>
-                  <div className="flex flex-wrap gap-8">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                     <div>
                       <div className="text-3xl font-bold text-[#1e3a5f]">3,200+</div>
                       <div className="text-xs uppercase tracking-wider text-gray-400">Verified Startups</div>
@@ -267,10 +325,22 @@ export default async function Home() {
                       <div className="text-3xl font-bold text-[#1e3a5f]">15k+</div>
                       <div className="text-xs uppercase tracking-wider text-gray-400">Monthly Connections</div>
                     </div>
+                    <div>
+                      <div className="text-3xl font-bold text-[#1e3a5f]">₹45Cr+</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">Funding Facilitated</div>
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-[#1e3a5f]">22</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">Exit Events</div>
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-[#1e3a5f]">100%</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">Founder Verified</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-inner">
+                <div className="bg-gray-50 p-6 rounded-2xl shadow-inner">
                   <div className="flex items-center gap-2 mb-4">
                     <BarChart3 className="h-5 w-5 text-[#1e3a5f]" />
                     <span className="font-semibold">Ecosystem Growth (last 6 months)</span>
@@ -286,7 +356,7 @@ export default async function Home() {
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-3">
                         <span className="text-xs w-8 text-gray-500">{item.label}</span>
-                        <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-[#1e3a5f] rounded-full"
                             style={{ width: `${item.value}%` }}
@@ -311,42 +381,61 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* FEATURES GRID */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-y border-black/5">
-          <div className="max-w-7xl mx-auto text-center">
-            <p className="text-sm uppercase tracking-widest mb-4">Core Features:</p>
+        {/* ========== FEATURES GRID ========== */}
+        <section className="py-20 sm:py-24 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
+                Everything you need to succeed
+              </h2>
+              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+                Powerful features designed for founders, by founders.
+              </p>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-sm">
               {[
-                "Verified Startups",
-                "Sponsored Startups",
-                "Investor Insights",
-                "AI Recommendations",
-                "Collaboration Tools",
-                "Analytics Dashboard",
-                "Portfolio Management",
-                "Flexible Plans",
-              ].map((feat) => (
-                <div key={feat} className="bg-white p-4 rounded-lg border border-black/5 shadow-sm hover:shadow-md transition">
-                  <Check className="h-4 w-4 text-green-600 mx-auto mb-2" />
-                  {feat}
+                { icon: <Shield className="h-4 w-4" />, label: "Verified Startups" },
+                { icon: <Crown className="h-4 w-4" />, label: "Sponsored Startups" },
+                { icon: <TrendingUp className="h-4 w-4" />, label: "Investor Insights" },
+                { icon: <Sparkles className="h-4 w-4" />, label: "AI Recommendations" },
+                { icon: <Users className="h-4 w-4" />, label: "Collaboration Tools" },
+                { icon: <BarChart3 className="h-4 w-4" />, label: "Analytics Dashboard" },
+                { icon: <Briefcase className="h-4 w-4" />, label: "Portfolio Management" },
+                { icon: <Rocket className="h-4 w-4" />, label: "Flexible Plans" },
+              ].map((feat, i) => (
+                <div key={i} className="bg-white p-4 rounded-lg border border-black/5 shadow-sm hover:shadow-md transition flex flex-col items-center text-center">
+                  <div className="text-[#1e3a5f] mb-2">{feat.icon}</div>
+                  <span className="font-medium">{feat.label}</span>
                 </div>
               ))}
             </div>
-            <Button variant="link" asChild className="mt-8 text-black hover:underline">
-              <Link href="/features">See all features →</Link>
-            </Button>
+            <div className="text-center mt-12">
+              <Button variant="link" asChild className="text-black hover:underline">
+                <Link href="/features">See all features →</Link>
+              </Button>
+            </div>
           </div>
         </section>
 
-        {/* TESTIMONIALS */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6">
+        {/* ========== TESTIMONIALS ========== */}
+        <section className="py-20 sm:py-24 px-4 sm:px-6 bg-gray-50/50">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-12 sm:mb-16 text-center">
-              What our users say
-            </h2>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
+                Loved by founders
+              </h2>
+              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+                Join 3,200+ startups that trust UpForge.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {comments.map((t, i) => (
                 <div key={i} className="p-6 border border-black/5 rounded-xl hover:shadow-lg transition bg-white">
+                  <div className="flex items-center gap-2 mb-4">
+                    {[...Array(5)].map((_, j) => (
+                      <Star key={j} className="h-4 w-4 fill-[#c6a43f] text-[#c6a43f]" />
+                    ))}
+                  </div>
                   <p className="text-sm italic mb-4">“{t.text}”</p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
@@ -366,26 +455,60 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* TEMPLATES */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-y border-black/5">
+        {/* ========== TEMPLATES ========== */}
+        <section className="py-20 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tighter mb-2">Get started with a template</h2>
-            <p className="text-gray-400 mb-10">Jumpstart your startup workflow.</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
+              Jumpstart with templates
+            </h2>
+            <p className="text-gray-400 mb-12 max-w-2xl mx-auto">
+              Proven frameworks used by top founders to raise funds, pitch investors, and track growth.
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { name: "Investor Brief", type: "Briefing" },
-                { name: "Startup Plan", type: "Planning" },
-                { name: "Sponsor Checklist", type: "Checklist" },
-                { name: "Weekly Review", type: "Reports" },
+                { name: "Investor Brief", type: "Briefing", icon: "📄" },
+                { name: "Startup Plan", type: "Planning", icon: "📊" },
+                { name: "Sponsor Checklist", type: "Checklist", icon: "✅" },
+                { name: "Weekly Review", type: "Reports", icon: "📈" },
               ].map((t, i) => (
                 <Link key={i} href={`/templates/${t.name.toLowerCase().replace(" ", "-")}`}>
-                  <div className="bg-white p-6 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition">
-                    <div className="text-4xl mb-2">📄</div>
+                  <div className="bg-white p-6 rounded-xl border border-black/5 shadow-sm hover:shadow-md transition group">
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{t.icon}</div>
                     <div className="font-medium">{t.name}</div>
                     <div className="text-xs text-gray-400">{t.type}</div>
                   </div>
                 </Link>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========== FINAL CTA ========== */}
+        <section className="py-20 px-4 sm:px-6 bg-[#1e3a5f] text-white relative overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-5 pointer-events-none"
+            style={{
+              backgroundImage: `repeating-linear-gradient(45deg, #fff 0px, #fff 2px, transparent 2px, transparent 8px)`,
+            }}
+          />
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h3 className="text-3xl md:text-4xl font-light mb-4">
+              Ready to transform your <span className="font-semibold">startup journey?</span>
+            </h3>
+            <p className="text-white/70 mb-8 text-lg">
+              Join India's fastest-growing founder network today.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link href="/apply">
+                <Button className="rounded-full px-8 h-14 bg-[#c6a43f] text-white hover:bg-[#b08c2e] text-sm uppercase tracking-widest font-semibold shadow-xl border-0">
+                  List Your Startup
+                </Button>
+              </Link>
+              <Link href="/sponsor">
+                <Button variant="outline" className="rounded-full px-8 h-14 border-white text-white hover:bg-white/10 text-sm uppercase tracking-widest font-semibold">
+                  Become a Sponsor
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
