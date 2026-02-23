@@ -19,15 +19,15 @@ export default function DashboardClient({
   teamCount: number
 }) {
   const router = useRouter()
-  const [activeUrl, setActiveUrl] = useState<string>("https://groww.in/")
+  const [activeUrl, setActiveUrl] = useState<string>("https://www.sarvam.ai/")
 
   const featuredStartups = [
-    { name: "Groww", url: "https://groww.in/" },
+    { name: "Sarvam", url: "https://www.sarvam.ai/" },
     { name: "Factacy AI", url: "https://www.factacy.ai/" },
     { name: "Internadda", url: "https://internadda.com" },
-    { name: "Patil Farms", url: "https://www.patilfarms.in/" },
+    { name: "Cava", url: "https://cavaathleisure.com/" },
     { name: "Visey", url: "https://visey.co.in/" },
-    { name: "NayePankh", url: "https://nayepankh.com/" },
+    { name: "Entellus", url: "https://entellusind.com/" },
   ]
 
   return (
