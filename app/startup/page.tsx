@@ -6,6 +6,8 @@ import { SearchBar } from "@/components/search-bar";
 import Link from "next/link";
 import { Crown, Search } from "lucide-react";
 import type { StartupDirectoryItem } from "@/types/startup";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export default function StartupsPage() {
   const supabase = createClient();
@@ -42,7 +44,7 @@ export default function StartupsPage() {
 
   return (
     <div className="relative bg-white text-black min-h-screen">
-      {/* Navbar and Footer are now in global layout. Calling them here causes double spacing/rendering */}
+      <Navbar />
 
       <main className="relative pt-2">
         <section className="pt-4 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-6">
@@ -158,6 +160,8 @@ export default function StartupsPage() {
           UpForge Intelligence Group · Institutional Grade · 2026
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
