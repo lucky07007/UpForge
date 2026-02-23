@@ -1,4 +1,3 @@
-// app/page.tsx
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -28,8 +27,7 @@ import {
 } from "lucide-react"
 import { Metadata } from "next"
 import DashboardClient from "@/components/DashboardClient"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { CyclingText } from "@/components/cycling-text"
 
 export const metadata: Metadata = {
   title: "UpForge | India’s Independent Founder Network",
@@ -83,11 +81,12 @@ export default async function Home() {
 
   return (
     <div className="relative bg-white text-black min-h-screen">
-      <Navbar />
-
-      <main className="relative pt-20">
+      <main className="relative pt-2"> 
+        {/* Adjusted pt-20 to pt-2 to remove excessive gap below GlobalHero */}
+        
         {/* ========== HERO ========== */}
-        <section className="pt-12 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6">
+        <section className="pt-4 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-6"> 
+          {/* Adjusted pt-12 to pt-4 to sit tight under the header */}
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* LEFT TEXT */}
@@ -99,8 +98,8 @@ export default async function Home() {
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold tracking-tighter leading-[0.9]">
-                  Transform your <br />
-                  <span className="text-gray-500 italic font-medium">startup journey</span> <br />
+                  Architect your <br />
+                  <CyclingText /> <br />
                   with UpForge
                 </h1>
                 <p className="text-base sm:text-xl text-gray-400 max-w-md mx-auto lg:mx-0">
@@ -406,8 +405,6 @@ export default async function Home() {
           UpForge · Founder First · 2026
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }
