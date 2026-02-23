@@ -15,6 +15,9 @@ import {
   TrendingUp,
   Award,
   Star,
+  BarChart3,
+  Target,
+  Handshake,
 } from "lucide-react"
 import { Metadata } from "next"
 import DashboardClient from "@/components/DashboardClient"
@@ -25,7 +28,6 @@ export const metadata: Metadata = {
     "Discover India’s rising startups. Sponsor your startup. Get visibility in the premium founder registry.",
 }
 
-// Header (unchanged but with refined spacing)
 function Header() {
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-black/5 z-50">
@@ -50,7 +52,6 @@ function Header() {
   )
 }
 
-// Footer (unchanged but centered)
 function Footer() {
   return (
     <footer className="border-t border-black/5 py-12 px-4 sm:px-6 bg-white">
@@ -102,15 +103,21 @@ export default async function Home() {
   const comments = [
     {
       author: "FLORENT MERIAN",
+      role: "DYNAMICSCREEN",
       text: "UpForge helps me track the most promising startups. I feel more connected to the ecosystem than ever.",
+      image: "/founders/florent-merian.jpg", // Placeholder - replace with actual image
     },
     {
       author: "HAMPUS PERSSON",
+      role: "VAAM",
       text: "The dashboard is intuitive, clean, and makes startup sponsorship extremely easy.",
+      image: "/founders/hampus-persson.jpg",
     },
     {
       author: "ERIC FETTNER",
+      role: "THE JOB SAUCE",
       text: "The platform gives me exactly what I need to make quick, informed decisions without clutter.",
+      image: "/founders/eric-fettner.jpg",
     },
   ]
 
@@ -119,11 +126,11 @@ export default async function Home() {
       <Header />
 
       <main className="relative pt-20">
-        {/* ========== HERO WITH APP MOCKUP ========== */}
+        {/* HERO SECTION (unchanged) */}
         <section className="pt-12 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-              {/* LEFT TEXT - centered on mobile */}
+              {/* LEFT TEXT */}
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start gap-3">
                   <span className="h-px w-10 bg-black/20 hidden sm:block"></span>
@@ -142,23 +149,16 @@ export default async function Home() {
                 </p>
                 <p className="text-base sm:text-lg text-gray-600">Join thousands of innovators shaping the future of tech.</p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 justify-center lg:justify-start">
-                  <Button
-                    asChild
-                    className="rounded-full px-6 sm:px-8 h-12 bg-black text-white hover:bg-gray-800 text-xs font-bold uppercase tracking-wider"
-                  >
+                  <Button asChild className="rounded-full px-6 sm:px-8 h-12 bg-black text-white hover:bg-gray-800 text-xs font-bold uppercase tracking-wider">
                     <Link href="/apply">Get Started</Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-full px-6 sm:px-8 h-12 border-black/20 text-xs font-bold uppercase tracking-wider"
-                  >
+                  <Button asChild variant="outline" className="rounded-full px-6 sm:px-8 h-12 border-black/20 text-xs font-bold uppercase tracking-wider">
                     <Link href="/download">Download App</Link>
                   </Button>
                 </div>
               </div>
 
-              {/* RIGHT MOCKUP - responsive */}
+              {/* RIGHT MOCKUP */}
               <div className="bg-gray-50 rounded-2xl border border-black/10 shadow-2xl overflow-hidden">
                 <div className="bg-white border-b border-black/5 px-4 py-2 flex items-center gap-2 text-xs text-gray-500">
                   <div className="w-3 h-3 rounded-full bg-red-400"></div>
@@ -167,160 +167,141 @@ export default async function Home() {
                   <span className="ml-2 font-mono truncate">UpForge — Dashboard</span>
                 </div>
 
-                <DashboardClient
-                  latestStartup={latestStartup}
-                  comments={comments}
-                  teamCount={teamCount || 4}
-                />
+                <DashboardClient latestStartup={latestStartup} comments={comments} teamCount={teamCount || 4} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* ========== SECOND MOCKUP / QUOTE ========== */}
-        <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-t border-black/5">
+        {/* ========== CONNECT, SPONSOR, TRACK - ENHANCED SECTION ========== */}
+        <section className="py-20 sm:py-24 px-4 sm:px-6 bg-white">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-              <div className="bg-white rounded-xl border border-black/10 p-4 sm:p-6 shadow-lg">
-                <div className="flex items-center gap-2 mb-4 text-sm">
-                  <span className="font-bold">Acme Inc.</span>
-                  <span className="text-gray-400">© UpForge</span>
-                  <MessageCircle className="h-4 w-4 ml-auto" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-4">
-                  <div className="space-y-2">
-                    <div className="font-medium">Discussions</div>
-                    <div className="text-gray-500">My private docs</div>
-                    <div className="border-t my-2"></div>
-                    <div className="font-medium">Channels</div>
-                    <div>General</div>
-                    <div>Company Wiki</div>
-                    <div>Mission, vision, values</div>
-                    <div>Remote work setup</div>
-                    <div>Policies & perks</div>
-                    <div>Strategy</div>
-                    <div>Updates</div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold">All your startup updates in one place.</div>
-                    <p className="text-sm text-gray-600 mt-2">
-                      Track, sponsor, and connect with promising startups easily.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                      <Button asChild size="sm" className="rounded-full text-xs">
-                        <Link href="/apply">Get started</Link>
-                      </Button>
-                      <Button asChild size="sm" variant="outline" className="rounded-full text-xs">
-                        <Link href="/download">Download the app</Link>
-                      </Button>
-                    </div>
-                    <div className="mt-4 flex items-center gap-2 text-gray-400">
-                      <MessageCircle className="h-4 w-4" /> Discussions
-                      <Search className="h-4 w-4 ml-2" /> Find anything
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center text-center lg:text-left">
-                <blockquote className="text-xl sm:text-2xl italic">
-                  “UpForge connects startups, sponsors, and innovators, making discovery and support seamless. The
-                  ecosystem grows stronger with every decision taken transparently and efficiently.”
-                  <footer className="mt-4 text-sm not-italic font-bold">
-                    — SEBASTIEN GENDREAU <span className="font-normal text-gray-500">POOF AGORAPULSE</span>
-                  </footer>
-                </blockquote>
-              </div>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-display font-bold tracking-tighter mb-4">
+                Connect, Sponsor, Track.
+              </h2>
+              <p className="text-base sm:text-xl text-gray-400 max-w-2xl mx-auto">
+                Everything you need to build and grow your startup ecosystem — all in one unified dashboard.
+              </p>
             </div>
-          </div>
-        </section>
 
-        {/* ========== COMMUNICATE WHERE WORK HAPPENS ========== */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-display font-bold tracking-tighter mb-4">
-              Connect, Sponsor, Track.
-            </h2>
-            <p className="text-base sm:text-xl text-gray-400 mb-12 sm:mb-16">All your startup ecosystem activity in one place.</p>
-
-            <div className="bg-white border border-black/10 rounded-2xl shadow-xl overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_260px] h-auto md:h-[450px] text-sm">
-                {/* Left */}
-                <div className="bg-gray-50 p-4 border-r border-black/5">
-                  <div className="font-bold mb-4">Acme</div>
-                  <div className="text-gray-500">Marketing / Q1 Initiatives</div>
-                  <div className="mt-6 flex items-center gap-2 text-gray-400">
-                    <Search className="h-4 w-4" /> Find anything
+            {/* Interactive Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+              {/* Connect Card */}
+              <Link href="/connect" className="group">
+                <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-14 h-14 bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#1e3a5f] group-hover:text-white transition-colors">
+                    <Users className="h-7 w-7 text-[#1e3a5f] group-hover:text-white" />
                   </div>
-                  <div className="mt-4">
-                    <div className="font-medium">Channels</div>
-                    <div className="font-medium mt-2">Discussions</div>
+                  <h3 className="text-2xl font-bold mb-3">Connect</h3>
+                  <p className="text-gray-500 mb-6">Find and network with verified founders, investors, and mentors in the ecosystem.</p>
+                  <div className="flex items-center text-[#1e3a5f] font-medium">
+                    <span>Discover network</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </div>
+              </Link>
 
-                {/* Center */}
-                <div className="p-4 overflow-y-auto">
-                  <div className="font-bold text-lg">Goals & planning</div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Highlight the most promising startups and plan sponsorships effectively.
+              {/* Sponsor Card */}
+              <Link href="/sponsor" className="group">
+                <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-14 h-14 bg-[#c6a43f]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#c6a43f] group-hover:text-white transition-colors">
+                    <Crown className="h-7 w-7 text-[#c6a43f] group-hover:text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3">Sponsor</h3>
+                  <p className="text-gray-500 mb-6">Boost your startup's visibility with premium placement and social media promotion.</p>
+                  <div className="flex items-center text-[#c6a43f] font-medium">
+                    <span>View sponsorship</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Track Card */}
+              <Link href="/track" className="group">
+                <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                    <TrendingUp className="h-7 w-7 text-green-600 group-hover:text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3">Track</h3>
+                  <p className="text-gray-500 mb-6">Monitor startup growth, engagement metrics, and sponsorship performance in real-time.</p>
+                  <div className="flex items-center text-green-600 font-medium">
+                    <span>View analytics</span>
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+            {/* Trust & Credibility Dashboard - Mini Chart & Stats */}
+            <div className="bg-gray-50 rounded-3xl p-8 md:p-12 border border-black/5">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                {/* Left side: Mini chart placeholder */}
+                <div>
+                  <h3 className="text-2xl font-bold mb-4">Trusted by India's top founders</h3>
+                  <p className="text-gray-500 mb-8">
+                    Our platform processes hundreds of sponsorships and connections every month. Here's a snapshot of our ecosystem growth.
                   </p>
-                  <div className="mt-4 space-y-3">
-                    <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
-                      <div className="font-medium">AI Startup Spotlight!</div>
-                      <div className="text-xs">Review and sponsor the top innovative teams in Q1.</div>
+                  <div className="flex flex-wrap gap-8">
+                    <div>
+                      <div className="text-3xl font-bold text-[#1e3a5f]">3,200+</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">Verified Startups</div>
                     </div>
-                    <div className="bg-blue-50 p-3 rounded border border-blue-200">
-                      <div className="font-medium">Outreach Campaigns</div>
+                    <div>
+                      <div className="text-3xl font-bold text-[#1e3a5f]">850+</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">Active Sponsors</div>
                     </div>
-                    <div className="p-3 border-l-2 border-black">
-                      <div className="font-medium">Analytics Dashboard</div>
-                      <div>Track engagements, metrics, and startup growth</div>
+                    <div>
+                      <div className="text-3xl font-bold text-[#1e3a5f]">15k+</div>
+                      <div className="text-xs uppercase tracking-wider text-gray-400">Monthly Connections</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Right */}
-                <div className="bg-gray-50 p-4 border-l border-black/5">
-                  <div className="font-bold">Tasks</div>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Plus className="h-3 w-3" /> Interview founders for sponsorship
-                    </div>
-                    <div className="border-t my-2"></div>
-                    <div>Projects</div>
-                    <div>Investment Planning</div>
-                    <div>Growth Updates</div>
-                    <div>Metrics</div>
-                    <div>Templates</div>
+                {/* Right side: Simple bar chart (CSS only) */}
+                <div className="bg-white p-6 rounded-2xl shadow-inner">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BarChart3 className="h-5 w-5 text-[#1e3a5f]" />
+                    <span className="font-semibold">Ecosystem Growth (last 6 months)</span>
                   </div>
-                  <div className="mt-6 text-xs text-gray-500">
-                    Assign tasks, track progress, and collaborate with the right people.
+                  <div className="space-y-3">
+                    {[
+                      { label: "Jan", value: 65 },
+                      { label: "Feb", value: 72 },
+                      { label: "Mar", value: 80 },
+                      { label: "Apr", value: 78 },
+                      { label: "May", value: 88 },
+                      { label: "Jun", value: 95 },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center gap-3">
+                        <span className="text-xs w-8 text-gray-500">{item.label}</span>
+                        <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#1e3a5f] rounded-full"
+                            style={{ width: `${item.value}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium">{item.value}%</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-12 text-center">
-              <p className="text-lg">Flexible plans for startups & investors.</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-6 sm:gap-8 mt-6">
-                <div className="text-center sm:text-left">
-                  <span className="text-3xl font-bold">$0</span>
-                  <span className="text-gray-400"> /month</span>
-                  <p className="text-xs uppercase tracking-wider mt-1">Starter</p>
-                </div>
-                <div className="text-center sm:text-left">
-                  <span className="text-3xl font-bold">$6</span>
-                  <span className="text-gray-400"> /month per user</span>
-                  <p className="text-xs uppercase tracking-wider mt-1">Pro Plan</p>
-                </div>
-              </div>
-              <Button asChild className="mt-8 rounded-full px-10 bg-black text-white hover:bg-gray-800">
-                <Link href="/pricing">Compare all plans &gt;</Link>
+            {/* Call to action buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-12">
+              <Button asChild size="lg" className="rounded-full px-8 bg-[#1e3a5f] hover:bg-[#14304a]">
+                <Link href="/startups">Browse Startups</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-full px-8 border-[#1e3a5f]/30 text-[#1e3a5f]">
+                <Link href="/sponsor">Become a Sponsor</Link>
               </Button>
             </div>
           </div>
         </section>
 
-        {/* ========== FEATURES GRID ========== */}
+        {/* FEATURES GRID (unchanged) */}
         <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-y border-black/5">
           <div className="max-w-7xl mx-auto text-center">
             <p className="text-sm uppercase tracking-widest mb-4">Core Features:</p>
@@ -347,7 +328,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ========== TESTIMONIALS WALL ========== */}
+        {/* TESTIMONIALS WALL - with actual image placeholders */}
         <section className="py-20 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-12 sm:mb-16 text-center">
@@ -358,10 +339,19 @@ export default async function Home() {
                 <div key={i} className="p-6 border border-black/5 rounded-xl hover:shadow-lg transition bg-white">
                   <p className="text-sm italic mb-4">“{t.text}”</p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200"></div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={t.image}
+                      alt={t.author}
+                      className="w-10 h-10 rounded-full object-cover bg-gray-200"
+                      onError={(e) => {
+                        // Fallback to gray circle if image fails to load
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
                     <div>
                       <div className="font-bold text-sm">{t.author}</div>
-                      <div className="text-[10px] uppercase tracking-wider text-gray-400">FOUNDER</div>
+                      <div className="text-[10px] uppercase tracking-wider text-gray-400">{t.role}</div>
                     </div>
                   </div>
                 </div>
@@ -375,7 +365,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ========== TEMPLATES ========== */}
+        {/* TEMPLATES SECTION (unchanged) */}
         <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-y border-black/5">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tighter mb-2">Get started with a template</h2>
