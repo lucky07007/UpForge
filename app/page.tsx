@@ -187,67 +187,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ========== CONNECT, SPONSOR, TRACK (ENHANCED) ========== */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6 bg-gray-50/30">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-6xl font-display font-bold tracking-tighter mb-4">
-                Connect, Sponsor, Track.
-              </h2>
-              <p className="text-base sm:text-xl text-gray-400 max-w-2xl mx-auto">
-                Everything you need to build and grow your startup ecosystem — all in one unified dashboard.
-              </p>
-            </div>
-
-            {/* Interactive Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
-              {[
-                {
-                  href: "/connect",
-                  icon: <Users className="h-7 w-7" />,
-                  title: "Connect",
-                  desc: "Find and network with verified founders, investors, and mentors in the ecosystem.",
-                  color: "bg-[#1e3a5f]",
-                  lightColor: "bg-[#1e3a5f]/10",
-                  textColor: "text-[#1e3a5f]",
-                },
-                {
-                  href: "/sponsor",
-                  icon: <Crown className="h-7 w-7" />,
-                  title: "Sponsor",
-                  desc: "Boost your startup's visibility with premium placement and social media promotion.",
-                  color: "bg-[#c6a43f]",
-                  lightColor: "bg-[#c6a43f]/10",
-                  textColor: "text-[#c6a43f]",
-                },
-                {
-                  href: "/track",
-                  icon: <TrendingUp className="h-7 w-7" />,
-                  title: "Track",
-                  desc: "Monitor startup growth, engagement metrics, and sponsorship performance in real-time.",
-                  color: "bg-green-600",
-                  lightColor: "bg-green-100",
-                  textColor: "text-green-600",
-                },
-              ].map((item, i) => (
-                <Link key={i} href={item.href} className="group">
-                  <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                    <div className={`w-14 h-14 ${item.lightColor} rounded-2xl flex items-center justify-center mb-6 group-hover:${item.color} group-hover:text-white transition-colors`}>
-                      <div className={`${item.textColor} group-hover:text-white transition-colors`}>
-                        {item.icon}
-                      </div>
-                    </div>
-                    <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
-                    <p className="text-gray-500 mb-6">{item.desc}</p>
-                    <div className={`flex items-center ${item.textColor} font-medium`}>
-                      <span>Learn more</span>
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
             {/* Trust Dashboard with Metrics - Visual Upgrade */}
             <div className="bg-white rounded-3xl p-8 md:p-12 border border-black/5 shadow-xl">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -465,35 +404,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ========== FINAL CTA ========== */}
-        <section className="py-20 px-4 sm:px-6 bg-[#1e3a5f] text-white relative overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-5 pointer-events-none"
-            style={{
-              backgroundImage: `repeating-linear-gradient(45deg, #fff 0px, #fff 2px, transparent 2px, transparent 8px)`,
-            }}
-          />
-          <div className="relative max-w-3xl mx-auto text-center">
-            <h3 className="text-3xl md:text-4xl font-light mb-4">
-              Ready to transform your <span className="font-semibold">startup journey?</span>
-            </h3>
-            <p className="text-white/70 mb-8 text-lg">
-              Join India's fastest-growing founder network today.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/apply">
-                <Button className="rounded-full px-8 h-14 bg-[#c6a43f] text-white hover:bg-[#b08c2e] text-sm uppercase tracking-widest font-semibold shadow-xl border-0">
-                  List Your Startup
-                </Button>
-              </Link>
-              <Link href="/sponsor">
-                <Button variant="outline" className="rounded-full px-8 h-14 border-white text-white hover:bg-white/10 text-sm uppercase tracking-widest font-semibold">
-                  Become a Sponsor
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
+
 
         <div className="py-6 text-center text-[10px] tracking-[0.4em] uppercase text-[#4a4a4a] border-t border-[#1e3a5f]/10">
           UpForge · Founder First · 2026
