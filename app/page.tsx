@@ -16,8 +16,6 @@ import {
   Award,
   Star,
   BarChart3,
-  Target,
-  Handshake,
 } from "lucide-react"
 import { Metadata } from "next"
 import DashboardClient from "@/components/DashboardClient"
@@ -89,23 +87,37 @@ function Footer() {
 export default async function Home() {
   const supabase = await createClient()
 
-  const { data: latestStartup } = await supabase
-    .from("startups")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single()
+  // Fetch latest startup with error handling
+  let latestStartup = null
+  try {
+    const { data } = await supabase
+      .from("startups")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle() // Use maybeSingle instead of single to avoid error when no rows
+    latestStartup = data
+  } catch (error) {
+    console.error("Failed to fetch latest startup:", error)
+  }
 
-  const { count: teamCount } = await supabase
-    .from("team_members")
-    .select("*", { count: "exact", head: true })
+  // Fetch team members count with error handling
+  let teamCount = 4 // default
+  try {
+    const { count } = await supabase
+      .from("team_members")
+      .select("*", { count: "exact", head: true })
+    if (count !== null) teamCount = count
+  } catch (error) {
+    console.error("Failed to fetch team count:", error)
+  }
 
   const comments = [
     {
       author: "FLORENT MERIAN",
       role: "DYNAMICSCREEN",
       text: "UpForge helps me track the most promising startups. I feel more connected to the ecosystem than ever.",
-      image: "/founders/florent-merian.jpg", // Placeholder - replace with actual image
+      image: "/founders/florent-merian.jpg",
     },
     {
       author: "HAMPUS PERSSON",
@@ -126,7 +138,7 @@ export default async function Home() {
       <Header />
 
       <main className="relative pt-20">
-        {/* HERO SECTION (unchanged) */}
+        {/* HERO SECTION */}
         <section className="pt-12 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -167,13 +179,17 @@ export default async function Home() {
                   <span className="ml-2 font-mono truncate">UpForge — Dashboard</span>
                 </div>
 
-                <DashboardClient latestStartup={latestStartup} comments={comments} teamCount={teamCount || 4} />
+                <DashboardClient
+                  latestStartup={latestStartup}
+                  comments={comments}
+                  teamCount={teamCount}
+                />
               </div>
             </div>
           </div>
         </section>
 
-        {/* ========== CONNECT, SPONSOR, TRACK - ENHANCED SECTION ========== */}
+        {/* CONNECT, SPONSOR, TRACK SECTION */}
         <section className="py-20 sm:py-24 px-4 sm:px-6 bg-white">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
@@ -187,7 +203,6 @@ export default async function Home() {
 
             {/* Interactive Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
-              {/* Connect Card */}
               <Link href="/connect" className="group">
                 <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                   <div className="w-14 h-14 bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#1e3a5f] group-hover:text-white transition-colors">
@@ -202,7 +217,6 @@ export default async function Home() {
                 </div>
               </Link>
 
-              {/* Sponsor Card */}
               <Link href="/sponsor" className="group">
                 <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                   <div className="w-14 h-14 bg-[#c6a43f]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#c6a43f] group-hover:text-white transition-colors">
@@ -217,7 +231,6 @@ export default async function Home() {
                 </div>
               </Link>
 
-              {/* Track Card */}
               <Link href="/track" className="group">
                 <div className="bg-white p-8 rounded-2xl border border-black/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                   <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors">
@@ -233,10 +246,9 @@ export default async function Home() {
               </Link>
             </div>
 
-            {/* Trust & Credibility Dashboard - Mini Chart & Stats */}
+            {/* Trust Dashboard */}
             <div className="bg-gray-50 rounded-3xl p-8 md:p-12 border border-black/5">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                {/* Left side: Mini chart placeholder */}
                 <div>
                   <h3 className="text-2xl font-bold mb-4">Trusted by India's top founders</h3>
                   <p className="text-gray-500 mb-8">
@@ -258,7 +270,6 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* Right side: Simple bar chart (CSS only) */}
                 <div className="bg-white p-6 rounded-2xl shadow-inner">
                   <div className="flex items-center gap-2 mb-4">
                     <BarChart3 className="h-5 w-5 text-[#1e3a5f]" />
@@ -289,7 +300,6 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Call to action buttons */}
             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-12">
               <Button asChild size="lg" className="rounded-full px-8 bg-[#1e3a5f] hover:bg-[#14304a]">
                 <Link href="/startups">Browse Startups</Link>
@@ -301,7 +311,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* FEATURES GRID (unchanged) */}
+        {/* FEATURES GRID */}
         <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-y border-black/5">
           <div className="max-w-7xl mx-auto text-center">
             <p className="text-sm uppercase tracking-widest mb-4">Core Features:</p>
@@ -328,7 +338,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* TESTIMONIALS WALL - with actual image placeholders */}
+        {/* TESTIMONIALS */}
         <section className="py-20 sm:py-24 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-12 sm:mb-16 text-center">
@@ -339,16 +349,7 @@ export default async function Home() {
                 <div key={i} className="p-6 border border-black/5 rounded-xl hover:shadow-lg transition bg-white">
                   <p className="text-sm italic mb-4">“{t.text}”</p>
                   <div className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={t.image}
-                      alt={t.author}
-                      className="w-10 h-10 rounded-full object-cover bg-gray-200"
-                      onError={(e) => {
-                        // Fallback to gray circle if image fails to load
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
                     <div>
                       <div className="font-bold text-sm">{t.author}</div>
                       <div className="text-[10px] uppercase tracking-wider text-gray-400">{t.role}</div>
@@ -365,7 +366,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* TEMPLATES SECTION (unchanged) */}
+        {/* TEMPLATES */}
         <section className="py-16 sm:py-20 px-4 sm:px-6 bg-gray-50 border-y border-black/5">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tighter mb-2">Get started with a template</h2>
