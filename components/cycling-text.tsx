@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
-const words = ["Independent Legacy", "Founder Dream", "Venture Vision", "Digital Future"]
+const words = ["Legacy", "Founder Dream", "Venture Vision", "Digital Future"]
 
 export function CyclingText() {
   const [index, setIndex] = useState(0)
