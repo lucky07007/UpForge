@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react"
 import Image from "next/image"
 import { Startup } from "@/types/startup"
 import {
-  Share2,
   ArrowLeft,
   Download,
   CheckCircle2,
@@ -163,15 +162,6 @@ export function StartupDetail({ startup }: { startup: Startup }) {
             >
               <Download className="mr-2 h-4 w-4" />
               Download
-            </Button>
-
-            <Button
-              size="sm"
-              onClick={() => handleAction("share")}
-              disabled={isGenerating}
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
             </Button>
           </div>
         </div>
