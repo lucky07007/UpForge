@@ -1,3 +1,4 @@
+// components/navbar.tsx
 "use client";
 
 import * as React from "react";
@@ -19,7 +20,7 @@ export function Navbar() {
   }, []);
 
   const links = [
-    { name: "Startups", href: "/startups" },
+    { name: "Startups", href: "/startup" },
     { name: "Investors", href: "/investors" },
     { name: "Sponsors", href: "/sponsors" },
     { name: "About", href: "/about" },
@@ -28,8 +29,10 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 backdrop-blur-md shadow-sm" : "bg-white/80 backdrop-blur-md"
-      } border-b border-black/5`}
+        scrolled
+          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-black/5"
+          : "bg-white/80 backdrop-blur-md border-b border-black/5"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
@@ -57,7 +60,9 @@ export function Navbar() {
                 key={link.name}
                 href={link.href}
                 className={`transition-colors duration-200 ${
-                  isActive ? "text-[#1e3a5f]" : "text-black hover:text-[#1e3a5f]"
+                  isActive
+                    ? "text-[#1e3a5f]"
+                    : "text-black hover:text-[#1e3a5f]"
                 }`}
               >
                 {link.name}
@@ -68,10 +73,17 @@ export function Navbar() {
 
         {/* Desktop Right Actions */}
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/login" className="text-sm font-medium text-black hover:text-[#1e3a5f] transition">
+          <Link
+            href="/login"
+            className="text-sm font-medium text-black hover:text-[#1e3a5f] transition-colors"
+          >
             Log in
           </Link>
-          <Button asChild size="sm" className="rounded-full bg-[#1e3a5f] hover:bg-[#14304a] px-5">
+          <Button
+            asChild
+            size="sm"
+            className="rounded-full bg-[#1e3a5f] hover:bg-[#14304a] px-5 text-white"
+          >
             <Link href="/signup">Get Started</Link>
           </Button>
         </div>
@@ -79,7 +91,8 @@ export function Navbar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(true)}
-          className="md:hidden p-2 text-black hover:opacity-70 transition-opacity"
+          className="md:hidden p-2 text-black hover:text-[#1e3a5f] transition-colors"
+          aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -88,22 +101,26 @@ export function Navbar() {
       {/* Mobile Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-[100] bg-white animate-in fade-in duration-300 flex flex-col">
-          <div className="flex justify-between items-center p-8 border-b border-black/5">
+          <div className="flex justify-between items-center p-6 border-b border-black/5">
             <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">
               Navigation
             </span>
-            <button onClick={() => setIsOpen(false)} className="p-2 text-black">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-2 text-black hover:text-[#1e3a5f] transition-colors"
+              aria-label="Close menu"
+            >
               <X className="h-6 w-6" />
             </button>
           </div>
 
-          <div className="flex flex-col px-10 pt-10 space-y-6">
+          <div className="flex flex-col px-6 pt-10 space-y-6">
             {links.map((link, i) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-4xl font-display font-bold tracking-tighter text-black hover:translate-x-2 transition-transform duration-300"
+                className="text-4xl font-display font-bold tracking-tighter text-black hover:text-[#1e3a5f] transition-colors duration-300"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 {link.name}
@@ -111,9 +128,12 @@ export function Navbar() {
             ))}
           </div>
 
-          <div className="mt-auto p-10 space-y-4">
+          <div className="mt-auto p-6 space-y-3">
             <Link href="/login" onClick={() => setIsOpen(false)}>
-              <Button variant="outline" className="w-full rounded-full h-14 border-black/20 text-black text-base font-medium">
+              <Button
+                variant="outline"
+                className="w-full rounded-full h-14 border-black/20 text-black text-base font-medium hover:bg-black/5"
+              >
                 Log in
               </Button>
             </Link>
