@@ -22,72 +22,19 @@ import {
   Briefcase,
   Rocket,
   HeartHandshake,
+  ChevronRight,
+  Target,
+  Eye,
 } from "lucide-react"
 import { Metadata } from "next"
 import DashboardClient from "@/components/DashboardClient"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "UpForge | India’s Independent Founder Network",
   description:
     "Discover India’s rising startups. Sponsor your startup. Get visibility in the premium founder registry.",
-}
-
-function Header() {
-  return (
-    <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-black/5 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          UpForge<span className="text-[#1e3a5f]">.</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link href="/startups" className="hover:text-[#1e3a5f] transition">Startups</Link>
-          <Link href="/investors" className="hover:text-[#1e3a5f] transition">Investors</Link>
-          <Link href="/sponsors" className="hover:text-[#1e3a5f] transition">Sponsors</Link>
-          <Link href="/about" className="hover:text-[#1e3a5f] transition">About</Link>
-        </nav>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link href="/login" className="text-sm font-medium hover:text-[#1e3a5f] transition">Log in</Link>
-          <Button asChild size="sm" className="rounded-full bg-[#1e3a5f] hover:bg-[#14304a] px-4 sm:px-5">
-            <Link href="/signup">Get Started</Link>
-          </Button>
-        </div>
-      </div>
-    </header>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-black/5 py-12 px-4 sm:px-6 bg-white">
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
-        <div>
-          <h4 className="font-bold mb-4">Product</h4>
-          <ul className="space-y-2 text-gray-500">
-            <li><Link href="/features">Features</Link></li>
-            <li><Link href="/pricing">Pricing</Link></li>
-            <li><Link href="/directory">Directory</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-bold mb-4">Company</h4>
-          <ul className="space-y-2 text-gray-500">
-            <li><Link href="/about">About</Link></li>
-            <li><Link href="/blog">Blog</Link></li>
-            <li><Link href="/careers">Careers</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="font-bold mb-4">Resources</h4>
-          <ul className="space-y-2 text-gray-500">
-            <li><Link href="/help">Help</Link></li>
-            <li><Link href="/contact">Contact</Link></li>
-            <li><Link href="/terms">Terms</Link></li>
-          </ul>
-        </div>
-        <div className="text-gray-400 text-xs">© 2026 UpForge. All rights reserved.</div>
-      </div>
-    </footer>
-  )
 }
 
 export default async function Home() {
@@ -136,7 +83,7 @@ export default async function Home() {
 
   return (
     <div className="relative bg-white text-black min-h-screen">
-      <Header />
+      <Navbar />
 
       <main className="relative pt-20">
         {/* ========== HERO ========== */}
@@ -228,8 +175,8 @@ export default async function Home() {
                   desc: "Monitor engagement, connections, and sponsorship performance.",
                 },
               ].map((step, i) => (
-                <div key={i} className="text-center p-6 rounded-2xl bg-white border border-black/5 shadow-sm hover:shadow-lg transition">
-                  <div className="w-16 h-16 mx-auto bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-4 text-[#1e3a5f]">
+                <div key={i} className="text-center p-6 rounded-2xl bg-white border border-black/5 shadow-sm hover:shadow-lg transition group">
+                  <div className="w-16 h-16 mx-auto bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-4 text-[#1e3a5f] group-hover:scale-110 transition-transform">
                     {step.icon}
                   </div>
                   <h3 className="text-xl font-bold mb-2">{step.title}</h3>
@@ -301,9 +248,10 @@ export default async function Home() {
               ))}
             </div>
 
-            {/* Trust Dashboard with Metrics */}
+            {/* Trust Dashboard with Metrics - Visual Upgrade */}
             <div className="bg-white rounded-3xl p-8 md:p-12 border border-black/5 shadow-xl">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                {/* Left side: Impact numbers with icons */}
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-medium mb-4">
                     <Shield className="h-3 w-3" /> Trusted by India's best
@@ -312,60 +260,94 @@ export default async function Home() {
                   <p className="text-gray-500 mb-8">
                     Our platform processes hundreds of sponsorships and connections every month. Here's a snapshot of our ecosystem growth.
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                    <div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
+                    <div className="text-center sm:text-left">
                       <div className="text-3xl font-bold text-[#1e3a5f]">3,200+</div>
-                      <div className="text-xs uppercase tracking-wider text-gray-400">Verified Startups</div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1 mt-1">
+                        <Users className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs uppercase tracking-wider text-gray-400">Verified Startups</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="text-center sm:text-left">
                       <div className="text-3xl font-bold text-[#1e3a5f]">850+</div>
-                      <div className="text-xs uppercase tracking-wider text-gray-400">Active Sponsors</div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1 mt-1">
+                        <Crown className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs uppercase tracking-wider text-gray-400">Active Sponsors</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="text-center sm:text-left">
                       <div className="text-3xl font-bold text-[#1e3a5f]">15k+</div>
-                      <div className="text-xs uppercase tracking-wider text-gray-400">Monthly Connections</div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1 mt-1">
+                        <MessageCircle className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs uppercase tracking-wider text-gray-400">Monthly Connections</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="text-center sm:text-left">
                       <div className="text-3xl font-bold text-[#1e3a5f]">₹45Cr+</div>
-                      <div className="text-xs uppercase tracking-wider text-gray-400">Funding Facilitated</div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1 mt-1">
+                        <TrendingUp className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs uppercase tracking-wider text-gray-400">Funding Facilitated</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="text-center sm:text-left">
                       <div className="text-3xl font-bold text-[#1e3a5f]">22</div>
-                      <div className="text-xs uppercase tracking-wider text-gray-400">Exit Events</div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1 mt-1">
+                        <Award className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs uppercase tracking-wider text-gray-400">Exit Events</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="text-center sm:text-left">
                       <div className="text-3xl font-bold text-[#1e3a5f]">100%</div>
-                      <div className="text-xs uppercase tracking-wider text-gray-400">Founder Verified</div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1 mt-1">
+                        <Shield className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs uppercase tracking-wider text-gray-400">Founder Verified</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-6 rounded-2xl shadow-inner">
-                  <div className="flex items-center gap-2 mb-4">
-                    <BarChart3 className="h-5 w-5 text-[#1e3a5f]" />
-                    <span className="font-semibold">Ecosystem Growth (last 6 months)</span>
-                  </div>
-                  <div className="space-y-3">
-                    {[
-                      { label: "Jan", value: 65 },
-                      { label: "Feb", value: 72 },
-                      { label: "Mar", value: 80 },
-                      { label: "Apr", value: 78 },
-                      { label: "May", value: 88 },
-                      { label: "Jun", value: 95 },
-                    ].map((item) => (
-                      <div key={item.label} className="flex items-center gap-3">
-                        <span className="text-xs w-8 text-gray-500">{item.label}</span>
-                        <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#1e3a5f] rounded-full"
-                            style={{ width: `${item.value}%` }}
-                          />
+                {/* Right side: Visual stats - replaced bar chart with a "milestone" visual */}
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-[#1e3a5f] to-[#14304a] rounded-3xl p-8 text-white shadow-2xl">
+                    <div className="flex items-center gap-2 mb-6">
+                      <Eye className="h-5 w-5 text-[#c6a43f]" />
+                      <span className="font-semibold text-lg">Ecosystem at a glance</span>
+                    </div>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Quarterly growth</span>
+                          <span className="text-[#c6a43f] font-bold">+32%</span>
                         </div>
-                        <span className="text-xs font-medium">{item.value}%</span>
+                        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                          <div className="h-full w-2/3 bg-[#c6a43f] rounded-full" />
+                        </div>
                       </div>
-                    ))}
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Sponsor retention</span>
+                          <span className="text-[#c6a43f] font-bold">94%</span>
+                        </div>
+                        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                          <div className="h-full w-[94%] bg-[#c6a43f] rounded-full" />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Founder satisfaction</span>
+                          <span className="text-[#c6a43f] font-bold">4.9/5</span>
+                        </div>
+                        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                          <div className="h-full w-[98%] bg-[#c6a43f] rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-8 pt-6 border-t border-white/20 text-center text-xs opacity-70">
+                      Based on 1,200+ reviews
+                    </div>
                   </div>
+                  {/* Decorative element */}
+                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#c6a43f]/20 rounded-full blur-3xl -z-10" />
                 </div>
               </div>
             </div>
