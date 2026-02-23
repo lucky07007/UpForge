@@ -3,6 +3,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { LayoutGrid, ShieldCheck, ExternalLink, ChevronRight } from "lucide-react"
 
 interface Startup {
   id: string
@@ -20,11 +21,8 @@ export default function DashboardClient({
   teamCount: number
 }) {
   const router = useRouter()
-  
-  // Defaulting the view to Internadda
   const [activeUrl, setActiveUrl] = useState<string>("https://internadda.com")
 
-  // The simplified list of 5-6 startups as requested
   const featuredStartups = [
     { name: "Internadda", url: "https://internadda.com" },
     { name: "Brand Wala", url: "https://brandwala.com" },
@@ -34,61 +32,91 @@ export default function DashboardClient({
   ]
 
   return (
-    <div className="flex h-[600px] w-full bg-white text-xs overflow-hidden border border-black/5 rounded-xl">
-      {/* LEFT SIDEBAR: Simplified to Startups & Admin only */}
-      <div className="w-[240px] bg-gray-50/80 border-r border-black/5 flex flex-col">
-        <div className="p-6">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">
-            Featured Startups
-          </h2>
-          
-          <div className="space-y-2">
+    <div className="w-full max-w-6xl mx-auto overflow-hidden rounded-2xl border border-black/10 bg-white shadow-xl">
+      {/* Container with reduced height for desktop (450px) and auto for mobile */}
+      <div className="flex flex-col md:flex-row h-auto md:h-[450px]">
+        
+        {/* SIDEBAR / TOP MENU */}
+        <div className="w-full md:w-[220px] bg-gray-50/50 border-b md:border-b-0 md:border-r border-black/5 flex flex-col">
+          <div className="p-4 flex items-center justify-between md:block">
+            <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0 md:mb-4 flex items-center gap-2">
+              <LayoutGrid className="w-3 h-3" /> Featured
+            </h2>
+            
+            {/* Mobile Horizontal Scroll for Startups */}
+            <div className="flex md:hidden gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {featuredStartups.map((s) => (
+                <button
+                  key={s.name}
+                  onClick={() => setActiveUrl(s.url)}
+                  className={`whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
+                    activeUrl === s.url ? 'bg-black text-white' : 'bg-black/5 text-gray-600'
+                  }`}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Vertical Menu */}
+          <div className="hidden md:block flex-1 px-3 space-y-1">
             {featuredStartups.map((startup) => (
               <button
                 key={startup.name}
                 onClick={() => setActiveUrl(startup.url)}
-                className={`w-full text-left px-4 py-3 rounded-xl transition-all border ${
+                className={`w-full text-left px-3 py-2 rounded-lg text-[12px] transition-all flex items-center justify-between group ${
                   activeUrl === startup.url 
-                  ? 'bg-white border-black/10 shadow-sm font-bold text-black' 
-                  : 'border-transparent hover:bg-black/5 text-gray-500'
+                  ? 'bg-white border border-black/5 shadow-sm font-bold text-black' 
+                  : 'text-gray-500 hover:bg-black/5'
                 }`}
               >
                 {startup.name}
+                <ChevronRight className={`w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity ${activeUrl === startup.url ? 'opacity-100' : ''}`} />
               </button>
             ))}
+          </div>
 
+          {/* Bottom Actions */}
+          <div className="p-3 mt-auto border-t border-black/5 flex md:flex-col gap-2">
             <button 
               onClick={() => router.push('/startup')}
-              className="w-full text-center p-3 mt-4 text-[#1e3a5f] font-bold hover:underline border border-dashed border-[#1e3a5f]/20 rounded-xl"
+              className="flex-1 text-[11px] font-bold py-2 px-3 rounded-lg border border-black/10 hover:bg-black hover:text-white transition-colors text-center"
             >
-              More Startups →
+              Explore More
+            </button>
+            <button 
+              onClick={() => router.push('/admin')}
+              className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-blue-50 text-blue-700 text-[11px] font-bold hover:bg-blue-100 transition-colors"
+            >
+              <ShieldCheck className="w-3 h-3" /> Admin
             </button>
           </div>
         </div>
 
-        {/* BOTTOM SECTION: Admin only */}
-        <div className="mt-auto p-6 border-t border-black/5">
-          <button 
-            onClick={() => router.push('/admin')}
-            className="flex items-center gap-3 w-full p-2 hover:bg-black/5 rounded-lg transition"
-          >
-            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white font-bold text-[10px]">
-              A
+        {/* PREVIEW AREA */}
+        <div className="flex-1 bg-gray-100 relative min-h-[300px] md:min-h-0">
+          {/* Top Address Bar Look */}
+          <div className="absolute top-0 left-0 w-full h-8 bg-white/80 backdrop-blur-sm border-b border-black/5 flex items-center px-4 justify-between z-10">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 rounded-full bg-red-400" />
+                <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                <div className="w-2 h-2 rounded-full bg-green-400" />
+              </div>
+              <span className="text-[9px] text-gray-400 font-mono truncate">{activeUrl}</span>
             </div>
-            <span className="font-bold text-gray-700">Admin Panel</span>
-          </button>
-        </div>
-      </div>
+            <a href={activeUrl} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-black">
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
 
-      {/* RIGHT SIDE: Full Website Workspace */}
-      <div className="flex-1 bg-white relative">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-        <iframe 
-          src={activeUrl}
-          className="w-full h-full border-none shadow-inner"
-          title="Startup Preview"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        />
+          <iframe 
+            src={activeUrl}
+            className="w-full h-full pt-8 border-none"
+            title="Startup Workspace"
+          />
+        </div>
       </div>
     </div>
   )
