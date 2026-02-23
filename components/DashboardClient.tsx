@@ -19,7 +19,7 @@ export default function DashboardClient({
   teamCount: number
 }) {
   const router = useRouter()
-  const [activeUrl, setActiveUrl] = useState<string>("https://internadda.com")
+  const [activeUrl, setActiveUrl] = useState<string>("https://www.factacy.ai")
 
   const featuredStartups = [
     { name: "Factacy AI", url: "https://www.factacy.ai/" },
