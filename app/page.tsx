@@ -184,11 +184,9 @@ export default async function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
 
             {/* Trust Dashboard with Metrics - Visual Upgrade */}
-            <div className="bg-white rounded-3xl p-8 md:p-12 border border-black/5 shadow-xl">
+            <div className="bg-white rounded-3xl p-8 md:p-12 border border-black/5 shadow-xl mt-20">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 {/* Left side: Impact numbers with icons */}
                 <div>
@@ -245,7 +243,7 @@ export default async function Home() {
                   </div>
                 </div>
 
-                {/* Right side: Visual stats - replaced bar chart with a "milestone" visual */}
+                {/* Right side: Visual stats */}
                 <div className="relative">
                   <div className="bg-gradient-to-br from-[#1e3a5f] to-[#14304a] rounded-3xl p-8 text-white shadow-2xl">
                     <div className="flex items-center gap-2 mb-6">
@@ -403,8 +401,6 @@ export default async function Home() {
             </div>
           </div>
         </section>
-
-
 
         <div className="py-6 text-center text-[10px] tracking-[0.4em] uppercase text-[#4a4a4a] border-t border-[#1e3a5f]/10">
           UpForge · Founder First · 2026
