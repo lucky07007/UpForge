@@ -22,11 +22,12 @@ export default function DashboardClient({
   const [activeUrl, setActiveUrl] = useState<string>("https://internadda.com")
 
   const featuredStartups = [
+    { name: "Factacy AI", url: "https://www.factacy.ai/" },
     { name: "Internadda", url: "https://internadda.com" },
-    { name: "Brand Wala", url: "https://brandwala.com" },
-    { name: "Skillpoint", url: "https://skillpoint.in" },
-    { name: "Hozaak", url: "https://hozaak.com" },
-    { name: "IFL Institute", url: "https://iflinstitute.com" },
+    { name: "Spoy", url: "https://spoy.in/" },
+    { name: "Patil Farms", url: "https://www.patilfarms.in/" },
+    { name: "Visey", url: "https://visey.co.in/" },
+    { name: "NayePankh", url: "https://nayepankh.com/" },
   ]
 
   return (
