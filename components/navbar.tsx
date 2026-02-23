@@ -97,7 +97,8 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex flex-col">
+        <div className="fixed inset-0 z-[100] bg-black text-white flex flex-col overflow-y-auto">
+          {/* Top section with logo + close */}
           <div className="flex justify-between items-center p-6 border-b border-white/20">
             <div className="flex items-center gap-2">
               <div className="relative h-8 w-8">
@@ -119,6 +120,7 @@ export function Navbar() {
             </button>
           </div>
 
+          {/* Menu links */}
           <div className="flex flex-col px-6 pt-10 space-y-6">
             {links.map((link, i) => (
               <Link
@@ -133,6 +135,7 @@ export function Navbar() {
             ))}
           </div>
 
+          {/* Bottom actions */}
           <div className="mt-auto p-6 space-y-3">
             <Link href="/login" onClick={() => setIsOpen(false)}>
               <Button
