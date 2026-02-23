@@ -28,17 +28,17 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        scrolled
-          ? "py-4"
-          : "py-6"
+        scrolled ? "py-4" : "py-6"
       }`}
     >
-      <nav className={`max-w-5xl mx-auto px-6 flex items-center justify-between transition-all duration-500 ${
-        scrolled 
-          ? "bg-white/80 backdrop-blur-xl py-2 px-4 rounded-full border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]" 
-          : ""
-      }`}>
-        {/* Logo Section */}
+      <nav
+        className={`max-w-5xl mx-auto px-6 flex items-center justify-between transition-all duration-500 ${
+          scrolled
+            ? "bg-white/80 backdrop-blur-xl py-2 px-4 rounded-full border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+            : ""
+        }`}
+      >
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="relative h-8 w-8 overflow-hidden rounded-lg bg-black p-1.5 transition-transform duration-500 group-hover:rotate-[10deg]">
             <Image
@@ -54,7 +54,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Navigation - Minimalist style */}
+        {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-10">
           {links.map((link) => {
             const isActive = pathname === link.href;
@@ -77,10 +77,10 @@ export function Navbar() {
           })}
         </div>
 
-        {/* CTA Button - "Less is More" Design */}
+        {/* Desktop CTA */}
         <div className="hidden md:block">
           <Link href="/apply">
-            <Button variant="outline" className="premium-button rounded-full px-6 h-9 border-black text-black bg-transparent hover:bg-black hover:text-white text-[12px] font-bold uppercase tracking-tighter transition-all duration-300">
+            <Button className="premium-button rounded-full px-6 h-9 border-black text-black bg-transparent hover:bg-black hover:text-white text-[12px] font-bold uppercase tracking-tighter transition-all duration-300">
               Join Registry
             </Button>
           </Link>
@@ -95,20 +95,18 @@ export function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile Drawer - High-End Aesthetic */}
+      {/* Mobile Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-[100] bg-white animate-in fade-in duration-300 flex flex-col">
           <div className="flex justify-between items-center p-8">
             <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">
               Navigation
             </span>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-2 text-black"
-            >
+            <button onClick={() => setIsOpen(false)} className="p-2 text-black">
               <X className="h-6 w-6" />
             </button>
           </div>
+
           <div className="flex flex-col px-10 pt-10 space-y-6">
             {links.map((link, i) => (
               <Link
@@ -122,6 +120,7 @@ export function Navbar() {
               </Link>
             ))}
           </div>
+
           <div className="mt-auto p-10">
             <Link href="/apply" onClick={() => setIsOpen(false)}>
               <Button className="w-full rounded-full h-16 bg-black text-white text-lg font-bold">
