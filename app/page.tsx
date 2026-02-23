@@ -93,21 +93,20 @@ export default async function Home() {
               {/* LEFT TEXT */}
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start gap-3">
-                  <span className="h-px w-10 bg-black/20 hidden sm:block"></span>
-                  <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">
-                    EST. 2025 — BUILDING STARTUP ECOSYSTEM
+                  <span className="h-px w-10 bg-[#c6a43f] hidden sm:block"></span>
+                  <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#c6a43f]">
+                    EST. 2025 — BUILDING BHARAT'S STARTUP ECOSYSTEM
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold tracking-tighter leading-[0.9]">
-                  Architect your <br />
-                  <CyclingText /> <br />
-                  with UpForge
+                  Forge Your <br />
+                  Independent <br />
+                  <CyclingText />
                 </h1>
                 <p className="text-base sm:text-xl text-gray-400 max-w-md mx-auto lg:mx-0">
                   UpForge empowers founders, investors, and teams to discover, sponsor, and track the most promising
-                  startups.
+                  startups with institutional-grade transparency.
                 </p>
-                <p className="text-base sm:text-lg text-gray-600">Join thousands of innovators shaping the future of tech.</p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 justify-center lg:justify-start">
                   <Button asChild className="rounded-full px-6 sm:px-8 h-12 bg-black text-white hover:bg-gray-800 text-xs font-bold uppercase tracking-wider">
                     <Link href="/apply">Join The Forge</Link>
