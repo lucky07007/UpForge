@@ -2,6 +2,9 @@
 import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { Chatbot } from "@/components/chatbot";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -16,15 +19,21 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "Slite – Where remote teams share knowledge and make decisions",
-  description: "Say goodbye to endless meetings and Slack threads.",
+  title: "UpForge – Founder Registry",
+  description: "India's definitive ecosystem for independent builders.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${bricolage.variable}`}>
-      <body className="bg-white text-black antialiased">
-        {children}
+      <body className="bg-white text-black antialiased flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow pt-16">
+          {children}
+        </main>
+        <Footer />
+        {/* This ensures the chatbot is globally accessible */}
+        <Chatbot />
       </body>
     </html>
   );
