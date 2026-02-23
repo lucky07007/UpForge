@@ -1,4 +1,3 @@
-// components/navbar.tsx
 "use client";
 
 import * as React from "react";
@@ -20,8 +19,8 @@ export function Navbar() {
   }, []);
 
   const links = [
+    { name: "Home", href: "/" },
     { name: "Startups", href: "/startup" },
-    { name: "Investors", href: "/investors" },
     { name: "Sponsors", href: "/sponsors" },
     { name: "About", href: "/about" },
   ];
@@ -35,20 +34,17 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
+        {/* Naked Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="relative h-7 w-7 overflow-hidden rounded-lg bg-black p-1.5 transition-transform duration-500 group-hover:rotate-[10deg]">
+          <div className="relative h-10 w-10 overflow-hidden transition-transform duration-500 group-hover:scale-110">
             <Image
               src="/logo.jpg"
-              alt="UpForge"
+              alt="UpForge Logo"
               fill
-              className="object-contain invert"
+              className="object-contain"
               priority
             />
           </div>
-          <span className="text-xl font-bold tracking-tight">
-            UpForge<span className="text-[#1e3a5f]">.</span>
-          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -98,16 +94,16 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer with Footer matching background */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] bg-white animate-in fade-in duration-300 flex flex-col">
-          <div className="flex justify-between items-center p-6 border-b border-black/5">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-400">
+        <div className="fixed inset-0 z-[100] bg-[#1e3a5f] animate-in fade-in duration-300 flex flex-col text-white">
+          <div className="flex justify-between items-center p-6 border-b border-white/10">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-gray-300">
               Navigation
             </span>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2 text-black hover:text-[#1e3a5f] transition-colors"
+              className="p-2 text-white hover:text-[#c6a43f] transition-colors"
               aria-label="Close menu"
             >
               <X className="h-6 w-6" />
@@ -120,7 +116,7 @@ export function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-4xl font-display font-bold tracking-tighter text-black hover:text-[#1e3a5f] transition-colors duration-300"
+                className="text-4xl font-display font-bold tracking-tighter text-white hover:text-[#c6a43f] transition-colors duration-300"
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 {link.name}
@@ -132,13 +128,13 @@ export function Navbar() {
             <Link href="/login" onClick={() => setIsOpen(false)}>
               <Button
                 variant="outline"
-                className="w-full rounded-full h-14 border-black/20 text-black text-base font-medium hover:bg-black/5"
+                className="w-full rounded-full h-14 border-white/20 text-white text-base font-medium hover:bg-white/5"
               >
                 Log in
               </Button>
             </Link>
             <Link href="/signup" onClick={() => setIsOpen(false)}>
-              <Button className="w-full rounded-full h-14 bg-[#1e3a5f] hover:bg-[#14304a] text-white text-base font-medium">
+              <Button className="w-full rounded-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-black text-base font-medium">
                 Get Started
               </Button>
             </Link>
