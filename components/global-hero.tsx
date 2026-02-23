@@ -1,55 +1,54 @@
 "use client"
 
 import React from "react"
-import { ShieldCheck, Sparkles, Zap, BadgeCheck } from "lucide-react"
+import { ShieldCheck, Globe, Activity } from "lucide-react"
 
 export function GlobalHero() {
   return (
-    <div className="relative border-b border-slate-200 bg-gradient-to-r from-white via-slate-50 to-white">
-      
-      {/* Subtle authority glow line */}
-      <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#c6a43f]/60 to-transparent" />
+    <div className="relative border-b border-neutral-200 bg-white">
 
-      <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-5">
+      {/* Top micro authority line */}
+      <div className="h-[2px] bg-gradient-to-r from-transparent via-neutral-900 to-transparent opacity-80" />
 
-        {/* LEFT — Institutional Authority Signal */}
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-emerald-500/10 blur-lg rounded-full" />
-            <div className="relative bg-emerald-100 p-2 rounded-full border border-emerald-200">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            </div>
+      <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
+
+        {/* LEFT — Brand Authority Statement */}
+        <div className="flex items-start gap-4">
+
+          <div className="bg-neutral-900 p-2 rounded-md">
+            <ShieldCheck className="h-4 w-4 text-white" />
           </div>
 
           <div className="flex flex-col">
-            <p className="text-[11px] font-semibold tracking-widest uppercase text-slate-400">
-              Institutional Registry
+            <p className="text-[11px] tracking-[0.25em] uppercase text-neutral-400 font-semibold">
+              UpForge Intelligence Network
             </p>
-            <p className="text-sm font-semibold text-slate-800">
-              Verified Founders · Curated Leadership · Ecosystem Integrity
+
+            <p className="text-sm md:text-base font-semibold text-neutral-900 leading-snug">
+              Structured credibility. Verified leadership.  
+              A disciplined ecosystem built for long-term builders.
             </p>
           </div>
         </div>
 
-        {/* RIGHT — Real-Time Authority + Scarcity */}
-        <div className="flex items-center gap-6">
+        {/* RIGHT — Silent Power Signals */}
+        <div className="flex items-center gap-8 text-[11px] uppercase tracking-widest text-neutral-500 font-semibold">
 
-          <div className="hidden lg:flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            <Zap className="h-3 w-3 text-[#c6a43f]" />
-            Live Registry Active
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-neutral-700" />
+            Independent Infrastructure
           </div>
 
-          <div className="flex items-center gap-3 px-4 py-2 bg-white/70 backdrop-blur-md border border-slate-200 rounded-full shadow-sm hover:shadow-md transition-all">
-            <BadgeCheck className="h-4 w-4 text-[#c6a43f]" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-              2026 Founder Cohort — Limited Access
-            </span>
+          <div className="flex items-center gap-2">
+            <Activity className="h-4 w-4 text-neutral-700" />
+            Continuously Monitored
           </div>
+
         </div>
       </div>
 
-      {/* Bottom golden micro-divider */}
-      <div className="h-[1px] bg-gradient-to-r from-transparent via-[#c6a43f]/40 to-transparent" />
+      {/* Bottom subtle divider */}
+      <div className="h-[1px] bg-neutral-200" />
     </div>
   )
 }
