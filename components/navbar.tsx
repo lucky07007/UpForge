@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Zap } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -50,7 +50,7 @@ export function Navbar() {
                 priority
               />
             </div>
-            <span className="text-xl font-bold text-black">UpForge</span>
+            <span className="text-xl font-bold text-black tracking-tight">UpForge</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -61,37 +61,32 @@ export function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`relative pb-1 transition-all duration-300 ${
+                  className={`relative pb-1 transition-all duration-300 uppercase tracking-widest text-[10px] font-black ${
                     isActive
-                      ? "text-[#1e3a5f]"
-                      : "text-black hover:text-[#1e3a5f]"
+                      ? "text-black"
+                      : "text-slate-400 hover:text-black"
                   }`}
                 >
                   {link.name}
-
-                  {/* 🔥 Active Underline Glow */}
                   {isActive && (
-                    <span className="absolute left-0 bottom-0 w-full h-[2px] bg-[#1e3a5f] rounded-full shadow-[0_0_8px_rgba(30,58,95,0.6)]" />
+                    <span className="absolute left-0 bottom-0 w-full h-[2px] bg-[#c6a43f] rounded-full shadow-[0_0_8px_rgba(198,164,63,0.6)]" />
                   )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-black hover:text-[#1e3a5f] transition-colors"
-            >
-              Log in
-            </Link>
+          {/* Desktop Action */}
+          <div className="hidden md:flex items-center">
             <Button
               asChild
               size="sm"
-              className="rounded-full bg-[#1e3a5f] hover:bg-[#14304a] px-5 text-white"
+              className="rounded-full bg-black hover:bg-slate-800 px-6 text-white text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 shadow-lg gap-2"
             >
-              <Link href="/signup">Get Started</Link>
+              <Link href="/apply">
+                Join the Forge
+                <Zap className="h-3 w-3 fill-[#c6a43f] text-[#c6a43f]" />
+              </Link>
             </Button>
           </div>
 
@@ -127,7 +122,7 @@ export function Navbar() {
           }`}
         >
           {/* Top Bar */}
-          <div className="flex justify-between items-center p-6 border-b border-white/20">
+          <div className="flex justify-between items-center p-6 border-b border-white/10">
             <div className="flex items-center gap-2">
               <div className="relative h-8 w-8">
                 <Image
@@ -137,7 +132,7 @@ export function Navbar() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-lg font-bold">UpForge</span>
+              <span className="text-lg font-bold tracking-tight">UpForge</span>
             </div>
 
             <button
@@ -148,7 +143,7 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* 🔥 Mobile Links with Active Glow */}
+          {/* Mobile Links */}
           <div className="flex flex-col px-6 pt-12 space-y-8">
             {links.map((link) => {
               const isActive = pathname === link.href;
@@ -157,37 +152,32 @@ export function Navbar() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className={`relative text-3xl font-bold transition-all duration-300 ${
+                  className={`relative text-4xl font-black transition-all duration-300 uppercase tracking-tighter ${
                     isActive
                       ? "text-[#c6a43f]"
-                      : "text-white hover:text-[#c6a43f]"
+                      : "text-white/40 hover:text-white"
                   }`}
                 >
                   {link.name}
-
                   {isActive && (
-                    <span className="absolute left-0 -bottom-2 w-16 h-[3px] bg-[#c6a43f] rounded-full shadow-[0_0_10px_rgba(198,164,63,0.8)]" />
+                    <span className="absolute left-0 -bottom-2 w-20 h-[4px] bg-[#c6a43f] rounded-full" />
                   )}
                 </Link>
               );
             })}
           </div>
 
-          {/* 🔥 FIXED LOGIN BUTTON VISIBILITY */}
-          <div className="absolute bottom-8 left-6 right-6 space-y-4">
-            <Link href="/login" onClick={() => setIsOpen(false)}>
-              <Button
-                className="w-full rounded-full h-14 bg-white text-black hover:bg-gray-200"
-              >
-                Log in
+          {/* Mobile Action */}
+          <div className="absolute bottom-10 left-6 right-6">
+            <Link href="/apply" onClick={() => setIsOpen(false)}>
+              <Button className="w-full rounded-2xl h-16 bg-[#c6a43f] hover:bg-[#b08c2e] text-black text-xs font-black uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-2">
+                Join the Forge
+                <Zap className="h-4 w-4 fill-black" />
               </Button>
             </Link>
-
-            <Link href="/signup" onClick={() => setIsOpen(false)}>
-              <Button className="w-full rounded-full h-14 bg-[#c6a43f] hover:bg-[#b08c2e] text-black">
-                Get Started
-              </Button>
-            </Link>
+            <p className="text-center text-white/20 text-[9px] font-bold uppercase tracking-[0.4em] mt-6">
+              Institutional Grade Registry · 2026
+            </p>
           </div>
         </div>
       </div>
