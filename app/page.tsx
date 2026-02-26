@@ -1,111 +1,77 @@
-// app/page.tsx
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  
+  // Featured logic: Fetching verified featured startups newest first
+  const { data: featured } = await supabase
+    .from("startups")
+    .select("*")
+    .eq("is_featured", true)
+    .order("created_at", { ascending: false })
+    .limit(3);
+
   return (
-    <div className="max-w-5xl mx-auto px-6 space-y-24">
-      
-      {/* SECTION 1 — HERO */}
-      <section className="text-left py-12">
-        <h1 className="font-serif">Discover India’s Emerging Founders.</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mb-8">
-          UpForge is an open platform documenting early-stage startups and the founders building them.
-        </p>
+    <div className="w-full flex flex-col items-center">
+      {/* Container scales up to 1440px, but remains liquid */}
+      <div className="w-full max-w-[1440px] px-6 md:px-12 lg:px-24 py-12 space-y-32">
         
-        <div className="relative max-w-xl mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Search startups or founders..." 
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-link text-base"
-          />
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <Link href="/startup" className="text-sm font-medium">Browse Startups</Link>
-          <Button asChild variant="outline" className="border-link text-link rounded-[6px]">
-            <Link href="/apply">Submit Startup</Link>
-          </Button>
-        </div>
-      </section>
+        {/* Section 1: Hero */}
+        <section className="pt-20">
+          <h1 className="text-[40px] md:text-[56px] lg:text-[64px] font-serif leading-tight max-w-4xl">
+            Discover India’s Emerging Founders.
+          </h1>
+          <p className="text-xl text-gray-500 mt-6 max-w-2xl">
+            UpForge is an open founder discovery platform documenting early-stage innovation in India.
+          </p>
+          <div className="relative max-w-2xl mt-12">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input type="text" placeholder="Search startups, founders, or years..." 
+              className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-md focus:border-[#0645AD] outline-none text-lg" />
+          </div>
+        </section>
 
-      {/* SECTION 2 — FEATURED STARTUPS */}
-      <section>
-        <h2 className="font-serif">Featured This Week</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-5 border border-gray-200 rounded-sm bg-white hover:border-gray-300 transition-colors">
-              <div className="w-8 h-8 bg-gray-100 rounded mb-4" />
-              <Link href="#" className="font-bold text-lg block mb-1">Startup Name {i}</Link>
-              <p className="text-sm text-muted-foreground mb-3">Neutral one-line description of the startup's primary function.</p>
-              <span className="text-[12px] bg-gray-100 px-2 py-0.5 rounded text-gray-600">Industry</span>
-            </div>
-          ))}
-        </div>
-      </section>
+        {/* Section 2: Featured Startups (Real Data) */}
+        <section>
+          <h2 className="text-[28px] font-serif border-b border-gray-200 pb-2 mb-8">Featured This Week</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {featured?.map((startup) => (
+              <div key={startup.id} className="p-6 border border-gray-200 hover:border-gray-400 transition-colors">
+                <Link href={`/startup/${startup.slug}`} className="text-xl font-bold text-[#0645AD] hover:underline">
+                  {startup.name}
+                </Link>
+                <p className="text-gray-600 mt-2 line-clamp-2">{startup.description}</p>
+                <div className="mt-4 flex gap-2">
+                  <span className="text-xs bg-gray-100 px-2 py-1 uppercase tracking-wider">{startup.industry}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-      {/* SECTION 3 — FOUNDER SPOTLIGHT */}
-      <section>
-        <h2 className="font-serif">Founder Spotlight</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex flex-col items-start">
-              <div className="w-16 h-16 bg-gray-200 rounded-full mb-4" />
-              <Link href="#" className="font-bold text-base">Founder Name</Link>
-              <p className="text-sm text-gray-500 mb-2">Co-founder, Startup Name</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                A neutral two-line intro about the founder's background and current focus within the Indian ecosystem.
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+        {/* Section 3: Browse by Year (Archive Style) */}
+        <section>
+          <h2 className="text-[28px] font-serif border-b border-gray-200 pb-2 mb-8">Startup Archive by Year</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            {["2026", "2025", "2024", "2023", "2022", "2021"].map((year) => (
+              <Link key={year} href={`/startup?year=${year}`} 
+                className="py-3 px-4 border border-gray-100 bg-gray-50 text-center font-medium hover:bg-white hover:border-gray-300 transition-all">
+                Class of {year}
+              </Link>
+            ))}
+          </div>
+        </section>
 
-      {/* SECTION 4 — BROWSE BY INDUSTRY */}
-      <section>
-        <h2 className="font-serif">Browse by Category</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-4">
-          {["SaaS", "FinTech", "EdTech", "AI", "D2C", "HealthTech", "Bootstrapped", "Student Startups"].map((cat) => (
-            <Link key={cat} href="#" className="text-base">{cat}</Link>
-          ))}
-        </div>
-      </section>
-
-      {/* SECTION 5 — RECENTLY ADDED */}
-      <section>
-        <h2 className="font-serif">Recently Added Startups</h2>
-        <ul className="space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <li key={i} className="text-base list-disc list-inside">
-              <Link href="#" className="font-medium">Startup Alpha</Link>
-              <span className="text-gray-400 mx-2">—</span>
-              <span className="text-gray-600">Bengaluru</span>
-              <span className="text-gray-400 mx-2">—</span>
-              <span className="text-gray-500 text-sm italic">Early Stage</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* SECTION 6 — ABOUT */}
-      <section className="bg-gray-50 p-8 border border-gray-200">
-        <p className="text-base leading-relaxed text-muted-foreground max-w-3xl">
-          UpForge exists to provide structured visibility to emerging founders and to help students discover new innovation-driven startups across India. Our goal is to maintain an open founder discovery archive for the ecosystem.
-        </p>
-      </section>
-
-      {/* SECTION 7 — CTA */}
-      <section className="border border-gray-200 rounded-md p-10 text-left">
-        <h3 className="text-2xl font-serif mb-2">Are you building something new?</h3>
-        <p className="text-muted-foreground mb-6">
-          Submit your startup profile and become part of India’s open founder discovery archive.
-        </p>
-        <Button asChild variant="outline" className="border-link text-link rounded-[6px] px-8">
-          <Link href="/apply">Submit Startup</Link>
-        </Button>
-      </section>
+        {/* Section 4: Academic Verification Notice (Trust Builder) */}
+        <section className="bg-gray-50 p-10 border-l-4 border-[#0645AD]">
+          <h3 className="font-serif text-xl font-bold mb-4">Verification Standards</h3>
+          <p className="text-gray-600 max-w-3xl leading-relaxed">
+            Every startup profile in the UpForge Registry undergoes a manual verification process. We confirm MSME registration, founder identity, and operational status to ensure a high-trust database for students and investors.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }
