@@ -1,301 +1,111 @@
-import { createClient } from "@/lib/supabase/server"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import {
-  Clock,
-  MessageCircle,
-  Search,
-  Plus,
-  Check,
-  ArrowRight,
-  Crown,
-  Sparkles,
-  Users,
-  TrendingUp,
-  Award,
-  Star,
-  BarChart3,
-  Shield,
-  Zap,
-  Globe,
-  Briefcase,
-  Rocket,
-  HeartHandshake,
-  ChevronRight,
-  Target,
-  Eye,
-} from "lucide-react"
-import { Metadata } from "next"
-import DashboardClient from "@/components/DashboardClient"
-import { CyclingText } from "@/components/cycling-text"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+// app/page.tsx
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "UpForge | India’s Independent Founder Network",
-  description:
-    "Discover India’s rising startups. Sponsor your startup. Get visibility in the premium founder registry.",
-}
-
-export default async function Home() {
-  const supabase = await createClient()
-
-  let latestStartup = null
-  try {
-    const { data } = await supabase
-      .from("startups")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    latestStartup = data
-  } catch (error) {
-    console.error("Failed to fetch latest startup:", error)
-  }
-
-  let teamCount = 4
-  try {
-    const { count } = await supabase
-      .from("team_members")
-      .select("*", { count: "exact", head: true })
-    if (count !== null) teamCount = count
-  } catch (error) {
-    console.error("Failed to fetch team count:", error)
-  }
-
-  const comments = [
-    {
-      author: "FLORENT MERIAN",
-      role: "DYNAMICSCREEN",
-      text: "UpForge helps me track the most promising startups. I feel more connected to the ecosystem than ever.",
-    },
-    {
-      author: "HAMPUS PERSSON",
-      role: "VAAM",
-      text: "The dashboard is intuitive, clean, and makes startup sponsorship extremely easy.",
-    },
-    {
-      author: "ERIC FETTNER",
-      role: "THE JOB SAUCE",
-      text: "The platform gives me exactly what I need to make quick, informed decisions without clutter.",
-    },
-  ]
-
+export default function Home() {
   return (
-    <div className="relative bg-white text-black min-h-screen">
-      <Navbar />
+    <div className="max-w-5xl mx-auto px-6 space-y-24">
+      
+      {/* SECTION 1 — HERO */}
+      <section className="text-left py-12">
+        <h1 className="font-serif">Discover India’s Emerging Founders.</h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mb-8">
+          UpForge is an open platform documenting early-stage startups and the founders building them.
+        </p>
+        
+        <div className="relative max-w-xl mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search startups or founders..." 
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-link text-base"
+          />
+        </div>
+        
+        <div className="flex items-center gap-6">
+          <Link href="/startup" className="text-sm font-medium">Browse Startups</Link>
+          <Button asChild variant="outline" className="border-link text-link rounded-[6px]">
+            <Link href="/apply">Submit Startup</Link>
+          </Button>
+        </div>
+      </section>
 
-      <main className="relative pt-2"> 
-        {/* ========== HERO ========== */}
-        <section className="pt-4 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-6"> 
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              {/* LEFT TEXT */}
-              <div className="space-y-6 sm:space-y-8 text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start gap-3">
-                  <span className="h-px w-10 bg-[#c6a43f] hidden sm:block"></span>
-                  <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#c6a43f]">
-                    EST. 2025 — BUILDING BHARAT'S STARTUP ECOSYSTEM
-                  </span>
-                </div>
-                <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold tracking-tighter leading-[0.9]">
-                  Forge Your <br />
-                  Independent <br />
-                  <CyclingText />
-                </h1>
-                <p className="text-base sm:text-xl text-gray-400 max-w-md mx-auto lg:mx-0">
-                  UpForge empowers founders, investors, and teams to discover, sponsor, and track the most promising
-                  startups with institutional-grade transparency.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 justify-center lg:justify-start">
-                  <Button asChild className="rounded-full px-6 sm:px-8 h-12 bg-black text-white hover:bg-gray-800 text-xs font-bold uppercase tracking-wider">
-                    <Link href="/apply">Join The Forge</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="rounded-full px-6 sm:px-8 h-12 border-black/20 text-xs font-bold uppercase tracking-wider">
-                    <Link href="/startup">View All Startups</Link>
-                  </Button>
-                </div>
-              </div>
-
-              {/* RIGHT MOCKUP */}
-              <div className="bg-gray-50 rounded-2xl border border-black/10 shadow-2xl overflow-hidden">
-                <div className="bg-white border-b border-black/5 px-4 py-2 flex items-center gap-2 text-xs text-gray-500">
-                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                  <span className="ml-2 font-mono truncate">UpForge — Dashboard</span>
-                </div>
-                <DashboardClient latestStartup={latestStartup} comments={comments} teamCount={teamCount} />
-              </div>
+      {/* SECTION 2 — FEATURED STARTUPS */}
+      <section>
+        <h2 className="font-serif">Featured This Week</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-5 border border-gray-200 rounded-sm bg-white hover:border-gray-300 transition-colors">
+              <div className="w-8 h-8 bg-gray-100 rounded mb-4" />
+              <Link href="#" className="font-bold text-lg block mb-1">Startup Name {i}</Link>
+              <p className="text-sm text-muted-foreground mb-3">Neutral one-line description of the startup's primary function.</p>
+              <span className="text-[12px] bg-gray-100 px-2 py-0.5 rounded text-gray-600">Industry</span>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
+      </section>
 
-        {/* ========== TRUST BADGES ========== */}
-        <section className="py-8 sm:py-12 px-4 sm:px-6 bg-gray-50/50 border-y border-black/5">
-          <div className="max-w-7xl mx-auto">
-            <p className="text-center text-xs uppercase tracking-widest text-gray-400 mb-6 font-bold">Verified Partners</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 opacity-40">
-              <span className="text-sm font-bold text-black tracking-tighter">IIT DELHI</span>
-              <span className="text-sm font-bold text-black tracking-tighter">IIM AHMEDABAD</span>
-              <span className="text-sm font-bold text-black tracking-tighter">SEQUOIA</span>
-              <span className="text-sm font-bold text-black tracking-tighter">ACCEL</span>
-              <span className="text-sm font-bold text-black tracking-tighter">PEAK XV</span>
-            </div>
-          </div>
-        </section>
-
-        {/* ========== HOW IT WORKS ========== */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
-                How UpForge works
-              </h2>
-              <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-                Three simple steps to amplify your startup journey.
+      {/* SECTION 3 — FOUNDER SPOTLIGHT */}
+      <section>
+        <h2 className="font-serif">Founder Spotlight</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex flex-col items-start">
+              <div className="w-16 h-16 bg-gray-200 rounded-full mb-4" />
+              <Link href="#" className="font-bold text-base">Founder Name</Link>
+              <p className="text-sm text-gray-500 mb-2">Co-founder, Startup Name</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                A neutral two-line intro about the founder's background and current focus within the Indian ecosystem.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-              {[
-                {
-                  icon: <Users className="h-8 w-8" />,
-                  title: "1. Create Profile",
-                  desc: "List your startup with verified details and get discovered by investors.",
-                },
-                {
-                  icon: <Crown className="h-8 w-8" />,
-                  title: "2. Get Sponsored",
-                  desc: "Boost visibility with premium sponsorship and social media features.",
-                },
-                {
-                  icon: <TrendingUp className="h-8 w-8" />,
-                  title: "3. Track Growth",
-                  desc: "Monitor engagement, connections, and sponsorship performance.",
-                },
-              ].map((step, i) => (
-                <div key={i} className="text-center p-6 rounded-2xl bg-white border border-black/5 shadow-sm hover:shadow-lg transition group">
-                  <div className="w-16 h-16 mx-auto bg-[#1e3a5f]/10 rounded-2xl flex items-center justify-center mb-4 text-[#1e3a5f] group-hover:scale-110 transition-transform">
-                    {step.icon}
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-gray-500">{step.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Trust Dashboard with Metrics */}
-            <div className="bg-white rounded-3xl p-8 md:p-12 border border-black/5 shadow-xl mt-20">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-medium mb-4">
-                    <Shield className="h-3 w-3" /> Trusted by India's best
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4">Real impact, real numbers</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
-                    <div className="text-center sm:text-left">
-                      <div className="text-3xl font-bold text-[#1e3a5f]">3,200+</div>
-                      <span className="text-xs uppercase tracking-wider text-gray-400">Verified Startups</span>
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <div className="text-3xl font-bold text-[#1e3a5f]">850+</div>
-                      <span className="text-xs uppercase tracking-wider text-gray-400">Active Sponsors</span>
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <div className="text-3xl font-bold text-[#1e3a5f]">15k+</div>
-                      <span className="text-xs uppercase tracking-wider text-gray-400">Monthly Connections</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-[#1e3a5f] to-[#14304a] rounded-3xl p-8 text-white shadow-2xl">
-                    <div className="flex items-center gap-2 mb-6">
-                      <Eye className="h-5 w-5 text-[#c6a43f]" />
-                      <span className="font-semibold text-lg">Ecosystem at a glance</span>
-                    </div>
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Quarterly growth</span>
-                          <span className="text-[#c6a43f] font-bold">+32%</span>
-                        </div>
-                        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                          <div className="h-full w-2/3 bg-[#c6a43f] rounded-full" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ========== FEATURES GRID ========== */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
-                Everything you need to succeed
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-sm">
-              {[
-                { icon: <Shield className="h-4 w-4" />, label: "Verified Startups" },
-                { icon: <Crown className="h-4 w-4" />, label: "Sponsored Startups" },
-                { icon: <TrendingUp className="h-4 w-4" />, label: "Investor Insights" },
-                { icon: <Sparkles className="h-4 w-4" />, label: "AI Recommendations" },
-                { icon: <Users className="h-4 w-4" />, label: "Collaboration Tools" },
-                { icon: <BarChart3 className="h-4 w-4" />, label: "Analytics Dashboard" },
-                { icon: <Briefcase className="h-4 w-4" />, label: "Portfolio Management" },
-                { icon: <Rocket className="h-4 w-4" />, label: "Flexible Plans" },
-              ].map((feat, i) => (
-                <div key={i} className="bg-white p-4 rounded-lg border border-black/5 shadow-sm hover:shadow-md transition flex flex-col items-center text-center">
-                  <div className="text-[#1e3a5f] mb-2">{feat.icon}</div>
-                  <span className="font-medium">{feat.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ========== TESTIMONIALS ========== */}
-        <section className="py-20 sm:py-24 px-4 sm:px-6 bg-gray-50/50">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tighter mb-4">
-                Loved by founders
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {comments.map((t, i) => (
-                <div key={i} className="p-6 border border-black/5 rounded-xl hover:shadow-lg transition bg-white">
-                  <div className="flex items-center gap-2 mb-4">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} className="h-4 w-4 fill-[#c6a43f] text-[#c6a43f]" />
-                    ))}
-                  </div>
-                  <p className="text-sm italic mb-4">“{t.text}”</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
-                    <div>
-                      <div className="font-bold text-sm">{t.author}</div>
-                      <div className="text-[10px] uppercase tracking-wider text-gray-400">{t.role}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="py-6 text-center text-[10px] tracking-[0.4em] uppercase text-[#4a4a4a] border-t border-[#1e3a5f]/10">
-          UpForge Intelligence Group · Institutional Grade · 2026
+          ))}
         </div>
-      </main>
+      </section>
 
-      <Footer />
+      {/* SECTION 4 — BROWSE BY INDUSTRY */}
+      <section>
+        <h2 className="font-serif">Browse by Category</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-4">
+          {["SaaS", "FinTech", "EdTech", "AI", "D2C", "HealthTech", "Bootstrapped", "Student Startups"].map((cat) => (
+            <Link key={cat} href="#" className="text-base">{cat}</Link>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 5 — RECENTLY ADDED */}
+      <section>
+        <h2 className="font-serif">Recently Added Startups</h2>
+        <ul className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <li key={i} className="text-base list-disc list-inside">
+              <Link href="#" className="font-medium">Startup Alpha</Link>
+              <span className="text-gray-400 mx-2">—</span>
+              <span className="text-gray-600">Bengaluru</span>
+              <span className="text-gray-400 mx-2">—</span>
+              <span className="text-gray-500 text-sm italic">Early Stage</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* SECTION 6 — ABOUT */}
+      <section className="bg-gray-50 p-8 border border-gray-200">
+        <p className="text-base leading-relaxed text-muted-foreground max-w-3xl">
+          UpForge exists to provide structured visibility to emerging founders and to help students discover new innovation-driven startups across India. Our goal is to maintain an open founder discovery archive for the ecosystem.
+        </p>
+      </section>
+
+      {/* SECTION 7 — CTA */}
+      <section className="border border-gray-200 rounded-md p-10 text-left">
+        <h3 className="text-2xl font-serif mb-2">Are you building something new?</h3>
+        <p className="text-muted-foreground mb-6">
+          Submit your startup profile and become part of India’s open founder discovery archive.
+        </p>
+        <Button asChild variant="outline" className="border-link text-link rounded-[6px] px-8">
+          <Link href="/apply">Submit Startup</Link>
+        </Button>
+      </section>
     </div>
-  )
+  );
 }
