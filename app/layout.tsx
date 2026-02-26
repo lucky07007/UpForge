@@ -1,10 +1,9 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Inter, Bricolage_Grotesque } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
-import { Chatbot } from "@/components/chatbot";
-import { GlobalHero } from "@/components/global-hero"; // Import the new component
+import { Footer } from "@/components/footer";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -12,33 +11,20 @@ const inter = Inter({
   display: 'swap' 
 });
 
-const bricolage = Bricolage_Grotesque({ 
-  subsets: ["latin"], 
-  variable: "--font-display",
-  display: 'swap'
-});
-
 export const metadata: Metadata = {
-  title: "UpForge – Founder Registry",
-  description: "India's definitive ecosystem for independent builders.",
+  title: "UpForge — Open Founder Discovery Platform",
+  description: "An open platform documenting early-stage startups and the founders building them in India.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${bricolage.variable}`}>
-      <body className="bg-white text-black antialiased flex flex-col min-h-screen">
+    <html lang="en" className={`${inter.variable}`}>
+      <body className="bg-white text-[#1A1A1A] flex flex-col min-h-screen">
         <Navbar />
-        
-        {/* Added wrapper to handle fixed Navbar offset and the Hero */}
-        <div className="pt-16"> 
-          <GlobalHero />
-        </div>
-
-        <main className="flex-grow">
+        <main className="flex-grow pt-24 pb-20">
           {children}
         </main>
-        
-        <Chatbot />
+        <Footer />
       </body>
     </html>
   );
