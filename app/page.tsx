@@ -1,7 +1,7 @@
 // app/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Search, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -26,11 +26,15 @@ export default async function Home() {
 
   return (
     <div className="w-full flex flex-col items-center bg-white">
-      <div className="w-full max-w-[1200px] px-5 md:px-8 py-8 space-y-16">
+      {/* Outer container: only bottom padding, top padding handled by layout */}
+      <div className="w-full max-w-[1200px] px-5 md:px-8 pb-8 space-y-16">
         {/* Hero Section - Split Layout */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column - Text Content */}
           <div className="lg:col-span-7 text-center lg:text-left">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-[44px] leading-tight text-[#111111]">
+              UpForge
+            </h1>
             <p className="font-serif text-xl md:text-2xl text-gray-600 mt-2">
               India's Open Startup Registry
             </p>
@@ -65,33 +69,33 @@ export default async function Home() {
           <div className="lg:col-span-5">
             <div className="border border-gray-200 bg-gray-50 p-6">
               <h3 className="font-serif text-xl border-b border-gray-200 pb-2 mb-4">
-                Sponsored Startup
+                Startup Snapshot
               </h3>
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Startup:</dt>
-                  <dd className="font-medium text-[#111111]">Internadda</dd>
+                  <dd className="font-medium text-[#111111]">Nirmaan Energy</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Founded:</dt>
-                  <dd className="text-[#111111]">2020</dd>
+                  <dd className="text-[#111111]">2024</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Sector:</dt>
-                  <dd className="text-[#111111]">Edtech / HR Tech</dd>
+                  <dd className="text-[#111111]">ClimateTech / Energy</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Founders:</dt>
-                  <dd className="text-[#111111]">2</dd>
+                  <dd className="text-[#111111]">3</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Location:</dt>
-                  <dd className="text-[#111111]">Delhi</dd>
+                  <dd className="text-[#111111]">Bengaluru</dd>
                 </div>
               </dl>
               <div className="mt-5 pt-3 border-t border-gray-200">
                 <Link
-                  href="/startup/internadda"
+                  href="/startup/nirmaan-energy"
                   className="text-sm text-[#0645AD] hover:underline flex items-center gap-1"
                 >
                   View Full Entry <ExternalLink className="h-3 w-3" />
@@ -101,20 +105,66 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Valuation Tool Integration */}
+        {/* Valuation Tool Integration - Now with a subtle chart */}
         <section className="border border-gray-200 p-6 md:p-8">
-          <div className="max-w-3xl">
-            <h2 className="font-serif text-2xl mb-2">Estimate Startup Valuation</h2>
-            <p className="text-[17px] text-gray-700 leading-relaxed">
-              Use our structured evaluation tool to estimate an early-stage startup's 
-              indicative market value based on available public data.
-            </p>
-            <Link
-              href="/evaluation"
-              className="inline-block mt-5 px-6 py-2.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-sm font-medium"
-            >
-              Open Evaluation Tool →
-            </Link>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left: Text and button */}
+            <div>
+              <h2 className="font-serif text-2xl mb-2">Estimate Startup Valuation</h2>
+              <p className="text-[17px] text-gray-700 leading-relaxed">
+                Use our structured evaluation tool to estimate an early-stage startup's 
+                indicative market value based on available public data.
+              </p>
+              <Link
+                href="/evaluation"
+                className="inline-block mt-5 px-6 py-2.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-sm font-medium"
+              >
+                Open Evaluation Tool →
+              </Link>
+            </div>
+
+            {/* Right: Minimal academic chart */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="w-full max-w-[280px]">
+                <div className="text-xs text-gray-400 mb-2 flex justify-between">
+                  <span>Visibility Score</span>
+                  <span>← recent</span>
+                </div>
+                {/* Simple line chart SVG */}
+                <svg
+                  viewBox="0 0 200 80"
+                  className="w-full h-auto stroke-gray-500 stroke-1 fill-none"
+                  style={{ strokeLinecap: "round", strokeLinejoin: "round" }}
+                >
+                  {/* Axes */}
+                  <line x1="10" y1="70" x2="190" y2="70" stroke="#ccc" strokeWidth="0.5" />
+                  <line x1="10" y1="10" x2="10" y2="70" stroke="#ccc" strokeWidth="0.5" />
+
+                  {/* Data line */}
+                  <polyline
+                    points="30,60 60,45 90,50 120,30 150,40 180,25"
+                    stroke="#0645AD"
+                    strokeWidth="1.2"
+                    fill="none"
+                  />
+
+                  {/* Data points */}
+                  <circle cx="30" cy="60" r="2" fill="#0645AD" />
+                  <circle cx="60" cy="45" r="2" fill="#0645AD" />
+                  <circle cx="90" cy="50" r="2" fill="#0645AD" />
+                  <circle cx="120" cy="30" r="2" fill="#0645AD" />
+                  <circle cx="150" cy="40" r="2" fill="#0645AD" />
+                  <circle cx="180" cy="25" r="2" fill="#0645AD" />
+
+                  {/* Subtle grid lines (optional) */}
+                  <line x1="10" y1="50" x2="190" y2="50" stroke="#eee" strokeWidth="0.5" strokeDasharray="2,2" />
+                  <line x1="10" y1="30" x2="190" y2="30" stroke="#eee" strokeWidth="0.5" strokeDasharray="2,2" />
+                </svg>
+                <p className="text-xs text-gray-400 mt-2 text-center">
+                  Illustrative exposure trend
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
