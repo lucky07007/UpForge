@@ -4,14 +4,13 @@ import { useState, useEffect, useRef } from "react"
 import { X, Send, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
-import Link from "next/link"
 
 const suggestedQuestions = [
-  "Top Indian startups this month?",
-  "How does UpForge verification work?",
-  "Startup sponsorship insights?",
-  "High-growth sectors in India?",
-  "How can I get featured?"
+  "Recently added Indian startups?",
+  "What qualifies as a startup on UpForge?",
+  "How does listing work?",
+  "Emerging sectors in India?",
+  "How can a founder submit?"
 ]
 
 export function Chatbot() {
@@ -22,7 +21,7 @@ export function Chatbot() {
     {
       role: "assistant",
       content:
-        "Welcome to Forge AI — your startup intelligence layer. How can I assist you today?"
+        "Welcome to UpForge Research Assistant. I help you explore India's emerging startup registry. How may I assist you?"
     }
   ])
 
@@ -53,7 +52,7 @@ export function Chatbot() {
       const reply =
         data.message ||
         data.error ||
-        "Sorry, I couldn't process that request."
+        "Unable to process the request at this time."
 
       setMessages((prev) => [
         ...prev,
@@ -64,7 +63,7 @@ export function Chatbot() {
         ...prev,
         {
           role: "assistant",
-          content: "Connection error. Please try again."
+          content: "Network error. Please try again."
         }
       ])
     } finally {
@@ -75,51 +74,59 @@ export function Chatbot() {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
 
-      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 40, scale: 0.95 }}
-            className="mb-5 w-[360px] h-[560px] bg-white rounded-3xl shadow-2xl border border-neutral-200 flex flex-col overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="
+              mb-4
+              w-[95vw] max-w-[420px]
+              h-[70vh] max-h-[620px]
+              bg-white
+              border border-gray-300
+              shadow-lg
+              flex flex-col
+            "
           >
 
             {/* Header */}
-            <div className="px-6 py-4 bg-neutral-900 text-white flex items-center justify-between">
+            <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
               <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+                <div className="relative h-9 w-9">
                   <Image
                     src="/robot.jpg"
-                    alt="Forge AI"
+                    alt="UpForge Assistant"
                     fill
-                    className="object-contain p-2 rounded-full"
+                    className="object-contain rounded-full"
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-base tracking-tight">
-                    Forge AI
+                  <h3 className="font-serif text-lg text-gray-900">
+                    UpForge Assistant
                   </h3>
-                  <p className="text-[10px] uppercase tracking-[0.25em] text-neutral-400">
-                    Startup Intelligence Layer
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500">
+                    Public Startup Registry AI
                   </p>
                 </div>
               </div>
 
               <button onClick={() => setIsOpen(false)}>
-                <X className="h-5 w-5 text-neutral-400 hover:text-white transition" />
+                <X className="h-5 w-5 text-gray-500 hover:text-black transition" />
               </button>
             </div>
 
             {/* Chat Area */}
             <div
               ref={scrollRef}
-              className="flex-1 p-5 overflow-y-auto space-y-5 bg-neutral-50"
+              className="flex-1 p-5 overflow-y-auto space-y-4 bg-white"
             >
               {messages.map((msg, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex ${
                     msg.role === "user"
@@ -128,10 +135,10 @@ export function Chatbot() {
                   }`}
                 >
                   <div
-                    className={`max-w-[80%] px-4 py-3 text-sm leading-relaxed rounded-2xl ${
+                    className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed border ${
                       msg.role === "user"
-                        ? "bg-neutral-900 text-white rounded-br-none"
-                        : "bg-white border border-neutral-200 text-neutral-900 rounded-bl-none"
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-gray-50 text-gray-900 border-gray-200"
                     }`}
                   >
                     {msg.content}
@@ -141,19 +148,25 @@ export function Chatbot() {
 
               {isLoading && (
                 <div className="flex">
-                  <div className="h-10 w-20 bg-white border border-neutral-200 rounded-2xl animate-pulse" />
+                  <div className="h-8 w-24 bg-gray-100 border border-gray-200 animate-pulse" />
                 </div>
               )}
             </div>
 
             {/* Suggested Questions */}
             {messages.length === 1 && (
-              <div className="px-5 pb-2 flex flex-wrap gap-2">
+              <div className="px-4 pb-2 flex flex-wrap gap-2">
                 {suggestedQuestions.map((q, i) => (
                   <button
                     key={i}
                     onClick={() => handleSend(q)}
-                    className="text-xs bg-white border border-neutral-200 hover:border-neutral-400 rounded-full px-3 py-1.5 text-neutral-700 transition"
+                    className="
+                      text-xs
+                      border border-gray-300
+                      px-3 py-1
+                      hover:bg-gray-100
+                      transition
+                    "
                   >
                     {q}
                   </button>
@@ -162,20 +175,38 @@ export function Chatbot() {
             )}
 
             {/* Input */}
-            <div className="p-4 bg-white border-t border-neutral-200">
+            <div className="p-4 border-t border-gray-200 bg-gray-50">
               <div className="flex items-center gap-2">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Ask about India's startup ecosystem..."
-                  className="flex-1 bg-neutral-100 border border-neutral-200 rounded-xl py-3 px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-2 focus:ring-neutral-300 outline-none transition"
+                  placeholder="Search startup registry..."
+                  className="
+                    flex-1
+                    bg-white
+                    border border-gray-300
+                    py-2.5 px-3
+                    text-sm
+                    text-gray-900
+                    placeholder:text-gray-400
+                    focus:outline-none
+                    focus:border-black
+                  "
                 />
 
                 <button
                   onClick={() => handleSend()}
                   disabled={isLoading}
-                  className="h-11 w-11 rounded-xl bg-neutral-900 hover:bg-black text-white flex items-center justify-center transition"
+                  className="
+                    h-10 w-10
+                    border border-black
+                    bg-black
+                    text-white
+                    flex items-center justify-center
+                    hover:bg-gray-800
+                    transition
+                  "
                 >
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -192,20 +223,24 @@ export function Chatbot() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="h-14 w-14 rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition bg-neutral-900 border border-neutral-800 flex items-center justify-center"
+        className="
+          h-12 w-12
+          border border-gray-400
+          bg-white
+          shadow-md
+          flex items-center justify-center
+          hover:bg-gray-50
+          transition
+        "
       >
-        {isOpen ? (
-          <X className="h-6 w-6 text-white" />
-        ) : (
-          <div className="relative h-9 w-9">
-            <Image
-              src="/robot.jpg"
-              alt="Forge AI"
-              fill
-              className="object-contain rounded-full"
-            />
-          </div>
-        )}
+        <div className="relative h-8 w-8">
+          <Image
+            src="/robot.jpg"
+            alt="Assistant"
+            fill
+            className="object-contain rounded-full"
+          />
+        </div>
       </button>
     </div>
   )
