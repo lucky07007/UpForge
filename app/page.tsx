@@ -65,37 +65,37 @@ export default async function Home() {
             </p>
           </div>
 
-          {/* Right Column - Data Preview Card */}
+          {/* Right Column - Sponsored Startup Preview */}
           <div className="lg:col-span-5">
             <div className="border border-gray-200 bg-gray-50 p-6">
               <h3 className="font-serif text-xl border-b border-gray-200 pb-2 mb-4">
-                Startup Snapshot
+                Sponsored Startup
               </h3>
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Startup:</dt>
-                  <dd className="font-medium text-[#111111]">Nirmaan Energy</dd>
+                  <dd className="font-medium text-[#111111]">Internadda</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Founded:</dt>
-                  <dd className="text-[#111111]">2024</dd>
+                  <dd className="text-[#111111]">2020</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Sector:</dt>
-                  <dd className="text-[#111111]">ClimateTech / Energy</dd>
+                  <dd className="text-[#111111]">EdTech / HR Tech</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Founders:</dt>
-                  <dd className="text-[#111111]">3</dd>
+                  <dd className="text-[#111111]">2</dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Location:</dt>
-                  <dd className="text-[#111111]">Bengaluru</dd>
+                  <dd className="text-[#111111]">Delhi</dd>
                 </div>
               </dl>
               <div className="mt-5 pt-3 border-t border-gray-200">
                 <Link
-                  href="/startup/nirmaan-energy"
+                  href="/startup/internadda"
                   className="text-sm text-[#0645AD] hover:underline flex items-center gap-1"
                 >
                   View Full Entry <ExternalLink className="h-3 w-3" />
@@ -105,7 +105,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Valuation Tool Integration - Now with a subtle chart */}
+        {/* Valuation Tool Integration - With subtle chart */}
         <section className="border border-gray-200 p-6 md:p-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Left: Text and button */}
