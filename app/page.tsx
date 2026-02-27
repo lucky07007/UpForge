@@ -1,120 +1,127 @@
 // app/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, ExternalLink } from "lucide-react";
 
 export default async function Home() {
   const supabase = await createClient();
-
-  // Fetch featured startups (verified, newest first)
-  const { data: featured } = await supabase
-    .from("startups")
-    .select("*")
-    .eq("is_featured", true)
-    .order("created_at", { ascending: false })
-    .limit(3);
 
   // Fetch recently added startups
   const { data: recent } = await supabase
     .from("startups")
     .select("*")
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(6);
 
   const categories = [
-    "FinTech", "AI", "EdTech", "HealthTech",
-    "Climate", "SaaS", "Consumer", "DeepTech"
+    "FinTech",
+    "EdTech",
+    "AI & ML",
+    "HealthTech",
+    "D2C",
+    "SaaS",
+    "ClimateTech",
+    "Web3",
   ];
 
-  const years = ["2026", "2025", "2024", "2023", "2022", "2021"];
-
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="w-full max-w-[1280px] px-4 md:px-8 lg:px-16 py-6 space-y-12">
-        {/* Hero – centered on mobile, left on desktop */}
-        <section className="text-center md:text-left pt-4">
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl mx-auto md:mx-0">
-            UpForge
-            <span className="block text-2xl md:text-3xl font-normal text-gray-600 mt-2">
-              The Public Registry of Emerging Indian Startups
-            </span>
-          </h1>
-          <p className="text-gray-600 text-base md:text-lg mt-4 max-w-2xl mx-auto md:mx-0">
-            An independent, neutral documentation of early‑stage innovation in India.
-            Information is submitted by founders and manually verified where possible.
-          </p>
+    <div className="w-full flex flex-col items-center bg-white">
+      <div className="w-full max-w-[1200px] px-5 md:px-8 py-8 space-y-16">
+        {/* Hero Section - Split Layout */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+          {/* Left Column - Text Content */}
+          <div className="lg:col-span-7 text-center lg:text-left">
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-[44px] leading-tight text-[#111111]">
+              UpForge
+            </h1>
+            <p className="font-serif text-xl md:text-2xl text-gray-600 mt-2">
+              India's Open Startup Registry
+            </p>
+            <p className="text-base md:text-[17px] text-gray-700 leading-relaxed mt-5 max-w-2xl mx-auto lg:mx-0">
+              A structured, publicly accessible database documenting emerging Indian startups,
+              founders, and early-stage ventures for students, researchers, and the startup ecosystem.
+            </p>
 
-          {/* Search bar */}
-          <div className="relative max-w-[600px] mx-auto md:mx-0 mt-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search startups, founders, or locations..."
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-sm focus:border-[#0645AD] outline-none text-base"
-            />
+            {/* Buttons */}
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start mt-8">
+              <Link
+                href="/startups"
+                className="px-6 py-2.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-sm font-medium"
+              >
+                Browse Startups
+              </Link>
+              <Link
+                href="/submit"
+                className="px-6 py-2.5 bg-gray-100 text-[#111111] hover:bg-gray-200 transition-colors text-sm font-medium"
+              >
+                Submit Startup
+              </Link>
+            </div>
+
+            {/* Small meta line */}
+            <p className="text-xs text-gray-400 mt-4">
+              Updated regularly • Community-submitted • Publicly accessible
+            </p>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-3 justify-center md:justify-start mt-8">
-            <Link
-              href="/startups"
-              className="px-5 py-2 border border-[#0645AD] text-[#0645AD] hover:bg-[#0645AD] hover:text-white transition-colors text-sm font-medium"
-            >
-              Browse Startups
-            </Link>
-            <Link
-              href="/submit"
-              className="px-5 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium"
-            >
-              Submit Startup
-            </Link>
+          {/* Right Column - Data Preview Card */}
+          <div className="lg:col-span-5">
+            <div className="border border-gray-200 bg-gray-50 p-6">
+              <h3 className="font-serif text-xl border-b border-gray-200 pb-2 mb-4">
+                Startup Snapshot
+              </h3>
+              <dl className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Startup:</dt>
+                  <dd className="font-medium text-[#111111]">Nirmaan Energy</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Founded:</dt>
+                  <dd className="text-[#111111]">2024</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Sector:</dt>
+                  <dd className="text-[#111111]">ClimateTech / Energy</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Founders:</dt>
+                  <dd className="text-[#111111]">3</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Location:</dt>
+                  <dd className="text-[#111111]">Bengaluru</dd>
+                </div>
+              </dl>
+              <div className="mt-5 pt-3 border-t border-gray-200">
+                <Link
+                  href="/startup/nirmaan-energy"
+                  className="text-sm text-[#0645AD] hover:underline flex items-center gap-1"
+                >
+                  View Full Entry <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Valuation Tool Integration */}
+        <section className="border border-gray-200 p-6 md:p-8">
+          <div className="max-w-3xl">
+            <h2 className="font-serif text-2xl mb-2">Estimate Startup Valuation</h2>
+            <p className="text-[17px] text-gray-700 leading-relaxed">
+              Use our structured evaluation tool to estimate an early-stage startup's 
+              indicative market value based on available public data.
+            </p>
             <Link
               href="/evaluation"
-              className="px-5 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium"
+              className="inline-block mt-5 px-6 py-2.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-sm font-medium"
             >
-              Evaluation Tool
+              Open Evaluation Tool →
             </Link>
           </div>
         </section>
 
-        {/* Featured Startups – editorial grid */}
-        <section>
-          <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-6">
-            <h2 className="font-serif text-2xl">Featured Startups</h2>
-            <Link href="/startups?featured=true" className="text-sm text-[#0645AD] hover:underline">
-              View all →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
-            {featured?.map((startup, idx) => (
-              <article
-                key={startup.id}
-                className="pb-4 border-b border-gray-100 last:border-b-0"
-              >
-                <Link
-                  href={`/startup/${startup.slug}`}
-                  className="text-lg font-serif text-[#0645AD] hover:underline"
-                >
-                  {startup.name}
-                </Link>
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                  {startup.description}
-                </p>
-                <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                  {startup.founded_year && <span>{startup.founded_year}</span>}
-                  <span className="bg-gray-100 px-2 py-0.5 uppercase tracking-wider">
-                    {startup.industry}
-                  </span>
-                </div>
-              </article>
-            ))}
-            {(!featured || featured.length === 0) && (
-              <p className="text-gray-500 text-sm col-span-3">No featured startups at the moment.</p>
-            )}
-          </div>
-        </section>
-
-        {/* Recently Added – simple list */}
+        {/* Recently Added Startups */}
         <section>
           <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-6">
             <h2 className="font-serif text-2xl">Recently Added</h2>
@@ -122,34 +129,30 @@ export default async function Home() {
               View all →
             </Link>
           </div>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recent?.map((startup) => (
-              <article key={startup.id} className="border-b border-gray-100 pb-3 last:border-b-0">
+              <article key={startup.id} className="border border-gray-200 p-5 hover:border-gray-300 transition-colors">
                 <Link
                   href={`/startup/${startup.slug}`}
-                  className="text-base font-serif text-[#0645AD] hover:underline"
+                  className="font-serif text-xl text-[#0645AD] hover:underline"
                 >
                   {startup.name}
                 </Link>
-                <p className="text-sm text-gray-600 mt-0.5 line-clamp-1">
+                <p className="text-sm text-gray-600 mt-2 line-clamp-2 leading-relaxed">
                   {startup.description}
                 </p>
-                <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                  <span>
-                    Added {new Date(startup.created_at).toLocaleDateString("en-IN", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <span className="bg-gray-100 px-2 py-0.5 uppercase tracking-wider">
+                <div className="flex items-center gap-3 mt-3 text-xs">
+                  {startup.founded_year && (
+                    <span className="text-gray-500">{startup.founded_year}</span>
+                  )}
+                  <span className="bg-gray-100 px-2 py-0.5 text-gray-700 uppercase tracking-wider">
                     {startup.industry}
                   </span>
                 </div>
               </article>
             ))}
             {(!recent || recent.length === 0) && (
-              <p className="text-gray-500 text-sm">No startups have been added recently.</p>
+              <p className="text-gray-500 text-sm col-span-3">No startups added recently.</p>
             )}
           </div>
         </section>
@@ -163,8 +166,8 @@ export default async function Home() {
             {categories.map((category) => (
               <Link
                 key={category}
-                href={`/startups?industry=${category.toLowerCase()}`}
-                className="block py-2 px-3 border border-gray-200 text-center text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                href={`/startups?industry=${category.toLowerCase().replace(/ & /g, "-").replace(/\s+/g, "-")}`}
+                className="block py-3 px-3 border border-gray-200 text-center text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 {category}
               </Link>
@@ -172,47 +175,56 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Archive by Year */}
-        <section>
-          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
-            Archive by Year
-          </h2>
-          <div className="flex flex-wrap gap-x-3 gap-y-2 justify-center md:justify-start text-sm">
-            {years.map((year, i) => (
-              <span key={year}>
-                <Link
-                  href={`/startups?year=${year}`}
-                  className="text-[#0645AD] hover:underline"
-                >
-                  Class of {year}
-                </Link>
-                {i < years.length - 1 && <span className="text-gray-300 ml-3">|</span>}
-              </span>
-            ))}
-          </div>
+        {/* Why UpForge Exists */}
+        <section className="border-t border-gray-200 pt-8">
+          <h2 className="font-serif text-2xl mb-4">Why UpForge Exists</h2>
+          <p className="text-[17px] text-gray-700 leading-relaxed max-w-3xl">
+            UpForge documents emerging startups to provide visibility, structured information, 
+            and educational exposure for students and early-stage founders. This is a public 
+            registry, not a commercial database.
+          </p>
         </section>
 
-        {/* Evaluation Tool Integration */}
-        <section className="border border-gray-200 p-6">
-          <h3 className="font-serif text-xl mb-2">Startup Evaluation Estimator</h3>
-          <p className="text-gray-600 text-sm max-w-2xl">
-            A neutral, data‑informed indicator of your startup’s visibility and documentation readiness.
-            Not a valuation — just an exposure score based on public signals.
-          </p>
-          <Link
-            href="/evaluation"
-            className="inline-block mt-4 px-5 py-2 border border-[#0645AD] text-[#0645AD] hover:bg-[#0645AD] hover:text-white transition-colors text-sm font-medium"
-          >
-            Open Evaluation Tool →
-          </Link>
+        {/* How It Works */}
+        <section>
+          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <span className="text-3xl font-serif text-gray-300">01</span>
+              <h3 className="font-medium text-lg mt-2">Startup submits details</h3>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                Founders provide basic information through our structured submission form.
+              </p>
+            </div>
+            <div>
+              <span className="text-3xl font-serif text-gray-300">02</span>
+              <h3 className="font-medium text-lg mt-2">Information is structured</h3>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                We format and organize the data according to our registry standards.
+              </p>
+            </div>
+            <div>
+              <span className="text-3xl font-serif text-gray-300">03</span>
+              <h3 className="font-medium text-lg mt-2">Entry is added to registry</h3>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                The startup profile becomes publicly accessible in the database.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Academic Notice */}
         <section className="border-l-4 border-[#0645AD] bg-gray-50 p-5 text-sm text-gray-600">
           <p>
-            UpForge is an independent public registry documenting early‑stage innovation in India.
-            Information is submitted by founders and verified manually where possible.
-            We do not endorse or guarantee the accuracy of unverified entries.
+            Information is based on publicly available or submitted data. Last updated:{' '}
+            {new Date().toLocaleDateString('en-IN', { 
+              day: 'numeric', 
+              month: 'long', 
+              year: 'numeric' 
+            })}. 
+            UpForge is an independent public registry. Entries are assigned a unique ID (e.g., UF-2026-0012) for reference.
           </p>
         </section>
       </div>
