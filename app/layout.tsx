@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+// Import the Chatbot component
+import { Chatbot } from "@/components/chatbot"; 
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,7 +47,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="bg-neutral-50 text-[#111111] flex flex-col min-h-screen antialiased selection:bg-black selection:text-white">
 
-        {/* Navbar */}
+        {/* Navbar remains at the top */}
         <Navbar />
 
         {/* Main Content */}
@@ -57,6 +59,12 @@ export default function RootLayout({
 
         {/* Footer */}
         <Footer />
+
+        {/* Add the Chatbot here. 
+            Because it uses 'fixed' positioning in its own code, 
+            it will float in the bottom-right corner of the screen. 
+        */}
+        <Chatbot />
 
       </body>
     </html>
