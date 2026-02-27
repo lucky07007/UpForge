@@ -1,3 +1,4 @@
+// app/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Search } from "lucide-react";
@@ -20,34 +21,25 @@ export default async function Home() {
     .order("created_at", { ascending: false })
     .limit(5);
 
-  // Static categories (from design brief)
   const categories = [
-    "FinTech",
-    "AI",
-    "EdTech",
-    "HealthTech",
-    "Climate",
-    "SaaS",
-    "Consumer",
-    "DeepTech",
+    "FinTech", "AI", "EdTech", "HealthTech",
+    "Climate", "SaaS", "Consumer", "DeepTech"
   ];
 
-  // Static years (archive style)
   const years = ["2026", "2025", "2024", "2023", "2022", "2021"];
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Container: max-width 1280px, responsive padding */}
-      <div className="w-full max-w-[1280px] px-4 md:px-8 lg:px-16 py-8 space-y-16">
-        {/* Section 1: Hero (compact, left-aligned on desktop, centered on mobile) */}
-        <section className="text-center md:text-left pt-8">
+      <div className="w-full max-w-[1280px] px-4 md:px-8 lg:px-16 py-6 space-y-12">
+        {/* Hero – centered on mobile, left on desktop */}
+        <section className="text-center md:text-left pt-4">
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl mx-auto md:mx-0">
             UpForge
             <span className="block text-2xl md:text-3xl font-normal text-gray-600 mt-2">
               The Public Registry of Emerging Indian Startups
             </span>
           </h1>
-          <p className="text-gray-600 text-lg mt-4 max-w-2xl mx-auto md:mx-0">
+          <p className="text-gray-600 text-base md:text-lg mt-4 max-w-2xl mx-auto md:mx-0">
             An independent, neutral documentation of early‑stage innovation in India.
             Information is submitted by founders and manually verified where possible.
           </p>
@@ -63,38 +55,41 @@ export default async function Home() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-wrap gap-4 justify-center md:justify-start mt-8">
+          <div className="flex flex-wrap gap-3 justify-center md:justify-start mt-8">
             <Link
               href="/startups"
-              className="px-6 py-2 border border-[#0645AD] text-[#0645AD] hover:bg-[#0645AD] hover:text-white transition-colors text-sm font-medium"
+              className="px-5 py-2 border border-[#0645AD] text-[#0645AD] hover:bg-[#0645AD] hover:text-white transition-colors text-sm font-medium"
             >
               Browse Startups
             </Link>
             <Link
               href="/submit"
-              className="px-6 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium"
+              className="px-5 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium"
             >
               Submit Startup
             </Link>
             <Link
               href="/evaluation"
-              className="px-6 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium"
+              className="px-5 py-2 border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium"
             >
-              Startup Evaluation Tool
+              Evaluation Tool
             </Link>
           </div>
         </section>
 
-        {/* Section 2: Featured Startups (editorial grid with bottom borders) */}
+        {/* Featured Startups – editorial grid */}
         <section>
-          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
-            Featured Startups
-          </h2>
+          <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-6">
+            <h2 className="font-serif text-2xl">Featured Startups</h2>
+            <Link href="/startups?featured=true" className="text-sm text-[#0645AD] hover:underline">
+              View all →
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
             {featured?.map((startup, idx) => (
               <article
                 key={startup.id}
-                className={`pb-4 ${idx < (featured?.length ?? 0) - 1 ? "border-b border-gray-100" : ""}`}
+                className="pb-4 border-b border-gray-100 last:border-b-0"
               >
                 <Link
                   href={`/startup/${startup.slug}`}
@@ -106,9 +101,7 @@ export default async function Home() {
                   {startup.description}
                 </p>
                 <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                  {startup.founded_year && (
-                    <span>{startup.founded_year}</span>
-                  )}
+                  {startup.founded_year && <span>{startup.founded_year}</span>}
                   <span className="bg-gray-100 px-2 py-0.5 uppercase tracking-wider">
                     {startup.industry}
                   </span>
@@ -121,14 +114,17 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Section 3: Recently Added (simple list format) */}
+        {/* Recently Added – simple list */}
         <section>
-          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
-            Recently Added
-          </h2>
+          <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-6">
+            <h2 className="font-serif text-2xl">Recently Added</h2>
+            <Link href="/startups?recent=true" className="text-sm text-[#0645AD] hover:underline">
+              View all →
+            </Link>
+          </div>
           <div className="space-y-4">
             {recent?.map((startup) => (
-              <article key={startup.id} className="border-b border-gray-100 pb-3">
+              <article key={startup.id} className="border-b border-gray-100 pb-3 last:border-b-0">
                 <Link
                   href={`/startup/${startup.slug}`}
                   className="text-base font-serif text-[#0645AD] hover:underline"
@@ -139,7 +135,13 @@ export default async function Home() {
                   {startup.description}
                 </p>
                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                  <span>Added {new Date(startup.created_at).toLocaleDateString("en-IN", { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  <span>
+                    Added {new Date(startup.created_at).toLocaleDateString("en-IN", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
                   <span className="bg-gray-100 px-2 py-0.5 uppercase tracking-wider">
                     {startup.industry}
                   </span>
@@ -152,7 +154,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Section 4: Browse by Category */}
+        {/* Browse by Category */}
         <section>
           <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
             Browse by Category
@@ -170,12 +172,12 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Section 5: Archive by Year */}
+        {/* Archive by Year */}
         <section>
           <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
             Archive by Year
           </h2>
-          <div className="flex flex-wrap gap-x-3 gap-y-2 text-sm">
+          <div className="flex flex-wrap gap-x-3 gap-y-2 justify-center md:justify-start text-sm">
             {years.map((year, i) => (
               <span key={year}>
                 <Link
@@ -190,7 +192,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Section 6: Evaluation Tool Integration */}
+        {/* Evaluation Tool Integration */}
         <section className="border border-gray-200 p-6">
           <h3 className="font-serif text-xl mb-2">Startup Evaluation Estimator</h3>
           <p className="text-gray-600 text-sm max-w-2xl">
@@ -205,7 +207,7 @@ export default async function Home() {
           </Link>
         </section>
 
-        {/* Section 7: Academic Notice (Wikipedia‑style info box) */}
+        {/* Academic Notice */}
         <section className="border-l-4 border-[#0645AD] bg-gray-50 p-5 text-sm text-gray-600">
           <p>
             UpForge is an independent public registry documenting early‑stage innovation in India.
