@@ -33,7 +33,7 @@ export default async function Home() {
           {/* Left Column - Text Content */}
           <div className="lg:col-span-7 text-center lg:text-left">
             <h1 className="font-serif text-4xl md:text-5xl lg:text-[44px] leading-tight text-[#111111]">
-              UpForge
+              
             </h1>
             <p className="font-serif text-xl md:text-2xl text-gray-600 mt-2">
               India's Open Startup Registry
