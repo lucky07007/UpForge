@@ -5,7 +5,6 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
-// Body sans font
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -23,7 +22,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable}`}>
       <body className="bg-white text-[#111111] flex flex-col min-h-screen antialiased">
         <Navbar />
-        <main className="flex-grow">{children}</main>
+        {/* Increased top padding for more gap between header and content */}
+        <main className="flex-grow pt-12">{children}</main>
         <Footer />
       </body>
     </html>
