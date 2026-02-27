@@ -1,7 +1,7 @@
 // app/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { Search, ExternalLink } from "lucide-react";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -26,25 +26,21 @@ export default async function Home() {
 
   return (
     <div className="w-full flex flex-col items-center bg-white">
-      {/* pt-16 accounts for fixed navbar height with minimal extra space */}
-      <div className="w-full max-w-[1200px] px-5 md:px-8 pt-16 pb-8 space-y-12">
-        
-        {/* Hero Section - Fully Centered Alignment */}
-        <section className="flex flex-col items-center text-center py-4">
-          <div className="max-w-3xl">
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-[44px] leading-tight text-[#111111]">
-              UpForge
-            </h1>
-            <p className="font-serif text-xl md:text-2xl text-gray-600 mt-1">
+      <div className="w-full max-w-[1200px] px-5 md:px-8 py-8 space-y-16">
+        {/* Hero Section - Split Layout */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
+          {/* Left Column - Text Content */}
+          <div className="lg:col-span-7 text-center lg:text-left">
+            <p className="font-serif text-xl md:text-2xl text-gray-600 mt-2">
               India's Open Startup Registry
             </p>
-            <p className="text-base md:text-[17px] text-gray-700 leading-relaxed mt-5">
+            <p className="text-base md:text-[17px] text-gray-700 leading-relaxed mt-5 max-w-2xl mx-auto lg:mx-0">
               A structured, publicly accessible database documenting emerging Indian startups,
               founders, and early-stage ventures for students, researchers, and the startup ecosystem.
             </p>
 
-            {/* Buttons - Centered */}
-            <div className="flex flex-wrap gap-3 justify-center mt-8">
+            {/* Buttons */}
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start mt-8">
               <Link
                 href="/startups"
                 className="px-6 py-2.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-sm font-medium"
@@ -59,48 +55,66 @@ export default async function Home() {
               </Link>
             </div>
 
+            {/* Small meta line */}
             <p className="text-xs text-gray-400 mt-4">
               Updated regularly • Community-submitted • Publicly accessible
             </p>
           </div>
+
+          {/* Right Column - Data Preview Card */}
+          <div className="lg:col-span-5">
+            <div className="border border-gray-200 bg-gray-50 p-6">
+              <h3 className="font-serif text-xl border-b border-gray-200 pb-2 mb-4">
+                Sponsored Startup
+              </h3>
+              <dl className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Startup:</dt>
+                  <dd className="font-medium text-[#111111]">Internadda</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Founded:</dt>
+                  <dd className="text-[#111111]">2020</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Sector:</dt>
+                  <dd className="text-[#111111]">Edtech / HR Tech</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Founders:</dt>
+                  <dd className="text-[#111111]">2</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500">Location:</dt>
+                  <dd className="text-[#111111]">Delhi</dd>
+                </div>
+              </dl>
+              <div className="mt-5 pt-3 border-t border-gray-200">
+                <Link
+                  href="/startup/internadda"
+                  className="text-sm text-[#0645AD] hover:underline flex items-center gap-1"
+                >
+                  View Full Entry <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </section>
 
-        {/* Startup Snapshot - Centered Card Layout */}
-        <section className="flex justify-center w-full">
-          <div className="w-full max-w-md border border-gray-200 bg-gray-50 p-6">
-            <h3 className="font-serif text-xl border-b border-gray-200 pb-2 mb-4 text-center">
-              Startup Snapshot
-            </h3>
-            <dl className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-gray-500">Startup:</dt>
-                <dd className="font-medium text-[#111111]">Nirmaan Energy</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-gray-500">Founded:</dt>
-                <dd className="text-[#111111]">2024</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-gray-500">Sector:</dt>
-                <dd className="text-[#111111]">ClimateTech / Energy</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-gray-500">Founders:</dt>
-                <dd className="text-[#111111]">3</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-gray-500">Location:</dt>
-                <dd className="text-[#111111]">Bengaluru</dd>
-              </div>
-            </dl>
-            <div className="mt-5 pt-3 border-t border-gray-200 flex justify-center">
-              <Link
-                href="/startup/nirmaan-energy"
-                className="text-sm text-[#0645AD] hover:underline flex items-center gap-1"
-              >
-                View Full Entry <ExternalLink className="h-3 w-3" />
-              </Link>
-            </div>
+        {/* Valuation Tool Integration */}
+        <section className="border border-gray-200 p-6 md:p-8">
+          <div className="max-w-3xl">
+            <h2 className="font-serif text-2xl mb-2">Estimate Startup Valuation</h2>
+            <p className="text-[17px] text-gray-700 leading-relaxed">
+              Use our structured evaluation tool to estimate an early-stage startup's 
+              indicative market value based on available public data.
+            </p>
+            <Link
+              href="/evaluation"
+              className="inline-block mt-5 px-6 py-2.5 border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors text-sm font-medium"
+            >
+              Open Evaluation Tool →
+            </Link>
           </div>
         </section>
 
@@ -142,7 +156,7 @@ export default async function Home() {
 
         {/* Browse by Category */}
         <section>
-          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6 text-center">
+          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
             Browse by Category
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -159,7 +173,7 @@ export default async function Home() {
         </section>
 
         {/* Why UpForge Exists */}
-        <section className="border-t border-gray-200 pt-8 flex flex-col items-center text-center">
+        <section className="border-t border-gray-200 pt-8">
           <h2 className="font-serif text-2xl mb-4">Why UpForge Exists</h2>
           <p className="text-[17px] text-gray-700 leading-relaxed max-w-3xl">
             UpForge documents emerging startups to provide visibility, structured information, 
@@ -168,16 +182,46 @@ export default async function Home() {
           </p>
         </section>
 
+        {/* How It Works */}
+        <section>
+          <h2 className="font-serif text-2xl border-b border-gray-200 pb-2 mb-6">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <span className="text-3xl font-serif text-gray-300">01</span>
+              <h3 className="font-medium text-lg mt-2">Startup submits details</h3>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                Founders provide basic information through our structured submission form.
+              </p>
+            </div>
+            <div>
+              <span className="text-3xl font-serif text-gray-300">02</span>
+              <h3 className="font-medium text-lg mt-2">Information is structured</h3>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                We format and organize the data according to our registry standards.
+              </p>
+            </div>
+            <div>
+              <span className="text-3xl font-serif text-gray-300">03</span>
+              <h3 className="font-medium text-lg mt-2">Entry is added to registry</h3>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                The startup profile becomes publicly accessible in the database.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Academic Notice */}
         <section className="border-l-4 border-[#0645AD] bg-gray-50 p-5 text-sm text-gray-600">
-          <p className="text-center md:text-left">
+          <p>
             Information is based on publicly available or submitted data. Last updated:{' '}
             {new Date().toLocaleDateString('en-IN', { 
               day: 'numeric', 
               month: 'long', 
               year: 'numeric' 
             })}. 
-            UpForge is an independent public registry.
+            UpForge is an independent public registry. Entries are assigned a unique ID (e.g., UF-2026-0012) for reference.
           </p>
         </section>
       </div>
