@@ -1,112 +1,78 @@
-// components/footer.tsx
 import Link from "next/link";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-white border-t border-gray-300 mt-20">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-8 py-14">
+    <footer className="w-full bg-background border-t border-border mt-32">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 py-20">
 
-        {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+        {/* Top Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
 
-          {/* Identity Section */}
-          <div className="md:col-span-5 text-center md:text-left">
-            <h3 className="font-serif text-2xl text-black">
-              UpForge
-            </h3>
-            <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-sm mx-auto md:mx-0">
-              India's Public Registry of Emerging Startups. 
-              A structured, independent knowledge platform documenting early-stage ventures.
-            </p>
-
-            <p className="text-xs text-gray-400 mt-4">
-              Established 2026 • Independently Maintained
+          {/* Identity */}
+          <div className="space-y-4 text-center md:text-left">
+            <h3 className="font-serif text-[22px]">UpForge</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto md:mx-0">
+              A structured public registry documenting emerging Indian startups
+              and founders in a neutral and standardized format.
             </p>
           </div>
 
-          {/* Registry Links */}
-          <div className="md:col-span-3 text-center md:text-left">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+          {/* Registry */}
+          <div className="space-y-4 text-center md:text-left">
+            <h4 className="text-xs uppercase tracking-widest text-muted-foreground">
               Registry
             </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/startups" className="hover:underline">
-                  Browse Startups
-                </Link>
+                <Link href="/startups">Browse Startups</Link>
               </li>
               <li>
-                <Link href="/evaluation" className="hover:underline">
-                  Startup Evaluation Tool
-                </Link>
+                <Link href="/evaluation">Evaluation Tool</Link>
               </li>
               <li>
-                <Link href="/definition" className="hover:underline">
-                  Startup Definition
-                </Link>
+                <Link href="/transparency">Transparency</Link>
               </li>
             </ul>
           </div>
 
-          {/* Governance / Participation */}
-          <div className="md:col-span-4 text-center md:text-left">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+          {/* Participation */}
+          <div className="space-y-4 text-center md:text-left">
+            <h4 className="text-xs uppercase tracking-widest text-muted-foreground">
               Participation
             </h4>
-            <ul className="space-y-2 text-sm text-gray-700">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/submit" className="hover:underline">
-                  Submit a Startup
-                </Link>
+                <Link href="/submit">Submit Startup</Link>
               </li>
               <li>
-                <Link href="/about" className="hover:underline">
-                  About the Registry
-                </Link>
+                <Link href="/about">About</Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:underline">
-                  Contact
-                </Link>
+                <Link href="/contact">Contact</Link>
               </li>
             </ul>
           </div>
-
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 mt-12 pt-8">
+        {/* Bottom Section */}
+        <div className="border-t border-border mt-16 pt-10 text-xs text-muted-foreground space-y-6">
 
-          {/* Public Notice */}
-          <div className="max-w-3xl text-xs text-gray-500 leading-relaxed">
-            <p>
-              UpForge operates as a public informational registry. 
-              Entries are based on publicly available data or founder-submitted information.
-              The platform does not provide investment advice, financial ratings, or endorsement.
-            </p>
-          </div>
+          <p className="max-w-3xl leading-relaxed">
+            UpForge operates as an informational public registry. Entries are
+            based on publicly available or founder-submitted data. The platform
+            does not provide investment advice, endorsement or financial rating.
+          </p>
 
-          {/* Bottom Line */}
-          <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between text-xs text-gray-400">
-            <p>
-              © {currentYear} UpForge Registry. All rights reserved.
-            </p>
+          <div className="flex flex-col md:flex-row md:justify-between gap-4">
+            <p>© {year} UpForge Registry. All rights reserved.</p>
 
-            <div className="flex gap-4 mt-3 md:mt-0 justify-center md:justify-start">
-              <Link href="/privacy" className="hover:underline">
-                Privacy
-              </Link>
-              <Link href="/terms" className="hover:underline">
-                Terms
-              </Link>
-              <Link href="/transparency" className="hover:underline">
-                Transparency
-              </Link>
+            <div className="flex gap-6">
+              <Link href="/privacy">Privacy</Link>
+              <Link href="/terms">Terms</Link>
             </div>
           </div>
-
         </div>
 
       </div>
