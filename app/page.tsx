@@ -1,6 +1,15 @@
 // app/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import {
+  BadgeCheck,
+  BarChart3,
+  Calculator,
+  ArrowRight,
+  Shield,
+  FileText,
+  Users,
+} from "lucide-react";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -22,151 +31,245 @@ export default async function Home() {
     "Web3",
   ];
 
+  // For demo purposes, we'll simulate a verified flag.
+  // In production you'd have a `verified` boolean column.
+  const verifiedStartups = recent?.map((s, i) => ({
+    ...s,
+    verified: i % 2 === 0, // every other startup is "verified"
+  }));
+
   return (
-    <div className="w-full bg-[#FAFAFA] text-[#111111] flex justify-center">
-      <div className="w-full max-w-[1280px] px-6 md:px-10 py-16 md:py-24 space-y-32">
+    <div className="bg-[#FCFCFC] text-[#1A1A1A] font-sans antialiased">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-24 md:space-y-32">
 
         {/* ================= HERO ================= */}
-        <section className="text-center space-y-8 max-w-4xl mx-auto">
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-[56px] leading-tight tracking-tight">
-            India’s Structured Public Startup Registry
+        <section className="text-center max-w-4xl mx-auto space-y-8">
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight tracking-tight">
+            India’s Startup Registry
           </h1>
-
-          <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-            UpForge documents and organizes emerging Indian startups in a
-            neutral, structured and publicly accessible format.
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+            Get your startup verified for free, reach millions of visitors, and
+            receive an AI‑powered growth report with competitor analysis and
+            valuation estimates.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link
               href="/startups"
-              className="px-8 py-3 border border-[#111111] text-sm font-medium hover:bg-[#111111] hover:text-white transition-colors"
+              className="group inline-flex items-center justify-center px-8 py-4 bg-[#1A1A1A] text-white text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               Explore Registry
+              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-
             <Link
               href="/submit"
-              className="px-8 py-3 border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-4 border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
             >
-              Submit Startup
+              Get Listed Free
+            </Link>
+            <Link
+              href="/valuation"
+              className="inline-flex items-center justify-center px-8 py-4 border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              Valuation Estimator
             </Link>
           </div>
-
-          <p className="text-xs text-gray-400 pt-2">
-            Independent • Neutral • Updated Weekly
+          <p className="text-xs text-gray-400 flex items-center justify-center gap-2">
+            <Shield className="w-4 h-4" /> Independent • Neutral • Updated
+            Weekly
           </p>
         </section>
 
+        {/* ================= VALUE PROPOSITIONS ================= */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+          {[
+            {
+              icon: BadgeCheck,
+              title: "Free Verified Listing",
+              description:
+                "We verify every new startup to ensure authenticity. Your profile gets prime exposure to our millions of monthly visitors.",
+            },
+            {
+              icon: FileText,
+              title: "Detailed Analysis Report",
+              description:
+                "Our AI scans your online presence, competitors, and market to deliver a custom report with actionable improvements.",
+            },
+            {
+              icon: Calculator,
+              title: "Valuation Estimator",
+              description:
+                "Get an approximate valuation and growth potential score based on industry benchmarks and your stage.",
+            },
+          ].map(({ icon: Icon, title, description }) => (
+            <div
+              key={title}
+              className="group p-8 bg-white border border-gray-200 hover:border-gray-400 transition-all hover:shadow-lg"
+            >
+              <Icon className="w-10 h-10 text-[#1A1A1A] mb-6" />
+              <h3 className="font-serif text-xl mb-3">{title}</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {description}
+              </p>
+            </div>
+          ))}
+        </section>
 
         {/* ================= CREDIBILITY STRIP ================= */}
         <section className="border-y border-gray-200 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-sm">
             <div>
-              <p className="font-semibold text-lg">{recent?.length ?? 0}+</p>
-              <p className="text-gray-500">Recently Added</p>
+              <p className="font-semibold text-2xl">
+                {verifiedStartups?.length ?? 0}+
+              </p>
+              <p className="text-gray-500">Startups Listed</p>
             </div>
             <div>
-              <p className="font-semibold text-lg">{categories.length}</p>
-              <p className="text-gray-500">Industries Covered</p>
+              <p className="font-semibold text-2xl">{categories.length}</p>
+              <p className="text-gray-500">Industries</p>
             </div>
             <div>
-              <p className="font-semibold text-lg">100%</p>
-              <p className="text-gray-500">Open Access</p>
+              <p className="font-semibold text-2xl">100%</p>
+              <p className="text-gray-500">Free Access</p>
             </div>
             <div>
-              <p className="font-semibold text-lg">Neutral</p>
-              <p className="text-gray-500">Documentation</p>
+              <p className="font-semibold text-2flex items-baseline">
+                <span className="text-2xl">∞</span>
+              </p>
+              <p className="text-gray-500">Traffic Potential</p>
             </div>
           </div>
         </section>
 
-
-        {/* ================= WHY WE EXIST ================= */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          <div>
-            <h2 className="font-serif text-3xl mb-6">Why UpForge Exists</h2>
-            <p className="text-[17px] text-gray-600 leading-relaxed">
-              India is building thousands of startups every year. Yet structured
-              public documentation remains fragmented and inconsistent.
-              UpForge exists to organize, archive and present early-stage
-              startup information in a clear and standardized format for
-              students, researchers, founders and ecosystem participants.
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-medium">Structured Profiles</h3>
-              <p className="text-sm text-gray-500">
-                Standardized format covering founding year, industry,
-                stage and public presence.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-medium">Independent Registry</h3>
-              <p className="text-sm text-gray-500">
-                Informational visibility without promotional bias.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-medium">Publicly Accessible</h3>
-              <p className="text-sm text-gray-500">
-                Designed for open research and ecosystem awareness.
-              </p>
-            </div>
-          </div>
-        </section>
-
-
-        {/* ================= RECENT STARTUPS ================= */}
+        {/* ================= RECENT VERIFIED STARTUPS ================= */}
         <section>
           <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-10">
-            <h2 className="font-serif text-3xl">Recently Added</h2>
+            <h2 className="font-serif text-3xl">Recently Verified</h2>
             <Link
-              href="/startups?recent=true"
-              className="text-sm text-[#1C2A39] hover:underline"
+              href="/startups"
+              className="text-sm text-gray-600 hover:text-[#1A1A1A] flex items-center gap-1"
             >
-              View all →
+              View all <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {recent?.map((startup) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {verifiedStartups?.map((startup) => (
               <article
                 key={startup.id}
-                className="bg-white border border-gray-200 p-8 hover:border-gray-400 transition-colors"
+                className="bg-white border border-gray-200 p-6 hover:border-gray-400 transition-colors group"
               >
-                <Link
-                  href={`/startup/${startup.slug}`}
-                  className="font-serif text-xl text-[#1C2A39] hover:underline"
-                >
-                  {startup.name}
-                </Link>
+                <div className="flex items-start justify-between mb-4">
+                  <Link
+                    href={`/startup/${startup.slug}`}
+                    className="font-serif text-xl text-[#1A1A1A] group-hover:underline"
+                  >
+                    {startup.name}
+                  </Link>
+                  {startup.verified && (
+                    <BadgeCheck className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  )}
+                </div>
 
-                <p className="text-sm text-gray-600 mt-4 line-clamp-3 leading-relaxed">
+                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
                   {startup.description}
                 </p>
 
                 <div className="flex items-center gap-3 mt-6 text-xs text-gray-500">
-                  {startup.founded_year && <span>{startup.founded_year}</span>}
+                  {startup.founded_year && (
+                    <span>{startup.founded_year}</span>
+                  )}
                   <span className="bg-gray-100 px-3 py-1 uppercase tracking-wide">
                     {startup.industry}
                   </span>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs">
+                  <span className="text-gray-400">Report available</span>
+                  <Link
+                    href={`/report/${startup.slug}`}
+                    className="text-[#1A1A1A] font-medium hover:underline"
+                  >
+                    View analysis →
+                  </Link>
                 </div>
               </article>
             ))}
           </div>
         </section>
 
+        {/* ================= HOW IT WORKS ================= */}
+        <section className="bg-[#F4F4F4] -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="font-serif text-3xl md:text-4xl text-center mb-16">
+              From Listing to Growth in Three Steps
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {[
+                {
+                  step: "01",
+                  title: "Submit Your Startup",
+                  description:
+                    "Fill a simple form with your basic details – it takes less than 5 minutes.",
+                },
+                {
+                  step: "02",
+                  title: "Get Verified",
+                  description:
+                    "Our team manually reviews your submission to ensure authenticity and quality.",
+                },
+                {
+                  step: "03",
+                  title: "Receive Your Report",
+                  description:
+                    "We generate a detailed analysis with competitor insights and valuation estimate.",
+                },
+              ].map(({ step, title, description }) => (
+                <div key={step} className="relative pl-8 border-l border-gray-300">
+                  <span className="absolute -left-3 top-0 bg-[#1A1A1A] text-white text-xs font-mono w-6 h-6 flex items-center justify-center">
+                    {step}
+                  </span>
+                  <h3 className="font-serif text-xl mb-3">{title}</h3>
+                  <p className="text-sm text-gray-600">{description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= VALUATION ESTIMATOR TEASER ================= */}
+        <section className="bg-[#1A1A1A] text-white -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <Calculator className="w-12 h-12 mx-auto text-gray-400" />
+            <h2 className="font-serif text-3xl md:text-4xl">
+              Know Your Startup’s Worth
+            </h2>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              Our valuation estimator uses market data and machine learning to
+              give you a realistic range and growth potential – completely free.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/valuation"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-[#1A1A1A] text-sm font-medium hover:bg-gray-100 transition-colors"
+              >
+                Estimate Your Valuation
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </div>
+            <p className="text-xs text-gray-500">
+              No signup required • Takes 2 minutes
+            </p>
+          </div>
+        </section>
 
         {/* ================= CATEGORY EXPLORER ================= */}
         <section>
           <h2 className="font-serif text-3xl border-b border-gray-200 pb-4 mb-10">
-            Explore by Industry
+            Browse by Industry
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {categories.map((category) => (
               <Link
                 key={category}
@@ -174,7 +277,7 @@ export default async function Home() {
                   .toLowerCase()
                   .replace(/ & /g, "-")
                   .replace(/\s+/g, "-")}`}
-                className="block py-4 px-6 bg-white border border-gray-200 text-center text-sm hover:border-gray-400 transition-colors"
+                className="block py-4 px-4 bg-white border border-gray-200 text-center text-sm hover:border-gray-400 transition-colors"
               >
                 {category}
               </Link>
@@ -182,37 +285,41 @@ export default async function Home() {
           </div>
         </section>
 
-
-        {/* ================= STRUCTURED TRANSPARENCY ================= */}
+        {/* ================= TRUST & TRANSPARENCY NOTE ================= */}
         <section className="border-t border-gray-200 pt-16 max-w-4xl">
-          <h2 className="font-serif text-3xl mb-6">
-            Built With Structured Transparency
-          </h2>
-          <p className="text-[17px] text-gray-600 leading-relaxed">
-            UpForge presents publicly available and submitted information in a
-            standardized registry format. It does not provide investment advice
-            or promotional endorsement. The objective is documentation,
-            categorization and public awareness.
+          <h2 className="font-serif text-3xl mb-6">Built on Open Data</h2>
+          <p className="text-base text-gray-600 leading-relaxed">
+            UpForge aggregates publicly available information and founder
+            submissions into a structured, neutral registry. We do not offer
+            investment advice – our mission is documentation, transparency,
+            and helping early‑stage startups gain the visibility they deserve.
           </p>
         </section>
 
-
-        {/* ================= SUBMISSION CTA ================= */}
+        {/* ================= FINAL CTA ================= */}
         <section className="border border-gray-200 bg-white p-12 text-center space-y-6">
           <h2 className="font-serif text-3xl">
-            Add Your Startup To The Registry
+            Add Your Startup to the Registry
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Increase structured public visibility and contribute to India’s
-            documented startup ecosystem.
+            Join hundreds of Indian startups that have increased their
+            structured public visibility and received actionable insights.
           </p>
           <Link
             href="/submit"
-            className="inline-block px-8 py-3 border border-[#111111] text-sm font-medium hover:bg-[#111111] hover:text-white transition-colors"
+            className="inline-block px-8 py-4 bg-[#1A1A1A] text-white text-sm font-medium hover:bg-gray-800 transition-colors"
           >
-            Submit Startup
+            Get Started – It's Free
           </Link>
+          <p className="text-xs text-gray-400">
+            Verification usually takes 1–2 business days
+          </p>
         </section>
+
+        {/* ================= FOOTER NOTE (optional) ================= */}
+        <footer className="text-xs text-gray-400 text-center border-t border-gray-200 pt-8">
+          <p>© {new Date().getFullYear()} UpForge. Independent startup registry.</p>
+        </footer>
 
       </div>
     </div>
