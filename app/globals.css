@@ -1,16 +1,16 @@
 /* app/globals.css */
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #1A1A1A;
-  --muted: #4A4A4A;
+  --background: #FAFAFA;
+  --foreground: #111111;
+  --muted: #6B7280;
   --border: #E5E7EB;
-  --link: #0645AD;
-  --link-hover: #0b0080;
-  --radius: 6px;
+  --link: #1C2A39;
+  --link-hover: #000000;
+  --radius: 4px;
 }
 
 @theme inline {
@@ -20,9 +20,9 @@
   --color-border: var(--border);
   --color-link: var(--link);
   --color-link-hover: var(--link-hover);
-  
-  /* Academic Font Pairing */
-  --font-serif: "Georgia", "Merriweather", serif;
+
+  /* Premium Institutional Pairing */
+  --font-serif: "Georgia", "Times New Roman", serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
@@ -30,16 +30,46 @@
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground antialiased font-sans;
   }
+
+  /* ================= TYPOGRAPHY SYSTEM ================= */
+
   h1, h2, h3, h4 {
-    @apply font-serif font-normal tracking-tight text-[#1A1A1A] text-left;
+    @apply font-serif font-normal tracking-tight text-foreground;
   }
-  h1 { @apply text-[38px] md:text-[42px] leading-tight mb-4; }
-  h2 { @apply text-[26px] border-b border-border pb-2 mb-6; }
-  
+
+  h1 {
+    @apply text-[40px] md:text-[48px] lg:text-[56px] leading-tight;
+  }
+
+  h2 {
+    @apply text-[28px] md:text-[32px] leading-snug;
+  }
+
+  h3 {
+    @apply text-[20px] md:text-[22px];
+  }
+
+  p {
+    @apply text-[16px] md:text-[17px] leading-relaxed text-muted-foreground;
+  }
+
+  /* ================= LINKS ================= */
+
   a {
-    @apply text-link hover:text-link-hover hover:underline transition-colors;
+    @apply text-link hover:text-link-hover transition-colors;
+  }
+
+  /* ================= SELECTION ================= */
+
+  ::selection {
+    background: #E5E7EB;
   }
 }
