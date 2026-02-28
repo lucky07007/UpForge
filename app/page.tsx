@@ -14,33 +14,40 @@ import {
 export default async function Home() {
   const supabase = await createClient();
 
+  // Fetch recent 6 startups
   const { data: recent } = await supabase
     .from("startups")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(6);
 
-  const categories = [
-    "FinTech",
-    "EdTech",
-    "AI & ML",
-    "HealthTech",
-    "D2C",
-    "SaaS",
-    "ClimateTech",
-    "Web3",
-  ];
+  // Fetch total count of startups
+  const { count: totalStartups } = await supabase
+    .from("startups")
+    .select("*", { count: "exact", head: true });
 
-  // For demo purposes, we'll simulate a verified flag.
-  // In production you'd have a `verified` boolean column.
-  const verifiedStartups = recent?.map((s, i) => ({
+  // Fetch distinct founding years for browsing
+  const { data: yearsData } = await supabase
+    .from("startups")
+    .select("founded_year")
+    .not("founded_year", "is", null)
+    .order("founded_year", { ascending: false });
+
+  // Get unique years
+  const uniqueYears = Array.from(
+    new Set(yearsData?.map((item) => item.founded_year))
+  ).slice(0, 8); // limit to 8 for display
+
+  // Mark all recent startups as verified for demo
+  const verifiedStartups = recent?.map((s) => ({
     ...s,
-    verified: i % 2 === 0, // every other startup is "verified"
+    verified: true,
   }));
 
   return (
     <div className="bg-[#FCFCFC] text-[#1A1A1A] font-sans antialiased">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-24 md:space-y-32">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-12 md:pb-20 space-y-24 md:space-y-32">
+        {/* pt-24 ensures content starts below fixed header (72px + some breathing) */}
 
         {/* ================= HERO ================= */}
         <section className="text-center max-w-4xl mx-auto space-y-8">
@@ -118,13 +125,11 @@ export default async function Home() {
         <section className="border-y border-gray-200 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-sm">
             <div>
-              <p className="font-semibold text-2xl">
-                {verifiedStartups?.length ?? 0}+
-              </p>
+              <p className="font-semibold text-2xl">{totalStartups ?? 0}+</p>
               <p className="text-gray-500">Startups Listed</p>
             </div>
             <div>
-              <p className="font-semibold text-2xl">{categories.length}</p>
+              <p className="font-semibold text-2xl">8</p> {/* Placeholder for industries count - you can make dynamic later */}
               <p className="text-gray-500">Industries</p>
             </div>
             <div>
@@ -263,23 +268,20 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ================= CATEGORY EXPLORER ================= */}
+        {/* ================= BROWSE BY ESTABLISHED YEAR ================= */}
         <section>
           <h2 className="font-serif text-3xl border-b border-gray-200 pb-4 mb-10">
-            Browse by Industry
+            Browse by Established Year
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {categories.map((category) => (
+            {uniqueYears.map((year) => (
               <Link
-                key={category}
-                href={`/startups?industry=${category
-                  .toLowerCase()
-                  .replace(/ & /g, "-")
-                  .replace(/\s+/g, "-")}`}
+                key={year}
+                href={`/startups?year=${year}`}
                 className="block py-4 px-4 bg-white border border-gray-200 text-center text-sm hover:border-gray-400 transition-colors"
               >
-                {category}
+                {year}
               </Link>
             ))}
           </div>
@@ -315,11 +317,6 @@ export default async function Home() {
             Verification usually takes 1–2 business days
           </p>
         </section>
-
-        {/* ================= FOOTER NOTE (optional) ================= */}
-        <footer className="text-xs text-gray-400 text-center border-t border-gray-200 pt-8">
-          <p>© {new Date().getFullYear()} UpForge. Independent startup registry.</p>
-        </footer>
 
       </div>
     </div>
