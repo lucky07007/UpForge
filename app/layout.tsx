@@ -4,8 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-// Import the Chatbot component
-import { Chatbot } from "@/components/chatbot"; 
+import { Chatbot } from "@/components/chatbot";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,17 +16,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://upforge.in"),
   title: {
     default: "UpForge — Public Registry of Emerging Indian Startups",
-    template: "%s | UpForge Registry",
+    template: "%s | UpForge",
   },
   description:
-    "UpForge is India's structured public registry documenting emerging startups, founders, and early-stage ventures. Built for students, researchers, and the broader startup ecosystem.",
-  keywords: [
-    "Indian startups",
-    "startup registry",
-    "emerging startups India",
-    "startup database",
-    "public startup information",
-  ],
+    "UpForge is India’s structured public registry documenting emerging startups, founders, and early-stage ventures.",
   openGraph: {
     title: "UpForge — Public Startup Registry of India",
     description:
@@ -45,25 +37,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="bg-neutral-50 text-[#111111] flex flex-col min-h-screen antialiased selection:bg-black selection:text-white">
+      <body className="bg-background text-foreground flex flex-col min-h-screen antialiased">
 
-        {/* Navbar remains at the top */}
+        {/* NAVBAR */}
         <Navbar />
 
-        {/* Main Content */}
+        {/* MAIN CONTENT */}
         <main className="flex-grow w-full">
-          <div className="pt-16 md:pt-20">
-            {children}
-          </div>
+          {children}
         </main>
 
-        {/* Footer */}
+        {/* FOOTER */}
         <Footer />
 
-        {/* Add the Chatbot here. 
-            Because it uses 'fixed' positioning in its own code, 
-            it will float in the bottom-right corner of the screen. 
-        */}
+        {/* Floating Assistant */}
         <Chatbot />
 
       </body>
