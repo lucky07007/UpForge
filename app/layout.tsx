@@ -1,5 +1,5 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
@@ -12,21 +12,55 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#FCFCFC",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://upforge.in"),
   title: {
-    default: "UpForge — Public Registry of Emerging Indian Startups",
+    default: "UpForge — Free Verified Startup Registry & Growth Reports",
     template: "%s | UpForge",
   },
   description:
-    "UpForge is India’s structured public registry documenting emerging startups, founders, and early-stage ventures.",
+    "Get your startup verified for free. Reach millions, receive AI‑powered analysis reports, and estimate your valuation. India’s independent startup registry.",
+  keywords: [
+    "startup registry",
+    "India startups",
+    "verified listing",
+    "startup valuation",
+    "competitor analysis",
+    "growth report",
+    "free startup directory",
+  ],
+  authors: [{ name: "UpForge" }],
   openGraph: {
-    title: "UpForge — Public Startup Registry of India",
+    title: "UpForge — Free Verified Startup Registry",
     description:
-      "A structured, publicly accessible database of emerging Indian startups and founders.",
+      "List your startup for free, get verified, and receive detailed growth reports with competitor insights and valuation estimates.",
     url: "https://upforge.in",
     siteName: "UpForge",
     type: "website",
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UpForge — Free Verified Startup Registry",
+    description:
+      "List your startup for free, get verified, and receive detailed growth reports with competitor insights and valuation estimates.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  alternates: {
+    canonical: "https://upforge.in",
   },
 };
 
@@ -37,7 +71,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="bg-background text-foreground flex flex-col min-h-screen antialiased">
+      <body className="bg-background text-foreground flex flex-col min-h-screen antialiased font-sans">
 
         {/* NAVBAR */}
         <Navbar />
