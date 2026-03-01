@@ -4,7 +4,7 @@ import RegistrySearch from "@/components/registry-search";
 import PageTransition from "@/components/page-transition";
 import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
 
-export const revalidate = 600; // 10 minutes
+export const revalidate = 0; // Fresh results के लिए इसे 0 रखा गया है
 
 interface Props {
   searchParams?: {
@@ -100,16 +100,14 @@ export default async function StartupPage({ searchParams }: Props) {
   const supabase = await createClient();
   const insights = await getRegistryInsights();
 
-  // Fix for Next.js 15+ searchParams sync/async behavior
+  // Next.js 15+ searchParams handling
   const params = await (searchParams as any);
   
-  const currentPage =
-    params?.page && Number(params.page) > 0
-      ? Number(params.page)
-      : 1;
-
   const searchQuery = params?.search?.trim() ?? "";
   const sectorFilter = params?.sector?.trim() ?? "";
+  
+  // अगर सर्च किया गया है तो हमेशा पेज 1 दिखाओ, वरना पेज पैरामीटर का इस्तेमाल करो
+  const currentPage = params?.page && !searchQuery ? Number(params.page) : 1;
 
   const ITEMS_PER_PAGE = 12;
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -117,6 +115,7 @@ export default async function StartupPage({ searchParams }: Props) {
 
   let query = supabase.from("startups").select("*", { count: "exact" });
 
+  // Improved Search Logic
   if (searchQuery) {
     query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`);
   }
@@ -126,7 +125,7 @@ export default async function StartupPage({ searchParams }: Props) {
   }
 
   const { data: startups, count, error } = await query
-    .order("name")
+    .order("name", { ascending: true })
     .range(from, to);
 
   if (error) {
@@ -259,6 +258,8 @@ export default async function StartupPage({ searchParams }: Props) {
                 placeholder="Search by name, sector, or industry…"
                 className="w-full border border-[#D5D0C8] border-r-0 bg-white px-4 py-2.5 text-sm text-[#1C1C1C] placeholder-[#BBB] focus:outline-none focus:border-[#1C1C1C] transition-colors"
               />
+              {/* Force page 1 on new search */}
+              <input type="hidden" name="page" value="1" />
               {sectorFilter && (
                 <input type="hidden" name="sector" value={sectorFilter} />
               )}
@@ -281,9 +282,9 @@ export default async function StartupPage({ searchParams }: Props) {
           )}
         </div>
 
-        {/* ── CONTENT GRID (FIXED WITH KEY) ── */}
+        {/* ── CONTENT GRID ── */}
         <PageTransition key={`${searchQuery}-${sectorFilter}-${currentPage}`}>
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] mt-0 fade-up-4 border border-[#D5D0C8]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] border border-[#D5D0C8] mt-0 fade-up-4">
             {startups?.map((startup) => (
               <Link key={startup.id} href={`/startup/${startup.slug}`}>
                 <article className="bg-[#F7F5F0] p-5 lg:p-6 card-hover h-full flex flex-col border border-transparent">
@@ -314,7 +315,7 @@ export default async function StartupPage({ searchParams }: Props) {
           </div>
 
           {(!startups || startups.length === 0) && (
-            <div className="hidden md:flex flex-col items-center justify-center py-24 text-center border border-[#D5D0C8] mt-0">
+            <div className="flex flex-col items-center justify-center py-24 text-center border border-[#D5D0C8] mt-0 bg-white">
               <Search className="w-8 h-8 text-[#CCC] mb-4" />
               <p className="text-lg font-semibold text-[#555]" style={{ fontFamily: "'Georgia', serif" }}>No startups found</p>
               <p className="text-sm text-[#AAA] mt-1">Try a different search term or clear the filter</p>
@@ -350,7 +351,7 @@ export default async function StartupPage({ searchParams }: Props) {
             ))}
           </div>
 
-          {/* ── PAGINATION (FIXED LINKS) ── */}
+          {/* ── PAGINATION ── */}
           {totalPages > 1 && (
             <div className="mt-10 flex items-center justify-center gap-2 fade-up-4">
               <Link
