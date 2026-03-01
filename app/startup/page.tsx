@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import RegistrySearch from "@/components/registry-search";
+import PageTransition from "@/components/page-transition";
 import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
 
 export const revalidate = 600; // 10 minutes
@@ -254,7 +256,7 @@ export default async function StartupPage({ searchParams }: Props) {
 
         {/* ── SEARCH ── */}
         <div className="py-5 border-b border-[#D5D0C8] fade-up-3">
-          <form method="GET" className="flex gap-0 max-w-xl">
+          <RegistrySearch />
             <div className="relative flex-1">
               <input
                 type="text"
@@ -283,8 +285,9 @@ export default async function StartupPage({ searchParams }: Props) {
             </p>
           )}
         </div>
-
+      <PageTransition>
         {/* ── DESKTOP GRID ── */}
+      
         <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] mt-0 fade-up-4 border border-[#D5D0C8]">
           {startups?.map((startup) => (
             <Link key={startup.id} href={`/startup/${startup.slug}`}>
@@ -408,6 +411,7 @@ export default async function StartupPage({ searchParams }: Props) {
         </div>
 
         {/* ── PAGINATION ── */}
+      
         {totalPages > 1 && (
           <div className="mt-10 flex items-center justify-center gap-2 fade-up-4">
             <Link
@@ -458,6 +462,7 @@ export default async function StartupPage({ searchParams }: Props) {
             </Link>
           </div>
         )}
+        </PageTransition>
 
         {/* ── BOTTOM TRUST BAR ── */}
         <div className="mt-14 pt-6 border-t border-[#D5D0C8] flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
