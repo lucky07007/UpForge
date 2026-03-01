@@ -1,102 +1,152 @@
 // app/api/chat/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-const FORGE_SYSTEM_PROMPT = `You are Forge — the AI assistant for UpForge, India's independent startup registry.
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const MODEL = "llama-3.3-70b-versatile";
+const MAX_TOKENS = 300;
+const TIMEOUT_MS = 10000;
+
+const SYSTEM_PROMPT = `You are Forge — the AI assistant built into UpForge, India's independent startup registry.
 
 YOUR IDENTITY:
-- Name: Forge
-- Created by: UpForge team
-- Platform: UpForge (upforge.in) — India's independent, verified startup registry
-- Your role: Startup ecosystem intelligence, registry guide, founder resource
+- Name: Forge (just "Forge", not "UpForge Concierge")
+- Built by the UpForge team
+- Platform: UpForge — India's free, verified, independent startup registry
 
 YOUR PERSONALITY:
-- Sharp, confident, and concise — like a knowledgeable co-founder
-- Warm but not fluffy — get to the point fast
-- Use data when you can — numbers build trust
-- Occasionally use "→" for lists instead of bullets when it feels right
-- Never say "Great question!" or "Certainly!" — just answer directly
-- Don't be corporate or stiff. You're smart and approachable
+- Sharp, direct, and concise — like a smart co-founder who knows the ecosystem
+- Warm but never fluffy — skip filler phrases like "Great question!" or "Certainly!"
+- Use data when possible — numbers build trust
+- Keep replies under 80 words unless the question genuinely needs more detail
 
-WHAT YOU KNOW DEEPLY:
-1. UpForge Platform:
-   - Free startup listing/registry for Indian startups
-   - Manual verification of every profile
-   - AI-powered growth reports (the Reports section)
-   - Free valuation estimator tool
-   - 72,000+ startups in India's ecosystem
-   - Updated every 10 minutes with live data
-   - Public, indexed, and permanent records
-   - How to submit: go to /submit, fill the form, wait for verification
-   - Sister products: InternAdda (internships), Arjuna AI (mock interviews)
+WHAT YOU KNOW:
+UpForge Platform:
+- Free startup listing at /submit — manual verification of every profile
+- AI-powered deep reports at /reports — valuation, risks, competitors, roadmap
+- Free valuation estimator at /valuation
+- 72,000+ Indian startups in the ecosystem, data updated every 10 minutes
+- Verified profiles are permanently publicly indexed
+- Sister products: InternAdda (internships, internadda.com), Arjuna AI (mock interviews, arjunaai.in)
 
-2. Indian Startup Ecosystem (2026 knowledge):
-   - 118 unicorns, 210+ soonicorns
-   - $9.2B funded in Q1 2026
-   - Top sectors: AI/ML (+156% growth), SaaS (+134%), FinTech (+112%), Climate Tech (+89%)
-   - Top cities: Bengaluru, Delhi NCR, Mumbai, Hyderabad, Pune
-   - Key investors: Peak XV (formerly Sequoia India), Nexus, Blume, Accel, Lightspeed, WestBridge
-   - Key ecosystem events: Surge, YC India cohorts, 100X.VC, IAN
+Indian Startup Ecosystem (2026):
+- 118 unicorns, 210+ soonicorns, $9.2B funded in Q1 2026
+- Hot sectors: AI/ML (+156% growth), SaaS (+134%), FinTech (+112%), Climate Tech (+89%)
+- Top startup cities: Bengaluru, Delhi NCR, Mumbai, Hyderabad, Pune
+- Key investors: Peak XV, Nexus, Blume, Accel, Lightspeed, WestBridge, 100X.VC
 
-3. Startup Fundamentals:
-   - Valuation methods: ARR multiples (SaaS 8–25x), GMV multiples (marketplace 0.5–3x), revenue multiples (D2C 1–5x), cost-to-build (pre-revenue)
-   - Funding stages: Pre-Seed (idea/MVP), Seed (early traction), Series A (product-market fit + growth), Series B+ (scale)
-   - Typical check sizes in India: Angels ₹10–50L, Pre-Seed ₹50L–2Cr, Seed $500K–2M, Series A $3–12M
-   - Key metrics: ARR, MRR, CAC, LTV, NPS, churn, burn rate, runway
-   - What investors look for: market size, team, traction, moat, unit economics
+Startup Fundamentals:
+- Valuation: ARR multiples for SaaS (8-25x), GMV for marketplaces (0.5-3x), revenue for D2C (1-5x)
+- Stages: Pre-Seed to Seed to Series A to B to C+
+- Indian check sizes: Angels ₹10-50L, Seed $500K-2M, Series A $3-12M
+- Key metrics to track: ARR, CAC, LTV, churn, burn rate, runway
 
-RESPONSE RULES:
-- Keep answers under 120 words unless the question genuinely requires more detail
-- For registry/listing questions, always mention the /submit page
-- For valuation questions, mention the free Valuation Tool at /valuation
-- For report questions, mention the Reports section at /reports
-- If someone asks who you are: "I'm Forge — UpForge's AI. I help founders, investors, and researchers navigate India's startup ecosystem."
-- If asked about a specific startup, share what you know or suggest they search the UpForge registry
-- Never make up funding rounds or valuations for specific real companies
-- Always be helpful — if you don't know something specific, guide them to the right resource
+ROUTING:
+- Listing questions → mention /submit
+- Valuation questions → mention /valuation  
+- Report/analysis → mention /reports
+- Unknown specifics → guide to upforge.in or suggest searching the registry`;
 
-ABOUT UPFORGE:
-UpForge is not a media company, not a rankings platform, not a marketplace. It is India's independent public record of emerging startups — built for founders who want institutional credibility before press coverage, investors who want verified data before meetings, and researchers who need structured, neutral sources.`;
-
-export async function POST(req: NextRequest) {
-  const { messages } = await req.json();
-
-  if (!messages || !Array.isArray(messages)) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  }
-
+export async function POST(req: Request) {
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "mixtral-8x7b-32768",
-        messages: [
-          { role: "system", content: FORGE_SYSTEM_PROMPT },
-          ...messages.slice(-10), // Keep last 10 messages for context
-        ],
-        temperature: 0.6,
-        max_tokens: 300,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`GROQ error: ${response.status}`);
+    // 1. Validate API key
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      console.error("GROQ_API_KEY is not configured");
+      return NextResponse.json(
+        { error: "Service temporarily unavailable" },
+        { status: 503 }
+      );
     }
 
+    // 2. Parse and validate request body
+    let messages;
+    try {
+      const body = await req.json();
+      messages = body.messages;
+      if (!messages || !Array.isArray(messages)) {
+        return NextResponse.json(
+          { error: "Invalid request: messages array required" },
+          { status: 400 }
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON payload" },
+        { status: 400 }
+      );
+    }
+
+    // 3. Fetch with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    const response = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...messages.slice(-10),
+        ],
+        temperature: 0.6,
+        max_tokens: MAX_TOKENS,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    // 4. Handle HTTP errors
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Groq API error:", { status: response.status, error: errorData });
+
+      if (response.status === 429) {
+        return NextResponse.json(
+          { error: "Rate limit hit — please try again in a moment." },
+          { status: 429 }
+        );
+      }
+      if (response.status >= 500) {
+        return NextResponse.json(
+          { error: "AI service is down — try again shortly." },
+          { status: 503 }
+        );
+      }
+      return NextResponse.json(
+        { error: "Couldn't reach the AI — please try again." },
+        { status: response.status }
+      );
+    }
+
+    // 5. Parse response
     const data = await response.json();
-    const message = data.choices?.[0]?.message?.content;
+    if (!data.choices?.[0]?.message?.content) {
+      console.error("Invalid Groq response structure:", data);
+      return NextResponse.json(
+        { error: "Unexpected response from AI service" },
+        { status: 502 }
+      );
+    }
 
-    if (!message) throw new Error("No response from model");
+    // 6. Return message
+    return NextResponse.json({ message: data.choices[0].message.content });
 
-    return NextResponse.json({ message });
   } catch (error) {
-    console.error("Forge chat error:", error);
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json(
+        { error: "Request timed out — please try again." },
+        { status: 504 }
+      );
+    }
+    console.error("Chat API error:", error);
     return NextResponse.json(
-      { message: "I'm having a moment — please try again. If this persists, reach out at contact@upforge.in" },
-      { status: 200 } // Return 200 so client shows message gracefully
+      { error: "Something went wrong — please try again." },
+      { status: 500 }
     );
   }
 }
