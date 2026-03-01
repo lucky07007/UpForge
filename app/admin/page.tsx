@@ -24,32 +24,10 @@ export default async function AdminPage() {
     .select("*")
     .order("created_at", { ascending: false })
 
-  // Fetch stats for dashboard
-  const { count: totalCount } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true })
-
-  const { count: verifiedCount } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true })
-    .eq("is_verified", true)
-
-  const { count: pendingCount } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true })
-    .eq("is_verified", false)
-
-  const stats = {
-    total: totalCount || 0,
-    verified: verifiedCount || 0,
-    pending: pendingCount || 0,
-  }
-
   return (
     <AdminDashboard 
       startups={(startups as Startup[]) || []} 
       userEmail={user.email || ""} 
-      stats={stats}
     />
   )
 }
