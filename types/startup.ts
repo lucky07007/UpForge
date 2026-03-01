@@ -26,4 +26,6 @@ export interface StartupDirectoryItem {
   short_description?: string // Added to fix the "Property does not exist" error
   is_sponsored?: boolean
   is_featured?: boolean
+  industry?: string | null      // Added for directory display
+  founded_year?: number | null  // Added for directory display
 }
