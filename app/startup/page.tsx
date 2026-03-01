@@ -1,133 +1,124 @@
-"use client";
+// app/startups/page.tsx
 
-import { useState, useMemo, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { SearchBar } from "@/components/search-bar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { Search, BadgeCheck, ChevronLeft, ChevronRight } from "lucide-react";
-import type { StartupDirectoryItem } from "@/types/startup";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
-export default function StartupsPage() {
-  const supabase = createClient();
+interface Props {
+  searchParams: {
+    page?: string;
+    search?: string;
+  };
+}
 
-  const [allStartups, setAllStartups] = useState<StartupDirectoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 12;
 
-  // ✅ Fetch Data
-  useEffect(() => {
-    async function fetchAll() {
-      setLoading(true);
+export default async function StartupsPage({ searchParams }: Props) {
+  const supabase = await createClient();
 
-      const { data, error } = await supabase
-        .from("startups")
-        .select("id, name, slug, logo_url, description, founded_year, category")
-        .order("founded_year", { ascending: false, nullsFirst: false });
+  const currentPage = Number(searchParams?.page) > 0 ? Number(searchParams.page) : 1;
+  const searchQuery = searchParams?.search?.toLowerCase() || "";
 
-      if (error) {
-        console.error("Supabase Error:", error);
-      } else if (data) {
-        setAllStartups(data);
-      }
+  const from = (currentPage - 1) * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
 
-      setLoading(false);
-    }
+  let query = supabase
+    .from("startups")
+    .select(
+      "id, name, slug, logo_url, description, founded_year, category",
+      { count: "exact" }
+    )
+    .order("founded_year", { ascending: false });
 
-    fetchAll();
-  }, [supabase]);
-
-  // ✅ Reset page when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [query]);
-
-  // ✅ Search Filter
-  const filteredStartups = useMemo(() => {
-    if (!query) return allStartups;
-
-    return allStartups.filter((s) =>
-      s.name.toLowerCase().includes(query.toLowerCase()) ||
-      s.category?.toLowerCase().includes(query.toLowerCase())
+  if (searchQuery) {
+    query = query.or(
+      `name.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`
     );
-  }, [query, allStartups]);
+  }
 
-  // ✅ Pagination
-  const paginatedItems = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredStartups.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredStartups, currentPage]);
+  const { data: startups, count } = await query.range(from, to);
 
-  const totalPages = Math.ceil(filteredStartups.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
+
+  const buildUrl = (page: number) => {
+    const params = new URLSearchParams();
+    if (page > 1) params.set("page", page.toString());
+    if (searchQuery) params.set("search", searchQuery);
+    return `?${params.toString()}`;
+  };
 
   return (
-    <div className="bg-[#FCFCFC] min-h-screen pt-24 pb-20">
-      <div className="max-w-[1440px] mx-auto px-6">
+    <div className="bg-[#FCFCFC] min-h-screen pt-32 pb-32">
+      <div className="max-w-[1600px] mx-auto px-8">
 
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="font-serif text-5xl tracking-tight mb-4">
+        <div className="text-center mb-28">
+          <h1 className="font-serif text-6xl tracking-tight mb-6">
             Startup Registry
           </h1>
-          <p className="text-gray-500 max-w-xl mx-auto">
-            India's verified startup database.
+          <p className="text-neutral-500 text-lg max-w-2xl mx-auto leading-relaxed">
+            A curated archive of verified Indian ventures.
           </p>
-          <div className="mt-4 text-xs text-gray-400 tracking-widest uppercase">
-            {filteredStartups.length} Profiles Found
+          <div className="mt-8 text-xs tracking-[0.3em] text-neutral-400 uppercase">
+            {count || 0} Registered Profiles
           </div>
         </div>
 
         {/* Search */}
-        <div className="max-w-xl mx-auto mb-16">
-          <SearchBar query={query} setQuery={setQuery} />
-        </div>
+        <form method="GET" className="max-w-xl mx-auto mb-24">
+          <div className="relative">
+            <input
+              type="text"
+              name="search"
+              defaultValue={searchQuery}
+              placeholder="Search startups..."
+              className="w-full border border-neutral-300 px-5 py-4 pr-12 text-sm tracking-wide focus:outline-none focus:border-black transition"
+            />
+            <Search className="absolute right-4 top-4 text-neutral-400 w-5 h-5" />
+          </div>
+        </form>
 
         {/* Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-64" />
-            ))}
-          </div>
-        ) : paginatedItems.length > 0 ? (
+        {startups && startups.length > 0 ? (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {paginatedItems.map((startup) => (
-                <Link key={startup.id} href={`/startup/${startup.slug}`} className="group">
-                  <article className="bg-white border border-gray-200 p-6 hover:border-black transition-all h-full flex flex-col items-center text-center relative">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-16">
+              {startups.map((startup) => (
+                <Link
+                  key={startup.id}
+                  href={`/startup/${startup.slug}`}
+                  className="group"
+                >
+                  <article className="border border-neutral-200 p-8 bg-white transition duration-300 hover:shadow-sm hover:border-neutral-300 h-full flex flex-col">
 
-                    <span className="absolute top-2 right-2 text-xs font-bold text-gray-400">
-                      {startup.founded_year || "N/A"}
-                    </span>
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="w-16 h-16 flex items-center justify-center bg-neutral-50 border border-neutral-200">
+                        {startup.logo_url ? (
+                          <img
+                            src={startup.logo_url}
+                            alt={startup.name}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-2xl font-serif text-neutral-300">
+                            {startup.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="w-16 h-16 mb-4 flex items-center justify-center bg-gray-50 border">
-                      {startup.logo_url ? (
-                        <img
-                          src={startup.logo_url}
-                          alt={startup.name}
-                          className="max-h-full max-w-full object-contain"
-                        />
-                      ) : (
-                        <span className="text-2xl font-serif text-gray-300">
-                          {startup.name.charAt(0)}
-                        </span>
-                      )}
+                      <span className="text-xs text-neutral-400 tracking-wide">
+                        {startup.founded_year || "—"}
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-1 mb-2">
-                      <h3 className="font-serif text-lg line-clamp-1">
-                        {startup.name}
-                      </h3>
-                      <BadgeCheck className="w-4 h-4 text-blue-600" />
-                    </div>
+                    <h3 className="font-serif text-xl tracking-tight mb-3 line-clamp-1">
+                      {startup.name}
+                    </h3>
 
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-4">
-                      {startup.description}
+                    <p className="text-sm text-neutral-500 leading-relaxed line-clamp-3 mb-6 flex-grow">
+                      {startup.description || "No description available."}
                     </p>
 
-                    <span className="text-[10px] border border-gray-200 px-2 py-1 uppercase tracking-widest text-gray-400">
+                    <span className="text-[11px] border border-neutral-200 px-3 py-1 tracking-wide text-neutral-500 self-start">
                       {startup.category || "General"}
                     </span>
 
@@ -138,34 +129,41 @@ export default function StartupsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-12 flex justify-center items-center gap-4">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="p-2 border rounded-full disabled:opacity-30"
-                >
-                  <ChevronLeft size={20} />
-                </button>
+              <div className="mt-28 flex justify-center items-center gap-10">
 
-                <span className="text-sm font-medium">
-                  Page {currentPage} of {totalPages}
+                <Link
+                  href={buildUrl(currentPage - 1)}
+                  className={`px-5 py-2 border text-sm tracking-wide ${
+                    currentPage === 1
+                      ? "pointer-events-none opacity-30"
+                      : "hover:border-black"
+                  }`}
+                >
+                  <ChevronLeft size={16} />
+                </Link>
+
+                <span className="text-sm tracking-wide text-neutral-500">
+                  {currentPage} / {totalPages}
                 </span>
 
-                <button
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="p-2 border rounded-full disabled:opacity-30"
+                <Link
+                  href={buildUrl(currentPage + 1)}
+                  className={`px-5 py-2 border text-sm tracking-wide ${
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-30"
+                      : "hover:border-black"
+                  }`}
                 >
-                  <ChevronRight size={20} />
-                </button>
+                  <ChevronRight size={16} />
+                </Link>
+
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-gray-100">
-            <Search className="h-10 w-10 text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-400 font-serif">
-              Afsos! Koi match nahi mila.
+          <div className="text-center py-32 border-t border-neutral-200">
+            <p className="text-neutral-400 font-serif text-lg">
+              No startups found.
             </p>
           </div>
         )}
