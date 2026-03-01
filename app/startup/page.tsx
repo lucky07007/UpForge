@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
 
-export const revalidate = 600; // 10 minutes
+export const dynamic = "force-dynamic";
 
 interface Props {
   searchParams?: {
@@ -118,10 +118,9 @@ export default async function StartupPage({ searchParams }: Props) {
   if (searchQuery) {
     query = query.or(`name.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%`);
   }
-  if (sectorFilter) {
-    query = query.ilike("industry", `%${sectorFilter}%`);
-  }
-
+if (sectorFilter) {
+  query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
+}
   const { data: startups, count } = await query.range(from, to);
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
