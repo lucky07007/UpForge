@@ -110,13 +110,27 @@ export default async function StartupPage({ searchParams }: Props) {
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
-const { data: startups, count, error } = await supabase
-  .from("startups")
-  .select("*", { count: "exact" });
+  // Build the query with filters
+  let query = supabase.from("startups").select("*", { count: "exact" });
 
-if (error) {
-  console.log("SUPABASE ERROR:", error);
-}
+  // Apply search filter if present
+  if (searchQuery) {
+    query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`);
+  }
+
+  // Apply sector filter if present
+  if (sectorFilter) {
+    query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
+  }
+
+  // Apply pagination
+  const { data: startups, count, error } = await query
+    .order("name")
+    .range(from, to);
+
+  if (error) {
+    console.log("SUPABASE ERROR:", error);
+  }
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
@@ -210,7 +224,7 @@ if (error) {
               {insights.trendingSectors.map((sector: any, i: number) => (
                 <Link
                   key={i}
-                  href={`?sector=${encodeURIComponent(sector.name)}`}
+                  href={`?sector=${encodeURIComponent(sector.name)}${searchQuery ? `&search=${searchQuery}` : ""}`}
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 border text-[10px] font-semibold tracking-wide transition-colors ${
                     sectorFilter === sector.name
                       ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
@@ -228,7 +242,7 @@ if (error) {
               ))}
               {sectorFilter && (
                 <Link
-                  href="?"
+                  href={`?${searchQuery ? `search=${searchQuery}` : ""}`}
                   className="text-[10px] text-[#AAA] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors"
                 >
                   Clear filter
@@ -408,7 +422,16 @@ if (error) {
             {/* Page numbers */}
             <div className="flex items-center gap-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
                 return (
                   <Link
                     key={pageNum}
