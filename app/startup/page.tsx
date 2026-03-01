@@ -17,18 +17,17 @@ export default function StartupsPage() {
   const [offset, setOffset] = useState(0);
   const ITEMS_PER_PAGE = 12;
 
-  // Optimized Fetch Function
   const fetchStartups = useCallback(async (isInitial = false) => {
     setLoading(true);
     const currentOffset = isInitial ? 0 : offset;
 
+    // Fast Fetch Logic: Year-wise sort and range limit
     let supabaseQuery = supabase
       .from("startups")
       .select("*")
-      .order("founded_year", { ascending: false, nullsFirst: false }) // Year-wise sort
+      .order("founded_year", { ascending: false, nullsFirst: false })
       .range(currentOffset, currentOffset + ITEMS_PER_PAGE - 1);
 
-    // Agar user search kar raha hai toh server-side filter karein fast loading ke liye
     if (query) {
       supabaseQuery = supabaseQuery.ilike('name', `%${query}%`);
     }
@@ -42,16 +41,14 @@ export default function StartupsPage() {
         setStartups((prev) => [...prev, ...data]);
       }
       setHasMore(data.length === ITEMS_PER_PAGE);
-      setOffset(currentOffset + ITEMS_PER_PAGE);
+      setOffset(currentOffset + data.length);
     }
     setLoading(false);
   }, [offset, query, supabase]);
 
-  // Initial load and Search trigger
   useEffect(() => {
-    setOffset(0);
     fetchStartups(true);
-  }, [query]); // Jab search query badle toh reset karke naya data layein
+  }, [query]);
 
   return (
     <div className="bg-[#FCFCFC] text-[#1A1A1A] font-sans antialiased min-h-screen">
@@ -63,13 +60,13 @@ export default function StartupsPage() {
             Startup Registry
           </h1>
           <p className="text-lg text-gray-600">
-            India's most ambitious companies, indexed by foundation year.
+            Verified Indian startups, sorted by founding year.
           </p>
         </div>
 
         {/* Search */}
         <div className="max-w-xl mx-auto mb-16">
-          <SearchBar query={query} setQuery={(q) => { setQuery(q); setOffset(0); }} />
+          <SearchBar query={query} setQuery={setQuery} />
         </div>
 
         {/* Directory Grid */}
@@ -77,14 +74,11 @@ export default function StartupsPage() {
           {startups.map((startup) => (
             <Link key={startup.id} href={`/startup/${startup.slug}`} className="group">
               <article className="bg-white border border-gray-200 p-6 hover:border-black transition-all h-full flex flex-col items-center text-center relative">
-                
-                {/* Year Badge */}
                 <div className="absolute top-2 right-2 bg-gray-50 px-2 py-1 text-[10px] font-bold border border-gray-100">
                   {startup.founded_year || "N/A"}
                 </div>
 
-                {/* Logo */}
-                <div className="w-20 h-20 mb-4 flex items-center justify-center bg-gray-50 border border-gray-100 group-hover:border-gray-300 overflow-hidden">
+                <div className="w-20 h-20 mb-4 flex items-center justify-center bg-gray-50 border border-gray-100 overflow-hidden">
                   {startup.logo_url ? (
                     <img src={startup.logo_url} alt={startup.name} className="max-h-full max-w-full object-contain p-2" />
                   ) : (
@@ -97,37 +91,38 @@ export default function StartupsPage() {
                   <BadgeCheck className="w-4 h-4 text-blue-500 flex-shrink-0" />
                 </div>
 
-                <p className="text-[11px] text-gray-400 uppercase tracking-widest mb-2">
-                  {startup.industry || "Technology"}
+                <p className="text-[11px] text-gray-400 uppercase tracking-widest mt-auto">
+                  {startup.industry || "General"}
                 </p>
               </article>
             </Link>
           ))}
         </div>
 
-        {/* Loading & Empty States */}
+        {/* Loading Spinner */}
         {loading && (
           <div className="flex justify-center mt-12">
             <Loader2 className="animate-spin text-gray-400" size={32} />
           </div>
         )}
 
+        {/* Error/Empty State */}
         {!loading && startups.length === 0 && (
-          <div className="text-center py-20 border border-dashed">
+          <div className="text-center py-20 border border-dashed border-gray-200">
             <Search className="mx-auto text-gray-200 mb-4" size={48} />
-            <p className="text-gray-500 font-serif">Afsos! Koi startup nahi mila.</p>
+            <p className="text-gray-500 font-serif">Koi startup nahi mila. Please search refresh karein.</p>
           </div>
         )}
 
-        {/* Load More Button - Best for performance */}
-        {hasMore && !loading && (
+        {/* Load More Button (Fixed Tag Error) */}
+        {hasMore && !loading && startups.length > 0 && (
           <div className="mt-16 text-center">
             <button 
               onClick={() => fetchStartups()}
-              className="px-8 py-3 border border-black text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all"
+              className="px-8 py-3 border border-black text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all font-medium"
             >
               Load More Startups
-            </div>
+            </button>
           </div>
         )}
       </div>
