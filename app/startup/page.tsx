@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600; // 10 minutes
 
 interface Props {
   searchParams?: {
