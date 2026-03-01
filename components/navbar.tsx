@@ -18,7 +18,8 @@ export function Navbar() {
   }, []);
 
   const links = [
-    { name: "Registry", href: "/startups" },
+    { name: "Home", href: "/" },
+    { name: "Registry", href: "/startup" },
     { name: "Reports", href: "/reports" },
     { name: "Valuation", href: "/valuation" },
     { name: "About", href: "/about" },
