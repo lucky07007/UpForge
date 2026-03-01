@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, ArrowRight } from "lucide-react";
 
+// Fix: Use force-dynamic to ensure real-time data from the database
 export const dynamic = "force-dynamic";
 
 interface Props {
@@ -84,12 +85,11 @@ function PulseDot({ color = "green" }: { color?: "green" | "blue" | "amber" }) {
   const colors = {
     green: { ring: "bg-green-400", dot: "bg-green-500" },
     blue: { ring: "bg-blue-400", dot: "bg-blue-500" },
-    amber: { ring: "bg-amber-400", dot: "bg-amber-500" },
   };
   return (
     <span className="relative flex h-2 w-2 flex-shrink-0">
-      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${colors[color].ring} opacity-75`}></span>
-      <span className={`relative inline-flex rounded-full h-2 w-2 ${colors[color].dot}`}></span>
+      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${colors[color === 'amber' ? 'blue' : color].ring} opacity-75`}></span>
+      <span className={`relative inline-flex rounded-full h-2 w-2 ${colors[color === 'amber' ? 'blue' : color].dot}`}></span>
     </span>
   );
 }
@@ -118,9 +118,12 @@ export default async function StartupPage({ searchParams }: Props) {
   if (searchQuery) {
     query = query.or(`name.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%`);
   }
-if (sectorFilter) {
-  query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
-}
+
+  // Fix: Search both industry AND category to ensure data is found regardless of which field is filled
+  if (sectorFilter) {
+    query = query.or(`industry.ilike.%${sectorFilter}%,category.ilike.%${sectorFilter}%`);
+  }
+
   const { data: startups, count } = await query.range(from, to);
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
 
@@ -170,18 +173,14 @@ if (sectorFilter) {
 
         {/* ── SPOTLIGHT + STATS STRIP ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-[#D5D0C8] fade-up-2">
-          {/* Spotlight */}
           <div className="lg:col-span-2 py-5 pr-0 lg:pr-8 border-r border-[#D5D0C8]">
             <div className="flex items-start gap-3">
               <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
-                <PulseDot color="amber" />
+                <PulseDot color="green" />
                 <span className="text-[9px] text-[#AAA] uppercase tracking-widest font-bold">Spotlight</span>
               </div>
               <div>
-                <p
-                  className="text-sm font-semibold text-[#1C1C1C] leading-snug mb-1"
-                  style={{ fontFamily: "'Georgia', serif" }}
-                >
+                <p className="text-sm font-semibold text-[#1C1C1C] leading-snug mb-1" style={{ fontFamily: "'Georgia', serif" }}>
                   {insights.spotlight.headline}
                 </p>
                 <p className="text-[11px] text-[#888]">{insights.spotlight.sub}</p>
@@ -189,7 +188,6 @@ if (sectorFilter) {
             </div>
           </div>
 
-          {/* Quick Stats */}
           {[
             { label: "New This Week", value: insights.registryStats.newThisWeek, sub: "startups added" },
             { label: "Most Active", value: insights.registryStats.mostActiveSector, sub: "sector right now" },
@@ -231,10 +229,7 @@ if (sectorFilter) {
                 </Link>
               ))}
               {sectorFilter && (
-                <Link
-                  href="?"
-                  className="text-[10px] text-[#AAA] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors"
-                >
+                <Link href="?" className="text-[10px] text-[#AAA] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors">
                   Clear filter
                 </Link>
               )}
@@ -253,9 +248,7 @@ if (sectorFilter) {
                 placeholder="Search by name, sector, or industry…"
                 className="w-full border border-[#D5D0C8] border-r-0 bg-white px-4 py-2.5 text-sm text-[#1C1C1C] placeholder-[#BBB] focus:outline-none focus:border-[#1C1C1C] transition-colors"
               />
-              {sectorFilter && (
-                <input type="hidden" name="sector" value={sectorFilter} />
-              )}
+              {sectorFilter && <input type="hidden" name="sector" value={sectorFilter} />}
             </div>
             <button
               type="submit"
@@ -279,23 +272,12 @@ if (sectorFilter) {
           {startups?.map((startup) => (
             <Link key={startup.id} href={`/startup/${startup.slug}`}>
               <article className="bg-[#F7F5F0] p-5 lg:p-6 card-hover h-full flex flex-col border border-transparent">
-
-                {/* Logo + Year */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-12 h-12 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
                     {startup.logo_url ? (
-                      <img
-                        src={startup.logo_url}
-                        alt={startup.name}
-                        className="max-h-full max-w-full object-contain p-1"
-                      />
+                      <img src={startup.logo_url} alt={startup.name} className="max-h-full max-w-full object-contain p-1" />
                     ) : (
-                      <span
-                        className="text-lg text-[#CCC]"
-                        style={{ fontFamily: "'Georgia', serif" }}
-                      >
-                        {startup.name.charAt(0)}
-                      </span>
+                      <span className="text-lg text-[#CCC]" style={{ fontFamily: "'Georgia', serif" }}>{startup.name.charAt(0)}</span>
                     )}
                   </div>
                   <div className="text-right">
@@ -305,28 +287,18 @@ if (sectorFilter) {
                     </div>
                   </div>
                 </div>
-
-                {/* Name */}
-                <h3
-                  className="text-[1.05rem] font-semibold text-[#1C1C1C] mb-2 leading-tight"
-                  style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-                >
+                <h3 className="text-[1.05rem] font-semibold text-[#1C1C1C] mb-2 leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
                   {startup.name}
                 </h3>
-
-                {/* Description */}
                 <p className="text-[12px] text-[#666] line-clamp-3 leading-relaxed flex-1 mb-4">
                   {startup.description}
                 </p>
-
-                {/* Footer */}
                 <div className="flex items-center justify-between pt-3 border-t border-[#EEEAE3]">
                   <span className="text-[9px] text-[#AAA] uppercase tracking-wider font-bold">
                     {startup.industry || startup.category || "Startup"}
                   </span>
                   <ArrowRight className="w-3 h-3 text-[#CCC] group-hover:text-[#1C1C1C] transition-colors" />
                 </div>
-
               </article>
             </Link>
           ))}
@@ -349,27 +321,16 @@ if (sectorFilter) {
           {startups?.map((startup) => (
             <Link key={startup.id} href={`/startup/${startup.slug}`}>
               <div className="flex items-center gap-3 px-4 py-4 bg-[#F7F5F0] hover:bg-white transition-colors">
-                {/* Logo */}
                 <div className="w-10 h-10 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
                   {startup.logo_url ? (
-                    <img
-                      src={startup.logo_url}
-                      alt={startup.name}
-                      className="max-h-full max-w-full object-contain p-0.5"
-                    />
+                    <img src={startup.logo_url} alt={startup.name} className="max-h-full max-w-full object-contain p-0.5" />
                   ) : (
-                    <span className="text-sm text-[#CCC]" style={{ fontFamily: "'Georgia', serif" }}>
-                      {startup.name.charAt(0)}
-                    </span>
+                    <span className="text-sm text-[#CCC]" style={{ fontFamily: "'Georgia', serif" }}>{startup.name.charAt(0)}</span>
                   )}
                 </div>
-
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
-                    <p className="text-sm font-semibold text-[#1C1C1C] truncate" style={{ fontFamily: "'Georgia', serif" }}>
-                      {startup.name}
-                    </p>
+                    <p className="text-sm font-semibold text-[#1C1C1C] truncate" style={{ fontFamily: "'Georgia', serif" }}>{startup.name}</p>
                     <BadgeCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" />
                   </div>
                   <div className="flex items-center gap-2">
@@ -377,24 +338,14 @@ if (sectorFilter) {
                       {startup.industry || startup.category || "Startup"}
                     </span>
                     {startup.founded_year && (
-                      <>
-                        <span className="text-[#DDD]">·</span>
-                        <span className="text-[10px] text-[#BBB] num-font">{startup.founded_year}</span>
-                      </>
+                      <><span className="text-[#DDD]">·</span><span className="text-[10px] text-[#BBB] num-font">{startup.founded_year}</span></>
                     )}
                   </div>
                 </div>
-
                 <ChevronRight className="w-4 h-4 text-[#CCC] flex-shrink-0" />
               </div>
             </Link>
           ))}
-
-          {(!startups || startups.length === 0) && (
-            <div className="py-16 text-center px-4">
-              <p className="text-sm text-[#AAA]">No startups found. Try a different search.</p>
-            </div>
-          )}
         </div>
 
         {/* ── PAGINATION ── */}
@@ -408,8 +359,6 @@ if (sectorFilter) {
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Prev
             </Link>
-
-            {/* Page numbers */}
             <div className="flex items-center gap-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
@@ -418,9 +367,7 @@ if (sectorFilter) {
                     key={pageNum}
                     href={`?page=${pageNum}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
                     className={`w-8 h-8 flex items-center justify-center border text-[11px] font-bold num-font transition-colors ${
-                      pageNum === currentPage
-                        ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
-                        : "border-[#D5D0C8] bg-white text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C]"
+                      pageNum === currentPage ? "bg-[#1C1C1C] text-white border-[#1C1C1C]" : "border-[#D5D0C8] bg-white text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C]"
                     }`}
                   >
                     {pageNum}
@@ -428,7 +375,6 @@ if (sectorFilter) {
                 );
               })}
             </div>
-
             <Link
               href={`?page=${Math.min(totalPages, currentPage + 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
               className={`flex items-center gap-1.5 px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase tracking-wider text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors ${
@@ -440,7 +386,6 @@ if (sectorFilter) {
           </div>
         )}
 
-        {/* ── BOTTOM TRUST BAR ── */}
         <div className="mt-14 pt-6 border-t border-[#D5D0C8] flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {[
             { icon: BadgeCheck, text: "Every listing manually verified" },
@@ -453,7 +398,6 @@ if (sectorFilter) {
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );
