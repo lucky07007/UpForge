@@ -1,4 +1,3 @@
-// app/startup/page.tsx (redesigned to match new aesthetic)
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -17,10 +16,16 @@ export default function StartupsPage() {
 
   useEffect(() => {
     const fetchStartups = async () => {
+      setLoading(true);
+      // OPTIMIZATION: 
+      // 1. .order("founded_year") se year-wise short kiya gaya hai.
+      // 2. .limit(50) add kiya hai taaki page jaldi load ho aur browser hang na ho.
       const { data, error } = await supabase
         .from("startups")
         .select("*")
-        .order("name", { ascending: true });
+        .order("founded_year", { ascending: false }) // Newest startups first
+        .order("name", { ascending: true })
+        .limit(50); 
 
       if (!error && data) {
         setStartups(data);
@@ -35,7 +40,8 @@ export default function StartupsPage() {
   const filteredStartups = useMemo(() => {
     if (!query) return startups;
     return startups.filter((startup) =>
-      startup.name.toLowerCase().includes(query.toLowerCase())
+      startup.name.toLowerCase().includes(query.toLowerCase()) ||
+      startup.industry?.toLowerCase().includes(query.toLowerCase())
     );
   }, [query, startups]);
 
@@ -43,7 +49,6 @@ export default function StartupsPage() {
 
   return (
     <div className="bg-[#FCFCFC] text-[#1A1A1A] font-sans antialiased min-h-screen">
-      {/* pt-24 accounts for fixed navbar (72px height + margin) */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -51,13 +56,12 @@ export default function StartupsPage() {
             Startup Registry
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Search and discover verified Indian startups—curated for founders,
-            investors, and ecosystem participants.
+            Search and discover verified Indian startups—sorted by founding year for better insights.
           </p>
 
           <div className="mt-8 flex items-center justify-center gap-4 text-sm text-gray-400">
             <span className="h-px w-12 bg-gray-200" />
-            <span>{total} {total === 1 ? "Profile" : "Profiles"} Documented</span>
+            <span>Showing {total} Recent Profiles</span>
             <span className="h-px w-12 bg-gray-200" />
           </div>
         </div>
@@ -72,7 +76,7 @@ export default function StartupsPage() {
           <div className="text-center py-20">
             <div className="inline-flex items-center gap-3 text-gray-400">
               <div className="h-4 w-4 rounded-full border-2 border-[#1A1A1A] border-t-transparent animate-spin" />
-              <span className="text-xs uppercase tracking-widest">Loading registry...</span>
+              <span className="text-xs uppercase tracking-widest">Optimizing Registry...</span>
             </div>
           </div>
         ) : filteredStartups.length > 0 ? (
@@ -83,7 +87,14 @@ export default function StartupsPage() {
                 href={`/startup/${startup.slug}`}
                 className="group"
               >
-                <article className="bg-white border border-gray-200 p-6 hover:border-gray-400 transition-all h-full flex flex-col items-center text-center">
+                <article className="bg-white border border-gray-200 p-6 hover:border-gray-400 transition-all h-full flex flex-col items-center text-center relative">
+                  {/* Year Badge for Quick View */}
+                  {startup.founded_year && (
+                    <div className="absolute top-2 right-2 bg-gray-100 text-[10px] px-2 py-0.5 font-bold rounded-sm">
+                      {startup.founded_year}
+                    </div>
+                  )}
+
                   {/* Logo or initial */}
                   {startup.logo_url ? (
                     <div className="w-20 h-20 mb-4 flex items-center justify-center border border-gray-100 bg-white p-2 group-hover:border-gray-300 transition-colors">
@@ -91,6 +102,7 @@ export default function StartupsPage() {
                         src={startup.logo_url}
                         alt={`${startup.name} logo`}
                         className="max-h-full max-w-full object-contain"
+                        loading="lazy" // Loading speed improve karne ke liye
                       />
                     </div>
                   ) : (
@@ -123,9 +135,6 @@ export default function StartupsPage() {
                         {startup.industry}
                       </span>
                     )}
-                    {startup.founded_year && (
-                      <span>{startup.founded_year}</span>
-                    )}
                   </div>
                 </article>
               </Link>
@@ -133,15 +142,8 @@ export default function StartupsPage() {
           </div>
         ) : (
           <div className="text-center py-20 border border-dashed border-gray-200 rounded-none bg-gray-50/50">
-            <div className="inline-flex items-center justify-center p-4 bg-white border border-gray-200 mb-4">
-              <Search className="h-6 w-6 text-gray-300" />
-            </div>
-            <p className="text-gray-400 uppercase tracking-widest text-xs font-medium">
-              No matching entries
-            </p>
-            <p className="text-sm text-gray-400 mt-2">
-              Try refining your search
-            </p>
+            <Search className="h-6 w-6 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-400 uppercase tracking-widest text-xs font-medium">No matching entries</p>
           </div>
         )}
       </div>
