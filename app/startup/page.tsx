@@ -276,7 +276,7 @@ export default async function StartupPage({ searchParams }: Props) {
               <Search className="w-4 h-4" />
               <span className="text-[11px] font-bold tracking-wide uppercase hidden sm:block">Search</span>
             </button>
-          </form>
+
           {(searchQuery || sectorFilter) && (
             <p className="mt-2 text-[11px] text-[#888]">
               {count || 0} result{count !== 1 ? "s" : ""} for
