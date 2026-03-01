@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Users,
   Building2,
+  Clock,
 } from "lucide-react";
 
 export default async function Home() {
