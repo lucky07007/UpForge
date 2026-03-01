@@ -307,7 +307,7 @@ export default async function Home() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
               <Link
-                href="/startups"
+                href="/startup"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#1C1C1C] text-white text-sm font-bold tracking-wide hover:bg-[#333] transition-colors"
                 style={{ fontFamily: "system-ui, sans-serif" }}
               >
@@ -535,7 +535,7 @@ export default async function Home() {
                 </h3>
               </div>
               <Link
-                href="/startups"
+                href="/startup"
                 className="flex items-center gap-1 text-[10px] text-[#888] hover:text-[#1C1C1C] transition-colors"
                 style={{ fontFamily: "system-ui, sans-serif" }}
               >
@@ -629,7 +629,7 @@ export default async function Home() {
               </h3>
             </div>
             <Link
-              href="/startups"
+              href="/startup"
               className="flex items-center gap-1 text-[10px] text-[#888] hover:text-[#1C1C1C] transition-colors"
               style={{ fontFamily: "system-ui, sans-serif" }}
             >
