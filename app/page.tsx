@@ -679,41 +679,56 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* ─── VALUATION CTA ─── */}
-        <div className="my-8">
-          <div className="bg-[#1C1C1C] relative overflow-hidden">
-            {/* Decorative grid lines */}
-            <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
-              backgroundImage: "repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, white 0px, white 1px, transparent 1px, transparent 80px)"
-            }}></div>
-
-            <div className="relative p-8 sm:p-10 lg:p-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-              <div className="flex items-start gap-5">
-                <div className="bg-[#E8C547] p-3 flex-shrink-0">
-                  <Calculator className="w-6 h-6 text-[#1C1C1C]" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-white/30 tracking-[0.25em] uppercase mb-2" style={{ fontFamily: "system-ui, sans-serif" }}>
-                    Free Tool
-                  </p>
-                  <h3 className="text-2xl sm:text-3xl lg:text-[2rem] tracking-tight text-white mb-2">
-                    Know your startup's worth
-                  </h3>
-                  <p className="text-sm text-white/45" style={{ fontFamily: "system-ui, sans-serif" }}>
-                    Industry-benchmarked valuation · Takes 2 minutes · No signup required
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/valuation"
-                className="flex-shrink-0 inline-flex items-center gap-2 px-8 py-4 bg-[#E8C547] text-[#1C1C1C] text-sm font-bold tracking-wide hover:bg-[#F5D55A] transition-colors"
+        {/* ─── REPORTS CTA ─── */}
+      <div className="my-12">
+        <div className="bg-[#1C1C1C] relative overflow-hidden">
+      
+          {/* Decorative grid lines */}
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, white 0px, white 1px, transparent 1px, transparent 80px)",
+            }}
+          ></div>
+      
+          <div className="relative p-10 sm:p-14 flex flex-col items-center justify-center text-center gap-6">
+      
+            <div className="bg-[#E8C547] p-4">
+              <Newspaper className="w-7 h-7 text-[#1C1C1C]" />
+            </div>
+      
+            <div>
+              <p
+                className="text-[10px] text-white/30 tracking-[0.25em] uppercase mb-3"
                 style={{ fontFamily: "system-ui, sans-serif" }}
               >
-                Estimate Valuation <ArrowRight className="w-4 h-4" />
-              </Link>
+                Premium Intelligence
+              </p>
+      
+              <h3 className="text-3xl sm:text-4xl tracking-tight text-white mb-3">
+                Deep Startup Reports
+              </h3>
+      
+              <p
+                className="text-sm text-white/50 max-w-xl mx-auto"
+                style={{ fontFamily: "system-ui, sans-serif" }}
+              >
+                Institutional-grade AI research reports on Indian startups —
+                valuation insights, risk analysis, market positioning & growth signals.
+              </p>
             </div>
+      
+            <Link
+              href="/reports"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#E8C547] text-[#1C1C1C] text-sm font-bold tracking-wide hover:bg-[#F5D55A] transition-colors"
+              style={{ fontFamily: "system-ui, sans-serif" }}
+            >
+              Explore Reports <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
+      </div>
 
         {/* ─── FOOTER ─── */}
         <div className="pt-4 border-t border-[#D5D0C8] flex flex-col sm:flex-row items-center justify-between gap-3">
