@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import RegistrySearch from "@/components/registry-search";
 import PageTransition from "@/components/page-transition";
-import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, Filter, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, ArrowRight } from "lucide-react";
 
 export const revalidate = 0; // Fresh results के लिए इसे 0 रखा गया है
 
@@ -247,26 +246,20 @@ export default async function StartupPage({ searchParams }: Props) {
           </div>
         </div>
 
-        {/* ── SEARCH INPUT (NO BUTTON) ── */}
+        {/* ── SEARCH (NO BUTTON) ── */}
         <div className="py-5 border-b border-[#D5D0C8] fade-up-3">
-          <form action="" method="GET" className="flex items-stretch">
-            <div className="relative flex-1">
+          <form action="" method="GET" className="flex">
+            <div className="relative w-full">
               <input
                 type="text"
                 name="search"
                 defaultValue={searchQuery}
                 placeholder="Search by name, sector, or industry…"
                 className="w-full border border-[#D5D0C8] bg-white px-4 py-2.5 text-sm text-[#1C1C1C] placeholder-[#BBB] focus:outline-none focus:border-[#1C1C1C] transition-colors pr-10"
-                onChange={(e) => {
-                  // Auto-submit on typing (client-side will handle via form submission)
-                  const form = e.currentTarget.form;
-                  if (form) {
-                    const timeoutId = setTimeout(() => form.requestSubmit(), 500);
-                    return () => clearTimeout(timeoutId);
-                  }
-                }}
               />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#BBB] pointer-events-none" />
+              <button type="submit" className="absolute right-0 top-0 h-full px-3 flex items-center">
+                <Search className="w-4 h-4 text-[#888] hover:text-[#1C1C1C] transition-colors" />
+              </button>
               {/* Force page 1 on new search */}
               <input type="hidden" name="page" value="1" />
               {sectorFilter && (
@@ -286,10 +279,10 @@ export default async function StartupPage({ searchParams }: Props) {
 
         {/* ── CONTENT GRID ── */}
         <PageTransition key={`${searchQuery}-${sectorFilter}-${currentPage}`}>
-          {/* Desktop: Card Grid (hidden on mobile) */}
+          {/* Desktop: Card Grid */}
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] border border-[#D5D0C8] mt-0 fade-up-4">
             {startups?.map((startup) => (
-              <Link key={startup.id} href={`/startup/${startup.slug}`}>
+              <Link key={startup.id} href={`/startup/${startup.slug}`} className="group">
                 <article className="bg-[#F7F5F0] p-5 lg:p-6 card-hover h-full flex flex-col border border-transparent">
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-12 h-12 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
@@ -317,7 +310,7 @@ export default async function StartupPage({ searchParams }: Props) {
             ))}
           </div>
 
-          {/* Mobile: List View (only visible on mobile) */}
+          {/* Mobile: List View */}
           <div className="md:hidden divide-y divide-[#E8E4DC] border border-[#D5D0C8] mt-0 fade-up-4">
             {startups?.map((startup) => (
               <Link key={startup.id} href={`/startup/${startup.slug}`}>
