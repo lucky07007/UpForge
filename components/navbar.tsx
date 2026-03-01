@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { usePathname } from "next/navigation"; // Pathname check karne ke liye
+import { Menu, X } from "lucide-react";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname(); // Current URL lane ke liye
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,11 +36,15 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between">
-
-        {/* Brand */}
+        {/* Brand with Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 bg-[#1A1A1A] rounded-sm flex items-center justify-center text-white text-sm font-serif">
-            UF
+          <div className="relative w-10 h-10 overflow-hidden rounded-sm">
+            <Image
+              src="/logo.jpg" // Aapka logo path
+              alt="UpForge Logo"
+              fill
+              className="object-cover"
+            />
           </div>
           <span className="font-serif text-xl tracking-tight group-hover:text-gray-600 transition-colors">
             UpForge
@@ -47,15 +53,22 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm">
-          {links.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-muted-foreground hover:text-foreground transition-colors py-2 border-b-2 border-transparent hover:border-foreground"
-            >
-              {link.name}
-            </Link>
-          ))}
+          {links.map((link) => {
+            const isActive = pathname === link.href; // Active page logic
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`transition-colors py-2 border-b-2 ${
+                  isActive 
+                    ? "text-foreground border-foreground font-medium" // Active state underline
+                    : "text-muted-foreground border-transparent hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
 
           <Link
             href="/submit"
@@ -66,37 +79,25 @@ export function Navbar() {
         </nav>
 
         {/* Mobile Toggle */}
-        <button
-          className="md:hidden p-2"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
+        <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-background animate-in slide-in-from-top duration-300">
-          <div className="max-w-[1440px] mx-auto px-4 py-6 flex flex-col gap-4 text-base">
+        <div className="md:hidden border-t border-border bg-background">
+          <div className="px-4 py-6 flex flex-col gap-4">
             {links.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-muted-foreground hover:text-foreground py-2"
+                className={`py-2 ${pathname === link.href ? "text-foreground font-bold" : "text-muted-foreground"}`}
               >
                 {link.name}
               </Link>
             ))}
-
-            <Link
-              href="/submit"
-              onClick={() => setIsOpen(false)}
-              className="px-4 py-3 border border-foreground text-center mt-2 hover:bg-foreground hover:text-white transition-colors"
-            >
-              Submit Startup
-            </Link>
           </div>
         </div>
       )}
