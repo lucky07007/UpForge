@@ -93,7 +93,6 @@ export function Footer() {
             <ul className="space-y-3">
               {[
                 { label: "Browse Startups", href: "/startup" },
-                { label: "Valuation Tool", href: "/valuation" },
                 { label: "Sample Report", href: "/reports" },
                 { label: "Industries", href: "/industries" },
                 { label: "Sitemap", href: "/sitemap" },
@@ -121,7 +120,6 @@ export function Footer() {
                 { label: "Editorial Policy", href: "/editorial" },
                 { label: "Data Policy", href: "/data-policy" },
                 { label: "Corrections", href: "/corrections" },
-                { label: "Transparency", href: "/transparency" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -145,7 +143,6 @@ export function Footer() {
                 { label: "About", href: "/about" },
                 { label: "FAQ", href: "/faq" },
                 { label: "Contact", href: "/contact" },
-                { label: "Press", href: "/press" },
                 { label: "Feedback", href: "/feedback" },
               ].map((link) => (
                 <li key={link.href}>
