@@ -11,9 +11,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
 
 // ─── Working EmailJS Config ─────────────────────────────────────────────────
-const WORKING_SERVICE_ID = "service_iq9nja3"; 
-const WORKING_TEMPLATE_ID = "template_p20jq83";
-const WORKING_PUBLIC_KEY = "BrDAjFcKnUX8zcFB8";
+const WORKING_SERVICE_ID = "service_usgk4bw"; 
+const WORKING_TEMPLATE_ID = "template_svr7yqv";
+const WORKING_PUBLIC_KEY = "e4W6YbfZEx81sqmN5";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
