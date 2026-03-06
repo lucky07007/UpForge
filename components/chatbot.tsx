@@ -1,45 +1,52 @@
 // components/chatbot.tsx
 "use client";
 
+/**
+ * Forge — UpForge AI Chatbot
+ * 
+ * SEO / Structured Data notes:
+ *  • The floating button has aria-label, role, and title for screen readers
+ *  • The chat window uses role="dialog", aria-modal, aria-label for a11y
+ *  • SpeakableSpecification JSON-LD is injected so Google can index AI answers
+ *  • All images have explicit alt text
+ */
+
+import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Send, Loader2, ChevronDown, Minimize2, Zap } from "lucide-react";
+import { X, Send, Loader2, ChevronDown, Minimize2, Zap, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
-// ─── Rich Message Renderer ────────────────────────────────────────────────────
-// Parses assistant messages into bold, numbered lists, bullets, line breaks
+// ─── Rich Text Renderer ───────────────────────────────────────────────────────
+// Turns markdown-lite into styled React — bold, numbered lists, bullets,
+// headings, dividers, with every element on its own line.
 
 function RichText({ text }: { text: string }) {
-  const lines = text.split("\n").filter((l, i, arr) => {
-    // Collapse more than 2 consecutive blank lines
-    if (l.trim() === "" && i > 0 && arr[i - 1].trim() === "") return false;
-    return true;
-  });
+  const lines = text.split("\n").reduce<string[]>((acc, line, i, arr) => {
+    if (line.trim() === "" && i > 0 && arr[i - 1].trim() === "") return acc;
+    acc.push(line);
+    return acc;
+  }, []);
 
-  const renderInline = (str: string) => {
-    // Bold: **text** or *text*
-    const parts = str.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  const renderInline = (str: string): React.ReactNode[] => {
+    const parts = str.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
     return parts.map((part, i) => {
-      if (part.startsWith("**") && part.endsWith("**")) {
+      if (part.startsWith("**") && part.endsWith("**"))
+        return <strong key={i} className="font-bold text-[#1C1C1C]">{part.slice(2, -2)}</strong>;
+      if (part.startsWith("*") && part.endsWith("*"))
+        return <em key={i} className="italic text-[#555]">{part.slice(1, -1)}</em>;
+      if (part.startsWith("`") && part.endsWith("`"))
         return (
-          <strong key={i} className="font-bold text-[#1C1C1C]">
-            {part.slice(2, -2)}
-          </strong>
-        );
-      }
-      if (part.startsWith("*") && part.endsWith("*")) {
-        return (
-          <em key={i} className="italic text-[#444]">
+          <code key={i} className="bg-[#EEEAE3] text-[#1C1C1C] px-1 py-0.5 text-[10px] font-mono rounded-sm">
             {part.slice(1, -1)}
-          </em>
+          </code>
         );
-      }
       return <span key={i}>{part}</span>;
     });
   };
@@ -51,35 +58,33 @@ function RichText({ text }: { text: string }) {
     const line = lines[i];
     const trimmed = line.trim();
 
-    // Empty line → spacer
+    // Empty → spacer
     if (trimmed === "") {
-      elements.push(<div key={`space-${i}`} className="h-2" />);
-      i++;
-      continue;
+      elements.push(<div key={`sp-${i}`} className="h-2" />);
+      i++; continue;
     }
 
-    // Numbered list: "1. text" or "1) text"
-    const numMatch = trimmed.match(/^(\d+)[.)]\s+(.+)$/);
-    if (numMatch) {
-      const listItems: { num: string; text: string }[] = [];
+    // Numbered list  "1. …" or "1) …"
+    if (/^(\d+)[.)]\s/.test(trimmed)) {
+      const items: { n: string; t: string }[] = [];
       while (i < lines.length) {
         const m = lines[i].trim().match(/^(\d+)[.)]\s+(.+)$/);
         if (!m) break;
-        listItems.push({ num: m[1], text: m[2] });
+        items.push({ n: m[1], t: m[2] });
         i++;
       }
       elements.push(
-        <ol key={`ol-${i}`} className="space-y-1.5 my-2">
-          {listItems.map((item, idx) => (
+        <ol key={`ol-${i}`} className="space-y-2 my-2.5">
+          {items.map((item, idx) => (
             <li key={idx} className="flex items-start gap-2.5">
               <span
-                className="flex-shrink-0 w-5 h-5 bg-[#1C1C1C] text-[#E8C547] text-[9px] font-black flex items-center justify-center mt-0.5"
-                style={{ fontFamily: "system-ui, sans-serif", lineHeight: 1 }}
+                className="flex-shrink-0 w-[18px] h-[18px] bg-[#1C1C1C] text-[#E8C547] text-[8px] font-black flex items-center justify-center mt-[2px]"
+                style={{ fontFamily: "system-ui, sans-serif" }}
               >
-                {item.num}
+                {item.n}
               </span>
-              <span className="flex-1 text-[12px] leading-relaxed text-[#1C1C1C]">
-                {renderInline(item.text)}
+              <span className="flex-1 text-[12.5px] leading-relaxed text-[#1C1C1C]">
+                {renderInline(item.t)}
               </span>
             </li>
           ))}
@@ -88,22 +93,21 @@ function RichText({ text }: { text: string }) {
       continue;
     }
 
-    // Bullet: "- text" or "• text"
-    const bulletMatch = trimmed.match(/^[-•]\s+(.+)$/);
-    if (bulletMatch) {
-      const bullets: string[] = [];
+    // Bullet  "- …" or "• …"
+    if (/^[-•]\s/.test(trimmed)) {
+      const items: string[] = [];
       while (i < lines.length) {
         const m = lines[i].trim().match(/^[-•]\s+(.+)$/);
         if (!m) break;
-        bullets.push(m[1]);
+        items.push(m[1]);
         i++;
       }
       elements.push(
-        <ul key={`ul-${i}`} className="space-y-1.5 my-2">
-          {bullets.map((b, idx) => (
+        <ul key={`ul-${i}`} className="space-y-1.5 my-2.5">
+          {items.map((b, idx) => (
             <li key={idx} className="flex items-start gap-2.5">
-              <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#E8C547] mt-1.5" />
-              <span className="flex-1 text-[12px] leading-relaxed text-[#1C1C1C]">
+              <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#E8C547] mt-[5px]" />
+              <span className="flex-1 text-[12.5px] leading-relaxed text-[#1C1C1C]">
                 {renderInline(b)}
               </span>
             </li>
@@ -113,35 +117,29 @@ function RichText({ text }: { text: string }) {
       continue;
     }
 
-    // Heading: "### text" or "## text" or "# text"
-    const headingMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
-    if (headingMatch) {
-      const level = headingMatch[1].length;
+    // Heading  "### …"
+    const hm = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (hm) {
+      const lvl = hm[1].length;
       elements.push(
         <p
           key={`h-${i}`}
-          className={`font-bold text-[#1C1C1C] mt-2 mb-1 ${
-            level === 1 ? "text-[14px]" : level === 2 ? "text-[13px]" : "text-[12px]"
-          }`}
-          style={{ fontFamily: "'Georgia', serif", letterSpacing: "-0.01em" }}
+          className={`font-bold text-[#1C1C1C] mt-3 mb-1 ${lvl === 1 ? "text-[14px]" : lvl === 2 ? "text-[13px]" : "text-[12px]"}`}
+          style={{ fontFamily: "'Georgia', serif", letterSpacing: "-0.015em" }}
         >
-          {renderInline(headingMatch[2])}
+          {renderInline(hm[2])}
         </p>
       );
-      i++;
-      continue;
+      i++; continue;
     }
 
-    // Divider: "---"
+    // Divider  "---"
     if (trimmed === "---") {
-      elements.push(
-        <div key={`hr-${i}`} className="border-t border-[#E2DDD5] my-2" />
-      );
-      i++;
-      continue;
+      elements.push(<div key={`hr-${i}`} className="border-t border-[#E2DDD5] my-2" />);
+      i++; continue;
     }
 
-    // Default paragraph
+    // Paragraph
     elements.push(
       <p key={`p-${i}`} className="text-[12.5px] leading-relaxed text-[#1C1C1C]">
         {renderInline(trimmed)}
@@ -150,26 +148,26 @@ function RichText({ text }: { text: string }) {
     i++;
   }
 
-  return <div className="space-y-0.5">{elements}</div>;
+  return <div className="space-y-[2px]">{elements}</div>;
 }
 
-// ─── Typing Indicator ─────────────────────────────────────────────────────────
+// ─── Typing dots ──────────────────────────────────────────────────────────────
 
 function TypingDots() {
   return (
-    <div className="flex items-center gap-1 px-4 py-3">
+    <div className="flex items-center gap-1.5 px-4 py-3">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="w-1.5 h-1.5 rounded-full bg-[#AAA]"
-          style={{ animation: `typingBounce 1.2s ${i * 0.2}s ease-in-out infinite` }}
+          className="w-1.5 h-1.5 rounded-full bg-[#C8C3BC]"
+          style={{ animation: `tBounce 1.2s ${i * 0.18}s ease-in-out infinite` }}
         />
       ))}
     </div>
   );
 }
 
-// ─── Message Bubble ───────────────────────────────────────────────────────────
+// ─── Message bubble ───────────────────────────────────────────────────────────
 
 function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
   const isUser = msg.role === "user";
@@ -177,27 +175,37 @@ function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
     <motion.div
       initial={isNew ? { opacity: 0, y: 10 } : false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-2`}
     >
+      {/* AI avatar — robot image */}
       {!isUser && (
-        <div
-          className="w-6 h-6 bg-[#1C1C1C] text-[#E8C547] flex items-center justify-center text-[9px] font-black flex-shrink-0 mb-0.5"
-          style={{ fontFamily: "'Georgia', serif" }}
-        >
-          F
+        <div className="w-7 h-7 flex-shrink-0 mb-0.5 overflow-hidden bg-[#1C1C1C] border border-[#333] flex items-center justify-center">
+          <Image
+            src="/robot.png"
+            alt="Forge AI assistant"
+            width={28}
+            height={28}
+            className="w-full h-full object-cover"
+            style={{ filter: "brightness(0) invert(1) sepia(1) saturate(3) hue-rotate(5deg)" }}
+          />
         </div>
       )}
+
       <div
-        className={`max-w-[85%] px-3.5 py-2.5 ${
+        className={`max-w-[84%] px-3.5 py-2.5 ${
           isUser
-            ? "bg-[#1C1C1C] text-white text-[12.5px] leading-relaxed"
-            : "bg-white border border-[#E2DDD5] text-[#1C1C1C]"
+            ? "bg-[#1C1C1C] text-white"
+            : "bg-white border border-[#E2DDD5]"
         }`}
-        style={{ fontFamily: isUser ? "system-ui, sans-serif" : undefined }}
       >
         {isUser ? (
-          <span className="text-[12.5px] leading-relaxed">{msg.content}</span>
+          <span
+            className="text-[12.5px] leading-relaxed text-white"
+            style={{ fontFamily: "system-ui, sans-serif" }}
+          >
+            {msg.content}
+          </span>
         ) : (
           <RichText text={msg.content} />
         )}
@@ -206,9 +214,13 @@ function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
   );
 }
 
-// ─── Animated Forge Button ────────────────────────────────────────────────────
+// ─── Animated floating button ─────────────────────────────────────────────────
 
-function ForgeButton({ isOpen, newMsgCount, onClick }: {
+function ForgeButton({
+  isOpen,
+  newMsgCount,
+  onClick,
+}: {
   isOpen: boolean;
   newMsgCount: number;
   onClick: () => void;
@@ -216,59 +228,70 @@ function ForgeButton({ isOpen, newMsgCount, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="relative flex items-center justify-center"
-      style={{ width: 56, height: 56 }}
-      aria-label="Open Forge AI assistant"
+      aria-label="Open Forge — UpForge AI startup assistant"
+      title="Ask Forge anything about Indian startups"
+      className="relative flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8C547]"
+      style={{ width: 58, height: 58 }}
     >
-      {/* Outer rotating ring */}
+      {/* Slow-rotating outer square ring */}
       <span
-        className="absolute inset-0 border border-[#E8C547]/40"
-        style={{ animation: "spinRing 8s linear infinite" }}
+        className="absolute inset-0 border border-[#E8C547]/35"
+        style={{ animation: "spinRing 10s linear infinite" }}
       />
-      {/* Pulsing ring */}
+      {/* Counter-rotating inner ring */}
       <span
-        className="absolute inset-[-4px] border border-[#E8C547]/15"
-        style={{ animation: "pulseRing 2.5s ease-in-out infinite" }}
+        className="absolute inset-[5px] border border-[#E8C547]/15"
+        style={{ animation: "spinRing 6s linear infinite reverse" }}
+      />
+      {/* Pulse halo */}
+      <span
+        className="absolute inset-[-6px] border border-[#E8C547]/10 rounded-none"
+        style={{ animation: "pulseHalo 3s ease-in-out infinite" }}
       />
 
-      {/* Core button */}
+      {/* Core */}
       <motion.div
-        animate={isOpen ? { backgroundColor: "#2a2a2a" } : { backgroundColor: "#1C1C1C" }}
-        className="w-full h-full flex flex-col items-center justify-center gap-0.5 relative z-10"
-        style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.25), 0 1px 4px rgba(0,0,0,0.3)" }}
+        animate={{ backgroundColor: isOpen ? "#2a2a2a" : "#1C1C1C" }}
+        transition={{ duration: 0.2 }}
+        className="relative z-10 w-full h-full flex items-center justify-center overflow-hidden"
+        style={{ boxShadow: "0 6px 28px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.2)" }}
       >
+        {/* Shimmer sweep on hover */}
+        <span className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{ background: "linear-gradient(105deg, transparent 40%, rgba(232,197,71,0.08) 50%, transparent 60%)" }}
+        />
+
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div
               key="close"
-              initial={{ rotate: -90, opacity: 0, scale: 0.7 }}
+              initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
               animate={{ rotate: 0, opacity: 1, scale: 1 }}
-              exit={{ rotate: 90, opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.18 }}
+              exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.16 }}
             >
               <X className="w-5 h-5 text-white" />
             </motion.div>
           ) : (
             <motion.div
-              key="forge"
-              initial={{ rotate: 90, opacity: 0, scale: 0.7 }}
-              animate={{ rotate: 0, opacity: 1, scale: 1 }}
-              exit={{ rotate: -90, opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.18 }}
-              className="flex flex-col items-center gap-0"
+              key="robot"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.6, opacity: 0 }}
+              transition={{ duration: 0.16 }}
+              className="flex flex-col items-center gap-[1px]"
             >
-              <span
-                className="text-[#E8C547] font-black text-[15px] leading-none"
-                style={{ fontFamily: "'Georgia', serif" }}
-              >
-                F
-              </span>
-              <span
-                className="text-[7px] text-white/35 tracking-[0.15em] uppercase leading-none"
-                style={{ fontFamily: "system-ui, sans-serif" }}
-              >
-                forge
-              </span>
+              <div className="w-[28px] h-[28px] overflow-hidden flex items-center justify-center">
+                <Image
+                  src="/robot.png"
+                  alt="Forge AI"
+                  width={28}
+                  height={28}
+                  className="w-full h-full object-contain"
+                  style={{ filter: "brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(3deg)" }}
+                  priority
+                />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -281,10 +304,10 @@ function ForgeButton({ isOpen, newMsgCount, onClick }: {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-500 text-white text-[8px] font-black flex items-center justify-center rounded-full z-20 border-2 border-[#F7F5F0]"
+            className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 bg-emerald-500 text-white text-[8px] font-black px-1 flex items-center justify-center rounded-full z-20 border-2 border-[#F7F5F0]"
             style={{ fontFamily: "system-ui, sans-serif" }}
           >
-            {newMsgCount}
+            {newMsgCount > 9 ? "9+" : newMsgCount}
           </motion.span>
         )}
       </AnimatePresence>
@@ -292,37 +315,45 @@ function ForgeButton({ isOpen, newMsgCount, onClick }: {
   );
 }
 
-// ─── Tooltip on first load ────────────────────────────────────────────────────
+// ─── Tooltip ──────────────────────────────────────────────────────────────────
 
 function ForgeTooltip({ show }: { show: boolean }) {
   return (
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ opacity: 0, x: 12, scale: 0.95 }}
+          initial={{ opacity: 0, x: 14, scale: 0.94 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: 12, scale: 0.95 }}
-          transition={{ delay: 1.8, duration: 0.3 }}
-          className="absolute right-[68px] bottom-3 pointer-events-none"
+          exit={{ opacity: 0, x: 14, scale: 0.94 }}
+          transition={{ delay: 2, duration: 0.28, ease: "easeOut" }}
+          className="absolute right-[72px] bottom-[14px] pointer-events-none"
         >
-          <div
-            className="relative bg-[#1C1C1C] text-white px-3.5 py-2.5 shadow-xl whitespace-nowrap"
-          >
-            {/* Decorative top line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#E8C547]" />
-            <div className="flex items-center gap-2">
-              <Zap className="w-3 h-3 text-[#E8C547]" />
+          <div className="relative bg-[#111] text-white shadow-2xl whitespace-nowrap overflow-hidden">
+            {/* Gold top bar */}
+            <div className="h-[2px] bg-gradient-to-r from-[#E8C547] via-[#F5D55A] to-[#C8A83A]" />
+            <div className="px-4 py-2.5 flex items-center gap-2.5">
+              <div className="w-7 h-7 flex-shrink-0 overflow-hidden bg-[#1C1C1C] border border-[#2a2a2a] flex items-center justify-center">
+                <Image
+                  src="/robot.png"
+                  alt="Forge AI"
+                  width={28}
+                  height={28}
+                  className="w-full h-full object-contain"
+                  style={{ filter: "brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(3deg)" }}
+                />
+              </div>
               <div>
-                <div className="text-[10px] font-bold text-white" style={{ fontFamily: "'Georgia', serif" }}>
+                <div className="text-[11px] font-bold text-white leading-tight" style={{ fontFamily: "'Georgia', serif" }}>
                   Ask <span className="text-[#E8C547]">Forge</span>
                 </div>
-                <div className="text-[9px] text-white/40" style={{ fontFamily: "system-ui, sans-serif" }}>
-                  Startup AI · Always on
+                <div className="text-[9px] text-white/35 leading-tight" style={{ fontFamily: "system-ui, sans-serif" }}>
+                  India Startup AI · Always on
                 </div>
               </div>
+              <Zap className="w-3 h-3 text-[#E8C547] flex-shrink-0" />
             </div>
             {/* Arrow */}
-            <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[6px] border-t-transparent border-b-transparent border-l-[#1C1C1C]" />
+            <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-transparent border-l-[#111]" />
           </div>
         </motion.div>
       )}
@@ -330,16 +361,16 @@ function ForgeTooltip({ show }: { show: boolean }) {
   );
 }
 
-// ─── Quick Prompt Chips ───────────────────────────────────────────────────────
+// ─── Quick prompts ────────────────────────────────────────────────────────────
 
 const QUICK_PROMPTS = [
-  "How do I list my startup?",
-  "Hottest sectors in India 2026?",
-  "How is SaaS valuation calculated?",
-  "What's a soonicorn?",
+  { label: "How to list my startup free?", icon: "→" },
+  { label: "Hottest sectors in India 2026?", icon: "→" },
+  { label: "How is SaaS valuation calculated?", icon: "→" },
+  { label: "What's a soonicorn?", icon: "→" },
 ];
 
-// ─── Main Chatbot ─────────────────────────────────────────────────────────────
+// ─── Main Chatbot component ───────────────────────────────────────────────────
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -351,7 +382,7 @@ export function Chatbot() {
     {
       role: "assistant",
       content:
-        "Hey — I'm **Forge**, UpForge's AI analyst.\n\nI know India's startup ecosystem inside out:\n- Funding rounds & valuations\n- Hot sectors & market trends\n- How to list your startup\n- Investor landscape\n\nWhat would you like to know?",
+        "Hey — I'm **Forge**, UpForge's AI analyst.\n\nI know India's startup ecosystem inside out:\n- Funding rounds & valuations\n- Hot sectors & market trends\n- How to list your startup free\n- Investor landscape & deal flow\n\nWhat would you like to know?",
     },
   ]);
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set());
@@ -360,56 +391,59 @@ export function Chatbot() {
   const inputRef = useRef<HTMLInputElement>(null);
   const showTooltip = !isOpen && messages.length === 1;
 
+  // Auto-scroll
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
   }, [messages, isLoading]);
 
+  // Focus on open
   useEffect(() => {
-    if (isOpen && !isMinimized) {
-      setTimeout(() => inputRef.current?.focus(), 150);
-    }
+    if (isOpen && !isMinimized)
+      setTimeout(() => inputRef.current?.focus(), 160);
   }, [isOpen, isMinimized]);
 
+  // Clear badge
   useEffect(() => {
     if (isOpen) setNewMsgCount(0);
   }, [isOpen]);
 
-  const send = useCallback(async (text?: string) => {
-    const messageText = (text || input).trim();
-    if (!messageText || isLoading) return;
+  const send = useCallback(
+    async (text?: string) => {
+      const msg = (text ?? input).trim();
+      if (!msg || isLoading) return;
 
-    const userMsg: Message = { role: "user", content: messageText };
-    const newIndex = messages.length + 1;
+      const userMsg: Message = { role: "user", content: msg };
+      const nextIdx = messages.length + 1;
 
-    setMessages((p) => [...p, userMsg]);
-    setJustAdded((p) => new Set(p).add(messages.length));
-    setInput("");
-    setIsLoading(true);
+      setMessages((p) => [...p, userMsg]);
+      setJustAdded((p) => new Set(p).add(messages.length));
+      setInput("");
+      setIsLoading(true);
 
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
-      });
-      const data = await res.json();
-      const reply =
-        data.message || data.error || "I couldn't process that — please try again.";
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [...messages, userMsg] }),
+        });
+        const data = await res.json();
+        const reply = data.message ?? data.error ?? "I couldn't process that — please try again.";
 
-      setMessages((p) => [...p, { role: "assistant", content: reply }]);
-      setJustAdded((p) => new Set(p).add(newIndex));
-      if (!isOpen) setNewMsgCount((c) => c + 1);
-    } catch {
-      setMessages((p) => [
-        ...p,
-        { role: "assistant", content: "Network issue — please try again in a moment." },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [input, isLoading, messages, isOpen]);
+        setMessages((p) => [...p, { role: "assistant", content: reply }]);
+        setJustAdded((p) => new Set(p).add(nextIdx));
+        if (!isOpen) setNewMsgCount((c) => c + 1);
+      } catch {
+        setMessages((p) => [
+          ...p,
+          { role: "assistant", content: "Network issue — please try again in a moment." },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [input, isLoading, messages, isOpen]
+  );
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -418,90 +452,128 @@ export function Chatbot() {
     }
   };
 
+  const reset = () => {
+    setMessages([{
+      role: "assistant",
+      content: "Hey — I'm **Forge**, UpForge's AI analyst.\n\nI know India's startup ecosystem inside out:\n- Funding rounds & valuations\n- Hot sectors & market trends\n- How to list your startup free\n- Investor landscape & deal flow\n\nWhat would you like to know?",
+    }]);
+    setJustAdded(new Set());
+    setInput("");
+  };
+
   return (
     <>
+      {/* ── SEO: SpeakableSpecification so Google can surface AI answers ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPageElement",
+            "cssSelector": "#forge-chatbot",
+            "speakable": { "@type": "SpeakableSpecification", "cssSelector": "#forge-chatbot" },
+            "name": "Forge — UpForge AI Startup Assistant",
+            "description": "AI-powered startup assistant for India's startup ecosystem. Ask about funding, valuations, sectors, and how to list your startup on UpForge.",
+            "isPartOf": { "@type": "WebSite", "name": "UpForge", "url": "https://upforge.in" },
+          }),
+        }}
+      />
+
       <style>{`
-        @keyframes typingBounce {
-          0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-          30% { transform: translateY(-5px); opacity: 1; }
+        @keyframes tBounce {
+          0%,60%,100%{transform:translateY(0);opacity:.35}
+          30%{transform:translateY(-5px);opacity:1}
         }
         @keyframes spinRing {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          0%{transform:rotate(0deg)}
+          100%{transform:rotate(360deg)}
         }
-        @keyframes pulseRing {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(1.04); }
+        @keyframes pulseHalo {
+          0%,100%{opacity:.08;transform:scale(1)}
+          50%{opacity:.22;transform:scale(1.06)}
         }
-        @keyframes scanline {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
+        @keyframes scanBar {
+          0%{transform:translateY(-100%)}
+          100%{transform:translateY(400%)}
         }
-        .forge-scroll::-webkit-scrollbar { width: 3px; }
-        .forge-scroll::-webkit-scrollbar-track { background: transparent; }
-        .forge-scroll::-webkit-scrollbar-thumb { background: #D5D0C8; border-radius: 2px; }
-        .chip-hover:hover { background: #1C1C1C; color: white; border-color: #1C1C1C; }
-        .chip-hover:hover .chip-arrow { opacity: 1; }
+        @keyframes slideUp {
+          from{transform:translateY(6px);opacity:0}
+          to{transform:translateY(0);opacity:1}
+        }
+        .forge-scroll::-webkit-scrollbar{width:3px}
+        .forge-scroll::-webkit-scrollbar-track{background:transparent}
+        .forge-scroll::-webkit-scrollbar-thumb{background:#D5D0C8;border-radius:2px}
+        .prompt-chip:hover{background:#1C1C1C;color:white;border-color:#1C1C1C}
+        .prompt-chip:hover .chip-arr{opacity:1;color:#E8C547}
+        .send-btn:not(:disabled):hover{background:#E8C547;color:#1C1C1C}
       `}</style>
 
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+      <div id="forge-chatbot" className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
 
         {/* ── CHAT WINDOW ── */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.96 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Forge — UpForge AI Startup Assistant"
+              initial={{ opacity: 0, y: 22, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.96 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-3 w-[94vw] max-w-[390px] bg-[#F7F5F0] border border-[#C8C3BC] overflow-hidden flex flex-col"
+              exit={{ opacity: 0, y: 22, scale: 0.95 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-3 w-[94vw] max-w-[400px] bg-[#F7F5F0] border border-[#C8C3BC] flex flex-col overflow-hidden"
               style={{
-                height: isMinimized ? "auto" : "min(620px, 80vh)",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1)",
+                height: isMinimized ? "auto" : "min(640px, 82vh)",
+                boxShadow: "0 28px 72px rgba(0,0,0,0.22), 0 4px 18px rgba(0,0,0,0.12)",
               }}
             >
 
               {/* ── HEADER ── */}
-              <div className="flex-shrink-0 relative overflow-hidden" style={{ background: "#111" }}>
-                {/* Subtle scanline effect */}
-                <div
-                  className="absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#E8C547]/20 to-transparent pointer-events-none"
-                  style={{ animation: "scanline 4s linear infinite", top: 0 }}
-                />
+              <div className="flex-shrink-0 relative bg-[#111] overflow-hidden">
+                {/* Gold gradient top bar */}
+                <div className="h-[2.5px] w-full bg-gradient-to-r from-[#C8A83A] via-[#E8C547] to-[#F5D55A]" />
 
-                {/* Gold accent bar */}
-                <div className="h-[2px] w-full bg-gradient-to-r from-[#E8C547] via-[#F5D55A] to-[#C8A83A]" />
+                {/* Slow scan line */}
+                <div
+                  className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E8C547]/18 to-transparent pointer-events-none"
+                  style={{ animation: "scanBar 6s linear infinite" }}
+                />
 
                 <div className="px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {/* Avatar */}
+                    {/* Robot avatar */}
                     <div className="relative flex-shrink-0">
-                      <div
-                        className="w-9 h-9 bg-[#E8C547] flex items-center justify-center font-black text-[14px] text-[#1C1C1C]"
-                        style={{ fontFamily: "'Georgia', serif" }}
-                      >
-                        F
+                      <div className="w-10 h-10 bg-[#E8C547] flex items-center justify-center overflow-hidden border-2 border-[#C8A83A]">
+                        <Image
+                          src="/robot.png"
+                          alt="Forge — UpForge AI assistant robot"
+                          width={36}
+                          height={36}
+                          className="w-[32px] h-[32px] object-contain"
+                          priority
+                        />
                       </div>
-                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#111] rounded-full" />
+                      {/* Online dot */}
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-[#111] rounded-full" />
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2">
                         <span
-                          className="text-[15px] font-bold text-white tracking-tight"
+                          className="text-[15px] font-bold text-white tracking-tight leading-none"
                           style={{ fontFamily: "'Georgia', serif" }}
                         >
                           Forge
                         </span>
                         <span
-                          className="text-[8px] bg-[#E8C547] text-[#1C1C1C] px-1.5 py-0.5 font-black uppercase tracking-[0.15em]"
+                          className="text-[7px] bg-[#E8C547] text-[#111] px-1.5 py-0.5 font-black uppercase tracking-[0.18em] leading-none"
                           style={{ fontFamily: "system-ui, sans-serif" }}
                         >
                           AI
                         </span>
                       </div>
                       <div
-                        className="text-[9px] text-white/35 uppercase tracking-[0.2em]"
+                        className="text-[9px] text-white/30 uppercase tracking-[0.22em] mt-0.5 leading-none"
                         style={{ fontFamily: "system-ui, sans-serif" }}
                       >
                         UpForge Intelligence
@@ -509,56 +581,70 @@ export function Chatbot() {
                     </div>
                   </div>
 
-                  {/* Header actions */}
-                  <div className="flex items-center gap-1">
+                  {/* Controls */}
+                  <div className="flex items-center gap-0.5">
+                    <button
+                      onClick={reset}
+                      title="New conversation"
+                      aria-label="Reset conversation"
+                      className="p-2 text-white/25 hover:text-white/70 transition-colors"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={() => setIsMinimized(!isMinimized)}
-                      className="p-2 text-white/30 hover:text-white/70 transition-colors"
                       title={isMinimized ? "Expand" : "Minimize"}
+                      aria-label={isMinimized ? "Expand chat" : "Minimize chat"}
+                      className="p-2 text-white/25 hover:text-white/70 transition-colors"
                     >
-                      {isMinimized ? (
-                        <ChevronDown className="w-3.5 h-3.5 rotate-180" />
-                      ) : (
-                        <Minimize2 className="w-3.5 h-3.5" />
-                      )}
+                      {isMinimized
+                        ? <ChevronDown className="w-3.5 h-3.5 rotate-180" />
+                        : <Minimize2 className="w-3.5 h-3.5" />}
                     </button>
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="p-2 text-white/30 hover:text-white/70 transition-colors"
+                      aria-label="Close Forge chat"
+                      className="p-2 text-white/25 hover:text-white/70 transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
 
-                {/* Status bar */}
-                <div
-                  className="px-4 py-1.5 border-t border-white/5 flex items-center gap-2"
-                  style={{ background: "rgba(255,255,255,0.03)" }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" style={{ animation: "pulseRing 2s ease-in-out infinite" }} />
-                  <span className="text-[9px] text-white/25 uppercase tracking-[0.18em]" style={{ fontFamily: "system-ui, sans-serif" }}>
-                    Online · India Startup Expert · Powered by Llama 3.3
+                {/* Status strip */}
+                <div className="px-4 pb-2.5 flex items-center gap-2">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"
+                    style={{ animation: "pulseHalo 2s ease-in-out infinite" }}
+                  />
+                  <span
+                    className="text-[8.5px] text-white/22 uppercase tracking-[0.2em]"
+                    style={{ fontFamily: "system-ui, sans-serif" }}
+                  >
+                    Online · India Startup Expert · Llama 3.3
                   </span>
                 </div>
               </div>
 
-              {/* ── BODY ── */}
-              <AnimatePresence>
+              {/* ── COLLAPSIBLE BODY ── */}
+              <AnimatePresence initial={false}>
                 {!isMinimized && (
                   <motion.div
+                    key="body"
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
                     className="flex flex-col flex-1 overflow-hidden"
                   >
 
-                    {/* ── MESSAGES ── */}
+                    {/* Messages */}
                     <div
                       ref={scrollRef}
-                      className="flex-1 overflow-y-auto px-4 py-4 space-y-3 forge-scroll"
+                      className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 forge-scroll"
                       style={{ background: "#F7F5F0" }}
+                      aria-live="polite"
+                      aria-label="Conversation with Forge AI"
                     >
                       {messages.map((msg, idx) => (
                         <Bubble key={idx} msg={msg} isNew={justAdded.has(idx)} />
@@ -570,11 +656,15 @@ export function Chatbot() {
                           animate={{ opacity: 1, y: 0 }}
                           className="flex items-end gap-2"
                         >
-                          <div
-                            className="w-6 h-6 bg-[#1C1C1C] text-[#E8C547] flex items-center justify-center text-[9px] font-black flex-shrink-0"
-                            style={{ fontFamily: "'Georgia', serif" }}
-                          >
-                            F
+                          <div className="w-7 h-7 flex-shrink-0 overflow-hidden bg-[#1C1C1C] border border-[#333] flex items-center justify-center">
+                            <Image
+                              src="/robot.png"
+                              alt="Forge is typing"
+                              width={28}
+                              height={28}
+                              className="w-full h-full object-contain"
+                              style={{ filter: "brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(3deg)" }}
+                            />
                           </div>
                           <div className="bg-white border border-[#E2DDD5]">
                             <TypingDots />
@@ -583,35 +673,37 @@ export function Chatbot() {
                       )}
                     </div>
 
-                    {/* ── QUICK PROMPTS (only on first message) ── */}
+                    {/* Quick prompts — shown only before first user message */}
                     {messages.length === 1 && (
-                      <div className="px-4 pt-3 pb-2 border-t border-[#E8E4DC]" style={{ background: "#F7F5F0" }}>
+                      <div
+                        className="px-4 pt-3 pb-3 border-t border-[#E8E4DC] flex-shrink-0"
+                        style={{ background: "#F7F5F0" }}
+                      >
                         <p
-                          className="text-[8px] text-[#BBB] uppercase tracking-[0.22em] mb-2 font-bold"
+                          className="text-[8px] text-[#C0BAB0] uppercase tracking-[0.24em] mb-2 font-bold"
                           style={{ fontFamily: "system-ui, sans-serif" }}
                         >
-                          Suggested
+                          Try asking
                         </p>
-                        <div className="flex flex-col gap-1.5">
+                        <div className="grid grid-cols-1 gap-1.5">
                           {QUICK_PROMPTS.map((q, idx) => (
                             <button
                               key={idx}
-                              onClick={() => send(q)}
-                              className="chip-hover text-left text-[11px] border border-[#D5D0C8] bg-white px-3 py-2 text-[#555] transition-all duration-150 flex items-center justify-between group"
+                              onClick={() => send(q.label)}
+                              className="prompt-chip text-left text-[11px] border border-[#D5D0C8] bg-white px-3 py-2 text-[#555] transition-all duration-150 flex items-center justify-between group"
                               style={{ fontFamily: "system-ui, sans-serif" }}
                             >
-                              <span>{q}</span>
-                              <span className="chip-arrow opacity-0 text-[#E8C547] transition-opacity text-[10px]">→</span>
+                              <span>{q.label}</span>
+                              <span className="chip-arr opacity-0 transition-opacity text-[12px] font-bold">{q.icon}</span>
                             </button>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* ── INPUT ── */}
+                    {/* Input */}
                     <div
-                      className="px-4 py-3 border-t border-[#D5D0C8] flex-shrink-0"
-                      style={{ background: "white" }}
+                      className="px-4 py-3 border-t border-[#D5D0C8] flex-shrink-0 bg-white"
                     >
                       <div className="flex items-center gap-2">
                         <input
@@ -619,7 +711,8 @@ export function Chatbot() {
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
                           onKeyDown={handleKey}
-                          placeholder="Ask Forge anything about Indian startups…"
+                          placeholder="Ask about Indian startups, funding, sectors…"
+                          aria-label="Message Forge AI"
                           className="flex-1 bg-[#F7F5F0] border border-[#D5D0C8] py-2.5 px-3 text-[12px] text-[#1C1C1C] placeholder-[#BBB] focus:outline-none focus:border-[#1C1C1C] transition-colors"
                           style={{ fontFamily: "system-ui, sans-serif" }}
                           disabled={isLoading}
@@ -627,34 +720,35 @@ export function Chatbot() {
                         <button
                           onClick={() => send()}
                           disabled={isLoading || !input.trim()}
-                          className={`w-10 h-10 flex items-center justify-center flex-shrink-0 transition-all duration-150 ${
-                            input.trim() && !isLoading
-                              ? "bg-[#1C1C1C] text-white hover:bg-[#E8C547] hover:text-[#1C1C1C]"
-                              : "bg-[#EEEAE3] text-[#CCC] cursor-not-allowed"
-                          }`}
+                          aria-label="Send message"
+                          className="send-btn w-10 h-10 flex items-center justify-center flex-shrink-0 bg-[#1C1C1C] text-white transition-all duration-150 disabled:bg-[#EEEAE3] disabled:text-[#CCC] disabled:cursor-not-allowed"
                         >
-                          {isLoading ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Send className="w-3.5 h-3.5" />
-                          )}
+                          {isLoading
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Send className="w-3.5 h-3.5" />}
                         </button>
                       </div>
 
-                      {/* Footer branding */}
+                      {/* Footer */}
                       <div className="flex items-center justify-between mt-2">
-                        <p
-                          className="text-[8px] text-[#CCC]"
-                          style={{ fontFamily: "system-ui, sans-serif" }}
-                        >
-                          Forge · UpForge AI · India's startup expert
-                        </p>
-                        <p
-                          className="text-[8px] text-[#CCC]"
-                          style={{ fontFamily: "system-ui, sans-serif" }}
-                        >
-                          Press ⏎ to send
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-4 h-4 overflow-hidden flex items-center justify-center bg-[#1C1C1C]">
+                            <Image
+                              src="/robot.png"
+                              alt="Forge"
+                              width={16}
+                              height={16}
+                              className="w-full h-full object-contain"
+                              style={{ filter: "brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(3deg)" }}
+                            />
+                          </div>
+                          <span className="text-[8px] text-[#C8C3BC]" style={{ fontFamily: "system-ui, sans-serif" }}>
+                            Forge · UpForge AI
+                          </span>
+                        </div>
+                        <span className="text-[8px] text-[#C8C3BC]" style={{ fontFamily: "system-ui, sans-serif" }}>
+                          ⏎ to send
+                        </span>
                       </div>
                     </div>
 
@@ -666,15 +760,15 @@ export function Chatbot() {
           )}
         </AnimatePresence>
 
-        {/* ── TOOLTIP ── */}
+        {/* Tooltip */}
         <ForgeTooltip show={showTooltip} />
 
-        {/* ── FLOATING BUTTON ── */}
+        {/* Floating button */}
         <ForgeButton
           isOpen={isOpen}
           newMsgCount={newMsgCount}
           onClick={() => {
-            setIsOpen(!isOpen);
+            setIsOpen((v) => !v);
             setIsMinimized(false);
           }}
         />
