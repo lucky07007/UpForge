@@ -175,26 +175,6 @@ export default async function StartupPage({ params }: PageProps) {
         .bc-link{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);font-family:'Source Serif 4',Georgia,serif;transition:color .15s}
         .bc-link:hover{color:var(--ink)}
 
-        /* cert box */
-        .cert{border:2px solid var(--ink);background:#fff;position:relative;overflow:hidden}
-        .cert-corner{position:absolute;width:20px;height:20px;border-color:var(--gold)}
-        .cert-tl{top:0;left:0;border-right-width:2px;border-bottom-width:2px;border-style:solid}
-        .cert-tr{top:0;right:0;border-left-width:2px;border-bottom-width:2px;border-style:solid}
-        .cert-bl{bottom:0;left:0;border-right-width:2px;border-top-width:2px;border-style:solid}
-        .cert-br{bottom:0;right:0;border-left-width:2px;border-top-width:2px;border-style:solid}
-
-        /* dot grid texture */
-        .dot-grid{position:absolute;inset:0;pointer-events:none;opacity:.025;
-          background-image:radial-gradient(circle,#000 1px,transparent 1px);background-size:24px 24px}
-
-        /* seal */
-        .uf-seal{width:52px;height:52px;background:var(--ink);border:1px solid #333;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex-shrink:0}
-
-        /* meta strip */
-        .meta-strip{border-top:1px solid var(--rule);background:var(--off);padding:10px clamp(16px,3vw,32px);display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px}
-        .meta-item{display:flex;align-items:center;gap:6px}
-        .meta-sep{color:var(--rule);font-size:14px}
-
         /* trust badges */
         .trust-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
 
@@ -224,15 +204,12 @@ export default async function StartupPage({ params }: PageProps) {
             </div>
           )}
 
-          {/* ── PRIDE HEADER BAND ── */}
-          <div className="a0" style={{ borderBottom: "2px solid var(--ink)" }}>
+          {/* ── HEADER BAND ── */}
+          <div className="a0" style={{ borderBottom: "2px solid var(--ink)", background: "#fff" }}>
             <div className="uf-wrap">
 
-              {/* Meta strip — date + trust signals */}
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px",
-              }}>
+              {/* Top strip — date / trust / live */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
                 <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: 700 }}>{todayStr} · Vol. II</span>
                 <div className="hide-mob" style={{ display: "flex", gap: "20px" }}>
                   {["Independent", "Ad-Free", "Verified"].map((t) => (
@@ -246,7 +223,7 @@ export default async function StartupPage({ params }: PageProps) {
               </div>
 
               {/* Breadcrumb */}
-              <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: "4px", padding: "12px 0", borderBottom: "1px solid var(--rl)" }}>
+              <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: "4px", padding: "11px 0", borderBottom: "1px solid var(--rl)" }}>
                 <a href="/" className="bc-link">Home</a>
                 <ChevronRight style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
                 <a href="/startup" className="bc-link">Registry</a>
@@ -256,91 +233,80 @@ export default async function StartupPage({ params }: PageProps) {
                 </span>
               </nav>
 
-              {/* Certificate block */}
-              <div style={{ padding: "clamp(16px,4vw,32px) 0" }}>
-                <div className="cert">
-                  {/* Corner decorations */}
-                  <span className="cert-corner cert-tl" />
-                  <span className="cert-corner cert-tr" />
-                  <span className="cert-corner cert-bl" />
-                  <span className="cert-corner cert-br" />
-                  {/* Dot grid texture */}
-                  <div className="dot-grid" />
+              {/* ── PROFILE HEADER ── */}
+              <div style={{ padding: "clamp(20px,5vw,44px) 0 clamp(16px,4vw,32px)" }}>
 
-                  {/* Main content */}
-                  <div className="cert-inner" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "clamp(16px,4vw,40px)", padding: "clamp(18px,4vw,32px) clamp(18px,4vw,32px) clamp(14px,3vw,24px)" }}>
+                {/* UpForge registry attribution */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+                  <img src="/logo.jpg" alt="UpForge" style={{ width: "22px", height: "22px", objectFit: "contain", display: "block" }} />
+                  <span style={{ fontSize: "11px", color: "var(--ink4)", letterSpacing: "0.18em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>UpForge Registry</span>
+                  <span style={{ color: "var(--rule)", fontSize: "14px" }}>·</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <div className="dot" />
+                    <span className="uf-lbl" style={{ color: "var(--pos)", fontSize: "9px" }}>Live Profile</span>
+                  </div>
+                </div>
 
-                    {/* LEFT: Seal + name */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "clamp(12px,3vw,20px)", flex: 1, minWidth: 0 }}>
-                      {/* UF Seal */}
-                      <div className="uf-seal">
-                        <span style={{ color: "var(--gold)", fontWeight: 900, fontSize: "15px", lineHeight: 1, fontFamily: "'Playfair Display',Georgia,serif" }}>UF</span>
-                        <span className="uf-m" style={{ color: "rgba(255,255,255,.25)", fontSize: "6px", letterSpacing: "0.2em", lineHeight: 1 }}>REG</span>
-                      </div>
+                {/* Startup logo + name block */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "clamp(14px,3vw,28px)", marginBottom: "clamp(16px,3vw,28px)" }}>
 
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
-                          <span className="uf-lbl" style={{ color: "var(--ink4)", fontSize: "9px" }}>Official Registry Profile</span>
-                          <span style={{ color: "var(--rule)" }}>·</span>
-                          <span className="uf-m" style={{ fontSize: "9px", color: "var(--ink4)", letterSpacing: "0.1em" }}>
-                            UF–{String(startup.id || "000001").slice(-6).toUpperCase()}
-                          </span>
-                        </div>
-                        <h1 className="uf-d" style={{ fontSize: "clamp(1.6rem,4vw,2.8rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1, marginBottom: "6px" }}>
-                          {startup.name}
-                        </h1>
-                        {startup.tagline && (
-                          <p style={{ fontSize: "13px", color: "var(--ink3)", fontStyle: "italic", fontFamily: "'Playfair Display',Georgia,serif", lineHeight: 1.4 }}>
-                            "{startup.tagline}"
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                  {/* Startup logo */}
+                  <div style={{ width: "clamp(52px,8vw,72px)", height: "clamp(52px,8vw,72px)", border: "1px solid var(--rule)", background: "var(--off)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {startup.logo_url
+                      ? <img src={startup.logo_url} alt={startup.name} style={{ maxWidth: "80%", maxHeight: "80%", objectFit: "contain" }} />
+                      : <span className="uf-d" style={{ fontSize: "clamp(1.4rem,4vw,2rem)", color: "var(--ink3)", fontWeight: 700 }}>{startup.name.charAt(0)}</span>
+                    }
+                  </div>
 
-                    {/* RIGHT: Trust badges */}
-                    <div className="trust-row" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px", flexShrink: 0 }}>
+                  {/* Name + tagline + badges */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h1 className="uf-d" style={{ fontSize: "clamp(1.8rem,5vw,3.4rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 0.92, marginBottom: "10px" }}>
+                      {startup.name}
+                    </h1>
+                    {startup.tagline && (
+                      <p style={{ fontSize: "clamp(13px,1.8vw,15px)", color: "var(--ink3)", fontStyle: "italic", fontFamily: "'Playfair Display',Georgia,serif", lineHeight: 1.45, marginBottom: "14px", maxWidth: "560px" }}>
+                        "{startup.tagline}"
+                      </p>
+                    )}
+                    {/* Badges row */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                       <div className="vbadge">
                         <BadgeCheck style={{ width: "11px", height: "11px" }} />
                         Verified Startup
                       </div>
-                      <div style={{ display: "flex", gap: "14px" }}>
-                        <div className="trust-badge" style={{ color: "var(--ink4)" }}>
-                          <Shield style={{ width: "11px", height: "11px" }} />
-                          <span>Independently Reviewed</span>
-                        </div>
-                        <div className="trust-badge hide-mob" style={{ color: "var(--ink4)" }}>
-                          <Globe style={{ width: "11px", height: "11px" }} />
-                          <span>Publicly Indexed</span>
-                        </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "5px" }} className="hide-mob">
+                        <Shield style={{ width: "10px", height: "10px", color: "var(--ink4)" }} />
+                        <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>Independently Reviewed</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "5px" }} className="hide-mob">
+                        <Globe style={{ width: "10px", height: "10px", color: "var(--ink4)" }} />
+                        <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.08em", textTransform: "uppercase" }}>Publicly Indexed</span>
                       </div>
                     </div>
                   </div>
-
-                  {/* Bottom meta strip */}
-                  <div className="meta-strip">
-                    {[
-                      startup.founded_year   && { label: "Founded", value: startup.founded_year },
-                      (startup.industry || startup.category) && { label: "Sector", value: startup.industry || startup.category },
-                      startup.city          && { label: "Based In", value: startup.city },
-                      startup.funding_stage && { label: "Stage",    value: startup.funding_stage },
-                    ]
-                      .filter(Boolean)
-                      .map((item: any, i: number, arr) => (
-                        <div key={i} className="meta-item">
-                          <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--ink4)" }}>{item.label}</span>
-                          <span style={{ color: "var(--rl)", fontSize: "12px" }}>·</span>
-                          <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--ink2)", fontFamily: "'Source Serif 4',serif" }}>{item.value}</span>
-                          {i < arr.length - 1 && <span className="meta-sep hide-mob">|</span>}
-                        </div>
-                      ))}
-
-                    {/* Live indicator — pushed right */}
-                    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <div className="dot" />
-                      <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--ink4)" }}>Live Profile</span>
-                    </div>
-                  </div>
                 </div>
+
+                {/* Meta pills row — founded / sector / city / stage */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0", borderTop: "1px solid var(--rule)", borderBottom: "1px solid var(--rule)" }}>
+                  {[
+                    startup.founded_year   && { label: "Founded",  value: String(startup.founded_year) },
+                    (startup.industry || startup.category) && { label: "Sector",   value: startup.industry || startup.category },
+                    startup.city          && { label: "Based In", value: startup.city },
+                    startup.funding_stage && { label: "Stage",    value: startup.funding_stage },
+                  ]
+                    .filter(Boolean)
+                    .map((item: any, i: number, arr) => (
+                      <div key={i} style={{
+                        display: "flex", flexDirection: "column", justifyContent: "center",
+                        padding: "12px 20px", borderRight: i < arr.length - 1 ? "1px solid var(--rule)" : "none",
+                        background: i % 2 === 1 ? "var(--warm)" : "#fff",
+                      }}>
+                        <span className="uf-lbl" style={{ fontSize: "8px", color: "var(--ink4)", marginBottom: "3px" }}>{item.label}</span>
+                        <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", fontFamily: "'Source Serif 4',serif" }}>{item.value}</span>
+                      </div>
+                    ))}
+                </div>
+
               </div>
             </div>
           </div>
