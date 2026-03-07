@@ -15,15 +15,12 @@ import {
 export const metadata: Metadata = {
   title: "UpForge — India's #1 Independent Startup Registry & Database 2026",
   description:
-    "Discover, research and track 72,000+ verified Indian startups. Free listings, AI-powered growth reports, real-time funding news, unicorn tracker and live market intelligence. India's most trusted startup database.",
+    "Discover, research and track 72,000+ verified Indian startups. Free listings, AI-powered growth reports, real-time funding news, unicorn tracker and live market intelligence.",
   keywords: [
     "Indian startups 2026", "India startup database", "startup registry India",
     "verified Indian startups", "Indian unicorns 2026", "startup funding India",
-    "list your startup India free", "startup ecosystem India",
   ].join(", "),
   authors: [{ name: "UpForge", url: "https://upforge.in" }],
-  creator: "UpForge",
-  publisher: "UpForge",
   metadataBase: new URL("https://upforge.in"),
   alternates: { canonical: "https://upforge.in" },
   openGraph: {
@@ -35,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image", site: "@upforge_in", creator: "@upforge_in",
     title: "UpForge — India's #1 Independent Startup Registry 2026",
-    description: "72,000+ verified Indian startups. Free listings · AI growth reports.",
+    description: "72,000+ verified Indian startups. AI growth reports · Live funding news.",
     images: ["https://upforge.in/og-image.png"],
   },
   robots: {
@@ -62,20 +59,19 @@ const jsonLd = {
     {
       "@type": "Organization", "@id": "https://upforge.in/#organization",
       name: "UpForge", url: "https://upforge.in",
-      logo: { "@type": "ImageObject", url: "https://upforge.in/logo.png" },
       description: "India's most trusted independent startup registry.",
     },
   ],
 };
 
-// ─── BILLIONAIRE DATA ─────────────────────────────────────────────────────────
+// ─── BILLIONAIRES ─────────────────────────────────────────────────────────────
 const TOP_INDIAN_BILLIONAIRES = [
-  { name: "Mukesh Ambani", netWorth: "$96.3B", rank: "10", source: "Reliance Industries", yoy: "+4.4%", startupConnections: ["Jio Platforms", "Netmeds", "Dunzo"] },
-  { name: "Gautam Adani", netWorth: "$68.7B", rank: "17", source: "Adani Group", yoy: "+3.2%", startupConnections: ["Adani Digital Labs", "Adani Green Energy"] },
-  { name: "Shiv Nadar", netWorth: "$29.4B", rank: "56", source: "HCL Technologies", yoy: "+14.8%", startupConnections: ["HCL Software", "Vama Sundari Investments"] },
+  { name: "Mukesh Ambani", netWorth: "$96.3B", rank: "#10", source: "Reliance Industries", yoy: "+4.4%", startupConnections: ["Jio Platforms", "Netmeds"] },
+  { name: "Gautam Adani", netWorth: "$68.7B", rank: "#17", source: "Adani Group", yoy: "+3.2%", startupConnections: ["Adani Digital Labs", "Adani Green"] },
+  { name: "Shiv Nadar", netWorth: "$29.4B", rank: "#56", source: "HCL Technologies", yoy: "+14.8%", startupConnections: ["HCL Software", "Vama Sundari"] },
 ];
 
-// ─── NEWSAPI ──────────────────────────────────────────────────────────────────
+// ─── NEWS ─────────────────────────────────────────────────────────────────────
 async function getLiveNews() {
   try {
     const today = new Date();
@@ -83,11 +79,11 @@ async function getLiveNews() {
     threeDaysAgo.setDate(today.getDate() - 3);
     const fromDate = threeDaysAgo.toISOString().split("T")[0];
     const url = new URL("https://newsapi.org/v2/everything");
-    url.searchParams.set("q", "(Indian startup OR startup India OR VC funding India OR unicorn India OR fintech India OR SaaS India)");
+    url.searchParams.set("q", "(Indian startup OR startup India OR VC funding India OR unicorn India OR fintech India)");
     url.searchParams.set("from", fromDate);
     url.searchParams.set("language", "en");
     url.searchParams.set("sortBy", "publishedAt");
-    url.searchParams.set("pageSize", "6");
+    url.searchParams.set("pageSize", "8");
     url.searchParams.set("apiKey", process.env.NEWSAPI_KEY || "");
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) throw new Error(`NewsAPI ${res.status}`);
@@ -102,21 +98,21 @@ async function getLiveNews() {
         const diffD = Math.floor(diffH / 24);
         const timestamp = diffH < 1 ? "Just now" : diffH < 24 ? `${diffH}h ago` : diffD === 1 ? "1d ago" : `${diffD}d ago`;
         const title = article.title.toLowerCase();
-        const impact = title.match(/raises|funding|unicorn|launch|growth|profit|record|surge|ipo|expands/) ? "positive" :
-          title.match(/shutdown|layoff|fraud|crisis|loss|decline|cut|fail|drops/) ? "negative" : "neutral";
+        const impact = title.match(/raises|funding|unicorn|launch|growth|profit|record|surge|ipo|expands/) ? "positive"
+          : title.match(/shutdown|layoff|fraud|crisis|loss|decline|cut|fail|drops/) ? "negative" : "neutral";
         return {
-          headline: article.title.length > 110 ? article.title.slice(0, 107) + "…" : article.title,
+          headline: article.title.length > 100 ? article.title.slice(0, 97) + "…" : article.title,
           source: article.source.name, url: article.url, impact, timestamp,
         };
       });
   } catch {
     return [
-      { headline: "India startup ecosystem raises $9B+ in Q1 2026, up 34% year-on-year", source: "Inc42", impact: "positive", timestamp: "6h ago" },
-      { headline: "SEBI eases startup IPO norms, reduces mandatory lock-in to 6 months", source: "Economic Times", impact: "positive", timestamp: "12h ago" },
-      { headline: "Government's ₹1,000Cr DeepTech Fund opens applications for Indian startups", source: "PIB India", impact: "positive", timestamp: "1d ago" },
-      { headline: "Indian SaaS companies cross $1.8B in new ARR, global expansion accelerates", source: "Mint", impact: "positive", timestamp: "1d ago" },
-      { headline: "Krutrim AI hits 1M enterprise users; eyes Southeast Asia expansion in H2", source: "Inc42", impact: "positive", timestamp: "2d ago" },
-      { headline: "Zepto valued at $5B after latest funding round; profitability in sight", source: "TechCrunch", impact: "positive", timestamp: "2d ago" },
+      { headline: "India startup ecosystem raises $9B+ in Q1 2026, up 34% year-on-year", source: "Inc42", impact: "positive", timestamp: "6h ago", url: null },
+      { headline: "SEBI eases startup IPO norms, reduces mandatory lock-in to 6 months", source: "Economic Times", impact: "positive", timestamp: "12h ago", url: null },
+      { headline: "Government's ₹1,000Cr DeepTech Fund opens applications for Indian startups", source: "PIB India", impact: "positive", timestamp: "1d ago", url: null },
+      { headline: "Indian SaaS companies cross $1.8B in new ARR, global expansion accelerates", source: "Mint", impact: "positive", timestamp: "1d ago", url: null },
+      { headline: "Krutrim AI hits 1M enterprise users; eyes Southeast Asia expansion", source: "Inc42", impact: "positive", timestamp: "2d ago", url: null },
+      { headline: "Zepto valued at $5B after latest funding round; profitability in sight", source: "TechCrunch", impact: "positive", timestamp: "2d ago", url: null },
     ];
   }
 }
@@ -134,8 +130,7 @@ async function getEcosystemData() {
         messages: [
           {
             role: "system",
-            content: `Indian startup market data analyst. Today: ${dateStr}.
-Return ONLY valid JSON, no markdown.
+            content: `Indian startup market data analyst. Today: ${dateStr}. Return ONLY valid JSON, no markdown.
 {
   "marketMood": { "sentiment": "Bullish/Neutral/Bearish", "score": "0-100 string", "reason": "max 8 words" },
   "topRisingStartups": [{"name":"real startup","sector":"sector","insight":"max 12 words","growthIndicator":"+XX%","momentum":"high/medium"}],
@@ -145,7 +140,7 @@ Return ONLY valid JSON, no markdown.
 }
 EXACTLY: 6 topRisingStartups, 6 sectorMomentum, 4 fundingNews.`,
           },
-          { role: "user", content: `Indian startup market data for ${dateStr}. Q1 2026 actuals. Real startups, real investors only.` },
+          { role: "user", content: `Indian startup market data for ${dateStr}. Q1 2026. Real startups and investors only.` },
         ],
         temperature: 0.15,
         max_tokens: 1500,
@@ -164,14 +159,14 @@ EXACTLY: 6 topRisingStartups, 6 sectorMomentum, 4 fundingNews.`,
       marketMood: { sentiment: "Bullish", score: "76", reason: "Q1 2026 funding momentum strong" },
       topRisingStartups: [
         { name: "Krutrim AI", sector: "AI Infrastructure", insight: "India's first sovereign AI cloud, expanding fast", growthIndicator: "+312%", momentum: "high" },
-        { name: "Zepto", sector: "Quick Commerce", insight: "10-min delivery, profitable in 50+ cities", growthIndicator: "+189%", momentum: "high" },
+        { name: "Zepto", sector: "Quick Commerce", insight: "10-min delivery, now profitable in 50+ cities", growthIndicator: "+189%", momentum: "high" },
         { name: "Pixxel", sector: "Space Tech", insight: "Hyperspectral satellites for enterprise agriculture", growthIndicator: "+156%", momentum: "high" },
         { name: "PhysicsWallah", sector: "EdTech", insight: "100+ offline centres, India's largest ed-network", growthIndicator: "+145%", momentum: "high" },
         { name: "Rapido", sector: "Mobility", insight: "Bike taxi dominating Tier 2/3 with 8M daily rides", growthIndicator: "+98%", momentum: "medium" },
         { name: "Ather Energy", sector: "EV", insight: "450+ touchpoints, 40% premium EV market share", growthIndicator: "+87%", momentum: "medium" },
       ],
       sectorMomentum: [
-        { sector: "AI/ML", deals: "127", funding: "$1.2B", trend: "Enterprise AI adoption accelerating", growth: "+156%" },
+        { sector: "AI / ML", deals: "127", funding: "$1.2B", trend: "Enterprise AI adoption accelerating", growth: "+156%" },
         { sector: "SaaS", deals: "178", funding: "$1.8B", trend: "Global expansion by Indian SaaS", growth: "+134%" },
         { sector: "FinTech", deals: "143", funding: "$2.1B", trend: "Credit infra & UPI 3.0 innovation", growth: "+112%" },
         { sector: "Climate Tech", deals: "89", funding: "$845M", trend: "EV infra & carbon markets boom", growth: "+89%" },
@@ -195,28 +190,6 @@ EXACTLY: 6 topRisingStartups, 6 sectorMomentum, 4 fundingNews.`,
 
 export const revalidate = 3600;
 
-// ─── LIVE DOT ─────────────────────────────────────────────────────────────────
-function LiveDot({ color = "emerald" }: { color?: "emerald" | "blue" | "amber" }) {
-  const colors = {
-    emerald: "bg-emerald-400",
-    blue: "bg-blue-400",
-    amber: "bg-amber-400",
-  };
-  return (
-    <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
-      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${colors[color]} opacity-75`} />
-      <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${colors[color]}`} />
-    </span>
-  );
-}
-
-// ─── IMPACT BADGE ─────────────────────────────────────────────────────────────
-function ImpactBadge({ impact }: { impact: string }) {
-  if (impact === "positive") return <span className="text-emerald-400 text-xs">↑</span>;
-  if (impact === "negative") return <span className="text-red-400 text-xs">↓</span>;
-  return <span className="text-slate-500 text-xs">→</span>;
-}
-
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default async function Home() {
   const supabase = await createClient();
@@ -228,307 +201,366 @@ export default async function Home() {
     supabase.from("startups").select("*").order("created_at", { ascending: false }).limit(6),
   ]);
 
-  const totalStartups = startupsCount.count;
+  const totalStartups = startupsCount.count ?? 0;
   const uniqueIndustries = industriesData.data ? new Set(industriesData.data.map((i: any) => i.industry)).size : 30;
-  const verifiedStartups = recentData.data?.map((s: any) => ({ ...s, verified: true }));
-  const sentimentColor = ecosystem.marketMood.sentiment === "Bullish" ? "#34d399" : ecosystem.marketMood.sentiment === "Neutral" ? "#fbbf24" : "#f87171";
+  const verifiedStartups = recentData.data ?? [];
   const lastUpdated = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true });
   const todayStr = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
-
-  const featuredStartup = ecosystem.topRisingStartups[0];
-  const secondaryStartups = ecosystem.topRisingStartups.slice(1, 4);
+  const sentimentColor = ecosystem.marketMood.sentiment === "Bullish" ? "#1a6b3a" : ecosystem.marketMood.sentiment === "Bearish" ? "#b91c1c" : "#92400e";
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#0A0A0F", color: "#E8E6E1", fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+    <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script dangerouslySetInnerHTML={{ __html: `var _hAt=null;document.addEventListener('visibilitychange',function(){if(document.hidden){_hAt=Date.now();}else if(_hAt&&(Date.now()-_hAt)>3600000){window.location.reload();}});` }} />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+        *, *::before, *::after { box-sizing: border-box; }
+
+        .uf {
+          background: #ffffff;
+          color: #1a1a1a;
+          font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Typography */
+        .uf-display  { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.02em; }
+        .uf-serif    { font-family: 'Source Serif 4', Georgia, serif; }
+        .uf-mono     { font-family: 'JetBrains Mono', 'Courier New', monospace; font-variant-numeric: tabular-nums; }
+        .uf-label    { font-family: 'Source Serif 4', Georgia, serif; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #888; }
+
+        /* Color tokens */
         :root {
-          --bg: #0A0A0F;
-          --bg2: #111118;
-          --bg3: #16161F;
-          --border: rgba(255,255,255,0.07);
-          --border2: rgba(255,255,255,0.12);
-          --gold: #C9A84C;
-          --gold-dim: rgba(201,168,76,0.15);
-          --text: #E8E6E1;
-          --text-2: #9B9896;
-          --text-3: #5C5955;
-          --emerald: #34d399;
-          --blue: #60a5fa;
+          --ink:      #1a1a1a;
+          --ink2:     #444444;
+          --ink3:     #777777;
+          --ink4:     #aaaaaa;
+          --rule:     #e5e5e5;
+          --rulel:    #f0f0f0;
+          --bg:       #ffffff;
+          --bgoff:    #fafaf8;
+          --bgwarm:   #fdf8f0;
+          --gold:     #b8860b;
+          --goldr:    #c9960d;
+          --pos:      #1a6b3a;
+          --neg:      #b91c1c;
         }
 
-        * { box-sizing: border-box; }
-
-        .serif { font-family: 'DM Serif Display', Georgia, serif; }
-        .mono { font-family: 'DM Mono', 'Courier New', monospace; }
-
-        @keyframes ticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        /* Ticker animation */
+        @keyframes uf-ticker {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
         }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideRight {
-          from { width: 0; }
-          to { width: 100%; }
-        }
-        @keyframes counterUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .fade-up-1 { animation: fadeUp 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .fade-up-2 { animation: fadeUp 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .fade-up-3 { animation: fadeUp 0.7s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .fade-up-4 { animation: fadeUp 0.7s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .fade-in { animation: fadeIn 1s both; }
-
-        .ticker-wrap { overflow: hidden; }
-        .ticker-track {
+        .uf-ticker-track {
           display: inline-flex;
           white-space: nowrap;
-          animation: ticker 60s linear infinite;
+          animation: uf-ticker 70s linear infinite;
         }
-        .ticker-track:hover { animation-play-state: paused; }
+        .uf-ticker-track:hover { animation-play-state: paused; }
 
-        .card {
-          background: var(--bg2);
-          border: 1px solid var(--border);
-          transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        /* Page-load animations */
+        @keyframes uf-up {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        .card:hover {
-          border-color: var(--border2);
-          transform: translateY(-2px);
-          box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+        .uf-a0 { animation: uf-up 0.55s 0.00s cubic-bezier(0.16,1,0.3,1) both; }
+        .uf-a1 { animation: uf-up 0.55s 0.10s cubic-bezier(0.16,1,0.3,1) both; }
+        .uf-a2 { animation: uf-up 0.55s 0.20s cubic-bezier(0.16,1,0.3,1) both; }
+        .uf-a3 { animation: uf-up 0.55s 0.30s cubic-bezier(0.16,1,0.3,1) both; }
+        .uf-a4 { animation: uf-up 0.55s 0.40s cubic-bezier(0.16,1,0.3,1) both; }
+
+        /* Live pulse dot */
+        .uf-live {
+          width: 6px; height: 6px;
+          border-radius: 50%;
+          background: #16a34a;
+          flex-shrink: 0;
+          position: relative;
+        }
+        .uf-live::after {
+          content: '';
+          position: absolute;
+          inset: -3px;
+          border-radius: 50%;
+          background: rgba(22,163,74,0.22);
+          animation: uf-pulse 2.2s ease-in-out infinite;
+        }
+        @keyframes uf-pulse {
+          0%,100% { transform: scale(1); opacity: 1; }
+          50%      { transform: scale(2); opacity: 0; }
         }
 
-        .card-gold:hover {
-          border-color: rgba(201,168,76,0.3) !important;
+        /* Navigation links */
+        .uf-nav-link {
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 13px;
+          color: #555;
+          padding: 0 14px;
+          height: 42px;
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          white-space: nowrap;
+          transition: color 0.15s, border-color 0.15s;
         }
+        .uf-nav-link:hover { color: #1a1a1a; border-color: var(--goldr); }
 
-        .tag {
+        /* Cards */
+        .uf-card {
+          border: 1px solid var(--rule);
+          background: var(--bg);
+          transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .uf-card:hover {
+          border-color: #bbb;
+          box-shadow: 0 3px 16px rgba(0,0,0,0.07);
+        }
+        .uf-card-flat { border: 1px solid var(--rule); background: var(--bg); }
+
+        /* Article hover */
+        .uf-article { transition: opacity 0.15s; }
+        .uf-article:hover { opacity: 0.68; }
+
+        /* Data rows */
+        .uf-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 0;
+          border-bottom: 1px solid var(--rulel);
+          transition: background 0.12s, padding 0.12s, margin 0.12s;
+        }
+        .uf-row:last-child { border-bottom: none; }
+        .uf-row:hover { background: var(--bgoff); padding-left: 8px; padding-right: 8px; margin: 0 -8px; }
+
+        /* Pill badge */
+        .uf-pill {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
           padding: 3px 8px;
-          border-radius: 2px;
+          border: 1px solid currentColor;
         }
 
-        .tag-gold { background: rgba(201,168,76,0.12); color: #C9A84C; border: 1px solid rgba(201,168,76,0.2); }
-        .tag-emerald { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
-        .tag-blue { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
-        .tag-red { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
-        .tag-slate { background: rgba(255,255,255,0.05); color: #9B9896; border: 1px solid var(--border); }
-
-        .divider { height: 1px; background: var(--border); }
-        .divider-v { width: 1px; background: var(--border); flex-shrink: 0; }
-
-        .section-label {
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          color: var(--text-3);
-        }
-
-        .gold-line {
-          display: block;
-          width: 24px;
-          height: 2px;
-          background: var(--gold);
-          margin-bottom: 12px;
-        }
-
-        .stat-num {
-          font-family: 'DM Serif Display', Georgia, serif;
-          font-size: 2rem;
-          line-height: 1;
-          color: var(--text);
-        }
-
-        .growth-bar {
-          height: 2px;
-          background: rgba(255,255,255,0.06);
-          border-radius: 1px;
-          overflow: hidden;
-        }
-        .growth-bar-fill {
-          height: 100%;
-          background: linear-gradient(90deg, rgba(52,211,153,0.6), #34d399);
-          border-radius: 1px;
-          transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .nav-link {
-          font-size: 12px;
-          font-weight: 500;
-          color: var(--text-2);
-          transition: color 0.15s;
-          letter-spacing: 0.02em;
-          padding: 6px 0;
-          border-bottom: 2px solid transparent;
-          transition: color 0.15s, border-color 0.15s;
-        }
-        .nav-link:hover { color: var(--text); border-color: var(--gold); }
-
-        .hero-bg {
-          background:
-            radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.08) 0%, transparent 60%),
-            radial-gradient(ellipse 40% 40% at 80% 50%, rgba(96,165,250,0.04) 0%, transparent 60%),
-            #0A0A0F;
-        }
-
-        .grid-pattern {
-          background-image:
-            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-
-        .glow-gold { box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 4px 20px rgba(201,168,76,0.1); }
-        .glow-emerald { box-shadow: 0 0 0 1px rgba(52,211,153,0.15), 0 4px 20px rgba(52,211,153,0.08); }
-
-        .text-gradient {
-          background: linear-gradient(135deg, #E8E6E1 30%, #9B9896 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        .text-gradient-gold {
-          background: linear-gradient(135deg, #C9A84C, #E8C547);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .search-input {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid var(--border);
-          color: var(--text);
-          outline: none;
-          transition: border-color 0.2s, background 0.2s;
-        }
-        .search-input:focus {
-          border-color: rgba(201,168,76,0.4);
-          background: rgba(255,255,255,0.06);
-        }
-        .search-input::placeholder { color: var(--text-3); }
-
-        .btn-primary {
+        /* Buttons */
+        .uf-btn-dark {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: var(--gold);
-          color: #0A0A0F;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          padding: 12px 24px;
-          transition: background 0.2s, transform 0.15s;
+          background: var(--ink);
+          color: #fff;
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          padding: 12px 28px;
+          border: 2px solid var(--ink);
+          transition: background 0.18s, color 0.18s;
+          cursor: pointer;
         }
-        .btn-primary:hover { background: #E8C547; transform: translateY(-1px); }
+        .uf-btn-dark:hover { background: #333; border-color: #333; }
 
-        .btn-secondary {
+        .uf-btn-ghost {
           display: inline-flex;
           align-items: center;
           gap: 8px;
           background: transparent;
-          color: var(--text);
-          font-size: 12px;
+          color: var(--ink);
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 13px;
           font-weight: 600;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          padding: 11px 24px;
-          border: 1px solid var(--border2);
-          transition: border-color 0.2s, background 0.2s;
+          letter-spacing: 0.04em;
+          padding: 11px 28px;
+          border: 2px solid var(--ink);
+          transition: background 0.18s, color 0.18s;
+          cursor: pointer;
         }
-        .btn-secondary:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.04); }
+        .uf-btn-ghost:hover { background: var(--ink); color: #fff; }
 
-        .news-item { transition: background 0.15s; }
-        .news-item:hover { background: rgba(255,255,255,0.03); }
+        /* Search bar */
+        .uf-search-bar {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          border-bottom: 2px solid var(--ink);
+          padding: 4px 2px;
+          max-width: 520px;
+          transition: border-color 0.18s;
+        }
+        .uf-search-bar:focus-within { border-color: var(--goldr); }
+        .uf-search-input {
+          flex: 1;
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 14px;
+          color: var(--ink);
+          background: transparent;
+          border: none;
+          outline: none;
+          padding: 8px 0;
+        }
+        .uf-search-input::placeholder { color: var(--ink4); }
 
-        .market-pill {
+        /* Growth bar */
+        .uf-bar-track {
+          flex: 1;
+          height: 2px;
+          background: var(--rulel);
+          border-radius: 1px;
+          overflow: hidden;
+        }
+        .uf-bar-fill {
+          height: 100%;
+          background: var(--ink);
+          border-radius: 1px;
+        }
+
+        /* Pull quote */
+        .uf-blockquote {
+          border-left: 3px solid var(--goldr);
+          padding: 4px 0 4px 16px;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-style: italic;
+          font-size: 1.05rem;
+          line-height: 1.65;
+          color: var(--ink2);
+        }
+
+        /* Section dividers */
+        .uf-rule { height: 1px; background: var(--rule); }
+        .uf-rule-thick { height: 2px; background: var(--ink); }
+
+        /* Section header with rule */
+        .uf-sec-head {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+        }
+        .uf-sec-head::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: var(--rule);
+        }
+
+        /* Verified badge */
+        .uf-verified {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          border-radius: 100px;
-          font-size: 11px;
-          font-weight: 600;
+          gap: 3px;
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--pos);
+          border: 1px solid var(--pos);
+          padding: 2px 7px;
         }
 
-        .sector-row { transition: background 0.12s; }
-        .sector-row:hover { background: rgba(255,255,255,0.025); }
-
-        .startup-card { cursor: pointer; }
-
-        .footer-link { font-size: 12px; color: var(--text-3); transition: color 0.15s; }
-        .footer-link:hover { color: var(--text-2); }
-
-        /* Mobile */
-        @media (max-width: 768px) {
-          .stat-num { font-size: 1.6rem; }
-          .hide-mobile { display: none !important; }
+        /* Stat box */
+        .uf-stat {
+          padding: 20px 16px;
+          border-right: 1px solid var(--rule);
+          text-align: center;
         }
-        @media (min-width: 769px) {
-          .show-mobile { display: none !important; }
+        .uf-stat:last-child { border-right: none; }
+
+        /* Feature grid dividers */
+        .uf-grid-divider {
+          display: grid;
+          gap: 1px;
+          background: var(--rule);
+          border: 1px solid var(--rule);
+        }
+        .uf-grid-cell {
+          background: var(--bg);
+          padding: 24px;
+          transition: background 0.18s;
+        }
+        .uf-grid-cell:hover { background: var(--bgoff); }
+
+        /* Footer links */
+        .uf-footer-link {
+          font-family: 'Source Serif 4', Georgia, serif;
+          font-size: 13px;
+          color: var(--ink3);
+          display: block;
+          padding: 4px 0;
+          transition: color 0.15s;
+        }
+        .uf-footer-link:hover { color: var(--ink); }
+
+        /* Responsive overrides */
+        @media (max-width: 1024px) {
+          .uf-three-col { grid-template-columns: 1fr !important; }
+          .uf-hide-tablet { display: none !important; }
+        }
+        @media (max-width: 640px) {
+          .uf-stat { border-right: none; border-bottom: 1px solid var(--rule); }
+          .uf-stat:last-child { border-bottom: none; }
+          .uf-hide-mobile { display: none !important; }
+          .uf-full-mobile { grid-column: 1 / -1 !important; }
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Scrollbar */
+        .uf-noscroll::-webkit-scrollbar { display: none; }
+        .uf-noscroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Max width container */
+        .uf-wrap {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 0 clamp(16px, 3vw, 32px);
+        }
       `}</style>
 
-      {/* ══ BREAKING NEWS TICKER ════════════════════════════════════════════ */}
-      <div style={{ backgroundColor: "#0D0D15", borderBottom: "1px solid rgba(201,168,76,0.15)", marginTop: "3.5rem" }}>
-        <div className="flex items-stretch" style={{ minHeight: "38px" }}>
-          <div className="flex items-center gap-2.5 px-4 flex-shrink-0" style={{ background: "rgba(201,168,76,0.1)", borderRight: "1px solid rgba(201,168,76,0.2)" }}>
-            <LiveDot color="emerald" />
-            <span className="tag tag-gold">Breaking</span>
-          </div>
-          <div className="ticker-wrap flex-1">
-            <div className="ticker-track items-center" style={{ height: "38px" }}>
-              {[...liveNews, ...liveNews].map((news: any, i: number) => (
-                <span key={i} className="inline-flex items-center gap-3 px-8" style={{ borderRight: "1px solid rgba(255,255,255,0.05)" }}>
-                  <ImpactBadge impact={news.impact} />
-                  <span style={{ fontSize: "12px", color: "#C8C6C2", fontWeight: 400 }}>{news.headline}</span>
-                  <span className="mono" style={{ fontSize: "10px", color: "#5C5955" }}>{news.source} · {news.timestamp}</span>
-                </span>
-              ))}
+      <div className="uf">
+
+        {/* ══ LIVE TICKER ═════════════════════════════════════════════════ */}
+        <div style={{ background: "var(--bgoff)", borderBottom: "1px solid var(--rule)", overflow: "hidden", marginTop: "3.5rem" }}>
+          <div style={{ display: "flex", alignItems: "stretch", height: "36px" }}>
+            {/* Label cell */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "0 16px", flexShrink: 0, borderRight: "1px solid var(--rule)", background: "var(--bgwarm)" }}>
+              <div className="uf-live" />
+              <span className="uf-label">Live Feed</span>
             </div>
-          </div>
-          <div className="flex-shrink-0 items-center gap-4 px-5 hide-mobile" style={{ borderLeft: "1px solid rgba(255,255,255,0.06)", display: "flex" }}>
-            <div className="flex items-center gap-2">
-              <span style={{ fontSize: "10px", color: "#5C5955", letterSpacing: "0.1em" }}>MARKET</span>
-              <span className="mono" style={{ fontSize: "13px", fontWeight: 600, color: sentimentColor }}>
-                {ecosystem.marketMood.sentiment} {ecosystem.marketMood.score}
+            {/* Scrolling news */}
+            <div style={{ flex: 1, overflow: "hidden" }}>
+              <div className="uf-ticker-track" style={{ height: "36px", alignItems: "center" }}>
+                {[...liveNews, ...liveNews].map((news: any, i: number) => (
+                  <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "0 28px", borderRight: "1px solid var(--rulel)" }}>
+                    <span style={{ fontSize: "10px", fontWeight: 700, color: news.impact === "positive" ? "var(--pos)" : news.impact === "negative" ? "var(--neg)" : "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>
+                      {news.impact === "positive" ? "▲" : news.impact === "negative" ? "▼" : "●"}
+                    </span>
+                    <span style={{ fontSize: "12.5px", color: "var(--ink2)", fontFamily: "'Source Serif 4', serif" }}>{news.headline}</span>
+                    <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", flexShrink: 0 }}>{news.source} · {news.timestamp}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+            {/* Market mood pill */}
+            <div className="uf-hide-mobile" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "0 18px", borderLeft: "1px solid var(--rule)", flexShrink: 0 }}>
+              <span className="uf-label">Market</span>
+              <span className="uf-mono" style={{ fontSize: "12px", fontWeight: 600, color: sentimentColor }}>
+                {ecosystem.marketMood.sentiment} {ecosystem.marketMood.score}/100
               </span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ══ NAVIGATION ══════════════════════════════════════════════════════ */}
-      {/* Note: Nav is handled by layout, but we add sub-nav */}
-      <div style={{ backgroundColor: "#0D0D15", borderBottom: "1px solid var(--border)" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between no-scrollbar overflow-x-auto" style={{ gap: "0" }}>
-            <div className="flex items-center gap-0 flex-nowrap no-scrollbar overflow-x-auto">
+        {/* ══ SUB-NAV ══════════════════════════════════════════════════════ */}
+        <nav style={{ background: "#fff", borderBottom: "1px solid var(--rule)" }}>
+          <div className="uf-wrap">
+            <div className="uf-noscroll" style={{ display: "flex", alignItems: "center", overflowX: "auto", height: "44px" }}>
               {[
                 { label: "Registry", href: "/startup" },
                 { label: "AI Startups", href: "/top-ai-startups" },
@@ -537,707 +569,580 @@ export default async function Home() {
                 { label: "Funded", href: "/top-funded-startups" },
                 { label: "SaaS", href: "/best-saas-startups" },
                 { label: "Reports", href: "/reports" },
-              ].map((item, i) => (
-                <Link key={i} href={item.href}
-                  className="nav-link whitespace-nowrap"
-                  style={{ padding: "14px 16px", borderBottom: "2px solid transparent", display: "block" }}>
-                  {item.label}
-                </Link>
+              ].map((item) => (
+                <Link key={item.href} href={item.href} className="uf-nav-link">{item.label}</Link>
               ))}
-            </div>
-            <Link href="/submit" className="btn-primary hide-mobile" style={{ padding: "8px 20px", fontSize: "11px" }}>
-              + List Free
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ══ HERO ════════════════════════════════════════════════════════════ */}
-      <section className="hero-bg grid-pattern" style={{ padding: "80px 0 60px" }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* Hero header */}
-          <div className="fade-up" style={{ maxWidth: "720px", marginBottom: "48px" }}>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="tag tag-gold">
-                <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-400" /></span>
-                Live Intelligence
-              </span>
-              <span style={{ fontSize: "11px", color: "#5C5955" }}>{todayStr}</span>
-            </div>
-
-            <h1 className="serif" style={{ fontSize: "clamp(2.8rem, 6vw, 4.5rem)", lineHeight: "1.06", fontWeight: 400, marginBottom: "20px", letterSpacing: "-0.02em" }}>
-              India's Definitive<br />
-              <em style={{ color: "#C9A84C", fontStyle: "italic" }}>Startup Intelligence</em><br />
-              Platform
-            </h1>
-
-            <p style={{ fontSize: "16px", color: "#9B9896", lineHeight: "1.7", maxWidth: "520px", marginBottom: "32px" }}>
-              Track, research, and discover {totalStartups?.toLocaleString() || "72,000"}+ verified Indian startups. Institutional-grade data, AI-powered reports, and real-time market intelligence — free, independent, and ad-free.
-            </p>
-
-            {/* Search bar */}
-            <div className="flex gap-2 mb-8" style={{ maxWidth: "520px" }}>
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#5C5955" }} />
-                <input
-                  type="text"
-                  placeholder="Search startups, sectors, founders..."
-                  className="search-input w-full"
-                  style={{ padding: "12px 16px 12px 38px", fontSize: "13px", borderRadius: "4px" }}
-                />
-              </div>
-              <Link href="/startup" className="btn-primary" style={{ borderRadius: "4px", flexShrink: 0 }}>
-                Search
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4">
-              <Link href="/startup" className="btn-secondary" style={{ borderRadius: "4px" }}>
-                Open Registry <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-              <Link href="/submit" className="flex items-center gap-1.5" style={{ fontSize: "12px", color: "#C9A84C", fontWeight: 600, letterSpacing: "0.04em" }}>
-                List your startup free <ArrowUpRight className="w-3.5 h-3.5" />
+              <div style={{ flex: 1 }} />
+              <Link href="/submit" className="uf-btn-dark uf-hide-mobile" style={{ fontSize: "11px", padding: "7px 16px", letterSpacing: "0.12em" }}>
+                + List Free
               </Link>
             </div>
           </div>
+        </nav>
 
-          {/* Hero stats row */}
-          <div className="fade-up-1 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-0" style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-            {[
-              { label: "Verified Startups", value: ecosystem.ecosystemMetrics.totalActiveStartups, sub: "In registry", color: "#E8E6E1" },
-              { label: "Funding YTD", value: ecosystem.ecosystemMetrics.totalFundingYTD, sub: ecosystem.ecosystemMetrics.monthlyGrowth + " YoY", color: "#34d399" },
-              { label: "Active VCs", value: ecosystem.ecosystemMetrics.activeVCFirms, sub: ecosystem.ecosystemMetrics.activeAngels + " angels", color: "#E8E6E1" },
-              { label: "Unicorns", value: ecosystem.ecosystemMetrics.unicorns, sub: ecosystem.ecosystemMetrics.soonicorns + " soonicorns", color: "#C9A84C" },
-              { label: "Avg Deal Size", value: ecosystem.ecosystemMetrics.avgDealSize, sub: "Seed → Series A", color: "#E8E6E1" },
-              { label: "Hottest Sector", value: ecosystem.ecosystemMetrics.mostActiveSector, sub: ecosystem.sectorMomentum[0]?.deals + " deals", color: "#60a5fa" },
-              { label: "Top City", value: ecosystem.ecosystemMetrics.topCity, sub: "Leading hub", color: "#E8E6E1" },
-              { label: "Market Mood", value: ecosystem.marketMood.sentiment, sub: "Score: " + ecosystem.marketMood.score + "/100", color: sentimentColor },
-            ].map((stat, i) => (
-              <div key={i} className="p-4 sm:p-5 group hover:bg-white/[0.02] transition-colors"
-                style={{ borderRight: i < 7 ? "1px solid var(--border)" : "none", borderBottom: i >= 4 ? "0" : "0" }}>
-                <div className="stat-num mb-1" style={{ fontSize: "1.4rem", color: stat.color }}>{stat.value}</div>
-                <div className="section-label mb-0.5" style={{ fontSize: "9px" }}>{stat.label}</div>
-                <div style={{ fontSize: "10px", color: "#5C5955" }}>{stat.sub}</div>
+        <div className="uf-wrap">
+
+          {/* ── MASTHEAD ──────────────────────────────────────────────── */}
+          <header className="uf-a0">
+            {/* Meta strip */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
+              <span className="uf-label" style={{ color: "var(--ink4)" }}>{todayStr} · Vol. II</span>
+              <div className="uf-hide-mobile" style={{ display: "flex", gap: "20px" }}>
+                {["Independent", "Ad-Free", "Verified"].map((t) => (
+                  <span key={t} style={{ fontSize: "10px", color: "var(--ink4)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Source Serif 4', serif" }}>
+                    ✓ {t}
+                  </span>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ MAIN CONTENT GRID ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ paddingTop: "48px", paddingBottom: "80px" }}>
-
-        {/* ── ROW 1: FEATURED + NEWS SIDEBAR ──────────────────────────────── */}
-        <div className="grid lg:grid-cols-[1fr_360px] gap-6 mb-12">
-
-          {/* FEATURED STARTUPS */}
-          <div>
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <span className="gold-line" style={{ marginBottom: 0 }} />
-                <span className="section-label">Featured Intelligence</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div className="uf-live" />
+                <span className="uf-label" style={{ color: "var(--ink4)" }}>Updated {lastUpdated} IST</span>
               </div>
-              <Link href="/startup" className="flex items-center gap-1" style={{ fontSize: "11px", color: "#9B9896" }}>
-                View all <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
             </div>
 
-            {/* Hero feature card */}
-            {featuredStartup && (
-              <div className="card card-gold mb-4" style={{ padding: "0", overflow: "hidden", borderRadius: "6px" }}>
-                <div style={{
-                  background: "linear-gradient(135deg, #111118 0%, #16161F 100%)",
-                  padding: "36px",
-                  borderBottom: "1px solid var(--border)",
-                  position: "relative",
-                  overflow: "hidden"
-                }}>
-                  {/* Background glow */}
-                  <div style={{
-                    position: "absolute", top: 0, right: 0, width: "300px", height: "300px",
-                    background: "radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)",
-                    pointerEvents: "none"
-                  }} />
-                  <div className="relative">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="tag tag-gold">Editor's Pick</span>
-                          <span className="tag tag-slate">{featuredStartup.sector}</span>
-                          {featuredStartup.momentum === "high" && <span className="tag tag-emerald">🔥 High Momentum</span>}
-                        </div>
-                        <h2 className="serif" style={{ fontSize: "2.2rem", fontWeight: 400, color: "#E8E6E1", lineHeight: 1.1, marginBottom: "12px" }}>
-                          {featuredStartup.name}
-                        </h2>
-                        <p style={{ fontSize: "14px", color: "#9B9896", lineHeight: 1.6, maxWidth: "400px" }}>
-                          {featuredStartup.insight}
-                        </p>
-                      </div>
-                      <div className="hide-mobile text-right flex-shrink-0 ml-6">
-                        <div className="mono text-gradient-gold" style={{ fontSize: "3rem", fontWeight: 700, lineHeight: 1 }}>
-                          {featuredStartup.growthIndicator}
-                        </div>
-                        <div style={{ fontSize: "10px", color: "#5C5955", letterSpacing: "0.12em", marginTop: "4px" }}>GROWTH RATE</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Link href={`/startup`} className="btn-primary" style={{ borderRadius: "4px", padding: "10px 20px" }}>
-                        View Profile <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
-                      <Link href="/reports" style={{ fontSize: "12px", color: "#C9A84C", display: "flex", alignItems: "center", gap: "4px" }}>
-                        <FileText className="w-3.5 h-3.5" />
-                        Full Research Report
-                      </Link>
-                    </div>
-                  </div>
+            {/* Wordmark */}
+            <div style={{ textAlign: "center", padding: "clamp(24px, 5vw, 48px) 0 clamp(16px, 3vw, 28px)", borderBottom: "2px solid var(--ink)" }}>
+              <p style={{ fontSize: "10px", letterSpacing: "0.32em", textTransform: "uppercase", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", marginBottom: "12px" }}>
+                India's Independent Startup Intelligence Platform
+              </p>
+              <h1 className="uf-display" style={{
+                fontSize: "clamp(3rem, 10vw, 8rem)",
+                fontWeight: 900,
+                lineHeight: 0.88,
+                color: "var(--ink)",
+                marginBottom: "16px",
+              }}>
+                UpForge
+              </h1>
+              <div style={{ display: "flex", justifyContent: "center", gap: "clamp(12px, 2vw, 28px)", flexWrap: "wrap" }}>
+                {[
+                  `${totalStartups.toLocaleString() || "72,000"}+ Verified Startups`,
+                  "100% Independent",
+                  "AI-Powered Reports",
+                  "Real-Time Intelligence",
+                ].map((t) => (
+                  <span key={t} className="uf-label" style={{ color: "var(--ink3)", fontSize: "9.5px" }}>{t}</span>
+                ))}
+              </div>
+            </div>
+          </header>
+
+          {/* ── THREE-COLUMN BROADSHEET ───────────────────────────────── */}
+          <section className="uf-a1" style={{ borderBottom: "1px solid var(--rule)" }}>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "clamp(240px, 22%, 300px) 1px 1fr 1px clamp(260px, 24%, 340px)",
+              gap: 0,
+              padding: "clamp(20px, 4vw, 40px) 0",
+            }} className="uf-three-col">
+
+              {/* ── LEFT: Market + Deals ── */}
+              <div style={{ paddingRight: "clamp(16px, 3vw, 32px)" }}>
+                <div className="uf-sec-head">
+                  <span className="uf-label" style={{ color: "var(--gold)" }}>Market Pulse</span>
                 </div>
-              </div>
-            )}
 
-            {/* Secondary startup cards */}
-            <div className="grid sm:grid-cols-3 gap-3">
-              {ecosystem.topRisingStartups.slice(1, 4).map((startup: any, i: number) => (
-                <Link key={i} href="/startup" className="card startup-card" style={{ padding: "20px", borderRadius: "6px", display: "block" }}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <span className="tag tag-slate" style={{ fontSize: "9px" }}>{startup.sector}</span>
-                      </div>
-                      <h3 className="serif" style={{ fontSize: "1.1rem", color: "#E8E6E1", lineHeight: 1.2 }}>{startup.name}</h3>
-                    </div>
-                    <span className="mono" style={{ fontSize: "1rem", color: "#34d399", fontWeight: 600, flexShrink: 0, marginLeft: "8px" }}>
-                      {startup.growthIndicator}
+                {/* Mood card */}
+                <div style={{ background: "var(--bgwarm)", border: "1px solid var(--rule)", padding: "18px 16px", marginBottom: "24px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "14px" }}>
+                    <span className="uf-display" style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 900, color: sentimentColor, lineHeight: 1 }}>
+                      {ecosystem.marketMood.sentiment}
+                    </span>
+                    <span className="uf-mono" style={{ fontSize: "1.3rem", fontWeight: 600, color: "var(--ink4)" }}>
+                      {ecosystem.marketMood.score}
                     </span>
                   </div>
-                  <p style={{ fontSize: "11.5px", color: "#9B9896", lineHeight: 1.55, marginBottom: "12px" }}>{startup.insight}</p>
-                  <div className="growth-bar">
-                    <div className="growth-bar-fill" style={{ width: `${Math.min(parseFloat(startup.growthIndicator.replace("+","").replace("%","")), 200)/2}%` }} />
+                  {/* Gradient bar */}
+                  <div style={{ height: "4px", background: "var(--rule)", borderRadius: "2px", marginBottom: "6px", position: "relative" }}>
+                    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${ecosystem.marketMood.score}%`, background: "linear-gradient(90deg, #dc2626 0%, #ca8a04 45%, #16a34a 100%)", borderRadius: "2px" }} />
+                    <div style={{ position: "absolute", top: "50%", left: `${ecosystem.marketMood.score}%`, transform: "translate(-50%, -50%)", width: "10px", height: "10px", background: "#fff", borderRadius: "50%", border: "2px solid var(--ink)", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
                   </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+                    {["Bearish", "Neutral", "Bullish"].map((l) => (
+                      <span key={l} style={{ fontSize: "9px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{l}</span>
+                    ))}
+                  </div>
+                  <p className="uf-serif" style={{ fontSize: "11.5px", color: "var(--ink3)", lineHeight: 1.5 }}>
+                    {ecosystem.marketMood.reason}
+                  </p>
+                </div>
 
-          {/* NEWS SIDEBAR */}
-          <div>
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <LiveDot color="emerald" />
-                <span className="section-label">Startup Dispatch</span>
-              </div>
-              <span className="tag tag-emerald">Live</span>
-            </div>
-
-            <div className="card" style={{ borderRadius: "6px", overflow: "hidden" }}>
-              {liveNews.map((news: any, i: number) => (
-                <div key={i} className="news-item" style={{ padding: "14px 18px", borderBottom: i < liveNews.length - 1 ? "1px solid var(--border)" : "none" }}>
-                  <div className="flex items-start gap-2.5">
-                    <div className="flex-shrink-0 mt-1">
-                      {news.impact === "positive" && <div style={{ width: "2px", height: "32px", background: "rgba(52,211,153,0.5)", borderRadius: "1px" }} />}
-                      {news.impact === "negative" && <div style={{ width: "2px", height: "32px", background: "rgba(248,113,113,0.5)", borderRadius: "1px" }} />}
-                      {news.impact === "neutral" && <div style={{ width: "2px", height: "32px", background: "rgba(255,255,255,0.1)", borderRadius: "1px" }} />}
+                {/* Latest Deals */}
+                <div className="uf-sec-head">
+                  <span className="uf-label">Latest Deals</span>
+                </div>
+                {ecosystem.fundingNews.slice(0, 3).map((f: any, i: number) => (
+                  <div key={i} className="uf-row">
+                    <div style={{ flex: 1, minWidth: 0, paddingRight: "12px" }}>
+                      <div className="uf-serif" style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", marginBottom: "2px" }}>{f.startup}</div>
+                      <div style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{f.round} · {f.investors.split(",")[0]}</div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      {news.url ? (
-                        <a href={news.url} target="_blank" rel="noopener noreferrer"
-                          style={{ fontSize: "12.5px", color: "#C8C6C2", lineHeight: 1.55, display: "block", marginBottom: "5px", fontWeight: 400 }}
-                          className="hover:text-white transition-colors">
-                          {news.headline}
-                        </a>
-                      ) : (
-                        <p style={{ fontSize: "12.5px", color: "#C8C6C2", lineHeight: 1.55, marginBottom: "5px" }}>{news.headline}</p>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <span style={{ fontSize: "10px", color: "#5C5955", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>{news.source}</span>
-                        <span style={{ color: "#2A2825", fontSize: "10px" }}>·</span>
-                        <span style={{ fontSize: "10px", color: "#5C5955" }}>{news.timestamp}</span>
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      <div className="uf-mono" style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--pos)" }}>{f.amount}</div>
+                      {f.valuation && <div style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>@ {f.valuation}</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Vertical rule */}
+              <div style={{ background: "var(--rule)", width: "1px" }} className="uf-hide-tablet" />
+
+              {/* ── CENTER: Hero ── */}
+              <div style={{ padding: "0 clamp(16px, 3vw, 40px)" }}>
+                <span className="uf-pill" style={{ color: "var(--gold)", marginBottom: "12px", display: "inline-flex" }}>Feature</span>
+                <h2 className="uf-display" style={{
+                  fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)",
+                  fontWeight: 700,
+                  lineHeight: 1.06,
+                  color: "var(--ink)",
+                  marginBottom: "16px",
+                  marginTop: "10px",
+                }}>
+                  Documenting India's{" "}
+                  <em style={{ fontStyle: "italic", color: "var(--goldr)" }}>
+                    {totalStartups.toLocaleString() || "72,000"}+
+                  </em>{" "}
+                  emerging founders — one verified listing at a time.
+                </h2>
+                <p className="uf-serif" style={{ fontSize: "15px", color: "var(--ink2)", lineHeight: 1.8, marginBottom: "20px" }}>
+                  UpForge is India's only fully independent, ad-free startup registry — built for founders, investors, and researchers who demand verified data, not sponsored noise. Every single listing is manually reviewed before appearing in our registry.
+                </p>
+                <div className="uf-blockquote" style={{ marginBottom: "24px" }}>
+                  "The most comprehensive free database of verified Indian startups — used by 340+ VC firms and research teams."
+                </div>
+
+                {/* Search */}
+                <div className="uf-search-bar" style={{ marginBottom: "24px" }}>
+                  <Search style={{ width: "15px", height: "15px", color: "var(--ink4)", flexShrink: 0 }} />
+                  <input type="text" placeholder="Search startups, sectors, founders…" className="uf-search-input" />
+                  <Link href="/startup" style={{ fontSize: "11px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif", fontWeight: 700, flexShrink: 0, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                    Go →
+                  </Link>
+                </div>
+
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                  <Link href="/startup" className="uf-btn-dark">
+                    Open Registry <ArrowRight style={{ width: "14px", height: "14px" }} />
+                  </Link>
+                  <Link href="/submit" className="uf-btn-ghost">
+                    List Your Startup — Free
+                  </Link>
+                </div>
+
+                <div style={{ display: "flex", gap: "20px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--rule)", flexWrap: "wrap" }}>
+                  {[
+                    { icon: CheckCircle2, text: "Free forever" },
+                    { icon: BadgeCheck, text: "Manual verification" },
+                    { icon: Sparkles, text: "AI deep reports" },
+                  ].map((p) => (
+                    <div key={p.text} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <p.icon style={{ width: "13px", height: "13px", color: "var(--pos)" }} />
+                      <span style={{ fontSize: "12px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif" }}>{p.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Vertical rule */}
+              <div style={{ background: "var(--rule)", width: "1px" }} className="uf-hide-tablet" />
+
+              {/* ── RIGHT: News Dispatch ── */}
+              <div style={{ paddingLeft: "clamp(16px, 3vw, 32px)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div className="uf-live" />
+                    <span className="uf-label">Startup Dispatch</span>
+                  </div>
+                  <span className="uf-pill" style={{ color: "var(--pos)" }}>Live</span>
+                </div>
+
+                {liveNews.map((news: any, i: number) => (
+                  <div key={i} className="uf-article" style={{ paddingBottom: "14px", marginBottom: "14px", borderBottom: i < liveNews.length - 1 ? "1px solid var(--rulel)" : "none" }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                      {/* Sentiment rule */}
+                      <div style={{ width: "3px", minHeight: "40px", flexShrink: 0, background: news.impact === "positive" ? "var(--pos)" : news.impact === "negative" ? "var(--neg)" : "var(--rule)", borderRadius: "2px", marginTop: "2px" }} />
+                      <div>
+                        {news.url ? (
+                          <a href={news.url} target="_blank" rel="noopener noreferrer"
+                            style={{ fontSize: "13px", color: "var(--ink)", lineHeight: 1.55, display: "block", marginBottom: "5px", fontFamily: "'Source Serif 4', serif" }}>
+                            {news.headline}
+                          </a>
+                        ) : (
+                          <p style={{ fontSize: "13px", color: "var(--ink)", lineHeight: 1.55, marginBottom: "5px", fontFamily: "'Source Serif 4', serif" }}>
+                            {news.headline}
+                          </p>
+                        )}
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <span style={{ fontSize: "10px", color: "var(--gold)", fontWeight: 700, fontFamily: "'Source Serif 4', serif", textTransform: "uppercase", letterSpacing: "0.08em" }}>{news.source}</span>
+                          <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{news.timestamp}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              <div style={{ padding: "12px 18px", borderTop: "1px solid var(--border)", background: "rgba(255,255,255,0.02)" }}>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3 h-3" style={{ color: "#5C5955" }} />
-                  <span style={{ fontSize: "10px", color: "#5C5955" }}>Refreshed hourly via NewsAPI · {lastUpdated} IST</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", paddingTop: "8px", borderTop: "1px solid var(--rulel)" }}>
+                  <Clock style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
+                  <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>
+                    Refreshed hourly via NewsAPI · {lastUpdated} IST
+                  </span>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* ── ROW 2: SECTOR INTELLIGENCE ──────────────────────────────────── */}
-        <div className="divider mb-8" />
-
-        <div className="grid lg:grid-cols-[1fr_1fr_280px] gap-6 mb-12">
-
-          {/* SECTOR MOMENTUM */}
-          <div>
-            <div className="flex items-center gap-3 mb-5">
-              <span className="gold-line" style={{ marginBottom: 0 }} />
-              <span className="section-label">Sector Momentum · Q1 2026</span>
+          {/* ── ECOSYSTEM METRICS STRIP ───────────────────────────────── */}
+          <section className="uf-a2">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", borderBottom: "1px solid var(--rule)" }}>
+              {[
+                { label: "Active Startups",  value: ecosystem.ecosystemMetrics.totalActiveStartups, sub: "+2,300 / month" },
+                { label: "Funding YTD",      value: ecosystem.ecosystemMetrics.totalFundingYTD,    sub: `${ecosystem.ecosystemMetrics.monthlyGrowth} YoY`, accent: true },
+                { label: "VC Firms",         value: ecosystem.ecosystemMetrics.activeVCFirms,      sub: `${ecosystem.ecosystemMetrics.activeAngels} angels` },
+                { label: "Unicorns",         value: ecosystem.ecosystemMetrics.unicorns,           sub: `${ecosystem.ecosystemMetrics.soonicorns} soonicorns`, warm: true },
+                { label: "Avg Deal",         value: ecosystem.ecosystemMetrics.avgDealSize,        sub: "Seed → Series A" },
+                { label: "Hot Sector",       value: ecosystem.ecosystemMetrics.mostActiveSector,   sub: `${ecosystem.sectorMomentum[0]?.deals} deals` },
+                { label: "Top City",         value: ecosystem.ecosystemMetrics.topCity,            sub: "Leading hub" },
+                { label: "Our Registry",     value: `${totalStartups.toLocaleString() || 0}+`,    sub: `${uniqueIndustries} sectors`, warm: true },
+              ].map((s, i) => (
+                <div key={i} className="uf-stat" style={{ background: s.warm ? "var(--bgwarm)" : "#fff" }}>
+                  <div className="uf-display" style={{ fontSize: "clamp(1.4rem, 2.5vw, 1.9rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1.1, marginBottom: "4px" }}>
+                    {s.value}
+                  </div>
+                  <div className="uf-label" style={{ marginBottom: "2px", color: "var(--ink3)" }}>{s.label}</div>
+                  <div style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{s.sub}</div>
+                </div>
+              ))}
             </div>
+          </section>
 
-            <div className="card" style={{ borderRadius: "6px", overflow: "hidden" }}>
-              <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid var(--border)", background: "rgba(255,255,255,0.02)" }}>
-                <span style={{ fontSize: "10px", color: "#5C5955" }}>SECTOR</span>
-                <div className="flex gap-6" style={{ fontSize: "10px", color: "#5C5955" }}>
-                  <span>DEALS</span>
-                  <span>FUNDING</span>
-                  <span>GROWTH</span>
+          {/* ── SECTOR + LEADERS ─────────────────────────────────────── */}
+          <section className="uf-a3" style={{ display: "grid", gridTemplateColumns: "1fr 1px clamp(280px, 26%, 360px)", gap: 0, borderBottom: "1px solid var(--rule)" }}>
+            {/* Sector table */}
+            <div style={{ padding: "clamp(20px, 4vw, 40px) clamp(16px, 3vw, 32px) clamp(20px, 4vw, 40px) 0" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                <div className="uf-sec-head" style={{ flex: 1 }}>
+                  <span className="uf-label">Sector Momentum · Q1 2026</span>
+                </div>
+                <div className="uf-hide-mobile" style={{ display: "flex", gap: "20px", marginLeft: "12px" }}>
+                  {["DEALS", "FUNDING", "GROWTH"].map((h) => (
+                    <span key={h} style={{ fontSize: "9px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", letterSpacing: "0.1em", width: "52px", textAlign: "right" }}>{h}</span>
+                  ))}
                 </div>
               </div>
 
               {ecosystem.sectorMomentum.map((sector: any, i: number) => {
-                const growthNum = Math.min(parseFloat(sector.growth.replace("+", "").replace("%", "")), 160);
+                const pct = Math.min(parseFloat(sector.growth.replace("+", "").replace("%", "")), 160);
                 return (
-                  <div key={i} className="sector-row px-4 py-3.5" style={{ borderBottom: i < 5 ? "1px solid var(--border)" : "none" }}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2.5">
-                        <span className="mono" style={{ fontSize: "10px", color: "#5C5955", width: "16px" }}>{String(i + 1).padStart(2, "0")}</span>
-                        <span className="serif" style={{ fontSize: "14px", color: "#E8E6E1" }}>{sector.sector}</span>
+                  <div key={i} className="uf-row">
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
+                      <span className="uf-mono" style={{ fontSize: "10px", color: "var(--ink4)", width: "18px", flexShrink: 0 }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="uf-serif" style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", width: "100px", flexShrink: 0 }}>{sector.sector}</span>
+                      <div className="uf-bar-track uf-hide-mobile" style={{ marginRight: "8px" }}>
+                        <div className="uf-bar-fill" style={{ width: `${(pct / 160) * 100}%` }} />
                       </div>
-                      <div className="flex items-center gap-5 flex-shrink-0">
-                        <span className="mono" style={{ fontSize: "12px", color: "#9B9896", width: "28px", textAlign: "right" }}>{sector.deals}</span>
-                        <span className="mono" style={{ fontSize: "12px", color: "#9B9896", width: "48px", textAlign: "right" }}>{sector.funding}</span>
-                        <span className="mono" style={{ fontSize: "13px", color: "#34d399", fontWeight: 600, width: "48px", textAlign: "right" }}>{sector.growth}</span>
-                      </div>
+                      <span className="uf-hide-mobile" style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", flexShrink: 0, maxWidth: "130px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {sector.trend}
+                      </span>
                     </div>
-                    <div className="growth-bar ml-7">
-                      <div className="growth-bar-fill" style={{ width: `${(growthNum / 160) * 100}%` }} />
+                    <div style={{ display: "flex", gap: "0px", flexShrink: 0, alignItems: "center" }}>
+                      <span className="uf-mono" style={{ fontSize: "12.5px", color: "var(--ink2)", width: "40px", textAlign: "right" }}>{sector.deals}</span>
+                      <span className="uf-mono" style={{ fontSize: "12.5px", color: "var(--ink2)", width: "60px", textAlign: "right" }}>{sector.funding}</span>
+                      <span className="uf-mono" style={{ fontSize: "13px", fontWeight: 700, color: "var(--pos)", width: "56px", textAlign: "right" }}>{sector.growth}</span>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
 
-          {/* FUNDING TRACKER */}
-          <div>
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <span className="gold-line" style={{ marginBottom: 0 }} />
-                <span className="section-label">Funding Tracker</span>
+            {/* Vertical rule */}
+            <div style={{ background: "var(--rule)" }} className="uf-hide-tablet" />
+
+            {/* Leaders sidebar */}
+            <div style={{ padding: "clamp(20px, 4vw, 40px) 0 clamp(20px, 4vw, 40px) clamp(16px, 3vw, 32px)" }} className="uf-hide-tablet">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                <span className="uf-label">Business Leaders</span>
+                <a href="https://www.forbes.com/billionaires/" target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: "10px", color: "var(--gold)", fontFamily: "'Source Serif 4', serif", display: "flex", alignItems: "center", gap: "3px" }}>
+                  Forbes <ExternalLink style={{ width: "10px", height: "10px" }} />
+                </a>
               </div>
-              <div className="flex items-center gap-1.5">
-                <LiveDot color="blue" />
-                <span style={{ fontSize: "10px", color: "#60a5fa", fontWeight: 600, letterSpacing: "0.1em" }}>ACTIVE</span>
+
+              {TOP_INDIAN_BILLIONAIRES.map((p, i) => (
+                <div key={i} className="uf-row">
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
+                    <div style={{ width: "22px", height: "22px", background: "var(--bgoff)", border: "1px solid var(--rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <span className="uf-mono" style={{ fontSize: "8.5px", fontWeight: 700, color: "var(--ink3)" }}>{p.rank.replace("#", "")}</span>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="uf-serif" style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--ink)", marginBottom: "1px" }}>{p.name}</div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{p.source}</span>
+                        <span style={{ fontSize: "10px", color: "var(--pos)", fontFamily: "'Source Serif 4', serif", fontWeight: 600 }}>{p.yoy}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="uf-mono" style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", flexShrink: 0, marginLeft: "8px" }}>{p.netWorth}</span>
+                </div>
+              ))}
+
+              {/* Snapshot box */}
+              <div style={{ marginTop: "20px", padding: "16px", background: "var(--bgwarm)", border: "1px solid var(--rule)" }}>
+                <div className="uf-label" style={{ marginBottom: "10px" }}>Q1 2026 Snapshot</div>
+                {[
+                  { l: "Total Funding YTD", v: ecosystem.ecosystemMetrics.totalFundingYTD },
+                  { l: "Avg Deal Size",     v: ecosystem.ecosystemMetrics.avgDealSize },
+                  { l: "Unicorns",          v: ecosystem.ecosystemMetrics.unicorns },
+                  { l: "Soonicorns",        v: ecosystem.ecosystemMetrics.soonicorns },
+                ].map((s, i) => (
+                  <div key={i} className="uf-row" style={{ padding: "7px 0" }}>
+                    <span style={{ fontSize: "11.5px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif" }}>{s.l}</span>
+                    <span className="uf-display" style={{ fontSize: "15px", fontWeight: 700, color: "var(--ink)" }}>{s.v}</span>
+                  </div>
+                ))}
               </div>
+              <p style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", marginTop: "10px", fontStyle: "italic", lineHeight: 1.5 }}>
+                Forbes Real-Time Billionaires, 2026. Rankings fluctuate daily.
+              </p>
+            </div>
+          </section>
+
+          {/* ── RISING STARTUPS ──────────────────────────────────────── */}
+          <section className="uf-a3" style={{ padding: "clamp(24px, 5vw, 48px) 0", borderBottom: "1px solid var(--rule)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+              <div className="uf-sec-head" style={{ flex: 1, marginBottom: 0 }}>
+                <span className="uf-label">Top Rising Startups · 2026</span>
+              </div>
+              <Link href="/startup" style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif", marginLeft: "16px", flexShrink: 0 }}>
+                Full registry <ChevronRight style={{ width: "13px", height: "13px" }} />
+              </Link>
             </div>
 
-            <div className="card" style={{ borderRadius: "6px", overflow: "hidden" }}>
-              {ecosystem.fundingNews.map((funding: any, i: number) => (
-                <div key={i} style={{
-                  padding: "18px 20px",
-                  borderBottom: i < ecosystem.fundingNews.length - 1 ? "1px solid var(--border)" : "none",
-                  background: i === 0 ? "linear-gradient(135deg, rgba(201,168,76,0.06), rgba(201,168,76,0.02))" : "transparent"
-                }}>
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2.5">
-                      {i === 0 && <Star className="w-3 h-3 flex-shrink-0" style={{ color: "#C9A84C" }} />}
-                      <span className="serif" style={{ fontSize: "15px", color: "#E8E6E1" }}>{funding.startup}</span>
+            {/* Hero card */}
+            {ecosystem.topRisingStartups[0] && (
+              <div style={{ background: "var(--bgwarm)", border: "1px solid var(--rule)", padding: "clamp(18px, 3vw, 30px)", marginBottom: "16px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "20px", alignItems: "start" }}>
+                  <div>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "10px", flexWrap: "wrap" }}>
+                      <span className="uf-pill" style={{ color: "var(--gold)" }}>Editor's Pick</span>
+                      <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                        {ecosystem.topRisingStartups[0].sector}
+                      </span>
+                      {ecosystem.topRisingStartups[0].momentum === "high" && (
+                        <span className="uf-pill" style={{ color: "var(--pos)" }}>🔥 High Momentum</span>
+                      )}
                     </div>
-                    <span className="mono" style={{ fontSize: "15px", color: i === 0 ? "#C9A84C" : "#34d399", fontWeight: 600, marginLeft: "12px", flexShrink: 0 }}>
-                      {funding.amount}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="tag tag-slate" style={{ fontSize: "9px" }}>{funding.round}</span>
-                    <span style={{ fontSize: "11px", color: "#5C5955" }}>{funding.investors.split(",")[0]}</span>
-                  </div>
-                  {funding.valuation && (
-                    <p style={{ fontSize: "10.5px", color: "#5C5955" }}>
-                      Valuation: <span style={{ color: "#9B9896", fontWeight: 600 }}>{funding.valuation}</span>
+                    <h3 className="uf-display" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)", fontWeight: 700, color: "var(--ink)", marginBottom: "8px", lineHeight: 1.1 }}>
+                      {ecosystem.topRisingStartups[0].name}
+                    </h3>
+                    <p className="uf-serif" style={{ fontSize: "14px", color: "var(--ink2)", lineHeight: 1.65, maxWidth: "500px", marginBottom: "16px" }}>
+                      {ecosystem.topRisingStartups[0].insight}
                     </p>
-                  )}
-                </div>
-              ))}
-
-              <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border)", background: "rgba(255,255,255,0.02)" }}>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { label: "Funding YTD", value: ecosystem.ecosystemMetrics.totalFundingYTD },
-                    { label: "Avg Deal", value: ecosystem.ecosystemMetrics.avgDealSize },
-                  ].map((s, i) => (
-                    <div key={i}>
-                      <div style={{ fontSize: "9px", color: "#5C5955", letterSpacing: "0.1em", marginBottom: "2px" }}>{s.label}</div>
-                      <div className="serif" style={{ fontSize: "1.1rem", color: "#E8E6E1" }}>{s.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* MARKET MOOD + LEADERS */}
-          <div>
-            <div className="flex items-center gap-3 mb-5">
-              <span className="gold-line" style={{ marginBottom: 0 }} />
-              <span className="section-label">Market Pulse</span>
-            </div>
-
-            {/* Mood card */}
-            <div className="card card-gold mb-4" style={{ padding: "20px", borderRadius: "6px" }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="serif" style={{ fontSize: "1.5rem", color: sentimentColor }}>
-                  {ecosystem.marketMood.sentiment}
-                </span>
-                <span className="mono" style={{ fontSize: "1.8rem", color: sentimentColor, opacity: 0.7, fontWeight: 700 }}>
-                  {ecosystem.marketMood.score}
-                </span>
-              </div>
-
-              {/* Gauge bar */}
-              <div style={{ height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "3px", marginBottom: "8px", position: "relative", overflow: "visible" }}>
-                <div style={{
-                  position: "absolute", top: 0, left: 0, bottom: 0,
-                  width: `${ecosystem.marketMood.score}%`,
-                  background: `linear-gradient(90deg, #f87171 0%, #fbbf24 45%, #34d399 100%)`,
-                  borderRadius: "3px"
-                }} />
-                <div style={{
-                  position: "absolute", top: "50%", left: `${ecosystem.marketMood.score}%`,
-                  transform: "translate(-50%, -50%)",
-                  width: "12px", height: "12px",
-                  background: "#E8E6E1",
-                  borderRadius: "50%",
-                  boxShadow: "0 0 0 3px rgba(232,230,225,0.2)"
-                }} />
-              </div>
-
-              <div className="flex justify-between mb-3" style={{ fontSize: "9px", color: "#5C5955" }}>
-                <span>Bearish</span><span>Neutral</span><span>Bullish</span>
-              </div>
-              <p style={{ fontSize: "11px", color: "#9B9896", lineHeight: 1.5 }}>{ecosystem.marketMood.reason}</p>
-            </div>
-
-            {/* Business leaders */}
-            <div className="flex items-center justify-between mb-3">
-              <span className="section-label" style={{ fontSize: "9px" }}>Business Leaders</span>
-              <a href="https://www.forbes.com/billionaires/" target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1" style={{ fontSize: "10px", color: "#5C5955" }}>
-                Forbes <ExternalLink className="w-2.5 h-2.5" />
-              </a>
-            </div>
-
-            <div className="card" style={{ borderRadius: "6px" }}>
-              {TOP_INDIAN_BILLIONAIRES.map((person, i) => (
-                <div key={i} className="news-item" style={{ padding: "12px 16px", borderBottom: i < 2 ? "1px solid var(--border)" : "none" }}>
-                  <div className="flex items-center gap-2.5 mb-1">
-                    <div style={{ width: "18px", height: "18px", background: "rgba(201,168,76,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, borderRadius: "2px" }}>
-                      <span className="mono" style={{ fontSize: "8px", color: "#C9A84C", fontWeight: 700 }}>{person.rank}</span>
-                    </div>
-                    <span className="serif" style={{ fontSize: "13px", color: "#E8E6E1", flex: 1 }}>{person.name}</span>
-                    <span className="mono" style={{ fontSize: "12px", color: "#E8E6E1", fontWeight: 600 }}>{person.netWorth}</span>
+                    <Link href="/startup" className="uf-btn-dark" style={{ fontSize: "12px", padding: "10px 22px" }}>
+                      View Profile <ArrowUpRight style={{ width: "13px", height: "13px" }} />
+                    </Link>
                   </div>
-                  <div className="flex items-center justify-between ml-7">
-                    <span style={{ fontSize: "10px", color: "#5C5955" }}>{person.source}</span>
-                    <span className="mono" style={{ fontSize: "10px", color: "#34d399" }}>{person.yoy}</span>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div className="uf-mono" style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 700, color: "var(--pos)", lineHeight: 1 }}>
+                      {ecosystem.topRisingStartups[0].growthIndicator}
+                    </div>
+                    <div className="uf-label" style={{ fontSize: "9px", marginTop: "4px" }}>Growth Rate</div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
+              {ecosystem.topRisingStartups.slice(1).map((s: any, i: number) => (
+                <Link key={i} href="/startup" className="uf-card" style={{ display: "block", padding: "18px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: "9px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>{s.sector}</div>
+                      <h4 className="uf-display" style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.2 }}>{s.name}</h4>
+                    </div>
+                    <span className="uf-mono" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--pos)", flexShrink: 0, marginLeft: "8px" }}>{s.growthIndicator}</span>
+                  </div>
+                  <p className="uf-serif" style={{ fontSize: "12px", color: "var(--ink3)", lineHeight: 1.6, marginBottom: "12px" }}>{s.insight}</p>
+                  <div style={{ height: "2px", background: "var(--rule)", borderRadius: "1px", overflow: "hidden" }}>
+                    <div style={{ height: "100%", background: "var(--ink)", width: `${Math.min(parseFloat(s.growthIndicator.replace("+", "").replace("%", "")), 200) / 2}%`, borderRadius: "1px" }} />
+                  </div>
+                </Link>
               ))}
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* ── ROW 3: RECENTLY VERIFIED ─────────────────────────────────────── */}
-        <div className="divider mb-8" />
-
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <span className="gold-line" style={{ marginBottom: 0 }} />
-              <span className="section-label">Recently Verified in Registry</span>
-              <span className="tag tag-emerald">
-                <BadgeCheck className="w-2.5 h-2.5" />
-                Live
-              </span>
+          {/* ── RECENTLY VERIFIED ────────────────────────────────────── */}
+          <section className="uf-a4" style={{ padding: "clamp(24px, 5vw, 48px) 0", borderBottom: "1px solid var(--rule)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span className="uf-label">Recently Verified on UpForge</span>
+                <span className="uf-verified">✓ Live Registry</span>
+              </div>
+              <Link href="/startup" style={{ fontSize: "12px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif", display: "flex", alignItems: "center", gap: "4px" }}>
+                View all {totalStartups.toLocaleString()}+ <ChevronRight style={{ width: "13px", height: "13px" }} />
+              </Link>
             </div>
-            <Link href="/startup" className="flex items-center gap-1" style={{ fontSize: "11px", color: "#9B9896" }}>
-              View all {totalStartups?.toLocaleString()}+ <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-            {verifiedStartups?.slice(0, 6).map((startup: any) => (
-              <Link key={startup.id} href={`/startup/${startup.slug}`}
-                className="card startup-card" style={{ padding: "18px", borderRadius: "6px", display: "block" }}>
-                <div className="flex items-start justify-between mb-3">
-                  <div style={{ width: "32px", height: "32px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Building2 className="w-4 h-4" style={{ color: "#5C5955" }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
+              {verifiedStartups.slice(0, 6).map((startup: any) => (
+                <Link key={startup.id} href={`/startup/${startup.slug}`} className="uf-card" style={{ display: "block", padding: "18px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                    <h4 className="uf-display" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.25, flex: 1 }}>{startup.name}</h4>
+                    <BadgeCheck style={{ width: "13px", height: "13px", color: "var(--pos)", flexShrink: 0, marginLeft: "8px", marginTop: "2px" }} />
                   </div>
-                  <BadgeCheck className="w-3.5 h-3.5" style={{ color: "#34d399", flexShrink: 0 }} />
-                </div>
-                <h3 className="serif" style={{ fontSize: "14px", color: "#E8E6E1", marginBottom: "6px", lineHeight: 1.2 }}>{startup.name}</h3>
-                <p style={{ fontSize: "11px", color: "#9B9896", lineHeight: 1.5, marginBottom: "12px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                  {startup.description}
-                </p>
-                <div style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: "10px", color: "#5C5955" }}>{startup.founded_year || "—"}</span>
-                    <span style={{ color: "#2A2825" }}>·</span>
-                    <span style={{ fontSize: "10px", color: "#9B9896", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>{startup.industry || "Startup"}</span>
+                  <p className="uf-serif" style={{ fontSize: "12px", color: "var(--ink3)", lineHeight: 1.6, marginBottom: "14px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {startup.description}
+                  </p>
+                  <div style={{ display: "flex", gap: "8px", paddingTop: "10px", borderTop: "1px solid var(--rulel)" }}>
+                    <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{startup.founded_year || "—"}</span>
+                    <span style={{ color: "var(--rule)" }}>·</span>
+                    <span style={{ fontSize: "10px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>{startup.industry || "Startup"}</span>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+                </Link>
+              ))}
+            </div>
+          </section>
 
-        {/* ── ROW 4: EDITORIAL PAGES ────────────────────────────────────────── */}
-        <div className="divider mb-8" />
+          {/* ── INTELLIGENCE HUB ─────────────────────────────────────── */}
+          <section className="uf-a4" style={{ padding: "clamp(24px, 5vw, 48px) 0", borderBottom: "1px solid var(--rule)" }}>
+            <div className="uf-sec-head">
+              <span className="uf-label">Intelligence Hub</span>
+            </div>
 
-        <section className="mb-12">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="gold-line" style={{ marginBottom: 0 }} />
-            <span className="section-label">Intelligence Hub</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                label: "AI Startup Reports",
-                desc: "Deep dives into India's fastest-growing AI companies — valuation, growth signals, competitive moats.",
-                href: "/top-ai-startups",
-                icon: Sparkles,
-                stat: "1,779+ companies",
-                tag: "AI/ML",
-                highlight: true,
-              },
-              {
-                label: "Indian Unicorn Tracker",
-                desc: "126 verified unicorn profiles with funding history, investor networks, and growth trajectory data.",
-                href: "/indian-unicorns",
-                icon: Gem,
-                stat: "126 unicorns",
-                tag: "Unicorns",
-              },
-              {
-                label: "SaaS Intelligence",
-                desc: "India's $26B SaaS landscape — ranked by ARR growth, global reach, and category leadership.",
-                href: "/best-saas-startups",
-                icon: BarChart3,
-                stat: "$26B market",
-                tag: "SaaS",
-              },
-              {
-                label: "Funding Database",
-                desc: "Track every major funding round in India — from angel to Series F, with investor and valuation data.",
-                href: "/top-funded-startups",
-                icon: DollarSign,
-                stat: "$14B+ tracked",
-                tag: "Funding",
-              },
-              {
-                label: "Founder Stories",
-                desc: "In-depth profiles of India's most ambitious founders — their journey, decisions, and lessons.",
-                href: "/founder-stories",
-                icon: Users,
-                stat: "Curated profiles",
-                tag: "Founders",
-              },
-              {
-                label: "Full Startup Registry",
-                desc: `${totalStartups?.toLocaleString() || "72,000"}+ verified startups across ${uniqueIndustries} sectors — the most comprehensive free database in India.`,
-                href: "/startup",
-                icon: BookOpen,
-                stat: `${totalStartups?.toLocaleString() || "72,000"}+`,
-                tag: "Registry",
-              },
-            ].map((item, i) => (
-              <Link key={i} href={item.href}
-                className={`card card-gold group`}
-                style={{
-                  padding: "24px",
-                  borderRadius: "6px",
-                  display: "block",
-                  border: item.highlight ? "1px solid rgba(201,168,76,0.2)" : "1px solid var(--border)",
-                  background: item.highlight ? "linear-gradient(135deg, rgba(201,168,76,0.04), rgba(201,168,76,0.01))" : undefined
-                }}>
-                <div className="flex items-start justify-between mb-4">
-                  <div style={{
-                    width: "40px", height: "40px",
-                    background: item.highlight ? "rgba(201,168,76,0.12)" : "rgba(255,255,255,0.05)",
-                    borderRadius: "6px",
-                    display: "flex", alignItems: "center", justifyContent: "center"
-                  }}>
-                    <item.icon className="w-5 h-5" style={{ color: item.highlight ? "#C9A84C" : "#9B9896" }} />
+            <div className="uf-grid-divider" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+              {[
+                { label: "AI Startup Reports",    desc: "Deep dives into India's fastest-growing AI companies — valuation, growth signals, competitive moats.", href: "/top-ai-startups",     icon: Sparkles,  stat: "1,779+ companies", tag: "AI / ML" },
+                { label: "Indian Unicorn Tracker",desc: "118 verified unicorn profiles with funding history, investor networks, and growth trajectory data.",  href: "/indian-unicorns",   icon: Gem,       stat: "118 unicorns",     tag: "Unicorns" },
+                { label: "SaaS Intelligence",     desc: "India's $26B SaaS landscape — ranked by ARR growth, global reach, and category leadership.",          href: "/best-saas-startups",icon: BarChart3,  stat: "$26B market",      tag: "SaaS" },
+                { label: "Funding Database",      desc: "Track every major round in India — from angel to Series F, with investor and valuation data.",         href: "/top-funded-startups",icon: DollarSign,stat: "$14B+ tracked",    tag: "Funding" },
+                { label: "Founder Stories",       desc: "In-depth profiles of India's most ambitious founders — their journey, decisions, and lessons.",        href: "/founder-stories",   icon: Users,     stat: "Curated profiles", tag: "Founders" },
+                { label: "Full Startup Registry", desc: `${totalStartups.toLocaleString() || "72,000"}+ verified startups across ${uniqueIndustries} sectors — India's most comprehensive free database.`, href: "/startup", icon: BookOpen, stat: `${totalStartups.toLocaleString() || "72,000"}+`, tag: "Registry" },
+              ].map((item, i) => (
+                <Link key={i} href={item.href} className="uf-grid-cell" style={{ display: "block" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+                    <div style={{ width: "36px", height: "36px", background: "var(--bgwarm)", border: "1px solid var(--rule)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <item.icon style={{ width: "16px", height: "16px", color: "var(--ink3)" }} />
+                    </div>
+                    <ArrowUpRight style={{ width: "14px", height: "14px", color: "var(--ink4)" }} />
                   </div>
-                  <ArrowUpRight className="w-4 h-4 group-hover:opacity-100 opacity-0 transition-opacity" style={{ color: "#C9A84C" }} />
-                </div>
-                <div className="tag tag-slate mb-3" style={{ display: "inline-flex" }}>{item.tag}</div>
-                <h3 className="serif" style={{ fontSize: "1.1rem", color: "#E8E6E1", marginBottom: "8px", lineHeight: 1.25 }}>{item.label}</h3>
-                <p style={{ fontSize: "12px", color: "#9B9896", lineHeight: 1.6, marginBottom: "16px" }}>{item.desc}</p>
-                <div style={{ borderTop: "1px solid var(--border)", paddingTop: "12px" }}>
-                  <span className="mono" style={{ fontSize: "12px", color: item.highlight ? "#C9A84C" : "#34d399", fontWeight: 600 }}>{item.stat}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+                  <div style={{ fontSize: "9px", color: "var(--gold)", fontFamily: "'Source Serif 4', serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>
+                    {item.tag}
+                  </div>
+                  <h3 className="uf-display" style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--ink)", marginBottom: "8px", lineHeight: 1.2 }}>{item.label}</h3>
+                  <p className="uf-serif" style={{ fontSize: "12.5px", color: "var(--ink3)", lineHeight: 1.65, marginBottom: "16px" }}>{item.desc}</p>
+                  <div style={{ paddingTop: "12px", borderTop: "1px solid var(--rulel)" }}>
+                    <span className="uf-mono" style={{ fontSize: "12px", fontWeight: 600, color: "var(--ink2)" }}>{item.stat}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
 
-        {/* ── CTA BLOCK: AI REPORTS ─────────────────────────────────────────── */}
-        <div className="mb-12">
-          <div style={{
-            borderRadius: "8px",
-            overflow: "hidden",
-            background: "linear-gradient(135deg, #111118 0%, #16161F 100%)",
-            border: "1px solid rgba(201,168,76,0.15)",
-            position: "relative"
-          }}>
-            {/* Grid overlay */}
-            <div className="grid-pattern absolute inset-0 opacity-40" />
-            {/* Glow */}
-            <div style={{
-              position: "absolute", bottom: 0, right: "10%",
-              width: "400px", height: "400px",
-              background: "radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)",
-              pointerEvents: "none"
-            }} />
-
-            <div className="relative grid lg:grid-cols-2 gap-8 p-10 sm:p-14 items-center">
+          {/* ── AI REPORTS CTA ───────────────────────────────────────── */}
+          <section style={{ padding: "clamp(32px, 6vw, 64px) 0", borderBottom: "1px solid var(--rule)" }}>
+            <div style={{ background: "var(--bgwarm)", border: "1px solid var(--rule)", padding: "clamp(28px, 5vw, 56px)", display: "grid", gridTemplateColumns: "1fr auto", gap: "clamp(20px, 4vw, 48px)", alignItems: "center" }}>
               <div>
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="gold-line" style={{ marginBottom: 0 }} />
-                  <span className="tag tag-gold">Premium Intelligence</span>
-                </div>
-                <h2 className="serif" style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#E8E6E1", lineHeight: 1.1, marginBottom: "16px", fontWeight: 400 }}>
-                  AI-Powered Deep<br />
-                  <em style={{ color: "#C9A84C" }}>Research Reports</em>
+                <span className="uf-label" style={{ color: "var(--gold)", display: "block", marginBottom: "12px" }}>Premium Intelligence</span>
+                <h2 className="uf-display" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1.05, marginBottom: "16px" }}>
+                  AI-Powered Deep Research Reports on Indian Startups
                 </h2>
-                <p style={{ fontSize: "14px", color: "#9B9896", lineHeight: 1.7, maxWidth: "420px", marginBottom: "28px" }}>
-                  Institutional-grade analysis on Indian startups — valuation insights, competitive landscape, market positioning, and risk signals. Built for founders, investors, and analysts.
+                <p className="uf-serif" style={{ fontSize: "15px", color: "var(--ink2)", lineHeight: 1.8, maxWidth: "540px", marginBottom: "28px" }}>
+                  Institutional-grade analysis — valuation insights, competitive landscape, market positioning, and risk signals. Built for founders, investors, and analysts who need more than surface-level data.
                 </p>
-                <div className="flex items-center gap-3">
-                  <Link href="/reports" className="btn-primary" style={{ borderRadius: "4px" }}>
-                    Explore Reports <ArrowRight className="w-4 h-4" />
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                  <Link href="/reports" className="uf-btn-dark">
+                    Explore Reports <ArrowRight style={{ width: "14px", height: "14px" }} />
                   </Link>
-                  <Link href="/startup" className="btn-secondary" style={{ borderRadius: "4px" }}>
+                  <Link href="/startup" className="uf-btn-ghost">
                     Browse Registry
                   </Link>
                 </div>
               </div>
-
-              <div className="hidden lg:grid grid-cols-2 gap-3">
-                {[
-                  { label: "Valuation Analysis", icon: LineChart, desc: "DCF models, comparables, funding multiples" },
-                  { label: "Market Positioning", icon: Target, desc: "Competitive maps, category definitions" },
-                  { label: "Risk Signals", icon: Activity, desc: "Regulatory, operational, market risks" },
-                  { label: "Growth Trajectory", icon: TrendingUp, desc: "Revenue projections, expansion signals" },
-                ].map((item, i) => (
-                  <div key={i} style={{
-                    padding: "18px",
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    borderRadius: "6px",
-                    transition: "border-color 0.2s"
-                  }}>
-                    <item.icon className="w-4 h-4 mb-3" style={{ color: "#C9A84C", opacity: 0.7 }} />
-                    <p className="serif" style={{ fontSize: "14px", color: "#E8E6E1", marginBottom: "6px" }}>{item.label}</p>
-                    <p style={{ fontSize: "11px", color: "#5C5955", lineHeight: 1.5 }}>{item.desc}</p>
+              <div className="uf-hide-tablet" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", width: "240px" }}>
+                {["Valuation Analysis", "Market Positioning", "Risk Signals", "Growth Trajectory"].map((t) => (
+                  <div key={t} style={{ padding: "16px", background: "#fff", border: "1px solid var(--rule)", textAlign: "center" }}>
+                    <Newspaper style={{ width: "18px", height: "18px", color: "var(--ink4)", margin: "0 auto 8px" }} />
+                    <p className="uf-serif" style={{ fontSize: "11px", fontWeight: 600, color: "var(--ink2)", lineHeight: 1.4 }}>{t}</p>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* ── TRUST STRIP ──────────────────────────────────────────────────── */}
-        <div className="divider mb-8" />
-
-        <div style={{ marginBottom: "48px" }}>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+          {/* ── TRUST STRIP ──────────────────────────────────────────── */}
+          <div className="uf-rule-thick" />
+          <div style={{ padding: "18px 0", borderBottom: "1px solid var(--rule)", display: "flex", flexWrap: "wrap", gap: "8px 28px", alignItems: "center", justifyContent: "center", background: "var(--bgoff)" }}>
             {[
-              { icon: Shield, text: "100% Independent · Zero paid rankings" },
-              { icon: BadgeCheck, text: "Every startup manually reviewed" },
-              { icon: Sparkles, text: "AI-powered deep analysis" },
-              { icon: Globe, text: "Open, public & Google-indexed" },
-              { icon: Clock, text: "Refreshed hourly via NewsAPI + Groq" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <item.icon className="w-3.5 h-3.5" style={{ color: "#C9A84C", opacity: 0.6 }} />
-                <span style={{ fontSize: "11.5px", color: "#9B9896" }}>{item.text}</span>
+              { icon: Shield,       text: "100% Independent · Zero paid rankings" },
+              { icon: BadgeCheck,   text: "Every startup manually reviewed" },
+              { icon: Sparkles,     text: "AI-powered research reports" },
+              { icon: Globe,        text: "Open, public & Google-indexed" },
+              { icon: Clock,        text: "Refreshed hourly via NewsAPI + Groq" },
+            ].map((item) => (
+              <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                <item.icon style={{ width: "13px", height: "13px", color: "var(--ink3)" }} />
+                <span style={{ fontSize: "11.5px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif" }}>{item.text}</span>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-        <footer style={{ borderTop: "1px solid var(--border)", paddingTop: "40px" }}>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-
-            {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2.5 mb-4">
-                <div style={{ width: "32px", height: "32px", background: "rgba(201,168,76,0.15)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span className="mono" style={{ fontSize: "11px", color: "#C9A84C", fontWeight: 700 }}>UF</span>
-                </div>
-                <div>
-                  <div className="serif" style={{ fontSize: "16px", color: "#E8E6E1" }}>UpForge</div>
-                  <div style={{ fontSize: "9px", color: "#5C5955", letterSpacing: "0.12em", textTransform: "uppercase" }}>Registry of Record</div>
+          {/* ── FOOTER ───────────────────────────────────────────────── */}
+          <footer style={{ padding: "clamp(32px, 5vw, 56px) 0 clamp(20px, 3vw, 32px)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "clamp(24px, 4vw, 48px)", marginBottom: "clamp(24px, 4vw, 40px)" }}>
+              {/* Brand */}
+              <div>
+                <div className="uf-display" style={{ fontSize: "1.6rem", fontWeight: 900, color: "var(--ink)", lineHeight: 1, marginBottom: "4px" }}>UpForge</div>
+                <div className="uf-label" style={{ color: "var(--ink4)", marginBottom: "12px" }}>Registry of Record</div>
+                <p className="uf-serif" style={{ fontSize: "12.5px", color: "var(--ink3)", lineHeight: 1.7 }}>
+                  India's independent startup intelligence platform. Free, verified, and built for the ecosystem.
+                </p>
+                <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div className="uf-live" />
+                  <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{lastUpdated} IST</span>
                 </div>
               </div>
-              <p style={{ fontSize: "12px", color: "#5C5955", lineHeight: 1.7 }}>
-                India's independent startup intelligence platform. Free, verified, and built for the ecosystem.
+              {/* Registry */}
+              <div>
+                <div className="uf-label" style={{ marginBottom: "12px" }}>Registry</div>
+                {[
+                  { label: "All Startups", href: "/startup" },
+                  { label: "AI Startups", href: "/top-ai-startups" },
+                  { label: "Unicorns", href: "/indian-unicorns" },
+                  { label: "Funded Startups", href: "/top-funded-startups" },
+                  { label: "List Your Startup", href: "/submit" },
+                ].map((l) => <Link key={l.href} href={l.href} className="uf-footer-link">{l.label}</Link>)}
+              </div>
+              {/* Intelligence */}
+              <div>
+                <div className="uf-label" style={{ marginBottom: "12px" }}>Intelligence</div>
+                {[
+                  { label: "Research Reports", href: "/reports" },
+                  { label: "SaaS Rankings", href: "/best-saas-startups" },
+                  { label: "Founder Stories", href: "/founder-stories" },
+                  { label: "Sector Analysis", href: "/startup" },
+                ].map((l) => <Link key={l.href} href={l.href} className="uf-footer-link">{l.label}</Link>)}
+              </div>
+              {/* Data */}
+              <div>
+                <div className="uf-label" style={{ marginBottom: "12px" }}>Data Sources</div>
+                {["NewsAPI — Live News", "Groq LLM — Market Data", "Supabase — Registry", "Forbes — Billionaires"].map((s) => (
+                  <p key={s} className="uf-footer-link" style={{ cursor: "default" }}>{s}</p>
+                ))}
+              </div>
+            </div>
+
+            <div className="uf-rule" />
+            <div style={{ paddingTop: "18px", textAlign: "center" }}>
+              <p style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", fontStyle: "italic" }}>
+                © {new Date().getFullYear()} UpForge · Independent · Ad-Free · Open Registry · v2.4 · Market data is AI-generated for informational purposes only.
               </p>
             </div>
-
-            {/* Registry */}
-            <div>
-              <p style={{ fontSize: "10px", color: "#5C5955", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "14px" }}>Registry</p>
-              {[
-                { label: "All Startups", href: "/startup" },
-                { label: "AI Startups", href: "/top-ai-startups" },
-                { label: "Unicorns", href: "/indian-unicorns" },
-                { label: "Funded Startups", href: "/top-funded-startups" },
-                { label: "List Your Startup", href: "/submit" },
-              ].map((link, i) => (
-                <Link key={i} href={link.href} className="footer-link block mb-2.5">{link.label}</Link>
-              ))}
-            </div>
-
-            {/* Intelligence */}
-            <div>
-              <p style={{ fontSize: "10px", color: "#5C5955", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "14px" }}>Intelligence</p>
-              {[
-                { label: "Research Reports", href: "/reports" },
-                { label: "SaaS Rankings", href: "/best-saas-startups" },
-                { label: "Founder Stories", href: "/founder-stories" },
-                { label: "Sector Analysis", href: "/startup" },
-              ].map((link, i) => (
-                <Link key={i} href={link.href} className="footer-link block mb-2.5">{link.label}</Link>
-              ))}
-            </div>
-
-            {/* Live data */}
-            <div>
-              <p style={{ fontSize: "10px", color: "#5C5955", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "14px" }}>Live Data</p>
-              <div className="flex items-center gap-2 mb-3">
-                <LiveDot color="emerald" />
-                <span style={{ fontSize: "11px", color: "#9B9896" }}>Market: <span style={{ color: sentimentColor }}>{ecosystem.marketMood.sentiment}</span></span>
-              </div>
-              <div style={{ fontSize: "11px", color: "#5C5955", lineHeight: 1.8 }}>
-                <div>News via NewsAPI</div>
-                <div>Market data via Groq LLM</div>
-                <div>Registry: Supabase</div>
-                <div style={{ marginTop: "8px", color: "#3A3835" }}>Updated {lastUpdated} IST</div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "6px", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-            <p style={{ fontSize: "11px", color: "#3A3835" }}>
-              © {new Date().getFullYear()} UpForge · Independent · Ad-Free · Open Registry · v2.3
-            </p>
-            <p style={{ fontSize: "10px", color: "#2A2825" }}>
-              Delhi, India · Est. 2025 · Market data is AI-generated for informational purposes only
-            </p>
-          </div>
-        </footer>
-
+          </footer>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
