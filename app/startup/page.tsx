@@ -475,7 +475,6 @@ export default async function StartupPage({ searchParams }: Props) {
               </div>
             </div>
 
-          </div>
         </header>
 
         {/* ══════════════════════════════════════════════════════════
