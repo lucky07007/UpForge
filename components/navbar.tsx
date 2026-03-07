@@ -6,15 +6,14 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search, ChevronRight } from "lucide-react";
 
-  const links = [
-    { name: "Home", href: "/" },
-    { name: "Registry", href: "/startup" },
-    { name: "Founders", href: "/founder-stories" },
-    { name: "Reports", href: "/reports" },
-    { name: "About", href: "/about" },
-  ];
+const NAV_LINKS = [
+  { label: "Directory",  href: "/startup" },
+  { label: "Reports",    href: "/reports" },
+  { label: "Insights",   href: "/insights" },
+  { label: "Tools",      href: "/tools" },
+];
 
-export function Header() {
+export function Navbar() {
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [searchOpen,  setSearchOpen]  = useState(false);
   const [scrolled,    setScrolled]    = useState(false);
