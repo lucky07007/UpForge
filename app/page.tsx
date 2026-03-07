@@ -442,37 +442,151 @@ export default async function Home() {
 
               <div style={{ background: "var(--rule)", width: "1px" }} className="hide-tab" />
 
-              {/* CENTER: Hero */}
-              <div style={{ padding: "0 clamp(14px,3vw,36px)" }} className="center-mob">
-                <span className="pill" style={{ color: "var(--gold)", marginBottom: "14px", display: "inline-flex" }}>India's #1 Startup Database</span>
-                <h2 className="uf-d" style={{ fontSize: "clamp(1.7rem,3.5vw,2.6rem)", fontWeight: 700, lineHeight: 1.06, color: "var(--ink)", marginBottom: "14px", marginTop: "8px" }}>
-                  India's most comprehensive registry of{" "}
-                  <em style={{ fontStyle: "italic", color: "var(--gr)" }}>72,000+ verified startups</em>
-                  {" "}— researched, ranked, and updated daily.
-                </h2>
+ {/* CENTER: Hero */}
 
-                <div className="srch" style={{ marginBottom: "22px", maxWidth: "480px" }}>
-                  <Search style={{ width: "14px", height: "14px", color: "var(--ink4)", flexShrink: 0 }} />
-                  <input type="text" placeholder="Search startups, sectors, founders…" aria-label="Search Indian startups" />
-                </div>
+<div style={{ padding: "0 clamp(16px,3vw,40px)" }} className="center-mob">
 
-                <div className="jc-center" style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "20px" }}>
-                  <Link href="/startup" className="btn-d">Open Registry <ArrowRight style={{ width: "13px", height: "13px" }} /></Link>
-                  <Link href="/submit" className="btn-g">List Your Startup — Free</Link>
-                </div>
+  {/* Editorial label */}
 
-                <div className="jc-center" style={{ display: "flex", gap: "20px", paddingTop: "16px", borderTop: "1px solid var(--rule)", flexWrap: "wrap" }}>
-                  {[{ icon: CheckCircle2, text: "Free forever" }, { icon: BadgeCheck, text: "Manual verification" }, { icon: Sparkles, text: "AI reports" }].map((p) => (
-                    <div key={p.text} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <p.icon style={{ width: "12px", height: "12px", color: "var(--pos)" }} />
-                      <span style={{ fontSize: "12px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif" }}>{p.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+  <span
+    className="pill"
+    style={{
+      color: "var(--gold)",
+      marginBottom: "16px",
+      display: "inline-flex",
+      letterSpacing: "0.06em",
+      fontSize: "11px",
+      textTransform: "uppercase",
+      fontWeight: 600
+    }}
+  >
+    India's Independent Startup Registry
+  </span>
 
-              <div style={{ background: "var(--rule)", width: "1px" }} className="hide-tab" />
 
+  {/* Headline */}
+
+  <h2
+    className="uf-d"
+    style={{
+      fontSize: "clamp(1.9rem,3.6vw,2.8rem)",
+      fontWeight: 700,
+      lineHeight: 1.08,
+      color: "var(--ink)",
+      marginBottom: "18px",
+      marginTop: "6px",
+      fontFamily: "'Playfair Display','Source Serif 4',serif",
+      letterSpacing: "-0.01em"
+    }}
+  >
+    India's most comprehensive registry of{" "}
+    <em
+      style={{
+        fontStyle: "italic",
+        color: "var(--gr)"
+      }}
+    >
+      72,000+ verified startups
+    </em>
+    {" "}— researched, ranked and continuously updated
+    to map the evolving startup ecosystem.
+  </h2>
+
+
+  {/* Supporting editorial line */}
+
+  <p
+    style={{
+      fontSize: "15px",
+      color: "var(--ink3)",
+      maxWidth: "560px",
+      lineHeight: 1.65,
+      fontFamily: "'Source Serif 4',serif",
+      marginBottom: "26px"
+    }}
+  >
+    UpForge tracks emerging companies, funding movements, and
+    founder insights across India's startup ecosystem — providing
+    a neutral and independently verified database used by founders,
+    investors, and researchers.
+  </p>
+
+
+  {/* CTA buttons */}
+
+  <div
+    className="jc-center"
+    style={{
+      display: "flex",
+      gap: "12px",
+      flexWrap: "wrap",
+      marginBottom: "22px"
+    }}
+  >
+    <Link href="/startup" className="btn-d">
+      Explore Registry
+      <ArrowRight style={{ width: "13px", height: "13px" }} />
+    </Link>
+
+    <Link href="/submit" className="btn-g">
+      List Your Startup — Free
+    </Link>
+  </div>
+
+
+  {/* Trust signals */}
+
+  <div
+    className="jc-center"
+    style={{
+      display: "flex",
+      gap: "22px",
+      paddingTop: "18px",
+      borderTop: "1px solid var(--rule)",
+      flexWrap: "wrap"
+    }}
+  >
+    {[
+      { icon: CheckCircle2, text: "Free & open registry" },
+      { icon: BadgeCheck, text: "Manual verification" },
+      { icon: Sparkles, text: "AI-powered insights" }
+    ].map((p) => (
+      <div
+        key={p.text}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "7px"
+        }}
+      >
+        <p.icon
+          style={{
+            width: "13px",
+            height: "13px",
+            color: "var(--pos)"
+          }}
+        />
+
+        <span
+          style={{
+            fontSize: "12px",
+            color: "var(--ink3)",
+            fontFamily: "'Source Serif 4',serif"
+          }}
+        >
+          {p.text}
+        </span>
+      </div>
+    ))}
+  </div>
+
+</div>
+
+
+<div
+  style={{ background: "var(--rule)", width: "1px" }}
+  className="hide-tab"
+/>
               {/* RIGHT: Live Dispatch */}
               <div style={{ paddingLeft: "clamp(14px,3vw,28px)" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
