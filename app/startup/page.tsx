@@ -103,7 +103,7 @@ export default async function StartupPage({ searchParams }: Props) {
   const sectorFilter = params?.sector?.trim() ?? "";
   const currentPage  = params?.page && !searchQuery ? Number(params.page) : 1;
 
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 15;
   const from = (currentPage - 1) * ITEMS_PER_PAGE;
   const to   = from + ITEMS_PER_PAGE - 1;
 
