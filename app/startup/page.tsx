@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import PageTransition from "@/components/page-transition";
-import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, BadgeCheck, TrendingUp, Zap, Activity, ArrowRight, ArrowUpRight } from "lucide-react";
 
-export const revalidate = 0; // Fresh results के लिए इसे 0 रखा गया है
+export const revalidate = 0;
 
 interface Props {
   searchParams?: {
@@ -81,31 +81,14 @@ async function getRegistryInsights() {
   }
 }
 
-function PulseDot({ color = "green" }: { color?: "green" | "blue" | "amber" }) {
-  const colors = {
-    green: { ring: "bg-green-400", dot: "bg-green-500" },
-    blue: { ring: "bg-blue-400", dot: "bg-blue-500" },
-    amber: { ring: "bg-amber-400", dot: "bg-amber-500" },
-  };
-  return (
-    <span className="relative flex h-2 w-2 flex-shrink-0">
-      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${colors[color].ring} opacity-75`}></span>
-      <span className={`relative inline-flex rounded-full h-2 w-2 ${colors[color].dot}`}></span>
-    </span>
-  );
-}
-
 export default async function StartupPage({ searchParams }: Props) {
   const supabase = await createClient();
   const insights = await getRegistryInsights();
 
-  // Next.js 15+ searchParams handling
   const params = await (searchParams as any);
-  
+
   const searchQuery = params?.search?.trim() ?? "";
   const sectorFilter = params?.sector?.trim() ?? "";
-  
-  // अगर सर्च किया गया है तो हमेशा पेज 1 दिखाओ, वरना पेज पैरामीटर का इस्तेमाल करो
   const currentPage = params?.page && !searchQuery ? Number(params.page) : 1;
 
   const ITEMS_PER_PAGE = 12;
@@ -114,7 +97,6 @@ export default async function StartupPage({ searchParams }: Props) {
 
   let query = supabase.from("startups").select("*", { count: "exact" });
 
-  // Improved Search Logic
   if (searchQuery) {
     query = query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`);
   }
@@ -132,284 +114,378 @@ export default async function StartupPage({ searchParams }: Props) {
   }
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
+  const updatedAt = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true });
+  const todayStr = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
 
   return (
-    <div className="bg-[#F7F5F0] text-[#1C1C1C] min-h-screen" style={{ fontFamily: "system-ui, sans-serif" }}>
-
+    <>
       <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box}
+        .uf{background:#fff;color:#1a1a1a;font-family:'Source Serif 4',Georgia,serif;-webkit-font-smoothing:antialiased}
+        .uf-d{font-family:'Playfair Display',Georgia,serif;letter-spacing:-.02em}
+        .uf-m{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+        .uf-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#888;font-family:'Source Serif 4',Georgia,serif}
+        :root{--ink:#1a1a1a;--ink2:#444;--ink3:#777;--ink4:#aaa;--rule:#e5e5e5;--rl:#f0f0f0;--bg:#fff;--off:#fafaf8;--warm:#fdf8f0;--gold:#b8860b;--gr:#c9960d;--pos:#1a6b3a;--neg:#b91c1c}
+        .uf-wrap{max-width:1400px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+
+        /* animations */
+        @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        .a0{animation:up .5s .00s cubic-bezier(.16,1,.3,1) both}
+        .a1{animation:up .5s .08s cubic-bezier(.16,1,.3,1) both}
+        .a2{animation:up .5s .16s cubic-bezier(.16,1,.3,1) both}
+        .a3{animation:up .5s .24s cubic-bezier(.16,1,.3,1) both}
+        .a4{animation:up .5s .32s cubic-bezier(.16,1,.3,1) both}
+
+        /* live dot */
+        .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0;position:relative}
+        .dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:0}}
+
+        /* buttons */
+        .btn-d{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;font-size:13px;font-weight:600;letter-spacing:.04em;padding:12px 28px;border:2px solid var(--ink);transition:background .18s;font-family:'Source Serif 4',Georgia,serif}
+        .btn-d:hover{background:#333}
+        .btn-g{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ink);font-size:13px;font-weight:600;letter-spacing:.04em;padding:11px 28px;border:2px solid var(--ink);transition:background .18s,color .18s;font-family:'Source Serif 4',Georgia,serif}
+        .btn-g:hover{background:var(--ink);color:#fff}
+
+        /* search */
+        .srch{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--ink);padding:4px 2px;transition:border-color .18s}
+        .srch:focus-within{border-color:var(--gr)}
+        .srch input{flex:1;font-size:14px;color:var(--ink);background:transparent;border:none;outline:none;padding:8px 0;font-family:'Source Serif 4',Georgia,serif}
+        .srch input::placeholder{color:var(--ink4)}
+
+        /* cards */
+        .card{border:1px solid var(--rule);background:#fff;transition:border-color .18s,box-shadow .18s}
+        .card:hover{border-color:#bbb;box-shadow:0 3px 16px rgba(0,0,0,.07)}
+
+        /* rows */
+        .row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--rl)}
+        .row:last-child{border-bottom:none}
+
+        /* pill */
+        .pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;font-family:'Source Serif 4',Georgia,serif}
+
+        /* verified badge */
+        .vbadge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pos);border:1px solid var(--pos);padding:2px 7px;font-family:'Source Serif 4',Georgia,serif}
+
+        /* stat cell */
+        .stat{padding:18px 14px;border-right:1px solid var(--rule);text-align:center}
+        .stat:last-child{border-right:none}
+
+        /* section header */
+        .sh{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+        .sh::after{content:'';flex:1;height:1px;background:var(--rule)}
+
+        /* thick rule */
+        .rule-t{height:2px;background:var(--ink)}
+
+        /* sector pills */
+        .sec-pill{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--rule);background:#fff;color:var(--ink3);font-family:'Source Serif 4',Georgia,serif;transition:all .15s;cursor:pointer}
+        .sec-pill:hover{border-color:var(--ink);color:var(--ink)}
+        .sec-pill.hot{border-color:rgba(184,134,11,.4);background:rgba(184,134,11,.06);color:var(--gold)}
+        .sec-pill.hot:hover{border-color:var(--gold)}
+        .sec-pill.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+        /* startup card */
+        .s-card{border:1px solid var(--rule);background:#fff;padding:20px;transition:border-color .18s,box-shadow .18s;display:flex;flex-direction:column;height:100%}
+        .s-card:hover{border-color:#bbb;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+
+        /* logo box */
+        .logo-box{width:40px;height:40px;border:1px solid var(--rule);background:var(--off);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Playfair Display',Georgia,serif;font-size:1.1rem;color:var(--ink4)}
+
+        /* mobile list */
+        .m-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-bottom:1px solid var(--rl);transition:background .15s}
+        .m-row:hover{background:var(--off)}
+
+        /* pagination */
+        .pg-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border:1px solid var(--rule);background:#fff;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-family:'Source Serif 4',Georgia,serif;transition:all .15s}
+        .pg-btn:hover{border-color:var(--ink);color:var(--ink)}
+        .pg-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+        .pg-btn.disabled{opacity:.3;pointer-events:none}
+
+        /* no scroll */
+        .noscroll::-webkit-scrollbar{display:none}
+        .noscroll{-ms-overflow-style:none;scrollbar-width:none}
+
+        @media(max-width:1024px){.hide-tab{display:none !important}}
+        @media(max-width:640px){
+          .hide-mob{display:none !important}
+          .stat{border-right:none;border-bottom:1px solid var(--rule)}
+          .stat:last-child{border-bottom:none}
+          .stats-g{grid-template-columns:repeat(2,1fr) !important}
+          .show-mob-grid{display:grid !important}
+          .hide-mob-grid{display:none !important}
+          .sh::after{display:none}
         }
-        .fade-up-1 { animation: fadeUp 0.5s 0.05s ease both; }
-        .fade-up-2 { animation: fadeUp 0.5s 0.15s ease both; }
-        .fade-up-3 { animation: fadeUp 0.5s 0.25s ease both; }
-        .fade-up-4 { animation: fadeUp 0.5s 0.38s ease both; }
-        .card-hover { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); border-color: #1C1C1C !important; }
-        .num-font { font-variant-numeric: tabular-nums; }
       `}</style>
 
-      <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
+      <div className="uf">
+        <div className="uf-wrap" style={{ paddingTop: "clamp(20px,4vw,36px)", paddingBottom: "clamp(32px,6vw,64px)" }}>
 
-        {/* ── MASTHEAD ── */}
-        <div className="border-b-2 border-[#1C1C1C] pb-5 mb-0 fade-up-1">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-            <div>
-              <p className="text-[9px] tracking-[0.28em] text-[#AAA] uppercase mb-2">UpForge · Public Registry</p>
-              <h1
-                className="text-[2.2rem] sm:text-[3rem] lg:text-[3.6rem] tracking-tight leading-none text-[#1C1C1C]"
-                style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-              >
+          {/* ── MASTHEAD ── */}
+          <header className="a0">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
+              <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: 700 }}>{todayStr} · Vol. II</span>
+              <div className="hide-mob" style={{ display: "flex", gap: "20px" }}>
+                {["Independent", "Ad-Free", "Verified"].map((t) => (
+                  <span key={t} style={{ fontSize: "10px", color: "var(--ink4)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>✓ {t}</span>
+                ))}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div className="dot" />
+                <span className="uf-lbl" style={{ color: "var(--ink4)" }}>Updated {updatedAt} IST</span>
+              </div>
+            </div>
+
+            <div style={{ padding: "clamp(24px,5vw,44px) 0 clamp(14px,3vw,24px)", borderBottom: "2px solid var(--ink)", textAlign: "center" }}>
+              <p style={{ fontSize: "11px", letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif", marginBottom: "12px" }}>
+                UpForge · Public Startup Registry
+              </p>
+              <h1 className="uf-d" style={{ fontSize: "clamp(2.6rem,8vw,6rem)", fontWeight: 900, lineHeight: 0.88, color: "var(--ink)", marginBottom: "16px" }}>
                 Startup Registry
               </h1>
-            </div>
-            <div className="flex items-center gap-3 pb-1">
-              <div className="flex items-center gap-2 border border-[#DDD] bg-white px-3 py-1.5">
-                <PulseDot color="green" />
-                <span className="text-[10px] font-semibold text-[#555] tracking-wide uppercase">Live · {count || 0} Profiles</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 text-[11px] text-[#888]">
-                <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
-                All Verified
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "clamp(10px,2vw,24px)", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div className="dot" />
+                  <span className="uf-lbl" style={{ color: "var(--pos)" }}>Live · {(count || 0).toLocaleString()} Profiles</span>
+                </div>
+                <span className="vbadge">✓ All Verified</span>
+                <span className="uf-lbl" style={{ color: "var(--ink4)" }}>India's Most Comprehensive Database</span>
               </div>
             </div>
-          </div>
-        </div>
+          </header>
 
-        {/* ── SPOTLIGHT + STATS STRIP ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-[#D5D0C8] fade-up-2">
-          <div className="lg:col-span-2 py-5 pr-0 lg:pr-8 border-r border-[#D5D0C8]">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
-                <PulseDot color="amber" />
-                <span className="text-[9px] text-[#AAA] uppercase tracking-widest font-bold">Spotlight</span>
+          {/* ── SPOTLIGHT + STATS STRIP ── */}
+          <section className="a1">
+            <div className="stats-g" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", borderBottom: "1px solid var(--rule)" }}>
+              {/* Spotlight */}
+              <div style={{ padding: "18px 24px 18px 0", borderRight: "1px solid var(--rule)" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0, marginTop: "2px" }}>
+                    <div className="dot" style={{ background: "#ca8a04" }} />
+                    <span className="uf-lbl" style={{ color: "var(--gold)" }}>Spotlight</span>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", lineHeight: 1.5, marginBottom: "4px", fontFamily: "'Source Serif 4',serif" }}>
+                      {insights.spotlight.headline}
+                    </p>
+                    <p style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{insights.spotlight.sub}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-[#1C1C1C] leading-snug mb-1" style={{ fontFamily: "'Georgia', serif" }}>
-                  {insights.spotlight.headline}
+              {/* Stats */}
+              {[
+                { label: "New This Week", v: insights.registryStats.newThisWeek, sub: "startups added" },
+                { label: "Most Active",   v: insights.registryStats.mostActiveSector, sub: "sector right now" },
+                { label: "Top City",      v: insights.registryStats.topCity, sub: "by listing count" },
+              ].map((s, i) => (
+                <div key={i} className="stat" style={{ background: i === 1 ? "var(--warm)" : "#fff" }}>
+                  <div className="uf-d" style={{ fontSize: "clamp(1.1rem,2vw,1.6rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1.1, marginBottom: "4px" }}>{s.v}</div>
+                  <div className="uf-lbl" style={{ marginBottom: "2px", color: "var(--ink3)" }}>{s.label}</div>
+                  <div style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{s.sub}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ── TRENDING SECTORS ── */}
+          <section className="a2" style={{ padding: "16px 0", borderBottom: "1px solid var(--rule)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                <Zap style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
+                <span className="uf-lbl">Trending Sectors</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                {insights.trendingSectors.map((sector: any, i: number) => (
+                  <Link
+                    key={i}
+                    href={`?sector=${encodeURIComponent(sector.name)}${searchQuery ? `&search=${searchQuery}` : ""}`}
+                    className={`sec-pill ${sectorFilter === sector.name ? "active" : sector.heat === "hot" ? "hot" : ""}`}
+                  >
+                    {sector.heat === "hot" && sectorFilter !== sector.name && <span style={{ fontSize: "9px" }}>🔥</span>}
+                    {sector.name}
+                    <span className="uf-m" style={{ fontSize: "9px", fontWeight: 700, color: sectorFilter === sector.name ? "rgba(255,255,255,.6)" : "var(--pos)" }}>
+                      {sector.growth}
+                    </span>
+                  </Link>
+                ))}
+                {sectorFilter && (
+                  <Link href={`?${searchQuery ? `search=${searchQuery}` : ""}`}
+                    style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+                    Clear filter
+                  </Link>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* ── SEARCH ── */}
+          <section className="a2" style={{ padding: "20px 0", borderBottom: "1px solid var(--rule)" }}>
+            <form action="" method="GET">
+              <div className="srch" style={{ maxWidth: "600px" }}>
+                <Search style={{ width: "14px", height: "14px", color: "var(--ink4)", flexShrink: 0 }} />
+                <input
+                  type="text"
+                  name="search"
+                  defaultValue={searchQuery}
+                  placeholder="Search by name, sector, or industry…"
+                  aria-label="Search Indian startups"
+                />
+                <input type="hidden" name="page" value="1" />
+                {sectorFilter && <input type="hidden" name="sector" value={sectorFilter} />}
+                <button type="submit" style={{ background: "none", border: "none", cursor: "pointer", padding: "0", display: "flex", alignItems: "center" }}>
+                  <ArrowRight style={{ width: "14px", height: "14px", color: "var(--ink3)" }} />
+                </button>
+              </div>
+              {(searchQuery || sectorFilter) && (
+                <p style={{ marginTop: "8px", fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>
+                  <span className="uf-m" style={{ fontWeight: 600, color: "var(--ink)", fontSize: "12px" }}>{(count || 0).toLocaleString()}</span> result{count !== 1 ? "s" : ""}
+                  {searchQuery && <> for <span style={{ fontWeight: 600, color: "var(--ink)" }}>"{searchQuery}"</span></>}
+                  {sectorFilter && <> in <span style={{ fontWeight: 600, color: "var(--ink)" }}>{sectorFilter}</span></>}
                 </p>
-                <p className="text-[11px] text-[#888]">{insights.spotlight.sub}</p>
-              </div>
-            </div>
-          </div>
+              )}
+            </form>
+          </section>
 
-          {[
-            { label: "New This Week", value: insights.registryStats.newThisWeek, sub: "startups added" },
-            { label: "Most Active", value: insights.registryStats.mostActiveSector, sub: "sector right now" },
-            { label: "Top City", value: insights.registryStats.topCity, sub: "by listing count" },
-          ].map((stat, i) => (
-            <div key={i} className={`py-5 px-4 sm:px-6 border-l border-[#D5D0C8] ${i === 2 ? "hidden lg:block" : ""}`}>
-              <p className="num-font text-xl sm:text-2xl font-semibold text-[#1C1C1C] leading-none mb-1">{stat.value}</p>
-              <p className="text-[9px] text-[#AAA] uppercase tracking-wider font-bold mb-0.5">{stat.label}</p>
-              <p className="text-[10px] text-[#BBB]">{stat.sub}</p>
-            </div>
-          ))}
-        </div>
+          {/* ── CONTENT ── */}
+          <PageTransition key={`${searchQuery}-${sectorFilter}-${currentPage}`}>
 
-        {/* ── TRENDING SECTORS ── */}
-        <div className="border-b border-[#D5D0C8] py-4 fade-up-3">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <Zap className="w-3.5 h-3.5 text-[#AAA]" />
-              <span className="text-[9px] text-[#AAA] uppercase tracking-widest font-bold">Trending</span>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {insights.trendingSectors.map((sector: any, i: number) => (
-                <Link
-                  key={i}
-                  href={`?sector=${encodeURIComponent(sector.name)}${searchQuery ? `&search=${searchQuery}` : ""}`}
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 border text-[10px] font-semibold tracking-wide transition-colors ${
-                    sectorFilter === sector.name
-                      ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
-                      : sector.heat === "hot"
-                      ? "border-[#E8C547]/50 bg-[#E8C547]/10 text-[#7A6A20] hover:border-[#E8C547] hover:bg-[#E8C547]/20"
-                      : "border-[#DDD] bg-white text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C]"
-                  }`}
-                >
-                  {sector.heat === "hot" && <span className="text-[8px]">🔥</span>}
-                  {sector.name}
-                  <span className={`text-[9px] ${sectorFilter === sector.name ? "text-white/60" : "text-emerald-600"}`}>
-                    {sector.growth}
-                  </span>
+            {/* Desktop Card Grid */}
+            <div className="a3 hide-mob-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: "1px", background: "var(--rule)", border: "1px solid var(--rule)", marginTop: "0" }}>
+              {startups?.map((startup) => (
+                <Link key={startup.id} href={`/startup/${startup.slug}`} style={{ display: "block" }}>
+                  <div className="s-card">
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
+                      <div className="logo-box">
+                        {startup.logo_url
+                          ? <img src={startup.logo_url} alt={startup.name} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", padding: "3px" }} />
+                          : <span>{startup.name.charAt(0)}</span>
+                        }
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <span className="uf-m" style={{ fontSize: "10px", color: "var(--ink4)" }}>{startup.founded_year || "—"}</span>
+                        <div style={{ marginTop: "4px", display: "flex", justifyContent: "flex-end" }}>
+                          <BadgeCheck style={{ width: "11px", height: "11px", color: "var(--pos)" }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <h3 className="uf-d" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--ink)", marginBottom: "8px", lineHeight: 1.2 }}>
+                      {startup.name}
+                    </h3>
+
+                    <p style={{ fontSize: "12px", color: "var(--ink3)", lineHeight: 1.65, flex: 1, marginBottom: "14px", fontFamily: "'Source Serif 4',serif",
+                      display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>
+                      {startup.description}
+                    </p>
+
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "10px", borderTop: "1px solid var(--rl)" }}>
+                      <span className="uf-lbl" style={{ fontSize: "9px", color: "var(--ink4)" }}>{startup.industry || startup.category || "Startup"}</span>
+                      <ArrowUpRight style={{ width: "11px", height: "11px", color: "var(--ink4)" }} />
+                    </div>
+                  </div>
                 </Link>
               ))}
-              {sectorFilter && (
-                <Link
-                  href={`?${searchQuery ? `search=${searchQuery}` : ""}`}
-                  className="text-[10px] text-[#AAA] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors"
-                >
-                  Clear filter
+            </div>
+
+            {/* Mobile List View */}
+            <div className="show-mob-grid" style={{ display: "none", border: "1px solid var(--rule)", borderTop: "none" }}>
+              {startups?.map((startup) => (
+                <Link key={startup.id} href={`/startup/${startup.slug}`}>
+                  <div className="m-row">
+                    <div className="logo-box" style={{ width: "36px", height: "36px" }}>
+                      {startup.logo_url
+                        ? <img src={startup.logo_url} alt={startup.name} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", padding: "2px" }} />
+                        : <span style={{ fontSize: "0.9rem" }}>{startup.name.charAt(0)}</span>
+                      }
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "2px" }}>
+                        <span className="uf-d" style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--ink)" }}>{startup.name}</span>
+                        <BadgeCheck style={{ width: "11px", height: "11px", color: "var(--pos)", flexShrink: 0 }} />
+                      </div>
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <span className="uf-lbl" style={{ fontSize: "9px" }}>{startup.industry || startup.category || "Startup"}</span>
+                        {startup.founded_year && <>
+                          <span style={{ color: "var(--rule)" }}>·</span>
+                          <span className="uf-m" style={{ fontSize: "10px", color: "var(--ink4)" }}>{startup.founded_year}</span>
+                        </>}
+                      </div>
+                    </div>
+                    <ChevronRight style={{ width: "14px", height: "14px", color: "var(--ink4)", flexShrink: 0 }} />
+                  </div>
                 </Link>
-              )}
+              ))}
             </div>
-          </div>
-        </div>
 
-        {/* ── SEARCH (NO BUTTON) ── */}
-        <div className="py-5 border-b border-[#D5D0C8] fade-up-3">
-          <form action="" method="GET" className="flex">
-            <div className="relative w-full">
-              <input
-                type="text"
-                name="search"
-                defaultValue={searchQuery}
-                placeholder="Search by name, sector, or industry…"
-                className="w-full border border-[#D5D0C8] bg-white px-4 py-2.5 text-sm text-[#1C1C1C] placeholder-[#BBB] focus:outline-none focus:border-[#1C1C1C] transition-colors pr-10"
-              />
-              <button type="submit" className="absolute right-0 top-0 h-full px-3 flex items-center">
-                <Search className="w-4 h-4 text-[#888] hover:text-[#1C1C1C] transition-colors" />
-              </button>
-              {/* Force page 1 on new search */}
-              <input type="hidden" name="page" value="1" />
-              {sectorFilter && (
-                <input type="hidden" name="sector" value={sectorFilter} />
-              )}
-            </div>
-          </form>
-
-          {(searchQuery || sectorFilter) && (
-            <p className="mt-2 text-[11px] text-[#888]">
-              {count || 0} result{count !== 1 ? "s" : ""} for
-              {searchQuery && <span className="font-semibold text-[#1C1C1C]"> "{searchQuery}"</span>}
-              {sectorFilter && <span className="font-semibold text-[#1C1C1C]"> in {sectorFilter}</span>}
-            </p>
-          )}
-        </div>
-
-        {/* ── CONTENT GRID ── */}
-        <PageTransition key={`${searchQuery}-${sectorFilter}-${currentPage}`}>
-          {/* Desktop: Card Grid */}
-          <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[#D5D0C8] border border-[#D5D0C8] mt-0 fade-up-4">
-            {startups?.map((startup) => (
-              <Link key={startup.id} href={`/startup/${startup.slug}`} className="group">
-                <article className="bg-[#F7F5F0] p-5 lg:p-6 card-hover h-full flex flex-col border border-transparent">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
-                      {startup.logo_url ? (
-                        <img src={startup.logo_url} alt={startup.name} className="max-h-full max-w-full object-contain p-1" />
-                      ) : (
-                        <span className="text-lg text-[#CCC]" style={{ fontFamily: "'Georgia', serif" }}>{startup.name.charAt(0)}</span>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] text-[#AAA] num-font">{startup.founded_year || "—"}</span>
-                      <div className="mt-1"><BadgeCheck className="w-3 h-3 text-emerald-500 ml-auto" /></div>
-                    </div>
-                  </div>
-                  <h3 className="text-[1.05rem] font-semibold text-[#1C1C1C] mb-2 leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
-                    {startup.name}
-                  </h3>
-                  <p className="text-[12px] text-[#666] line-clamp-3 leading-relaxed flex-1 mb-4">{startup.description}</p>
-                  <div className="flex items-center justify-between pt-3 border-t border-[#EEEAE3]">
-                    <span className="text-[9px] text-[#AAA] uppercase tracking-wider font-bold">{startup.industry || startup.category || "Startup"}</span>
-                    <ArrowRight className="w-3 h-3 text-[#CCC] group-hover:text-[#1C1C1C] transition-colors" />
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile: List View */}
-          <div className="md:hidden divide-y divide-[#E8E4DC] border border-[#D5D0C8] mt-0 fade-up-4">
-            {startups?.map((startup) => (
-              <Link key={startup.id} href={`/startup/${startup.slug}`}>
-                <div className="flex items-center gap-3 px-4 py-4 bg-[#F7F5F0] hover:bg-white transition-colors">
-                  <div className="w-10 h-10 flex items-center justify-center border border-[#E2DDD5] bg-white flex-shrink-0">
-                    {startup.logo_url ? (
-                      <img src={startup.logo_url} alt={startup.name} className="max-h-full max-w-full object-contain p-0.5" />
-                    ) : (
-                      <span className="text-sm text-[#CCC]" style={{ fontFamily: "'Georgia', serif" }}>{startup.name.charAt(0)}</span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <p className="text-sm font-semibold text-[#1C1C1C] truncate" style={{ fontFamily: "'Georgia', serif" }}>{startup.name}</p>
-                      <BadgeCheck className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#AAA] uppercase tracking-wider font-bold">{startup.industry || startup.category || "Startup"}</span>
-                      {startup.founded_year && <><span className="text-[#DDD]">·</span><span className="text-[10px] text-[#BBB] num-font">{startup.founded_year}</span></>}
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-[#CCC] flex-shrink-0" />
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          {(!startups || startups.length === 0) && (
-            <div className="flex flex-col items-center justify-center py-24 text-center border border-[#D5D0C8] mt-0 bg-white">
-              <Search className="w-8 h-8 text-[#CCC] mb-4" />
-              <p className="text-lg font-semibold text-[#555]" style={{ fontFamily: "'Georgia', serif" }}>No startups found</p>
-              <p className="text-sm text-[#AAA] mt-1">Try a different search term or clear the filter</p>
-              <Link href="/startup" className="mt-4 text-[11px] text-[#888] hover:text-[#1C1C1C] underline underline-offset-2 transition-colors">Clear all filters</Link>
-            </div>
-          )}
-
-          {/* ── PAGINATION ── */}
-          {totalPages > 1 && (
-            <div className="mt-10 flex items-center justify-center gap-2 fade-up-4">
-              <Link
-                href={`?page=${Math.max(1, currentPage - 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
-                className={`flex items-center gap-1.5 px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase tracking-wider text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors ${
-                  currentPage === 1 ? "pointer-events-none opacity-30" : ""
-                }`}
-              >
-                <ChevronLeft className="w-3.5 h-3.5" /> Prev
-              </Link>
-
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) pageNum = i + 1;
-                  else if (currentPage <= 3) pageNum = i + 1;
-                  else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-                  else pageNum = currentPage - 2 + i;
-                  
-                  return (
-                    <Link
-                      key={pageNum}
-                      href={`?page=${pageNum}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
-                      className={`w-8 h-8 flex items-center justify-center border text-[11px] font-bold num-font transition-colors ${
-                        pageNum === currentPage
-                          ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
-                          : "border-[#D5D0C8] bg-white text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C]"
-                      }`}
-                    >
-                      {pageNum}
-                    </Link>
-                  );
-                })}
+            {/* Empty State */}
+            {(!startups || startups.length === 0) && (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 24px", textAlign: "center", border: "1px solid var(--rule)", background: "var(--off)" }}>
+                <Search style={{ width: "28px", height: "28px", color: "var(--ink4)", marginBottom: "16px" }} />
+                <h3 className="uf-d" style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--ink)", marginBottom: "8px" }}>No startups found</h3>
+                <p style={{ fontSize: "13px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", marginBottom: "20px" }}>Try a different search term or clear the filter</p>
+                <Link href="/startup" className="btn-g" style={{ fontSize: "12px", padding: "9px 20px" }}>Clear all filters</Link>
               </div>
+            )}
 
-              <Link
-                href={`?page=${Math.min(totalPages, currentPage + 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
-                className={`flex items-center gap-1.5 px-4 py-2 border border-[#D5D0C8] bg-white text-[11px] font-bold uppercase tracking-wider text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors ${
-                  currentPage === totalPages ? "pointer-events-none opacity-30" : ""
-                }`}
-              >
-                Next <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          )}
-        </PageTransition>
+            {/* ── PAGINATION ── */}
+            {totalPages > 1 && (
+              <div className="a4" style={{ marginTop: "40px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                <Link
+                  href={`?page=${Math.max(1, currentPage - 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
+                  className={`pg-btn ${currentPage === 1 ? "disabled" : ""}`}
+                >
+                  <ChevronLeft style={{ width: "12px", height: "12px" }} /> Prev
+                </Link>
 
-        {/* ── BOTTOM TRUST BAR ── */}
-        <div className="mt-14 pt-6 border-t border-[#D5D0C8] flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {[
-            { icon: BadgeCheck, text: "Every listing manually verified" },
-            { icon: Activity, text: "Live data · Updates every 10 min" },
-            { icon: TrendingUp, text: "Ecosystem-backed intelligence" },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <item.icon className="w-3.5 h-3.5 text-[#BBB]" />
-              <span className="text-[11px] text-[#888]">{item.text}</span>
-            </div>
-          ))}
+                <div style={{ display: "flex", gap: "4px" }}>
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 5) pageNum = i + 1;
+                    else if (currentPage <= 3) pageNum = i + 1;
+                    else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                    else pageNum = currentPage - 2 + i;
+                    return (
+                      <Link
+                        key={pageNum}
+                        href={`?page=${pageNum}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
+                        className={`pg-btn ${pageNum === currentPage ? "active" : ""}`}
+                        style={{ padding: "8px 14px", minWidth: "36px", justifyContent: "center" }}
+                      >
+                        <span className="uf-m" style={{ fontSize: "12px" }}>{pageNum}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <Link
+                  href={`?page=${Math.min(totalPages, currentPage + 1)}${searchQuery ? `&search=${searchQuery}` : ""}${sectorFilter ? `&sector=${sectorFilter}` : ""}`}
+                  className={`pg-btn ${currentPage === totalPages ? "disabled" : ""}`}
+                >
+                  Next <ChevronRight style={{ width: "12px", height: "12px" }} />
+                </Link>
+              </div>
+            )}
+
+          </PageTransition>
+
+          {/* ── TRUST STRIP ── */}
+          <div style={{ height: "2px", background: "var(--ink)", marginTop: "clamp(28px,5vw,56px)" }} />
+          <div style={{ padding: "16px 0", display: "flex", flexWrap: "wrap", gap: "8px 24px", alignItems: "center", justifyContent: "center", background: "var(--off)" }}>
+            {[
+              { icon: BadgeCheck, text: "Every listing manually verified" },
+              { icon: Activity,   text: `Live data · Updated ${updatedAt} IST` },
+              { icon: TrendingUp, text: "Ecosystem-backed intelligence" },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <item.icon style={{ width: "12px", height: "12px", color: "var(--ink3)" }} />
+                <span style={{ fontSize: "11px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif" }}>{item.text}</span>
+              </div>
+            ))}
+          </div>
+
         </div>
-
       </div>
-    </div>
+    </>
   );
 }
