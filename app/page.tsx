@@ -1338,55 +1338,28 @@ export default async function Home() {
           </div>
 
           {/* ── FOOTER ───────────────────────────────────────────────── */}
-          <footer style={{ padding: "clamp(32px, 5vw, 56px) 0 clamp(20px, 3vw, 32px)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "clamp(24px, 4vw, 48px)", marginBottom: "clamp(24px, 4vw, 40px)" }}>
-              {/* Brand */}
-              <div>
-                <div className="uf-display" style={{ fontSize: "1.6rem", fontWeight: 900, color: "var(--ink)", lineHeight: 1, marginBottom: "4px" }}>UpForge</div>
-                <div className="uf-label" style={{ color: "var(--ink4)", marginBottom: "12px" }}>Registry of Record</div>
-                <p className="uf-serif" style={{ fontSize: "12.5px", color: "var(--ink3)", lineHeight: 1.7 }}>
-                  India's independent startup intelligence platform. Free, verified, and built for the ecosystem.
-                </p>
-                <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <div className="uf-live" />
-                  <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>{lastUpdated} IST</span>
+          <footer className="pt-5 border-t-2 border-[#1A1208]">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-[#1A1208] flex items-center justify-center">
+                  <span className="text-[#C9A84C] text-[10px] font-black" style={{ fontFamily: "system-ui,sans-serif" }}>UF</span>
+                </div>
+                <div>
+                  <p className="playfair font-black text-[#1A1208] text-base leading-tight">UpForge</p>
+                  <p className="text-[9px] text-[#8B7355] tracking-[.2em] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>India's Registry of Record</p>
                 </div>
               </div>
-              {/* Registry */}
-              <div>
-                <div className="uf-label" style={{ marginBottom: "12px" }}>Registry</div>
-                {[
-                  { label: "All Startups", href: "/startup" },
-                  { label: "AI Startups", href: "/top-ai-startups" },
-                  { label: "Unicorns", href: "/indian-unicorns" },
-                  { label: "Funded Startups", href: "/top-funded-startups" },
-                  { label: "List Your Startup", href: "/submit" },
-                ].map((l) => <Link key={l.href} href={l.href} className="uf-footer-link">{l.label}</Link>)}
-              </div>
-              {/* Intelligence */}
-              <div>
-                <div className="uf-label" style={{ marginBottom: "12px" }}>Intelligence</div>
-                {[
-                  { label: "Research Reports", href: "/reports" },
-                  { label: "SaaS Rankings", href: "/best-saas-startups" },
-                  { label: "Founder Stories", href: "/founder-stories" },
-                  { label: "Sector Analysis", href: "/startup" },
-                ].map((l) => <Link key={l.href} href={l.href} className="uf-footer-link">{l.label}</Link>)}
-              </div>
-              {/* Data */}
-              <div>
-                <div className="uf-label" style={{ marginBottom: "12px" }}>Data Sources</div>
-                {["NewsAPI — Live News", "Groq LLM — Market Data", "Supabase — Registry", "Forbes — Billionaires"].map((s) => (
-                  <p key={s} className="uf-footer-link" style={{ cursor: "default" }}>{s}</p>
-                ))}
+              <div className="flex items-center gap-2">
+                <PulseDot color="green" />
+                <span className="text-[9px] text-[#B0A090]" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Live news via NewsAPI · Market data via Groq · {lastUpdated} IST
+                </span>
               </div>
             </div>
-
-            <div className="uf-rule" />
-            <div style={{ paddingTop: "18px", textAlign: "center" }}>
-              <p style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif", fontStyle: "italic" }}>
-                © {new Date().getFullYear()} UpForge · Independent · Ad-Free · Open Registry · v2.4 · Market data is AI-generated for informational purposes only.
-              </p>
+            <div className="pt-4 border-t border-[#E8E2D8] flex items-center justify-center">
+              <span className="text-[8.5px] text-[#C8BCA8] baskerville italic">
+                © {new Date().getFullYear()} UpForge · Independent · Ad-Free · Open Registry · v2.3
+              </span>
             </div>
           </footer>
         </div>
