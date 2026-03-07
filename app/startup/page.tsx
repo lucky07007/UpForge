@@ -43,8 +43,8 @@ const SECTORS = [
 
 // First page: 3 featured + 15 grid = 18 total
 // Other pages: 15 per page
-const FIRST_PAGE_ITEMS = 18;
-const OTHER_PAGE_ITEMS = 15;
+const FIRST_PAGE_ITEMS = 21;
+const OTHER_PAGE_ITEMS = 18;
 
 export default async function StartupPage({ searchParams }: Props) {
   const supabase = await createClient();
