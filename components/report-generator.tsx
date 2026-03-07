@@ -1,6 +1,7 @@
+//components/report-generator.tsx
 "use client";
 
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import {
   Sparkles, FileText, Download, TrendingUp, Shield,
   Target, Zap, AlertTriangle, Users, Globe, BarChart2,
@@ -14,11 +15,11 @@ import {
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface FormData {
-  startupName: string; founderName: string; foundedYear: string;
-  industry: string; city: string; website: string; description: string;
-  targetMarket: string; businessModel: string; currentRevenue: string;
-  teamSize: string; fundingStage: string; fundingRaised: string;
-  keyCompetitors: string; uniqueAdvantage: string;
+  startupName:string; founderName:string; foundedYear:string;
+  industry:string; city:string; website:string; description:string;
+  targetMarket:string; businessModel:string; currentRevenue:string;
+  teamSize:string; fundingStage:string; fundingRaised:string;
+  keyCompetitors:string; uniqueAdvantage:string;
 }
 interface ValuationRange { low:string; high:string; midpoint:string; methodology:string; confidence:"high"|"medium"|"low"; confidenceNote:string; }
 interface Scores { overall:number; market:number; team:number; product:number; traction:number; moat:number; financials:number; }
@@ -51,11 +52,12 @@ const STEPS = [
   { label:"Compiling report & confidence signals",         ms:1500 },
 ];
 
+// ─── CSS — scoped to .uf-root to never leak into site header/footer ──────────
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap');
-:root{--ink:#1a1a1a;--ink2:#444;--ink3:#777;--ink4:#aaa;--rule:#e5e5e5;--rl:#f0f0f0;--off:#fafaf8;--warm:#fdf8f0;--gold:#b8860b;--pos:#1a6b3a;--neg:#b91c1c}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-.uf-d{font-family:'Playfair Display',Georgia,serif;letter-spacing:-.02em}
+.uf-root{--ink:#1a1a1a;--ink2:#444;--ink3:#777;--ink4:#aaa;--rule:#e5e5e5;--rl:#f0f0f0;--off:#fafaf8;--warm:#fdf8f0;--gold:#b8860b;--pos:#1a6b3a;--neg:#b91c1c;font-family:'Source Serif 4',Georgia,serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.uf-root *,.uf-root *::before,.uf-root *::after{box-sizing:border-box;margin:0;padding:0}
+.uf-d{font-family:'Playfair Display',Georgia,serif !important;letter-spacing:-.02em}
 .uf-m{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
 .uf-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#888;font-family:'Source Serif 4',Georgia,serif}
 .uf-w{max-width:1200px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
@@ -64,8 +66,8 @@ const CSS = `
 .a1{animation:uf-up .5s .08s cubic-bezier(.16,1,.3,1) both}
 .a2{animation:uf-up .5s .16s cubic-bezier(.16,1,.3,1) both}
 .a3{animation:uf-up .5s .24s cubic-bezier(.16,1,.3,1) both}
-.dot{width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0;position:relative}
-.dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:dot-p 2s ease-in-out infinite}
+.uf-dot{width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0;position:relative}
+.uf-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:dot-p 2s ease-in-out infinite}
 @keyframes dot-p{0%,100%{transform:scale(1)}50%{transform:scale(2);opacity:0}}
 .uf-sec{padding:clamp(20px,4vw,36px) 0;border-bottom:1px solid var(--rule)}
 .uf-sech{display:flex;align-items:center;gap:10px;margin-bottom:18px}
@@ -75,22 +77,48 @@ const CSS = `
 .uf-inp::placeholder{color:var(--ink4)}
 .uf-lbl2{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:var(--ink4);margin-bottom:5px;font-family:'Source Serif 4',Georgia,serif}
 .uf-sh{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rl);margin-bottom:16px}
+
+/* Loading screen — contained inside component, NOT fixed/fullscreen */
+.uf-loading{background:#080808;border-radius:0;overflow:hidden;position:relative;min-height:600px;display:flex;flex-direction:column}
+@keyframes ld-sw{0%{top:-4px;opacity:0}3%{opacity:1}97%{opacity:1}100%{top:100%;opacity:0}}
+@keyframes ld-gf{0%,100%{opacity:.04}60%{opacity:.09}}
+@keyframes ld-gl{0%,100%{opacity:.85}50%{opacity:1;filter:brightness(1.3)}}
+@keyframes ld-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes ld-sf{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes ld-pl{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.ld-sw{animation:ld-sw 5s linear infinite;position:absolute;left:0;right:0;top:0;height:100px;background:linear-gradient(to bottom,transparent,rgba(184,134,11,.07) 40%,rgba(184,134,11,.14) 50%,rgba(184,134,11,.07) 60%,transparent);pointer-events:none;z-index:1}
+.ld-gf{animation:ld-gf 4s ease-in-out infinite;position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(184,134,11,.12) 1px,transparent 1px);background-size:28px 28px}
+.ld-cur{animation:ld-cur .9s step-end infinite}
+.ld-sf{animation:ld-sf .35s cubic-bezier(.16,1,.3,1) both}
+.ld-pl{animation:ld-pl 1.4s ease-in-out infinite}
+.ld-gl{animation:ld-gl 2.5s ease-in-out infinite}
+
+/* Sticky toolbar — sticks within the report section, NOT above site header */
+.uf-toolbar{
+  position:sticky;
+  /* push down by approx site header height — adjust this value to match your layout */
+  top:var(--site-header-height, 64px);
+  z-index:20;
+  background:var(--ink);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
 @media print{.no-print{display:none!important}body{background:white!important}}
 @media(max-width:768px){.mc{grid-template-columns:1fr!important}}
 @media(max-width:640px){.hm{display:none!important}}
 `;
 
 // ─── SMALL COMPONENTS ─────────────────────────────────────────────────────────
-function RBadge({ level }: { level: "high"|"medium"|"low" }) {
+function RBadge({ level }: { level:"high"|"medium"|"low" }) {
   const s={high:{bg:"#fef2f2",c:"#b91c1c",b:"#fecaca"},medium:{bg:"#fffbeb",c:"#b8860b",b:"#fde68a"},low:{bg:"#f0fdf4",c:"#1a6b3a",b:"#bbf7d0"}}[level];
   return <span style={{fontSize:"8px",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",padding:"2px 8px",background:s.bg,color:s.c,border:`1px solid ${s.b}`,fontFamily:"'Source Serif 4',Georgia,serif"}}>{level}</span>;
 }
-function CBadge({ level }: { level: "high"|"medium"|"low" }) {
+function CBadge({ level }: { level:"high"|"medium"|"low" }) {
   const c={high:"#1a6b3a",medium:"#b8860b",low:"#b91c1c"}[level];
   const t={high:"High Confidence",medium:"Medium Confidence",low:"Estimated"}[level];
   return <span style={{display:"inline-flex",alignItems:"center",gap:"4px",fontSize:"9px",fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:c,border:`1px solid ${c}`,padding:"2px 8px",fontFamily:"'Source Serif 4',Georgia,serif"}}><span style={{width:"5px",height:"5px",borderRadius:"50%",background:c,display:"inline-block"}}/>{t}</span>;
 }
-function sc(v: number) { return v>=70?"#1a6b3a":v>=50?"#b8860b":"#b91c1c"; }
+function sc(v:number) { return v>=70?"#1a6b3a":v>=50?"#b8860b":"#b91c1c"; }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export function ReportGenerator() {
@@ -100,24 +128,30 @@ export function ReportGenerator() {
   const [progress, setProgress] = useState(0);
   const [report,   setReport]   = useState<ReportData|null>(null);
 
-  useEffect(() => { if (step==="report") window.scrollTo({top:0,behavior:"smooth"}); },[step]);
+  // ── Scroll to TOP OF COMPONENT (not page top) when report loads ──
+  const rootRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (step==="loading") { document.body.style.overflow="hidden"; }
-    else { document.body.style.overflow=""; }
-    return () => { document.body.style.overflow=""; };
-  },[step]);
+    if (step==="report" && rootRef.current) {
+      const rect = rootRef.current.getBoundingClientRect();
+      const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--site-header-height") || "64");
+      window.scrollTo({ top: window.scrollY + rect.top - headerH - 16, behavior:"smooth" });
+    }
+  }, [step]);
 
-  function upd(f: keyof FormData) {
-    return (e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) =>
-      setForm(p => ({...p,[f]:e.target.value}));
+  // ── NEVER touch body overflow — causes site header to break ──
+  // (removed the body.style.overflow manipulation entirely)
+
+  function upd(f:keyof FormData) {
+    return (e:ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) =>
+      setForm(p=>({...p,[f]:e.target.value}));
   }
 
   async function run() {
     setStep("loading"); setCurStep(0); setProgress(0);
-    const total = STEPS.reduce((a,s)=>a+s.ms,0);
-    let elapsed = 0;
-    const apiP = fetch("/api/generate-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)}).then(r=>r.json()).catch(()=>null);
-    for (let i=0;i<STEPS.length;i++) {
+    const total=STEPS.reduce((a,s)=>a+s.ms,0);
+    let elapsed=0;
+    const apiP=fetch("/api/generate-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)}).then(r=>r.json()).catch(()=>null);
+    for(let i=0;i<STEPS.length;i++) {
       setCurStep(i);
       await new Promise(r=>setTimeout(r,STEPS[i].ms));
       elapsed+=STEPS[i].ms;
@@ -128,11 +162,11 @@ export function ReportGenerator() {
     setStep("report");
   }
 
-  const ok = !!(form.startupName&&form.founderName&&form.foundedYear&&form.industry&&form.description);
+  const ok=!!(form.startupName&&form.founderName&&form.foundedYear&&form.industry&&form.description);
 
   // ══ FORM ══════════════════════════════════════════════════════════════════
   if (step==="form") return (
-    <div style={{background:"#fff",color:"var(--ink)",fontFamily:"'Source Serif 4',Georgia,serif",minHeight:"100vh",paddingBottom:"60px",WebkitFontSmoothing:"antialiased"}}>
+    <div ref={rootRef} className="uf-root" style={{background:"#fff",paddingBottom:"60px"}}>
       <style>{CSS}</style>
       <div className="uf-w" style={{paddingTop:"clamp(20px,4vw,40px)"}}>
 
@@ -142,7 +176,7 @@ export function ReportGenerator() {
             <div className="hm" style={{display:"flex",gap:"20px"}}>
               {["Free","AI-Powered","Web Search Backed"].map(t=><span key={t} style={{fontSize:"10px",color:"var(--ink4)",letterSpacing:"0.12em",textTransform:"uppercase"}}>✓ {t}</span>)}
             </div>
-            <div style={{display:"flex",alignItems:"center",gap:"6px"}}><div className="dot"/><span className="uf-lbl" style={{color:"var(--ink4)"}}>Live Engine</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:"6px"}}><div className="uf-dot"/><span className="uf-lbl" style={{color:"var(--ink4)"}}>Live Engine</span></div>
           </div>
           <div style={{textAlign:"center"}}>
             <p style={{fontSize:"11px",letterSpacing:"0.32em",textTransform:"uppercase",color:"var(--ink3)",marginBottom:"12px"}}>UpForge · Intelligence Reports</p>
@@ -153,7 +187,7 @@ export function ReportGenerator() {
           </div>
         </header>
 
-        <div className="a1" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderBottom:"1px solid var(--rule)"}}>
+        <div className="a1" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderBottom:"1px solid var(--rule)"}} >
           {[{I:Search,l:"Web Search Backed",s:"News, Crunchbase, Inc42"},{I:IndianRupee,l:"Honest Valuation",s:"Age & stage adjusted"},{I:BarChart2,l:"7-Dimension Score",s:"Market, Team, Moat…"},{I:TrendingUp,l:"12-Month Roadmap",s:"Actionable milestones"}].map(({I,l,s},i)=>(
             <div key={i} style={{padding:"16px",borderRight:i<3?"1px solid var(--rule)":"none",background:i%2===1?"var(--warm)":"#fff"}}>
               <I style={{width:"14px",height:"14px",color:"var(--ink4)",marginBottom:"8px",display:"block"}}/>
@@ -206,7 +240,7 @@ export function ReportGenerator() {
           </div>
 
           <div style={{paddingLeft:"clamp(16px,4vw,32px)",paddingTop:"28px",paddingBottom:"28px"}}>
-            <div style={{position:"sticky",top:"80px"}}>
+            <div style={{position:"sticky",top:`calc(var(--site-header-height, 64px) + 16px)`}}>
               <div style={{border:"1px solid var(--rule)",padding:"18px",marginBottom:"14px"}}>
                 <span className="uf-lbl" style={{display:"block",marginBottom:"12px"}}>What We Analyse</span>
                 {["Live web search for your startup","News & media mentions","Sector funding benchmarks","Age-adjusted valuation","Revenue multiple vs peers","DCF (if revenue exists)","Market size TAM/SAM/SOM","Competitive moat analysis","Investor readiness score","30/90/365-day roadmap"].map((item,i)=>(
@@ -241,119 +275,100 @@ export function ReportGenerator() {
     </div>
   );
 
-  // ══ LOADING ════════════════════════════════════════════════════════════════
+  // ══ LOADING — contained block, NOT full-screen fixed overlay ═════════════
   if (step==="loading") {
-    const cleanUrl = form.website?.replace(/^https?:\/\//,"").replace(/\/$/,"") || null;
+    const cleanUrl=form.website?.replace(/^https?:\/\//,"").replace(/\/$/,"")||null;
     return (
-      <div style={{position:"fixed",inset:0,zIndex:9999,background:"#080808",overflow:"hidden",display:"flex",flexDirection:"column",fontFamily:"'Source Serif 4',Georgia,serif"}}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap');
-          @keyframes ld-sw{0%{top:-4px;opacity:0}3%{opacity:1}97%{opacity:1}100%{top:100%;opacity:0}}
-          @keyframes ld-gf{0%,100%{opacity:.04}60%{opacity:.09}}
-          @keyframes ld-gl{0%,100%{opacity:.85}50%{opacity:1;filter:brightness(1.3)}}
-          @keyframes ld-cur{0%,49%{opacity:1}50%,100%{opacity:0}}
-          @keyframes ld-sf{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
-          @keyframes ld-pl{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
-          .ld-sw{animation:ld-sw 5s linear infinite}
-          .ld-gf{animation:ld-gf 4s ease-in-out infinite}
-          .ld-cur{animation:ld-cur .9s step-end infinite}
-          .ld-sf{animation:ld-sf .35s cubic-bezier(.16,1,.3,1) both}
-          .ld-pl{animation:ld-pl 1.4s ease-in-out infinite}
-          .ld-gl{animation:ld-gl 2.5s ease-in-out infinite}
-        `}</style>
+      <div ref={rootRef} className="uf-root">
+        <style>{CSS}</style>
+        {/* Dark contained loading block — no position:fixed, no body overflow lock */}
+        <div className="uf-loading">
+          {/* backgrounds */}
+          <div className="ld-gf"/>
+          <div className="ld-sw"/>
+          {/* vignette */}
+          <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:1,background:"radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.65) 100%)"}}/>
 
-        {/* dot grid bg */}
-        <div className="ld-gf" style={{position:"absolute",inset:0,pointerEvents:"none",backgroundImage:"radial-gradient(rgba(184,134,11,.12) 1px,transparent 1px)",backgroundSize:"28px 28px"}}/>
-        {/* scanline */}
-        <div className="ld-sw" style={{position:"absolute",left:0,right:0,top:0,height:"100px",background:"linear-gradient(to bottom,transparent,rgba(184,134,11,.07) 40%,rgba(184,134,11,.14) 50%,rgba(184,134,11,.07) 60%,transparent)",pointerEvents:"none",zIndex:1}}/>
-        {/* vignette */}
-        <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:1,background:"radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.75) 100%)"}}/>
-
-        {/* top bar */}
-        <div style={{position:"relative",zIndex:10,borderBottom:"1px solid rgba(184,134,11,.12)",padding:"14px clamp(16px,3vw,32px)",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(0,0,0,.5)",backdropFilter:"blur(8px)"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-            <img src="/logo.jpg" alt="UpForge" style={{width:"22px",height:"22px",objectFit:"contain",opacity:.9}}/>
-            <span style={{fontSize:"10px",letterSpacing:"0.24em",textTransform:"uppercase",color:"rgba(255,255,255,.3)",fontFamily:"'JetBrains Mono',monospace"}}>UpForge Intelligence</span>
+          {/* top bar */}
+          <div style={{position:"relative",zIndex:10,borderBottom:"1px solid rgba(184,134,11,.12)",padding:"14px clamp(16px,3vw,32px)",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(0,0,0,.5)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+              <img src="/logo.jpg" alt="UpForge" style={{width:"20px",height:"20px",objectFit:"contain",opacity:.9}}/>
+              <span style={{fontSize:"10px",letterSpacing:"0.24em",textTransform:"uppercase",color:"rgba(255,255,255,.3)",fontFamily:"'JetBrains Mono',monospace"}}>UpForge Intelligence</span>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
+              <span className="ld-pl" style={{width:"6px",height:"6px",borderRadius:"50%",background:"#b8860b",display:"inline-block"}}/>
+              <span style={{fontSize:"9px",letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(184,134,11,.7)",fontFamily:"'JetBrains Mono',monospace"}}>ANALYSIS RUNNING</span>
+            </div>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
-            <span className="ld-pl" style={{width:"6px",height:"6px",borderRadius:"50%",background:"#b8860b",display:"inline-block"}}/>
-            <span style={{fontSize:"9px",letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(184,134,11,.7)",fontFamily:"'JetBrains Mono',monospace"}}>ANALYSIS RUNNING</span>
-          </div>
-        </div>
 
-        {/* content */}
-        <div style={{position:"relative",zIndex:10,flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"clamp(20px,4vw,48px) clamp(16px,3vw,32px)",overflowY:"auto"}}>
-          <div style={{width:"100%",maxWidth:"660px"}}>
+          {/* content */}
+          <div style={{position:"relative",zIndex:10,flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"clamp(24px,4vw,52px) clamp(16px,3vw,32px)"}}>
+            <div style={{width:"100%",maxWidth:"660px"}}>
+              <div style={{textAlign:"center",marginBottom:"clamp(28px,5vw,52px)"}}>
+                <p style={{fontSize:"9px",letterSpacing:"0.3em",textTransform:"uppercase",color:"rgba(255,255,255,.18)",marginBottom:"12px",fontFamily:"'JetBrains Mono',monospace"}}>
+                  DEEP ANALYSIS · {new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase()}
+                </p>
+                <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"clamp(2rem,6vw,3.5rem)",fontWeight:900,color:"#fff",lineHeight:1,marginBottom:"12px",textShadow:"0 0 60px rgba(184,134,11,.2)"}}>
+                  {form.startupName}
+                </h2>
+                {cleanUrl&&(
+                  <div style={{display:"inline-flex",alignItems:"center",gap:"7px",padding:"5px 14px",border:"1px solid rgba(184,134,11,.22)",background:"rgba(184,134,11,.06)",marginBottom:"10px"}}>
+                    <span className="ld-pl" style={{width:"5px",height:"5px",borderRadius:"50%",background:"#b8860b",display:"inline-block"}}/>
+                    <span style={{fontSize:"11px",color:"rgba(184,134,11,.7)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.04em"}}>{cleanUrl}</span>
+                  </div>
+                )}
+                <p style={{fontSize:"12px",color:"rgba(255,255,255,.2)"}}>
+                  {[form.industry,form.city,form.foundedYear?`Est. ${form.foundedYear}`:null].filter(Boolean).join(" · ")}
+                </p>
+              </div>
 
-            {/* heading */}
-            <div style={{textAlign:"center",marginBottom:"clamp(28px,5vw,52px)"}}>
-              <p style={{fontSize:"9px",letterSpacing:"0.3em",textTransform:"uppercase",color:"rgba(255,255,255,.18)",marginBottom:"12px",fontFamily:"'JetBrains Mono',monospace"}}>
-                DEEP ANALYSIS · {new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase()}
-              </p>
-              <h2 style={{fontFamily:"'Playfair Display',Georgia,serif",fontSize:"clamp(2rem,6vw,3.5rem)",fontWeight:900,color:"#fff",lineHeight:1,marginBottom:"12px",textShadow:"0 0 60px rgba(184,134,11,.2)"}}>
-                {form.startupName}
-              </h2>
-              {cleanUrl&&(
-                <div style={{display:"inline-flex",alignItems:"center",gap:"7px",padding:"5px 14px",border:"1px solid rgba(184,134,11,.22)",background:"rgba(184,134,11,.06)",marginBottom:"10px"}}>
-                  <span className="ld-pl" style={{width:"5px",height:"5px",borderRadius:"50%",background:"#b8860b",display:"inline-block"}}/>
-                  <span style={{fontSize:"11px",color:"rgba(184,134,11,.7)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.04em"}}>{cleanUrl}</span>
+              {/* progress bar */}
+              <div style={{marginBottom:"10px"}}>
+                <div style={{height:"2px",background:"rgba(255,255,255,.05)",borderRadius:"2px",overflow:"hidden"}}>
+                  <div className="ld-gl" style={{height:"100%",background:"linear-gradient(90deg,#7a5a05,#b8860b 60%,#e8c547)",width:`${progress}%`,transition:"width .6s cubic-bezier(.4,0,.2,1)",borderRadius:"2px"}}/>
                 </div>
-              )}
-              <p style={{fontSize:"12px",color:"rgba(255,255,255,.2)"}}>
-                {[form.industry,form.city,form.foundedYear?`Est. ${form.foundedYear}`:null].filter(Boolean).join(" · ")}
+                <div style={{display:"flex",justifyContent:"space-between",marginTop:"6px"}}>
+                  <span style={{fontSize:"9px",color:"rgba(255,255,255,.15)",fontFamily:"'JetBrains Mono',monospace"}}>{progress}% complete</span>
+                  <span style={{fontSize:"9px",color:"rgba(184,134,11,.45)",fontFamily:"'JetBrains Mono',monospace",maxWidth:"60%",textAlign:"right",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>
+                    {STEPS[Math.min(curStep,STEPS.length-1)].label}<span className="ld-cur">_</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* terminal */}
+              <div style={{border:"1px solid rgba(184,134,11,.15)",background:"rgba(255,255,255,.02)",marginTop:"24px"}}>
+                <div style={{padding:"8px 14px",borderBottom:"1px solid rgba(184,134,11,.08)",display:"flex",alignItems:"center",gap:"6px",background:"rgba(0,0,0,.35)"}}>
+                  {["#5a1818","#5a4a05","#0d3d1e"].map((c,i)=><div key={i} style={{width:"9px",height:"9px",borderRadius:"50%",background:c}}/>)}
+                  <span style={{marginLeft:"10px",fontSize:"9px",color:"rgba(255,255,255,.15)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.08em"}}>
+                    upforge-intelligence — {form.startupName.toLowerCase().replace(/\s+/g,"-")||"startup"}
+                  </span>
+                </div>
+                <div style={{padding:"8px 0"}}>
+                  {STEPS.map((s,i)=>{
+                    const done=i<curStep, active=i===curStep;
+                    return (
+                      <div key={i} className={active?"ld-sf":undefined} style={{display:"flex",alignItems:"center",gap:"10px",padding:"7px 14px",background:active?"rgba(184,134,11,.07)":"transparent",borderLeft:active?"2px solid #b8860b":"2px solid transparent",opacity:done?.28:active?1:.13,transition:"opacity .4s ease,background .3s ease"}}>
+                        <div style={{width:"14px",flexShrink:0,textAlign:"center"}}>
+                          {done&&<span style={{color:"#1a6b3a",fontSize:"12px",lineHeight:1}}>✓</span>}
+                          {active&&<span className="ld-pl" style={{color:"#b8860b",fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",lineHeight:1,display:"inline-block"}}>▶</span>}
+                          {!done&&!active&&<span style={{color:"rgba(255,255,255,.12)",fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",lineHeight:1}}>○</span>}
+                        </div>
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:done?"rgba(255,255,255,.15)":active?"rgba(184,134,11,.5)":"rgba(255,255,255,.08)",flexShrink:0,minWidth:"18px"}}>{String(i+1).padStart(2,"0")}</span>
+                        <span style={{fontSize:"11px",color:done?"rgba(255,255,255,.2)":active?"#fff":"rgba(255,255,255,.12)",flex:1}}>{s.label}</span>
+                        {done&&<span style={{fontSize:"8px",color:"#1a6b3a",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.1em",flexShrink:0}}>DONE</span>}
+                        {active&&<span className="ld-cur" style={{fontSize:"8px",color:"#b8860b",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.1em",flexShrink:0}}>LIVE</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{padding:"8px 14px",borderTop:"1px solid rgba(184,134,11,.08)",fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:"rgba(255,255,255,.1)"}}>
+                  $ upforge analyse --startup=&quot;{form.startupName}&quot; --sector={form.industry||"tech"} --web=true<span className="ld-cur">_</span>
+                </div>
+              </div>
+              <p style={{textAlign:"center",marginTop:"18px",fontSize:"10px",color:"rgba(255,255,255,.1)"}}>
+                Searching Inc42 · YourStory · Crunchbase · news archives · public filings…
               </p>
             </div>
-
-            {/* progress */}
-            <div style={{marginBottom:"10px"}}>
-              <div style={{height:"2px",background:"rgba(255,255,255,.05)",borderRadius:"2px",overflow:"hidden"}}>
-                <div className="ld-gl" style={{height:"100%",background:"linear-gradient(90deg,#7a5a05,#b8860b 60%,#e8c547)",width:`${progress}%`,transition:"width .6s cubic-bezier(.4,0,.2,1)",borderRadius:"2px"}}/>
-              </div>
-              <div style={{display:"flex",justifyContent:"space-between",marginTop:"6px"}}>
-                <span style={{fontSize:"9px",color:"rgba(255,255,255,.15)",fontFamily:"'JetBrains Mono',monospace"}}>{progress}% complete</span>
-                <span style={{fontSize:"9px",color:"rgba(184,134,11,.45)",fontFamily:"'JetBrains Mono',monospace",maxWidth:"60%",textAlign:"right",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>
-                  {STEPS[Math.min(curStep,STEPS.length-1)].label}<span className="ld-cur">_</span>
-                </span>
-              </div>
-            </div>
-
-            {/* terminal */}
-            <div style={{border:"1px solid rgba(184,134,11,.15)",background:"rgba(255,255,255,.02)",marginTop:"24px"}}>
-              {/* chrome */}
-              <div style={{padding:"8px 14px",borderBottom:"1px solid rgba(184,134,11,.08)",display:"flex",alignItems:"center",gap:"6px",background:"rgba(0,0,0,.35)"}}>
-                {["#5a1818","#5a4a05","#0d3d1e"].map((c,i)=><div key={i} style={{width:"9px",height:"9px",borderRadius:"50%",background:c}}/>)}
-                <span style={{marginLeft:"10px",fontSize:"9px",color:"rgba(255,255,255,.15)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.08em"}}>
-                  upforge-intelligence — {form.startupName.toLowerCase().replace(/\s+/g,"-")||"startup"}
-                </span>
-              </div>
-              {/* steps */}
-              <div style={{padding:"8px 0"}}>
-                {STEPS.map((s,i)=>{
-                  const done=i<curStep, active=i===curStep;
-                  return (
-                    <div key={i} className={active?"ld-sf":undefined} style={{display:"flex",alignItems:"center",gap:"10px",padding:"7px 14px",background:active?"rgba(184,134,11,.07)":"transparent",borderLeft:active?"2px solid #b8860b":"2px solid transparent",opacity:done?.28:active?1:.13,transition:"opacity .4s ease,background .3s ease"}}>
-                      <div style={{width:"14px",flexShrink:0,textAlign:"center"}}>
-                        {done&&<span style={{color:"#1a6b3a",fontSize:"12px",lineHeight:1}}>✓</span>}
-                        {active&&<span className="ld-pl" style={{color:"#b8860b",fontFamily:"'JetBrains Mono',monospace",fontSize:"11px",lineHeight:1,display:"inline-block"}}>▶</span>}
-                        {!done&&!active&&<span style={{color:"rgba(255,255,255,.12)",fontFamily:"'JetBrains Mono',monospace",fontSize:"10px",lineHeight:1}}>○</span>}
-                      </div>
-                      <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:done?"rgba(255,255,255,.15)":active?"rgba(184,134,11,.5)":"rgba(255,255,255,.08)",flexShrink:0,minWidth:"18px"}}>{String(i+1).padStart(2,"0")}</span>
-                      <span style={{fontSize:"11px",color:done?"rgba(255,255,255,.2)":active?"#fff":"rgba(255,255,255,.12)",flex:1}}>{s.label}</span>
-                      {done&&<span style={{fontSize:"8px",color:"#1a6b3a",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.1em",flexShrink:0}}>DONE</span>}
-                      {active&&<span className="ld-cur" style={{fontSize:"8px",color:"#b8860b",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.1em",flexShrink:0}}>LIVE</span>}
-                    </div>
-                  );
-                })}
-              </div>
-              {/* prompt */}
-              <div style={{padding:"8px 14px",borderTop:"1px solid rgba(184,134,11,.08)",fontFamily:"'JetBrains Mono',monospace",fontSize:"9px",color:"rgba(255,255,255,.1)"}}>
-                $ upforge analyse --startup=&quot;{form.startupName}&quot; --sector={form.industry||"tech"} --web=true<span className="ld-cur">_</span>
-              </div>
-            </div>
-
-            <p style={{textAlign:"center",marginTop:"18px",fontSize:"10px",color:"rgba(255,255,255,.1)"}}>
-              Searching Inc42 · YourStory · Crunchbase · news archives · public filings…
-            </p>
           </div>
         </div>
       </div>
@@ -365,11 +380,11 @@ export function ReportGenerator() {
   const chartData=[{subject:"Market",A:report.scores.market},{subject:"Team",A:report.scores.team},{subject:"Product",A:report.scores.product},{subject:"Traction",A:report.scores.traction},{subject:"Moat",A:report.scores.moat},{subject:"Financials",A:report.scores.financials}];
 
   return (
-    <div style={{background:"#fff",color:"var(--ink)",fontFamily:"'Source Serif 4',Georgia,serif",WebkitFontSmoothing:"antialiased"}}>
+    <div ref={rootRef} className="uf-root" style={{background:"#fff"}}>
       <style>{CSS}</style>
 
-      {/* toolbar */}
-      <div className="no-print" style={{position:"sticky",top:0,zIndex:50,background:"var(--ink)",borderBottom:"1px solid rgba(255,255,255,.08)"}}>
+      {/* ── Toolbar: sticky but BELOW the site header via CSS var ── */}
+      <div className="uf-toolbar no-print">
         <div className="uf-w" style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px clamp(16px,3vw,32px)",gap:"12px"}}>
           <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
             <img src="/logo.jpg" alt="UpForge" style={{width:"20px",height:"20px",objectFit:"contain"}}/>
@@ -393,7 +408,7 @@ export function ReportGenerator() {
         <header className="a0" style={{borderBottom:"2px solid var(--ink)",paddingTop:"clamp(20px,4vw,36px)"}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingBottom:"10px",borderBottom:"1px solid var(--rule)",marginBottom:"clamp(18px,4vw,32px)",flexWrap:"wrap",gap:"8px"}}>
             <span className="uf-lbl" style={{color:"var(--ink2)"}}>{new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"})} · Intelligence Report</span>
-            <div style={{display:"flex",alignItems:"center",gap:"6px"}}><div className="dot"/><span className="uf-lbl" style={{color:"var(--pos)"}}>Analysis Complete</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:"6px"}}><div className="uf-dot"/><span className="uf-lbl" style={{color:"var(--pos)"}}>Analysis Complete</span></div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:"24px",alignItems:"flex-end",paddingBottom:"clamp(18px,4vw,32px)"}} className="mc">
             <div>
