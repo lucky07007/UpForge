@@ -386,30 +386,6 @@ export default async function StartupPage({ searchParams }: Props) {
         >
           <div style={{ maxWidth: 1300, margin: "0 auto", padding: "0 clamp(16px,3vw,32px)" }}>
 
-            {/* ── Dateline strip ── */}
-            <div
-              className="sf"
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "10px 0", borderBottom: "1px solid var(--rule2)", flexWrap: "wrap", gap: 8,
-              }}
-            >
-              <span style={{ fontSize: 9, color: "var(--ink4)", textTransform: "uppercase", letterSpacing: "0.18em", fontWeight: 600 }}>
-                {todayStr} · Vol. II
-              </span>
-              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                {["Independent", "Ad-Free", "Verified"].map(t => (
-                  <span key={t} style={{ fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em" }}>✓ {t}</span>
-                ))}
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span className="live-dot" />
-                <span className="sf" style={{ fontSize: 9, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em" }}>
-                  Updated {updatedAt} IST
-                </span>
-              </div>
-            </div>
-
             {/* ── Publication wordmark ── */}
             <div
               style={{
