@@ -750,34 +750,6 @@ export default function HomePage() {
         style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }}
         role="banner"
       >
-
-        {/* Dateline bar */}
-        <div
-          className="flex items-center justify-between px-4 sm:px-8 py-1.5"
-          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}
-        >
-          <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="text-[9px] text-[#888] uppercase tracking-widest hover:text-[#1A1208] transition-colors"
-              aria-label="UpForge homepage"
-            >
-              upforge.in
-            </Link>
-            <span className="text-[#C8C2B4]"> / </span>
-            <span className="text-[9px] text-[#888] uppercase tracking-widest">Founder Series</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:block text-[9px] text-[#AAA] uppercase tracking-widest">Vol. I · India</span>
-            <time
-              dateTime="2026-03"
-              className="text-[9px] text-[#AAA] uppercase tracking-widest"
-            >
-              March 2026
-            </time>
-          </div>
-        </div>
-
         {/* Publication name */}
         <div className="text-center px-4 py-6 sm:py-9" style={{ borderBottom: "1px solid #C8C2B4" }}>
           <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
