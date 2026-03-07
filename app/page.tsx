@@ -10,7 +10,49 @@ import {
   Github, Twitter, Linkedin, Mail, Search, Menu,
   ExternalLink, Download, BookOpen,
 } from "lucide-react";
-import HomeClient from "@/components/HomeClient";
+
+// ─── TYPE DEFINITIONS ─────────────────────────────────────────────────────
+interface NewsArticle {
+  title: string;
+  source: string;
+  url: string;
+  time: string;
+}
+
+interface Sector {
+  name: string;
+  deals: number;
+  funding: string;
+  growth: string;
+}
+
+interface RisingStartup {
+  name: string;
+  sector: string;
+  growth: string;
+  insight: string;
+}
+
+interface FundingNews {
+  startup: string;
+  amount: string;
+  round: string;
+  investors: string;
+}
+
+interface EcosystemData {
+  metrics: {
+    totalStartups: string;
+    fundingYTD: string;
+    activeVCs: string;
+    unicorns: string;
+    soonicorns: string;
+    avgDealSize: string;
+  };
+  sectors: Sector[];
+  risingStartups: RisingStartup[];
+  fundingNews: FundingNews[];
+}
 
 // ─── METADATA ─────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -51,7 +93,7 @@ const jsonLd = {
 };
 
 // ─── DATA FETCHING ────────────────────────────────────────────────────────
-async function getLiveNews() {
+async function getLiveNews(): Promise<NewsArticle[]> {
   try {
     const res = await fetch(
       `https://newsapi.org/v2/everything?q=indian%20startup%20OR%20india%20funding%20OR%20unicorn%20india&language=en&sortBy=publishedAt&pageSize=8&apiKey=${process.env.NEWSAPI_KEY}`,
@@ -69,7 +111,7 @@ async function getLiveNews() {
   }
 }
 
-async function getEcosystemData() {
+async function getEcosystemData(): Promise<EcosystemData> {
   const dateStr = new Date().toLocaleDateString("en-IN", { 
     day: "numeric", month: "long", year: "numeric" 
   });
@@ -139,19 +181,19 @@ async function getEcosystemData() {
         avgDealSize: "$12.4M"
       },
       sectors: [
-        {"name": "SaaS", "deals": 178, "funding": "$1.8B", "growth": "+134%"},
-        {"name": "FinTech", "deals": 143, "funding": "$2.1B", "growth": "+112%"},
-        {"name": "AI/ML", "deals": 127, "funding": "$1.2B", "growth": "+156%"},
-        {"name": "Climate Tech", "deals": 89, "funding": "$845M", "growth": "+89%"}
+        {name: "SaaS", deals: 178, funding: "$1.8B", growth: "+134%"},
+        {name: "FinTech", deals: 143, funding: "$2.1B", growth: "+112%"},
+        {name: "AI/ML", deals: 127, funding: "$1.2B", growth: "+156%"},
+        {name: "Climate Tech", deals: 89, funding: "$845M", growth: "+89%"}
       ],
       risingStartups: [
-        {"name": "Krutrim AI", "sector": "AI", "growth": "+312%", "insight": "India's first AI unicorn"},
-        {"name": "Zepto", "sector": "Quick Commerce", "growth": "+189%", "insight": "10-min delivery pioneer"},
-        {"name": "Pixxel", "sector": "Space Tech", "growth": "+156%", "insight": "Hyperspectral satellites"}
+        {name: "Krutrim AI", sector: "AI", growth: "+312%", insight: "India's first AI unicorn"},
+        {name: "Zepto", sector: "Quick Commerce", growth: "+189%", insight: "10-min delivery pioneer"},
+        {name: "Pixxel", sector: "Space Tech", growth: "+156%", insight: "Hyperspectral satellites"}
       ],
       fundingNews: [
-        {"startup": "Zepto", "amount": "$300M", "round": "Series F", "investors": "General Catalyst"},
-        {"startup": "Krutrim AI", "amount": "$150M", "round": "Series B", "investors": "Matrix Partners"}
+        {startup: "Zepto", amount: "$300M", round: "Series F", investors: "General Catalyst"},
+        {startup: "Krutrim AI", amount: "$150M", round: "Series B", investors: "Matrix Partners"}
       ]
     };
   }
@@ -195,7 +237,7 @@ function StatCard({ icon: Icon, label, value, sub, dark = false }: any) {
   );
 }
 
-function NewsCard({ article, index }: { article: any; index: number }) {
+function NewsCard({ article, index }: { article: NewsArticle; index: number }) {
   return (
     <a 
       href={article.url} 
@@ -221,7 +263,7 @@ function NewsCard({ article, index }: { article: any; index: number }) {
   );
 }
 
-function SectorRow({ sector, index }: { sector: any; index: number }) {
+function SectorRow({ sector, index }: { sector: Sector; index: number }) {
   return (
     <div className="flex items-center gap-4 py-3 border-b border-[#E5E5E5] last:border-0 hover:bg-gray-50/50 transition-colors px-2 -mx-2">
       <span className="font-mono text-xs text-gray-400 w-6">{String(index + 1).padStart(2, '0')}</span>
@@ -261,6 +303,16 @@ export default async function Home() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+      `}</style>
+
       <div className="min-h-screen bg-[#FAF9F6]">
         {/* Top Navigation Bar - Forbes Inspired */}
         <nav className="bg-white border-b border-[#E5E5E5] sticky top-0 z-50">
@@ -301,7 +353,7 @@ export default async function Home() {
 
           {/* Market Ticker */}
           <div className="border-t border-[#E5E5E5] bg-[#F5F5F5] overflow-hidden">
-            <div className="whitespace-nowrap py-2" style={{ animation: 'marquee 30s linear infinite' }}>
+            <div className="animate-marquee whitespace-nowrap py-2">
               <span className="inline-flex items-center gap-6 mx-4">
                 <LiveIndicator />
                 <span className="text-xs font-mono">NIFTY 22,345 ▲ 0.8%</span>
@@ -398,7 +450,7 @@ export default async function Home() {
               </div>
               
               <div className="space-y-1">
-                {news.map((article, i) => (
+                {news.map((article: NewsArticle, i: number) => (
                   <NewsCard key={i} article={article} index={i} />
                 ))}
               </div>
@@ -422,7 +474,7 @@ export default async function Home() {
               </div>
               
               <div className="space-y-1">
-                {ecosystem.sectors.map((sector: any, i: number) => (
+                {ecosystem.sectors.map((sector: Sector, i: number) => (
                   <SectorRow key={i} sector={sector} index={i} />
                 ))}
               </div>
@@ -437,7 +489,7 @@ export default async function Home() {
               </div>
               
               <div className="grid sm:grid-cols-2 gap-4">
-                {ecosystem.risingStartups.map((startup: any, i: number) => (
+                {ecosystem.risingStartups.map((startup: RisingStartup, i: number) => (
                   <div key={i} className="border border-[#E5E5E5] p-3 hover:border-[#C9A84C] transition-colors">
                     <div className="flex items-start justify-between mb-2">
                       <p className="font-serif font-bold text-sm">{startup.name}</p>
@@ -598,16 +650,6 @@ export default async function Home() {
           </div>
         </footer>
       </div>
-
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 30s linear infinite;
-        }
-      `}</style>
     </>
   );
 }
