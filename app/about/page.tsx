@@ -1,11 +1,10 @@
 // app/about/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Shield, Users, TrendingUp, Award, BadgeCheck, Globe,
   ArrowRight, Sparkles, Calculator, FileText, Zap,
-  Building2, Target, ExternalLink, Activity, CheckCircle2,
+  Building2, Target, Activity, CheckCircle2,
 } from "lucide-react";
 
 export const revalidate = 600;
@@ -14,10 +13,7 @@ async function getAboutInsights() {
   try {
     const response = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-      },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
       body: JSON.stringify({
         model: "mixtral-8x7b-32768",
         messages: [
@@ -38,10 +34,7 @@ async function getAboutInsights() {
               ]
             }`,
           },
-          {
-            role: "user",
-            content: "Give compelling data about why documenting Indian startups matters in 2026.",
-          },
+          { role: "user", content: "Give compelling data about why documenting Indian startups matters in 2026." },
         ],
         temperature: 0.3,
         response_format: { type: "json_object" },
@@ -53,7 +46,7 @@ async function getAboutInsights() {
     return {
       ecosystemPulse: {
         headline: "India is now home to the world's 3rd largest startup ecosystem",
-        stat: "118 Unicorns",
+        stat: "126 Unicorns",
         context: "and growing — ₹9.2B funded in Q1 2026 alone",
       },
       whyRegistry: [
@@ -74,508 +67,483 @@ async function getAboutInsights() {
   }
 }
 
-function PulseDot({ color = "green" }: { color?: "green" | "blue" | "amber" }) {
-  const colors = {
-    green: { ring: "bg-green-400", dot: "bg-green-500" },
-    blue: { ring: "bg-blue-400", dot: "bg-blue-500" },
-    amber: { ring: "bg-amber-400", dot: "bg-amber-500" },
-  };
-  return (
-    <span className="relative flex h-2 w-2 flex-shrink-0">
-      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${colors[color].ring} opacity-75`}></span>
-      <span className={`relative inline-flex rounded-full h-2 w-2 ${colors[color].dot}`}></span>
-    </span>
-  );
-}
+// Curated Unsplash images — sepia-tinted newspaper feel
+const IMAGES = {
+  hero:     "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&q=85&auto=format",
+  problem:  "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=900&q=80&auto=format",
+  answer:   "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=900&q=80&auto=format",
+  builders: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&q=80&auto=format",
+  believe:  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80&auto=format",
+};
 
 export default async function AboutPage() {
   const supabase = await createClient();
   const insights = await getAboutInsights();
 
   const { count: totalStartups } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true });
-
-  const { count: verifiedStartups } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true })
-    .eq("is_verified", true);
+    .from("startups").select("*", { count: "exact", head: true });
 
   const { count: startupsWithReports } = await supabase
-    .from("startups")
-    .select("*", { count: "exact", head: true })
-    .eq("has_report", true);
+    .from("startups").select("*", { count: "exact", head: true }).eq("has_report", true);
 
   const { data: industries } = await supabase
-    .from("startups")
-    .select("industry")
-    .not("industry", "is", null);
+    .from("startups").select("industry").not("industry", "is", null);
 
   const uniqueIndustries = industries ? new Set(industries.map((i) => i.industry)).size : 0;
 
   return (
-    <div className="bg-[#F7F5F0] text-[#1C1C1C] min-h-screen" style={{ fontFamily: "system-ui, sans-serif" }}>
-
+    <>
       <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(18px); }
-          to { opacity: 1; transform: translateY(0); }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+
+        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
+        .rp { font-family: 'Georgia', 'Times New Roman', serif; }
+        .sf { font-family: system-ui, -apple-system, sans-serif; }
+
+        :root {
+          --parch:  #F3EFE5;
+          --parch2: #EDE9DF;
+          --ink:    #1A1208;
+          --ink3:   #5A4A30;
+          --ink4:   #8C7D65;
+          --ink5:   #BBB0A0;
+          --rule:   #C8C2B4;
+          --rule2:  #D8D2C4;
+          --gold:   #D97706;
+          --gold2:  #E8C547;
+          --gold3:  #8B6914;
+          --white:  #FDFCF9;
         }
-        .fu-1 { animation: fadeUp 0.55s 0.05s ease both; }
-        .fu-2 { animation: fadeUp 0.55s 0.15s ease both; }
-        .fu-3 { animation: fadeUp 0.55s 0.28s ease both; }
-        .fu-4 { animation: fadeUp 0.55s 0.42s ease both; }
-        .fu-5 { animation: fadeUp 0.55s 0.55s ease both; }
-        .card-hover { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.08); border-color: #1C1C1C !important; }
-        .num-font { font-variant-numeric: tabular-nums; }
+
+        body { background: var(--parch); }
+
+        @keyframes storyIn {
+          from { opacity: 0; transform: translateY(9px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .a0 { animation: storyIn .42s .00s cubic-bezier(.16,1,.3,1) both; }
+        .a1 { animation: storyIn .42s .08s cubic-bezier(.16,1,.3,1) both; }
+        .a2 { animation: storyIn .42s .16s cubic-bezier(.16,1,.3,1) both; }
+        .a3 { animation: storyIn .42s .24s cubic-bezier(.16,1,.3,1) both; }
+        .a4 { animation: storyIn .42s .32s cubic-bezier(.16,1,.3,1) both; }
+
+        /* live dot */
+        .ldot { width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block;flex-shrink:0;position:relative; }
+        .ldot::after { content:'';display:block;width:100%;height:100%;border-radius:50%;background:rgba(34,197,94,.35);animation:lp 2s ease-in-out infinite;position:absolute;top:0;left:0; }
+        @keyframes lp { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(2.5);opacity:0} }
+
+        /* verified badge */
+        .vbadge {
+          display:inline-flex;align-items:center;gap:3px;
+          font-size:7.5px;font-weight:700;letter-spacing:.12em;
+          text-transform:uppercase;color:#15803D;
+          border:1px solid rgba(21,128,61,.3);padding:2px 7px;
+          font-family:system-ui;
+        }
+
+        /* image frame */
+        .imgf { position:relative;overflow:hidden; }
+        .imgf img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:sepia(18%) contrast(107%);transition:transform .6s ease; }
+        .imgf:hover img { transform:scale(1.025); }
+
+        /* section head */
+        .sh { display:flex;align-items:center;gap:10px;margin-bottom:14px; }
+        .sh-l { font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.26em;color:var(--ink5);font-family:system-ui;white-space:nowrap; }
+        .sh-r { flex:1;height:1px;background:var(--rule2); }
+
+        /* hover card */
+        .hc { transition:background .18s,border-color .18s,transform .18s,box-shadow .18s; }
+        .hc:hover { border-color:var(--ink)!important;transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);z-index:1; }
+
+        /* principle card icon */
+        .pc-wrap:hover .pc-icon { background:var(--ink); }
+        .pc-wrap:hover .pc-icon svg { color:var(--gold2)!important; }
+        .pc-icon { transition:background .18s; }
+        .pc-icon svg { transition:color .18s; }
+
+        /* row link hover */
+        .rlink:hover { background:var(--parch2)!important; }
+
+        @media(max-width:768px) {
+          .two-col { grid-template-columns:1fr!important; }
+          .hero-h { height:clamp(220px,50vw,300px)!important; }
+        }
       `}</style>
 
-      <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
+      <div className="rp" style={{ minHeight:"100vh", background:"var(--parch)" }}>
 
-        {/* ── MASTHEAD ── */}
-        <div className="border-b-2 border-[#1C1C1C] pb-6 mb-0 fu-1">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
-            <div>
-              <p className="text-[9px] tracking-[0.28em] text-[#AAA] uppercase mb-3">UpForge · Our Story</p>
-              <h1
-                className="text-[2.6rem] sm:text-[3.5rem] lg:text-[4.4rem] tracking-tight leading-[1.0] text-[#1C1C1C]"
-                style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-              >
+        {/* BREADCRUMB */}
+        <nav className="sf" style={{ background:"var(--parch2)", borderBottom:"1px solid var(--rule2)", padding:"7px 0" }}>
+          <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(16px,3vw,32px)" }}>
+            <ol style={{ display:"flex", alignItems:"center", gap:6, fontSize:9, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.18em", listStyle:"none", margin:0, padding:0 }}>
+              <li><Link href="/" style={{ color:"var(--ink5)", textDecoration:"none" }}>UpForge</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li style={{ color:"var(--ink4)", fontWeight:600 }}>About</li>
+            </ol>
+          </div>
+        </nav>
+
+        {/* ══ HERO IMAGE MASTHEAD ══ */}
+        <div className="a0" style={{ borderBottom:"3px solid var(--ink)" }}>
+          {/* Full-bleed image */}
+          <div className="imgf hero-h" style={{ height:"clamp(260px,32vw,420px)" }}>
+            <img src={IMAGES.hero} alt="Indian startup ecosystem — founders building" />
+            {/* Gradient overlays */}
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, rgba(26,18,8,.42) 0%, rgba(26,18,8,.82) 100%)" }} />
+            {/* Centered headline */}
+            <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 clamp(16px,5vw,60px)", textAlign:"center" }}>
+              <p className="sf" style={{ fontSize:8.5, letterSpacing:"0.42em", textTransform:"uppercase", color:"rgba(255,255,255,0.45)", marginBottom:16 }}>
+                UpForge · Our Story · Est. 2025
+              </p>
+              <h1 className="pf" style={{ fontSize:"clamp(2rem,6.5vw,5.2rem)", fontWeight:900, lineHeight:0.93, color:"white", letterSpacing:"-0.02em", marginBottom:18 }}>
                 India's Independent<br />
-                <em className="text-[#A89060] not-italic">Startup Registry</em>
+                <span style={{ color:"var(--gold2)" }}>Startup Registry</span>
               </h1>
-            </div>
-            <div className="flex flex-col gap-2 lg:items-end pb-1">
-              <div className="flex items-center gap-2 border border-[#DDD] bg-white px-3 py-1.5 w-fit">
-                <PulseDot color="green" />
-                <span className="text-[10px] font-semibold text-[#555] tracking-wide uppercase">Live · Est. 2025</span>
-              </div>
-              <p className="text-[11px] text-[#888] max-w-xs text-left lg:text-right">
-                Not a media platform. Not a marketplace.<br />A public record of serious builders.
+              <p className="rp" style={{ fontSize:"clamp(13px,1.8vw,16px)", fontStyle:"italic", color:"rgba(255,255,255,0.6)", maxWidth:520, lineHeight:1.6 }}>
+                Not a media platform. Not a marketplace.<br />A permanent public record of serious builders.
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* ── LIVE ECOSYSTEM PULSE ── */}
-        <div className="grid lg:grid-cols-3 border-b border-[#D5D0C8] fu-2">
-          {/* Big statement */}
-          <div className="lg:col-span-2 py-8 lg:py-10 pr-0 lg:pr-12 border-r border-[#D5D0C8] flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-4">
-              <PulseDot color="amber" />
-              <span className="text-[9px] text-[#AAA] uppercase tracking-widest font-bold">Ecosystem Pulse · March 2026</span>
-            </div>
-            <p
-              className="text-xl sm:text-2xl lg:text-[1.7rem] leading-snug text-[#1C1C1C] mb-3"
-              style={{ fontFamily: "'Georgia', serif" }}
-            >
-              {insights.ecosystemPulse.headline}
-            </p>
-            <p className="text-[12px] text-[#888]">{insights.ecosystemPulse.context}</p>
-          </div>
-
-          {/* Big stat */}
-          <div className="py-8 lg:py-10 lg:pl-10 flex flex-col justify-center">
-            <p
-              className="num-font text-[3.5rem] sm:text-[4.5rem] lg:text-[5rem] font-semibold text-[#1C1C1C] leading-none tracking-tight mb-2"
-              style={{ fontFamily: "'Georgia', serif" }}
-            >
-              {insights.ecosystemPulse.stat}
-            </p>
-            <p className="text-[11px] text-[#AAA] uppercase tracking-widest">& counting in India</p>
-          </div>
-        </div>
-
-        {/* ── REGISTRY LIVE STATS ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-[#D5D0C8] fu-3">
-          {[
-            { value: `${totalStartups || 0}+`, label: "Startups Documented", icon: Building2, dark: false },
-            { value: `${totalStartups || 0}+`, label: "Verified Profiles", icon: BadgeCheck, dark: true },
-            { value: `${startupsWithReports || 30}+`, label: "Reports Generated", icon: FileText, dark: false },
-            { value: `${uniqueIndustries || 20}+`, label: "Industries Covered", icon: Globe, dark: false },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className={`py-7 px-5 border-r border-[#D5D0C8] last:border-r-0 ${
-                stat.dark ? "bg-[#1C1C1C]" : "bg-[#F7F5F0] hover:bg-white"
-              } transition-colors`}
-            >
-              <stat.icon className={`w-4 h-4 mb-3 ${stat.dark ? "text-[#E8C547]" : "text-[#CCC]"}`} />
-              <p
-                className={`num-font text-3xl sm:text-4xl font-semibold tracking-tight leading-none mb-2 ${stat.dark ? "text-white" : "text-[#1C1C1C]"}`}
-                style={{ fontFamily: "'Georgia', serif" }}
-              >
-                {stat.value}
-              </p>
-              <p className={`text-[9px] font-bold tracking-wider uppercase ${stat.dark ? "text-white/40" : "text-[#AAA]"}`}>
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* ── WHY THIS EXISTS ── */}
-        <div className="grid lg:grid-cols-2 gap-0 border-b border-[#D5D0C8] fu-3">
-          {/* Left — The Problem */}
-          <div className="py-10 lg:py-12 lg:pr-12 border-r border-[#D5D0C8]">
-            <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-4 font-bold">Why UpForge Exists</p>
-            <h2
-              className="text-2xl sm:text-3xl lg:text-[2rem] tracking-tight leading-snug text-[#1C1C1C] mb-6"
-              style={{ fontFamily: "'Georgia', serif" }}
-            >
-              India's startup data was{" "}
-              <em className="text-[#A89060] not-italic">fragmented, unverified,</em>{" "}
-              and buried.
-            </h2>
-            <div className="space-y-4">
-              {insights.whyRegistry.map((item: any, i: number) => (
-                <div key={i} className="flex items-start gap-3 border-b border-[#EEEAE3] pb-4 last:border-0 last:pb-0">
-                  <div className="w-5 h-5 bg-[#1C1C1C] text-white flex items-center justify-center text-[9px] font-bold flex-shrink-0 mt-0.5">
-                    {i + 1}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[#1C1C1C] mb-0.5" style={{ fontFamily: "'Georgia', serif" }}>
-                      {item.point}
-                    </p>
-                    <p className="text-[11px] text-[#888]">{item.data}</p>
-                  </div>
-                </div>
-              ))}
+            {/* Live badge — top right */}
+            <div style={{ position:"absolute", top:18, right:20, display:"flex", alignItems:"center", gap:7, background:"rgba(26,18,8,.7)", border:"1px solid rgba(255,255,255,.12)", padding:"5px 12px" }}>
+              <span className="ldot" />
+              <span className="sf" style={{ fontSize:8.5, color:"#4ADE80", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em" }}>Live Registry</span>
             </div>
           </div>
 
-          {/* Right — Our Answer */}
-          <div className="py-10 lg:py-12 lg:pl-12">
-            <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-4 font-bold">Our Answer</p>
-            <h2
-              className="text-2xl sm:text-3xl lg:text-[2rem] tracking-tight leading-snug text-[#1C1C1C] mb-6"
-              style={{ fontFamily: "'Georgia', serif" }}
-            >
-              One structured,<br />
-              <em className="text-[#A89060] not-italic">independent</em> public record.
-            </h2>
-            <p className="text-sm text-[#666] leading-relaxed mb-6">
-              UpForge is India's independent startup registry — not a media outlet, not an accelerator,
-              not a ranking system. We document publicly available and founder-submitted data in a
-              neutral, structured, permanently accessible format.
-            </p>
-            <div className="space-y-3">
-              {[
-                { icon: BadgeCheck, text: "Every profile manually verified before listing", color: "text-emerald-600" },
-                { icon: Shield, text: "No paid rankings, no sponsored placements", color: "text-blue-600" },
-                { icon: Globe, text: "Publicly indexed and permanently accessible", color: "text-purple-600" },
-                { icon: Sparkles, text: "AI-powered growth analysis for every startup", color: "text-amber-600" },
-                { icon: Calculator, text: "Free valuation tool for early-stage founders", color: "text-red-500" },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <item.icon className={`w-4 h-4 ${item.color} flex-shrink-0`} />
-                  <span className="text-[12px] text-[#555]">{item.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ── CORE PRINCIPLES ── */}
-        <div className="py-10 lg:py-12 border-b border-[#D5D0C8] fu-4">
-          <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-8 font-bold">Core Principles</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#D5D0C8] border border-[#D5D0C8]">
-            {[
-              {
-                icon: Users,
-                title: "Built for Builders",
-                desc: "Every listed startup represents independent execution. We prioritize clarity and structured documentation over short-term hype.",
-              },
-              {
-                icon: Shield,
-                title: "Structured Credibility",
-                desc: "Profiles are designed as institutional records — founders build digital credibility that compounds over time.",
-              },
-              {
-                icon: TrendingUp,
-                title: "Independent First",
-                desc: "We spotlight founders before headlines do. Discoverability is structured around substance, not social noise.",
-              },
-              {
-                icon: Award,
-                title: "Long-Term Vision",
-                desc: "UpForge aims to become India's most trusted independent founder network — defined by quality, structure, and permanence.",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-[#F7F5F0] p-6 lg:p-8 card-hover group border border-transparent"
-              >
-                <div className="w-8 h-8 bg-[#EEEAE3] group-hover:bg-[#1C1C1C] flex items-center justify-center mb-4 transition-colors">
-                  <item.icon className="w-4 h-4 text-[#888] group-hover:text-[#E8C547] transition-colors" />
-                </div>
-                <h3
-                  className="text-[1rem] font-semibold text-[#1C1C1C] mb-2"
-                  style={{ fontFamily: "'Georgia', serif" }}
-                >
-                  {item.title}
-                </h3>
-                <p className="text-[12px] text-[#777] leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── ECOSYSTEM TIMELINE ── */}
-        <div className="py-10 lg:py-12 border-b border-[#D5D0C8] fu-4">
-          <div className="flex items-center gap-2 mb-8">
-            <Activity className="w-4 h-4 text-[#AAA]" />
-            <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase font-bold">India's Startup Journey</p>
-            <div className="flex items-center gap-1.5 ml-auto">
-              <PulseDot color="green" />
-              <span className="text-[9px] text-emerald-600 font-bold uppercase tracking-widest">We Are Here</span>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-[#D5D0C8] border border-[#D5D0C8]">
-            {insights.milestones.map((m: any, i: number) => {
-              const isLast = i === insights.milestones.length - 1;
-              return (
-                <div
-                  key={i}
-                  className={`p-4 lg:p-5 ${isLast ? "bg-[#1C1C1C]" : "bg-[#F7F5F0] hover:bg-white"} transition-colors`}
-                >
-                  <p
-                    className={`num-font text-xl font-bold mb-2 ${isLast ? "text-[#E8C547]" : "text-[#1C1C1C]"}`}
-                    style={{ fontFamily: "'Georgia', serif" }}
-                  >
-                    {m.year}
-                  </p>
-                  <p className={`text-[11px] leading-snug ${isLast ? "text-white/70" : "text-[#666]"}`}>
-                    {m.event}
-                  </p>
-                  {isLast && (
-                    <div className="flex items-center gap-1 mt-2">
-                      <PulseDot color="green" />
-                      <span className="text-[9px] text-emerald-400 font-bold">Now</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ── WHO WE SERVE ── */}
-        <div className="py-10 lg:py-12 border-b border-[#D5D0C8] fu-4">
-          <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-8 font-bold">Who Uses UpForge</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {[
-              {
-                type: "Founders",
-                headline: "Build your digital paper trail",
-                benefits: [
-                  "Free verified listing that compounds over time",
-                  "AI-generated growth analysis report",
-                  "Institutional credibility before press coverage",
-                  "Free startup valuation estimate",
-                ],
-                cta: { label: "List Your Startup", href: "/submit" },
-                accent: true,
-              },
-              {
-                type: "Investors & VCs",
-                headline: "Discover before the crowd",
-                benefits: [
-                  "Browse 72,000+ structured startup profiles",
-                  "Filter by sector, city, founding year",
-                  "Verified data — no noise, no duplicates",
-                  "Track emerging sectors with live momentum data",
-                ],
-                cta: { label: "Explore Registry", href: "/startup" },
-                accent: false,
-              },
-              {
-                type: "Researchers & Press",
-                headline: "Cite with confidence",
-                benefits: [
-                  "Structured, verified data you can reference",
-                  "Sector-level momentum reports",
-                  "Live ecosystem metrics updated every 10 min",
-                  "Independent — no commercial bias",
-                ],
-                cta: { label: "View Insights", href: "/reports" },
-                accent: false,
-              },
-            ].map((audience, i) => (
-              <div
-                key={i}
-                className={`p-6 lg:p-7 border card-hover flex flex-col ${
-                  audience.accent
-                    ? "bg-[#1C1C1C] text-white border-[#1C1C1C]"
-                    : "bg-white border-[#E2DDD5]"
-                }`}
-              >
-                <div className="mb-4">
-                  <p className={`text-[9px] font-bold uppercase tracking-widest mb-2 ${audience.accent ? "text-[#E8C547]" : "text-[#AAA]"}`}>
-                    {audience.type}
-                  </p>
-                  <h3
-                    className={`text-lg font-semibold leading-tight ${audience.accent ? "text-white" : "text-[#1C1C1C]"}`}
-                    style={{ fontFamily: "'Georgia', serif" }}
-                  >
-                    {audience.headline}
-                  </h3>
-                </div>
-                <ul className="space-y-2 flex-1 mb-5">
-                  {audience.benefits.map((b, j) => (
-                    <li key={j} className="flex items-start gap-2">
-                      <CheckCircle2 className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${audience.accent ? "text-emerald-400" : "text-emerald-500"}`} />
-                      <span className={`text-[11px] leading-snug ${audience.accent ? "text-white/70" : "text-[#666]"}`}>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={audience.cta.href}
-                  className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider mt-auto transition-colors ${
-                    audience.accent
-                      ? "text-[#E8C547] hover:text-white"
-                      : "text-[#1C1C1C] hover:text-[#444]"
-                  }`}
-                >
-                  {audience.cta.label} <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── SISTER PRODUCTS ── */}
-        <div className="py-10 lg:py-12 border-b border-[#D5D0C8] fu-5">
-          <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-2 font-bold">Our Ecosystem</p>
-          <p className="text-sm text-[#888] mb-8 max-w-lg">
-            UpForge is part of a broader mission — building trusted, independent platforms for India's professional and entrepreneurial community.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-4 max-w-2xl">
-            {/* InternAdda */}
-            <a
-              href="https://www.internadda.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-start gap-4 bg-white border border-[#E2DDD5] p-5 card-hover"
-            >
-              <div className="relative w-11 h-11 flex-shrink-0 border border-[#E8E4DC] overflow-hidden bg-gray-50">
-                <Image
-                  src="https://www.internadda.com/_next/image?url=%2Flogo.jpg&w=1920&q=75"
-                  alt="InternAdda"
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <p className="font-semibold text-[#1C1C1C] group-hover:text-[#A89060] transition-colors" style={{ fontFamily: "'Georgia', serif" }}>
-                    InternAdda
-                  </p>
-                  <ExternalLink className="w-3 h-3 text-[#CCC] group-hover:text-[#A89060] transition-colors" />
-                </div>
-                <p className="text-[10px] text-[#AAA] font-bold uppercase tracking-wider mb-1.5">Internship & Career Platform</p>
-                <p className="text-[12px] text-[#777] leading-snug">
-                  India's dedicated internship and early-career opportunity platform — connecting students and fresh graduates with their first real role.
-                </p>
-              </div>
-            </a>
-
-            {/* ArjunaAI */}
-            <a
-              href="https://www.arjunaai.in"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-start gap-4 bg-white border border-[#E2DDD5] p-5 card-hover"
-            >
-              <div className="relative w-11 h-11 flex-shrink-0 border border-[#E8E4DC] overflow-hidden bg-gray-50 flex items-center justify-center">
-                <Image
-                  src="https://www.arjunaai.in/_next/image?url=%2Farjuna_logo.png&w=32&q=75"
-                  alt="Arjuna AI"
-                  fill
-                  className="object-contain p-1"
-                  unoptimized
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <p className="font-semibold text-[#1C1C1C] group-hover:text-[#A89060] transition-colors" style={{ fontFamily: "'Georgia', serif" }}>
-                    Arjuna AI
-                  </p>
-                  <ExternalLink className="w-3 h-3 text-[#CCC] group-hover:text-[#A89060] transition-colors" />
-                </div>
-                <p className="text-[10px] text-[#AAA] font-bold uppercase tracking-wider mb-1.5">AI Interview Practice</p>
-                <p className="text-[12px] text-[#777] leading-snug">
-                  AI-powered mock interview platform — practice real interview scenarios, receive instant feedback, and build confidence before the actual interview.
-                </p>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        {/* ── CLOSING STATEMENT ── */}
-        <div className="py-12 lg:py-16 fu-5">
-          <div className="grid lg:grid-cols-2 gap-10 items-center">
-            <div>
-              <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-5 font-bold">Our Belief</p>
-              <h3
-                className="text-[2rem] sm:text-[2.8rem] lg:text-[3.2rem] tracking-tight leading-[1.05] text-[#1C1C1C] mb-6"
-                style={{ fontFamily: "'Georgia', serif" }}
-              >
-                This is not a{" "}
-                <em className="text-[#A89060] not-italic">directory.</em>
-              </h3>
-              <p className="text-base text-[#666] leading-relaxed max-w-lg mb-6">
-                It is a signal that serious founders are building. A structured record of India's emerging companies.
-                A quiet infrastructure layer beneath the ecosystem — built to last, not to trend.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/startup"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#1C1C1C] text-white text-[11px] font-bold tracking-wider uppercase hover:bg-[#333] transition-colors"
-                >
-                  Explore the Registry <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  href="/submit"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-[#1C1C1C] text-[#1C1C1C] text-[11px] font-bold tracking-wider uppercase hover:bg-[#1C1C1C] hover:text-white transition-colors"
-                >
-                  List Your Startup
-                </Link>
-              </div>
-            </div>
-
-            {/* Right — Quick links */}
-            <div className="border border-[#D5D0C8] bg-white p-6 lg:p-8">
-              <p className="text-[9px] tracking-[0.25em] text-[#AAA] uppercase mb-5 font-bold">Everything We Offer</p>
-              <div className="divide-y divide-[#EEEAE3]">
+          {/* Stats bar */}
+          <div style={{ background:"var(--ink)" }}>
+            <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(16px,3vw,32px)" }}>
+              <div style={{ display:"flex", flexWrap:"wrap" }}>
                 {[
-                  { icon: Building2, label: "Startup Registry", sub: "Browse 72,000+ verified startups", href: "/startup" },
-                  { icon: Calculator, label: "Valuation Tool", sub: "Free estimate in 2 minutes", href: "/valuation" },
-                  { icon: FileText, label: "Growth Reports", sub: "AI-generated analysis per startup", href: "/reports" },
-                  { icon: Zap, label: "Sector Intelligence", sub: "Live funding & momentum data", href: "/" },
-                  { icon: Target, label: "Submit a Startup", sub: "Free listing, always", href: "/submit" },
-                ].map((item, i) => (
-                  <Link
-                    key={i}
-                    href={item.href}
-                    className="flex items-center gap-4 py-3.5 group hover:bg-[#F7F5F0] px-2 -mx-2 transition-colors"
-                  >
-                    <item.icon className="w-4 h-4 text-[#CCC] group-hover:text-[#1C1C1C] transition-colors flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#1C1C1C] leading-none mb-0.5">{item.label}</p>
-                      <p className="text-[10px] text-[#AAA]">{item.sub}</p>
-                    </div>
-                    <ArrowRight className="w-3 h-3 text-[#CCC] group-hover:text-[#1C1C1C] transition-colors flex-shrink-0" />
-                  </Link>
+                  { v:`${(totalStartups||0).toLocaleString()}+`, l:"Startups Documented" },
+                  { v:`${(totalStartups||0).toLocaleString()}+`, l:"Verified Profiles"   },
+                  { v:`${(startupsWithReports||30)}+`,           l:"Reports Generated"   },
+                  { v:`${uniqueIndustries||20}+`,                l:"Industries Covered"  },
+                ].map((s,i) => (
+                  <div key={i} style={{ flex:"1 1 110px", padding:"18px clamp(14px,2vw,24px)", borderRight:"1px solid rgba(255,255,255,.07)" }}>
+                    <p className="pf" style={{ fontSize:"clamp(1.4rem,2.8vw,2.2rem)", fontWeight:900, color:"white", lineHeight:1, marginBottom:5 }}>{s.v}</p>
+                    <p className="sf" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.3)" }}>{s.l}</p>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
         </div>
 
+        {/* MAIN */}
+        <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(16px,3vw,32px) clamp(48px,8vw,96px)" }}>
+
+          {/* ── ECOSYSTEM PULSE ── */}
+          <div className="a1" style={{ display:"grid", gridTemplateColumns:"1fr auto", gap:0, borderBottom:"1px solid var(--rule2)", alignItems:"stretch" }}>
+            <div style={{ padding:"clamp(24px,4vw,42px) clamp(0px,3vw,40px) clamp(24px,4vw,42px) 0", borderRight:"1px solid var(--rule2)" }}>
+              <div className="sh" style={{ marginBottom:10 }}>
+                <span className="ldot" />
+                <span className="sh-l" style={{ color:"#15803D" }}>Ecosystem Pulse · March 2026</span>
+                <div className="sh-r" />
+              </div>
+              <p className="pf" style={{ fontSize:"clamp(1.1rem,2.5vw,1.9rem)", fontWeight:700, color:"var(--ink)", lineHeight:1.25, marginBottom:8 }}>
+                {insights.ecosystemPulse.headline}
+              </p>
+              <p className="rp" style={{ fontSize:12.5, color:"var(--ink4)", lineHeight:1.7 }}>{insights.ecosystemPulse.context}</p>
+            </div>
+            <div style={{ padding:"clamp(24px,4vw,42px) 0 clamp(24px,4vw,42px) clamp(24px,3vw,44px)", display:"flex", flexDirection:"column", justifyContent:"center", minWidth:"clamp(120px,18vw,200px)" }}>
+              <p className="pf" style={{ fontSize:"clamp(2.2rem,5vw,4.5rem)", fontWeight:900, color:"var(--ink)", lineHeight:1, marginBottom:6 }}>
+                {insights.ecosystemPulse.stat}
+              </p>
+              <p className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.18em", fontWeight:600 }}>& counting in India</p>
+            </div>
+          </div>
+
+          {/* ── WHY THIS EXISTS — 2-col with images ── */}
+          <div className="a2 two-col" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:0, borderBottom:"1px solid var(--rule2)" }}>
+
+            {/* Left — Problem */}
+            <div style={{ borderRight:"1px solid var(--rule2)", paddingRight:"clamp(16px,3vw,44px)", paddingTop:"clamp(28px,4vw,44px)", paddingBottom:"clamp(28px,4vw,44px)" }}>
+              <div className="imgf" style={{ height:210, marginBottom:22 }}>
+                <img src={IMAGES.problem} alt="Fragmented startup data problem in India" />
+                <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(26,18,8,.72) 0%,transparent 55%)" }} />
+                <div style={{ position:"absolute", bottom:12, left:14 }}>
+                  <span className="sf" style={{ fontSize:7.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.2em", color:"var(--gold2)" }}>The Problem</span>
+                </div>
+                <div style={{ position:"absolute", top:12, right:12 }}>
+                  <span className="sf" style={{ fontSize:8, fontWeight:700, color:"white", background:"rgba(26,18,8,.55)", padding:"3px 9px", letterSpacing:"0.1em" }}>India 2026</span>
+                </div>
+              </div>
+              <div className="sh"><span className="sh-l">Why UpForge Exists</span><div className="sh-r" /></div>
+              <h2 className="pf" style={{ fontSize:"clamp(1.1rem,2.2vw,1.65rem)", fontWeight:700, color:"var(--ink)", lineHeight:1.22, marginBottom:20 }}>
+                India's startup data was fragmented, unverified, and buried.
+              </h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
+                {insights.whyRegistry.map((item:any, i:number) => (
+                  <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"12px 0", borderBottom:"1px solid var(--rule2)" }}>
+                    <div className="sf" style={{ width:20, height:20, background:"var(--ink)", color:"white", display:"flex", alignItems:"center", justifyContent:"center", fontSize:8.5, fontWeight:700, flexShrink:0, marginTop:1 }}>
+                      {i+1}
+                    </div>
+                    <div>
+                      <p className="rp" style={{ fontSize:13, fontWeight:600, color:"var(--ink)", marginBottom:2, lineHeight:1.4 }}>{item.point}</p>
+                      <p className="sf" style={{ fontSize:10.5, color:"var(--ink5)" }}>{item.data}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — Answer */}
+            <div style={{ paddingLeft:"clamp(16px,3vw,44px)", paddingTop:"clamp(28px,4vw,44px)", paddingBottom:"clamp(28px,4vw,44px)" }}>
+              <div className="imgf" style={{ height:210, marginBottom:22 }}>
+                <img src={IMAGES.answer} alt="UpForge as India's trusted startup registry" />
+                <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(26,18,8,.72) 0%,transparent 55%)" }} />
+                <div style={{ position:"absolute", bottom:12, left:14 }}>
+                  <span className="sf" style={{ fontSize:7.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.2em", color:"var(--gold2)" }}>Our Answer</span>
+                </div>
+              </div>
+              <div className="sh"><span className="sh-l">Our Answer</span><div className="sh-r" /></div>
+              <h2 className="pf" style={{ fontSize:"clamp(1.1rem,2.2vw,1.65rem)", fontWeight:700, color:"var(--ink)", lineHeight:1.22, marginBottom:14 }}>
+                One structured, independent public record.
+              </h2>
+              <p className="rp" style={{ fontSize:13, color:"var(--ink3)", lineHeight:1.82, marginBottom:20 }}>
+                UpForge is India's independent startup registry — not a media outlet, not an accelerator,
+                not a ranking system. We document publicly available and founder-submitted data in a
+                neutral, structured, permanently accessible format.
+              </p>
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                {[
+                  { icon:BadgeCheck, text:"Every profile manually verified before listing",  c:"#15803D" },
+                  { icon:Shield,     text:"No paid rankings, no sponsored placements",       c:"#2563EB" },
+                  { icon:Globe,      text:"Publicly indexed and permanently accessible",     c:"#7C3AED" },
+                  { icon:Sparkles,   text:"AI-powered growth analysis for every startup",   c:"var(--gold)" },
+                  { icon:Calculator, text:"Free valuation tool for early-stage founders",   c:"#DC2626" },
+                ].map((item,i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <item.icon style={{ width:13, height:13, color:item.c, flexShrink:0 }} />
+                    <span className="rp" style={{ fontSize:12.5, color:"var(--ink3)" }}>{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── CORE PRINCIPLES ── */}
+          <div className="a3" style={{ padding:"clamp(28px,4vw,44px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh"><span className="sh-l">Core Principles</span><div className="sh-r" /></div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))", gap:1, background:"var(--rule2)", border:"1px solid var(--rule2)" }}>
+              {[
+                { icon:Users,      title:"Built for Builders",     desc:"Every listed startup represents independent execution. We prioritize clarity and structured documentation over short-term hype." },
+                { icon:Shield,     title:"Structured Credibility", desc:"Profiles are designed as institutional records — founders build digital credibility that compounds over time." },
+                { icon:TrendingUp, title:"Independent First",      desc:"We spotlight founders before headlines do. Discoverability is structured around substance, not social noise." },
+                { icon:Award,      title:"Long-Term Vision",       desc:"UpForge aims to become India's most trusted independent founder network — defined by quality, structure, and permanence." },
+              ].map((item,i) => (
+                <div key={i} className="pc-wrap" style={{ background:"var(--white)", padding:"24px 22px", position:"relative", cursor:"default" }}>
+                  <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"var(--rule2)", transition:"background .18s" }} />
+                  <div className="pc-icon" style={{ width:34, height:34, background:"var(--parch2)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:14 }}>
+                    <item.icon style={{ width:15, height:15, color:"var(--ink4)" }} />
+                  </div>
+                  <h3 className="pf" style={{ fontSize:"1rem", fontWeight:700, color:"var(--ink)", marginBottom:8, lineHeight:1.2 }}>{item.title}</h3>
+                  <p className="rp" style={{ fontSize:11.5, color:"var(--ink3)", lineHeight:1.75 }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── BUILDERS IMAGE + TIMELINE ── */}
+          <div className="a3" style={{ borderBottom:"1px solid var(--rule2)", padding:"clamp(28px,4vw,44px) 0" }}>
+            {/* Full-width editorial image */}
+            <div className="imgf" style={{ height:"clamp(160px,22vw,290px)", marginBottom:28 }}>
+              <img src={IMAGES.builders} alt="Indian startup founders building together" />
+              <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right, rgba(26,18,8,.78) 0%, rgba(26,18,8,.15) 60%, transparent 100%)" }} />
+              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", padding:"0 clamp(20px,4vw,52px)" }}>
+                <div>
+                  <p className="sf" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.3em", color:"var(--gold2)", marginBottom:10 }}>
+                    India's Startup Journey
+                  </p>
+                  <p className="pf" style={{ fontSize:"clamp(1.2rem,3vw,2.4rem)", fontWeight:900, color:"white", lineHeight:1.12, maxWidth:440 }}>
+                    From 10,000 startups<br />to a global ecosystem.
+                  </p>
+                </div>
+              </div>
+              <div style={{ position:"absolute", top:16, right:18, display:"flex", alignItems:"center", gap:7, background:"rgba(26,18,8,.6)", padding:"5px 12px" }}>
+                <span className="ldot" />
+                <span className="sf" style={{ fontSize:8.5, color:"#4ADE80", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em" }}>We Are Here</span>
+              </div>
+            </div>
+
+            <div className="sh"><span className="sh-l">Ecosystem Milestones</span><div className="sh-r" /></div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(155px,1fr))", gap:1, background:"var(--rule2)", border:"1px solid var(--rule2)" }}>
+              {insights.milestones.map((m:any, i:number) => {
+                const isLast = i === insights.milestones.length - 1;
+                return (
+                  <div key={i} style={{ background:isLast ? "var(--ink)" : "var(--white)", padding:"18px 16px" }}>
+                    <p className="pf" style={{ fontSize:"1.45rem", fontWeight:900, color:isLast ? "var(--gold2)" : "var(--ink)", lineHeight:1, marginBottom:6 }}>{m.year}</p>
+                    <p className="rp" style={{ fontSize:11, color:isLast ? "rgba(255,255,255,.65)" : "var(--ink3)", lineHeight:1.65 }}>{m.event}</p>
+                    {isLast && (
+                      <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:8 }}>
+                        <span className="ldot" />
+                        <span className="sf" style={{ fontSize:8, color:"#4ADE80", fontWeight:700 }}>Now</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── WHO WE SERVE ── */}
+          <div className="a4" style={{ padding:"clamp(28px,4vw,44px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh"><span className="sh-l">Who Uses UpForge</span><div className="sh-r" /></div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:1, background:"var(--rule2)", border:"1px solid var(--rule2)" }}>
+              {[
+                {
+                  type:"Founders",
+                  headline:"Build your digital paper trail",
+                  benefits:[
+                    "Free verified listing that compounds over time",
+                    "AI-generated growth analysis report",
+                    "Institutional credibility before press coverage",
+                    "Free startup valuation estimate",
+                  ],
+                  cta:{ label:"List Your Startup", href:"/submit" },
+                  dark:true,
+                },
+                {
+                  type:"Investors & VCs",
+                  headline:"Discover before the crowd",
+                  benefits:[
+                    "Browse 72,000+ structured startup profiles",
+                    "Filter by sector, city, founding year",
+                    "Verified data — no noise, no duplicates",
+                    "Track emerging sectors with live data",
+                  ],
+                  cta:{ label:"Explore Registry", href:"/startup" },
+                  dark:false,
+                },
+                {
+                  type:"Researchers & Press",
+                  headline:"Cite with confidence",
+                  benefits:[
+                    "Structured, verified data you can reference",
+                    "Sector-level momentum reports",
+                    "Live ecosystem metrics, updated regularly",
+                    "Independent — no commercial bias",
+                  ],
+                  cta:{ label:"View Insights", href:"/reports" },
+                  dark:false,
+                },
+              ].map((aud,i) => (
+                <div key={i} style={{ background:aud.dark ? "var(--ink)" : "var(--white)", padding:"24px 22px", display:"flex", flexDirection:"column" }}>
+                  <p className="sf" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.24em", color:aud.dark ? "var(--gold2)" : "var(--ink5)", marginBottom:6 }}>
+                    {aud.type}
+                  </p>
+                  <h3 className="pf" style={{ fontSize:"1.1rem", fontWeight:700, color:aud.dark ? "white" : "var(--ink)", lineHeight:1.2, marginBottom:16 }}>
+                    {aud.headline}
+                  </h3>
+                  <div style={{ display:"flex", flexDirection:"column", gap:9, flex:1, marginBottom:18 }}>
+                    {aud.benefits.map((b,j) => (
+                      <div key={j} style={{ display:"flex", alignItems:"flex-start", gap:8 }}>
+                        <CheckCircle2 style={{ width:12, height:12, marginTop:1, flexShrink:0, color:aud.dark ? "#4ADE80" : "#15803D" }} />
+                        <span className="rp" style={{ fontSize:11.5, color:aud.dark ? "rgba(255,255,255,.65)" : "var(--ink3)", lineHeight:1.6 }}>{b}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <Link href={aud.cta.href} style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em", fontFamily:"system-ui", color:aud.dark ? "var(--gold2)" : "var(--ink)", textDecoration:"none" }}>
+                    {aud.cta.label} <ArrowRight style={{ width:11, height:11 }} />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── CLOSING — belief + image + quick links ── */}
+          <div className="a4" style={{ padding:"clamp(28px,4vw,44px) 0" }}>
+            <div className="two-col" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:0, alignItems:"start" }}>
+
+              {/* Left — belief statement with image */}
+              <div style={{ paddingRight:"clamp(16px,3vw,52px)", borderRight:"1px solid var(--rule2)" }}>
+                {/* Editorial image */}
+                <div className="imgf" style={{ height:"clamp(180px,20vw,250px)", marginBottom:24 }}>
+                  <img src={IMAGES.believe} alt="Founders building India's future" />
+                  <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(26,18,8,.65) 0%,rgba(26,18,8,.15) 60%,transparent 100%)" }} />
+                  {/* Pull quote on image */}
+                  <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"14px 16px" }}>
+                    <p className="pf" style={{ fontSize:"clamp(0.85rem,1.8vw,1.05rem)", fontStyle:"italic", color:"white", lineHeight:1.35 }}>
+                      "Built to last, not to trend."
+                    </p>
+                  </div>
+                </div>
+
+                <div className="sh"><span className="sh-l">Our Belief</span><div className="sh-r" /></div>
+                <h3 className="pf" style={{ fontSize:"clamp(1.6rem,3.5vw,2.8rem)", fontWeight:900, color:"var(--ink)", lineHeight:1.04, marginBottom:16 }}>
+                  This is not a{" "}
+                  <em style={{ color:"var(--gold)", fontStyle:"italic" }}>directory.</em>
+                </h3>
+                <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85, marginBottom:24, maxWidth:460 }}>
+                  It is a signal that serious founders are building. A structured record of India's emerging companies.
+                  A quiet infrastructure layer beneath the ecosystem — built to last, not to trend.
+                </p>
+                <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+                  <Link href="/startup" style={{ display:"inline-flex", alignItems:"center", gap:7, background:"var(--ink)", color:"white", padding:"12px 22px", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em", fontFamily:"system-ui", textDecoration:"none" }}>
+                    Explore Registry <ArrowRight style={{ width:11, height:11 }} />
+                  </Link>
+                  <Link href="/submit" style={{ display:"inline-flex", alignItems:"center", gap:7, border:"2px solid var(--ink)", color:"var(--ink)", padding:"12px 22px", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em", fontFamily:"system-ui", textDecoration:"none", background:"transparent" }}>
+                    List Your Startup
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right — quick links */}
+              <div style={{ paddingLeft:"clamp(16px,3vw,52px)" }}>
+                <div className="sh"><span className="sh-l">Everything We Offer</span><div className="sh-r" /></div>
+                <div style={{ border:"1px solid var(--rule2)", background:"var(--white)" }}>
+                  {[
+                    { icon:Building2,  label:"Startup Registry",    sub:`Browse ${(totalStartups||0).toLocaleString()}+ verified startups`, href:"/startup" },
+                    { icon:Calculator, label:"Valuation Tool",      sub:"Free estimate in 2 minutes",                href:"/valuation" },
+                    { icon:FileText,   label:"Growth Reports",      sub:"AI-generated analysis per startup",         href:"/reports"   },
+                    { icon:Zap,        label:"Sector Intelligence", sub:"Live funding & momentum data",              href:"/"          },
+                    { icon:Target,     label:"Submit a Startup",    sub:"Free listing, always",                      href:"/submit"    },
+                  ].map((item,i) => (
+                    <Link key={i} href={item.href} className="rlink" style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", borderBottom:"1px solid var(--rule2)", textDecoration:"none", background:"transparent", transition:"background .13s" }}>
+                      <item.icon style={{ width:14, height:14, color:"var(--ink5)", flexShrink:0 }} />
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <p className="rp" style={{ fontSize:13, fontWeight:600, color:"var(--ink)", lineHeight:1, marginBottom:2 }}>{item.label}</p>
+                        <p className="sf" style={{ fontSize:9.5, color:"var(--ink5)" }}>{item.sub}</p>
+                      </div>
+                      <ArrowRight style={{ width:10, height:10, color:"var(--ink5)", flexShrink:0 }} />
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Inline pull quote card */}
+                <div style={{ marginTop:1, background:"var(--parch2)", border:"1px solid var(--rule2)", borderTop:"none", padding:"18px 18px" }}>
+                  <div style={{ position:"relative", paddingLeft:14, borderLeft:"2px solid var(--gold)" }}>
+                    <p className="pf" style={{ fontSize:"clamp(0.9rem,1.8vw,1.05rem)", fontStyle:"italic", color:"var(--ink)", lineHeight:1.5, marginBottom:6 }}>
+                      "India's most comprehensive startup database — verified, structured, free forever."
+                    </p>
+                    <div className="vbadge"><BadgeCheck style={{ width:8, height:8 }} /> Independent Registry</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FOOTER NAV */}
+          <nav style={{ padding:"14px 0", borderTop:"2px solid var(--ink)" }}>
+            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 18px", listStyle:"none", margin:0, padding:0 }}>
+              {[
+                { l:"Startup Registry",        h:"/startup" },
+                { l:"Indian Startup Founders", h:"/"        },
+                { l:"Indian Unicorns 2026",    h:"/indian-unicorns" },
+                { l:"Submit Your Startup",     h:"/submit"  },
+                { l:"Valuation Tool",          h:"/valuation" },
+              ].map(lnk => (
+                <li key={lnk.h}>
+                  <Link href={lnk.h} className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>
+                    {lnk.l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
