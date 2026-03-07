@@ -750,9 +750,15 @@ export default function HomePage() {
         style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }}
         role="banner"
       >
-        {/* Publication name */}
-        <div className="text-center px-4 py-6 sm:py-9" style={{ borderBottom: "1px solid #C8C2B4" }}>
-          <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
+        {/* Publication name - Added pt-[2px] for that slight difference */}
+        <div 
+          className="text-center px-4 pt-[2px] pb-6 sm:pb-9" 
+          style={{ borderBottom: "1px solid #C8C2B4" }}
+        >
+          <p 
+            className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" 
+            style={{ fontFamily: "system-ui,sans-serif" }}
+          >
             UpForge · Independent Startup Registry · India Edition
           </p>
           {/* This is styled as display title — real H1 is hidden above for SEO */}
