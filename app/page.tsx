@@ -1,891 +1,1345 @@
+"use client"
+
 // app/page.tsx
-import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
-import type { Metadata } from "next";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
-import {
-  BadgeCheck, ArrowRight, Shield, Clock, Sparkles, Globe,
-  Gem, CheckCircle2, ChevronRight, ArrowUpRight, Search,
-  DollarSign, Newspaper, Users, BookOpen, ExternalLink,
-} from "lucide-react";
+// THE FOUNDER CHRONICLE — Homepage (upforge.in)
+// SEO: JSON-LD injected client-side, BreadcrumbList, structured data for all founders
+// Canonical, OG, Twitter handled in app/layout.tsx (see comment at bottom of file)
 
-// ─── SEO METADATA ─────────────────────────────────────────────────────────────
-export const metadata: Metadata = {
-  title: "UpForge — India's #1 Independent Startup Registry & Database 2026",
-  description:
-    "Discover, research and track 72,000+ verified Indian startups across AI, SaaS, FinTech, HealthTech and more. Free listings, AI-powered growth reports, real-time funding news, unicorn tracker, and live market intelligence.",
-  keywords: [
-    "Indian startups 2026", "India startup database", "startup registry India",
-    "verified Indian startups", "Indian unicorns 2026", "startup funding India",
-    "list your startup India free", "startup ecosystem India", "UpForge",
-    "India startup intelligence", "top Indian startups", "Indian startup news",
-    "best startup database India", "free startup listing India",
-  ].join(", "),
-  authors: [{ name: "UpForge", url: "https://upforge.in" }],
-  creator: "UpForge", publisher: "UpForge",
-  metadataBase: new URL("https://upforge.in"),
-  alternates: { canonical: "https://upforge.in" },
-  openGraph: {
-    type: "website", locale: "en_IN", url: "https://upforge.in", siteName: "UpForge",
-    title: "UpForge — India's #1 Independent Startup Registry 2026",
-    description: "72,000+ verified Indian startups. Free listings · AI growth reports · Real-time funding news.",
-    images: [{ url: "https://upforge.in/og-image.png", width: 1200, height: 630, alt: "UpForge" }],
-  },
-  twitter: {
-    card: "summary_large_image", site: "@upforge_in", creator: "@upforge_in",
-    title: "UpForge — India's #1 Independent Startup Registry 2026",
-    description: "72,000+ verified Indian startups. Free listings · AI growth reports.",
-    images: ["https://upforge.in/og-image.png"],
-  },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
-  other: { "theme-color": "#ffffff" },
-};
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-react"
 
-// ─── JSON-LD ──────────────────────────────────────────────────────────────────
-const jsonLd = {
+// ─── FOUNDER DATA ─────────────────────────────────────────────────────────────
+const FOUNDERS = [
+  {
+    no: "01", edition: "No. 01",
+    category: "QUICK COMMERCE",
+    name: "Aadit Palicha & Kaivalya Vohra",
+    nameShort: "Palicha & Vohra",
+    initials: "Z",
+    company: "Zepto", slug: "zepto",
+    role: "Co-Founders — CEO & CTO",
+    city: "Bengaluru", context: "Dropped out of Stanford at 19",
+    valuation: "$5.9B", funding: "$2.5B+", founded: "2021",
+    imgSrc: "https://i.ytimg.com/vi/HBSOii00H68/maxresdefault.jpg",
+    accent: "#D97706", accentBg: "#FFFBEB", accentBorder: "#FDE68A",
+    headline: "Two Stanford dropouts. One failed startup. Then a $5.9 billion answer to India's grocery problem.",
+    deck: "Aadit Palicha and Kaivalya Vohra built India's fastest unicorn by failing first, then solving the logistics math nobody else wanted to.",
+    cols: [
+      {
+        h: "The Failed First Act",
+        b: "In 2020, Palicha and Vohra were Stanford freshmen who flew back to India to build KiranaKart — a 45-minute grocery app. It failed in months. Most founders would have returned to California. These two stayed in Bengaluru, rented a room, and dissected every mistake with unusual discipline.\n\nThe pivot they arrived at was specific: dark stores placed within 1.5km of dense demand made 10-minute delivery a pure logistics equation, not a gimmick. Every competitor called it insane. The founders called it math."
+      },
+      {
+        h: "The $5.9B Math Problem",
+        b: "Zepto launched in 2021. By August 2023, India had its first unicorn of the year — at $1.4B. The $350M Series H in 2025 brought the valuation to $5.9B, making them the youngest founders in India to build a business at that scale.\n\nKaivalya Vohra, at 22, became India's youngest billionaire. Zepto now operates 350+ dark stores across 10 cities, fulfilling orders in under 10 minutes — a logistics equation, solved."
+      },
+      {
+        h: "What the Story Really Is",
+        b: "The Zepto story isn't about being young or lucky. It is about the discipline to treat failure as data. KiranaKart showed them what didn't work. Zepto was the answer once they knew the right question.\n\nIndia's quick commerce market crossed $3.3B in 2025. Zepto commands its second-largest share — earned not by being first, but by being most precise about what '10 minutes' actually requires behind the scenes."
+      }
+    ],
+    pull: "We failed with KiranaKart in months. Most people would have gone back to Stanford. We stayed in Bengaluru and figured out what we got wrong.",
+    pullBy: "Aadit Palicha",
+    lesson: "The first startup teaches you the question. The second one lets you answer it.",
+    stats: [
+      { l: "Valuation", v: "$5.9B" },
+      { l: "Founded", v: "2021" },
+      { l: "Dark Stores", v: "350+" },
+      { l: "Total Raised", v: "$2.5B+" },
+    ],
+  },
+  {
+    no: "02", edition: "No. 02",
+    category: "EDTECH",
+    name: "Alakh Pandey",
+    nameShort: "Alakh Pandey",
+    initials: "AP",
+    company: "PhysicsWallah", slug: "physicswallah",
+    role: "Founder & CEO",
+    city: "Prayagraj, UP", context: "YouTube teacher turned unicorn CEO",
+    valuation: "$2.8B", funding: "$700M", founded: "2014",
+    imgSrc: "https://i0.wp.com/globalkashmir.net/wp-content/uploads/2024/08/Physicswallah.jpg",
+    accent: "#059669", accentBg: "#ECFDF5", accentBorder: "#A7F3D0",
+    headline: "BYJU's charged ₹80,000 for what he taught for ₹2,000. That wasn't a mission — it was just obviously the right thing to do.",
+    deck: "Alakh Pandey disrupted Indian edtech without a Harvard MBA or a term sheet — just a bedroom camera and an impossibly fair price.",
+    cols: [
+      {
+        h: "The Bedroom Studio",
+        b: "In 2014, Alakh Pandey was preparing for engineering entrance exams in Prayagraj and teaching the same material to earn money. He set up a camera in his room — not a studio, just a room — and started filming Physics lessons.\n\nThe difference was palpable: he taught like he was talking to a friend, not performing for an institution. No script, no production budget. Just clarity and genuine care for the student sitting somewhere in UP, unable to afford the alternatives."
+      },
+      {
+        h: "The Price That Changed Everything",
+        b: "By 2020, his YouTube channel had 5M subscribers. In 2021, he launched the PW app at ₹2,000/year — against BYJU's ₹80,000. Six million students enrolled within weeks. He raised $100M, hit unicorn status, and built the edtech story India had been waiting for — while BYJU's collapsed under its own weight.\n\nAlakh understood the real market: not 20M rich students, but 350M students who need something they can actually pay for."
+      },
+      {
+        h: "Profitable. By Design.",
+        b: "PhysicsWallah remained profitable through its entire growth — a near-impossibility in a sector that burned billions on celebrity ads. By 2025, it served 10M+ learners across JEE, NEET, and UPSC prep — and successfully listed on Indian exchanges in November 2025.\n\nAlakh grew up watching his parents manage tight budgets. He built his entire company around never making affordability the barrier. It is the only Indian edtech unicorn that is both affordable and profitable."
+      }
+    ],
+    pull: "BYJU's charged ₹80,000 for what I teach for ₹2,000. That wasn't a mission statement. It was just obviously the right thing to do.",
+    pullBy: "Alakh Pandey",
+    lesson: "Affordability is not a positioning strategy. It can be the entire moat.",
+    stats: [
+      { l: "Valuation", v: "$2.8B" },
+      { l: "Students", v: "10M+" },
+      { l: "Annual Fee", v: "₹2,000" },
+      { l: "Founded", v: "2014" },
+    ],
+  },
+  {
+    no: "03", edition: "No. 03",
+    category: "FOODTECH",
+    name: "Deepinder Goyal",
+    nameShort: "Deepinder Goyal",
+    initials: "DG",
+    company: "Zomato / Eternal", slug: "zomato",
+    role: "Founder & CEO",
+    city: "Delhi", context: "IIT Delhi → Bain & Co → Foodiebay at 25",
+    valuation: "$33B", funding: "$3.2B+", founded: "2008",
+    imgSrc: "https://pbs.twimg.com/media/GSiTEQ2WcAAwE4b.png",
+    accent: "#DC2626", accentBg: "#FFF1F2", accentBorder: "#FECDD3",
+    headline: "#1 on Hurun India 2025. Zomato is worth ₹3.2 lakh crore. It started as scanned restaurant menus.",
+    deck: "Deepinder Goyal tops India's self-made entrepreneur rankings. The Zomato story is 17 years of pivots, a brutal stock crash, and one very public bet on profitability.",
+    cols: [
+      {
+        h: "Scanned Menus, 2008",
+        b: "Deepinder Goyal was 25, consulting at Bain & Company, when he noticed colleagues spending long lunches passing around printed restaurant menus. He scanned them, put them on a website, and called it Foodiebay. Traffic arrived without advertising.\n\nHe quit Bain within months. Rebranded to Zomato in 2010 — a name that meant nothing but was clean, sticky, and available. What followed was a decade of relentless iteration: discovery, reviews, delivery, groceries, Blinkit quick commerce."
+      },
+      {
+        h: "The Public Company Bet",
+        b: "Zomato's 2021 IPO was the defining moment for Indian startup optimism. It listed at a premium — then fell 70% in 2022 as global markets repriced every loss-making tech company. Deepinder doubled down: cut costs, killed zombie products, set a public profitability target.\n\nZomato posted its first quarterly profit in Q2 FY2024. By 2025, the parent was renamed Eternal and valued at ₹3.2 lakh crore — up 27% year-on-year. Hurun India placed Deepinder at No. 1."
+      },
+      {
+        h: "17 Years. Still Reinventing.",
+        b: "The Eternal of 2025 — profitable food delivery, Blinkit, District ticketing, LAT Aerospace — is unrecognisable from the Foodiebay of 2008. That is the point.\n\nDeepinder's story is about adaptation above everything else. The companies that survive 17 years aren't the ones with the best original idea. They are the ones willing to change — and courageous enough to do it publicly."
+      }
+    ],
+    pull: "We have to keep reinventing Zomato. The product that got us here will not get us to where we need to go.",
+    pullBy: "Deepinder Goyal",
+    lesson: "The company that survives is rarely the one that started. It's the one that kept reinventing.",
+    stats: [
+      { l: "Mkt. Cap", v: "₹3.2L Cr" },
+      { l: "Hurun 2025", v: "#1" },
+      { l: "Founded", v: "2008" },
+      { l: "Raised", v: "$3.2B+" },
+    ],
+  },
+  {
+    no: "04", edition: "No. 04",
+    category: "FINTECH",
+    name: "Nithin Kamath",
+    nameShort: "Nithin Kamath",
+    initials: "NK",
+    company: "Zerodha", slug: "zerodha",
+    role: "Founder & CEO",
+    city: "Bengaluru", context: "Dropped out at 17 to trade. Never took VC.",
+    valuation: "$8.2B", funding: "Fully bootstrapped", founded: "2010",
+    imgSrc: "https://www.businessoutreach.in/wp-content/uploads/2023/08/Nithin-Kamath-1.jpg",
+    accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
+    headline: "He dropped out at 17 to trade stocks. Never took a rupee of VC. Zerodha is India's largest stockbroker — worth $8.2 billion.",
+    deck: "Nithin Kamath built India's largest brokerage without a single outside investor, a celebrity ad, or a paid acquisition. Just a better product and fifteen years of compounding trust.",
+    cols: [
+      {
+        h: "The Self-Taught Trader",
+        b: "Nithin Kamath dropped out of college at 17 to learn stock markets by doing: putting real money in and watching what happened. He spent a decade becoming exceptionally good at trading — while working as a sub-broker and call centre employee to fund his positions.\n\nBy 2010, he had identified the structural problem in Indian broking: fees were opaque, interfaces were broken, and the entire system was designed to benefit brokers, not investors. He founded Zerodha with his brother Nikhil to fix exactly that."
+      },
+      {
+        h: "₹20 Flat. Zero VC.",
+        b: "Zerodha introduced flat-fee brokerage to India: ₹20 per trade regardless of order size, at a time when brokers charged a percentage of trade value. This single pricing decision democratised investing for millions priced out by the old model.\n\nCritically, Zerodha never raised outside capital. No Series A, no Tiger Global, no SoftBank. Nithin reinvested every profit. Kite — their trading platform — became the benchmark every Indian fintech is measured against."
+      },
+      {
+        h: "The Bootstrapped Billionaire",
+        b: "Today, Zerodha has 1.5 crore active customers and an $8.2B valuation. Nithin also built Varsity (free financial education, 10M+ users), Rainmatter (a fintech incubator backing 40+ startups), and has become India's most respected voice on sustainable investing.\n\nThe Zerodha story is the definitive antidote to the idea that fundraising equals success. Fifteen years of being genuinely, unfashionably useful."
+      }
+    ],
+    pull: "We never raised money because we didn't need to. Build something people actually want, charge them fairly — that's the whole playbook.",
+    pullBy: "Nithin Kamath",
+    lesson: "Bootstrapping is not a funding strategy. It's a philosophy about who you're accountable to.",
+    stats: [
+      { l: "Valuation", v: "$8.2B" },
+      { l: "Customers", v: "1.5 Cr+" },
+      { l: "VC Raised", v: "₹0" },
+      { l: "Founded", v: "2010" },
+    ],
+  },
+  {
+    no: "05", edition: "No. 05",
+    category: "D2C / BEAUTY",
+    name: "Falguni Nayar",
+    nameShort: "Falguni Nayar",
+    initials: "FN",
+    company: "Nykaa", slug: "nykaa",
+    role: "Founder & CEO",
+    city: "Mumbai", context: "Left investment banking at 50",
+    valuation: "$2.5B", funding: "Bootstrapped to IPO", founded: "2012",
+    imgSrc: "https://i.cdn.newsbytesapp.com/images/l12420211110152610.jpeg",
+    accent: "#C026D3", accentBg: "#FDF4FF", accentBorder: "#E879F9",
+    headline: "She left a 20-year banking career at 50 to build India's first profitable unicorn. Everyone told her she was too old.",
+    deck: "Falguni Nayar built India's first woman-founded company to IPO — and proved the best founders sometimes take the longest to begin.",
+    cols: [
+      {
+        h: "Twenty Years at Kotak",
+        b: "Falguni Nayar spent two decades at Kotak Mahindra Bank, rising to Managing Director of Investment Banking. In 2012, at 50, she quit. Her network was uniformly sceptical: global beauty brands wouldn't trust an Indian startup, the market was fragmented, physical retail was dominant.\n\nShe flew personally to brand offices in France, Italy, and the United States to guarantee authenticity and explain the Indian consumer. She earned the trust one brand at a time."
+      },
+      {
+        h: "Curation Over Discounting",
+        b: "While every other platform competed on price, Falguni competed on trust. Nykaa launched with editorial curation, authentic products, and an experience that felt like a premium store. Customers returned because they trusted what they were buying.\n\nBy 2020, Nykaa crossed 2 million orders per month. No splashy VC backing, no celebrity campaigns in the early years. Just a product built around the conviction that Indian women deserved a trustworthy beauty destination."
+      },
+      {
+        h: "India's First Woman-Led IPO",
+        b: "In November 2021, Nykaa listed on the BSE — the first woman-founded Indian company to IPO, and the first profitable Indian unicorn to go public. Falguni's net worth crossed $7B at listing, making her India's wealthiest self-made woman.\n\nShe has since expanded into fashion, wellness, and men's grooming. Nykaa remains a masterclass in patience, domain expertise, and the radical idea that serving your customer well — not raising money — is the primary job of a founder."
+      }
+    ],
+    pull: "Everyone told me I was too old to start and the market was too fragmented. That was the business case — not a reason to stop.",
+    pullBy: "Falguni Nayar",
+    lesson: "There is no age requirement for building something consequential.",
+    stats: [
+      { l: "Valuation", v: "$2.5B" },
+      { l: "IPO Year", v: "2021" },
+      { l: "Age at Start", v: "50" },
+      { l: "Founded", v: "2012" },
+    ],
+  },
+  {
+    no: "06", edition: "No. 06",
+    category: "TRAVEL / HOSPITALITY",
+    name: "Ritesh Agarwal",
+    nameShort: "Ritesh Agarwal",
+    initials: "RA",
+    company: "OYO", slug: "oyo",
+    role: "Founder & CEO",
+    city: "Gurgaon", context: "Youngest billionaire founder",
+    valuation: "$10B+", funding: "$3B+", founded: "2013",
+    imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ritesh_Agarwal_CEO_OYO.jpg/800px-Ritesh_Agarwal_CEO_OYO.jpg",
+    accent: "#DC2626", accentBg: "#FEF2F2", accentBorder: "#FCA5A5",
+    headline: "At 19, he started fixing India's budget hotel problem — and built one of the world's largest hotel chains.",
+    deck: "Ritesh Agarwal built OYO after travelling across India and seeing the chaos in budget hotels. His solution standardized small hotels using technology and branding.",
+    cols: [
+      {
+        h: "Teenage Entrepreneur",
+        b: "Ritesh Agarwal left college early to build a startup. His first idea was Oravel Stays, a platform for budget accommodations."
+      },
+      {
+        h: "Birth of OYO",
+        b: "The idea evolved into OYO Rooms, which standardized hotel rooms with reliable pricing, cleanliness, and booking systems."
+      },
+      {
+        h: "Global Expansion",
+        b: "OYO expanded to dozens of countries and thousands of hotels, becoming one of the fastest-growing hospitality brands in the world."
+      }
+    ],
+    pull: "Opportunities often hide inside everyday problems.",
+    pullBy: "Ritesh Agarwal",
+    lesson: "Start young. Learn fast. Scale relentlessly.",
+    stats: [
+      { l: "Valuation", v: "$10B+" },
+      { l: "Countries", v: "80+" },
+      { l: "Founded", v: "2013" },
+      { l: "Age at Start", v: "19" }
+    ],
+  },
+  {
+    no: "07", edition: "No. 07",
+    category: "MOBILITY / TRANSPORT",
+    name: "Bhavish Aggarwal",
+    nameShort: "Bhavish Aggarwal",
+    initials: "BA",
+    company: "Ola", slug: "ola",
+    role: "Co-Founder & CEO",
+    city: "Bangalore", context: "Built India's largest ride-hailing platform",
+    valuation: "$7B+", funding: "$4B+", founded: "2010",
+    imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Bhavish_Aggarwal.jpg/800px-Bhavish_Aggarwal.jpg",
+    accent: "#EA580C", accentBg: "#FFF7ED", accentBorder: "#FDBA74",
+    headline: "A single bad taxi ride inspired him to build one of India's largest mobility platforms.",
+    deck: "Bhavish Aggarwal founded Ola after a frustrating cab experience — and went on to build a transportation network serving hundreds of cities across India.",
+    cols: [
+      {
+        h: "The Problem That Sparked Ola",
+        b: "In 2010, Bhavish Aggarwal was traveling from Bangalore to Bandipur when his taxi driver abruptly stopped midway and demanded extra money.\n\nThe experience revealed a huge gap in India's transportation infrastructure. Bhavish realized millions of commuters faced the same problem daily."
+      },
+      {
+        h: "Building India's Ride-Hailing Giant",
+        b: "Bhavish partnered with Ankit Bhati to launch Ola — a platform connecting passengers with reliable drivers through mobile technology.\n\nThe startup expanded rapidly across Indian cities and soon became a dominant player in ride-hailing."
+      },
+      {
+        h: "Beyond Ride-Hailing",
+        b: "Ola eventually expanded into electric mobility through Ola Electric, building scooters, EV platforms, and gigafactories.\n\nBhavish's ambition has always been larger than taxis — he wants to redefine transportation for an electric future."
+      }
+    ],
+    pull: "Every frustrating experience is an opportunity to build something better.",
+    pullBy: "Bhavish Aggarwal",
+    lesson: "Some of the biggest companies start with solving a personal problem.",
+    stats: [
+      { l: "Valuation", v: "$7B+" },
+      { l: "Cities", v: "250+" },
+      { l: "Founded", v: "2010" },
+      { l: "Funding", v: "$4B+" },
+    ],
+  },
+  {
+    no: "08",
+    edition: "No. 08",
+    category: "CAREER / STUDENT PLATFORM",
+    name: "Lucky Tiwari",
+    nameShort: "Lucky Tiwari",
+    initials: "LT",
+    company: "InternAdda",
+    slug: "internadda",
+    role: "Founder",
+    city: "India",
+    context: "Building a modern platform connecting students with real opportunities",
+    valuation: "Private",
+    funding: "Bootstrapped",
+    founded: "2024",
+    imgSrc: "/luckyinternadda.jpg",
+    accent: "#2563EB",
+    accentBg: "#EFF6FF",
+    accentBorder: "#93C5FD",
+    headline: "He is building InternAdda to make internships, startups, and career opportunities accessible to every student in India.",
+    deck: "InternAdda was created to bridge the gap between students and real-world opportunities. The platform helps students discover internships, startup roles, and learning experiences while helping companies reach young talent across the country.",
+    cols: [
+      {
+        h: "The Problem Students Face",
+        b: "Millions of students graduate every year in India, yet many struggle to find meaningful internships or early career opportunities.\n\nInformation is scattered across multiple platforms, and many students simply don't know where to start."
+      },
+      {
+        h: "Building InternAdda",
+        b: "Lucky Tiwari launched InternAdda with the goal of creating a simple and reliable platform where students can explore internships, startup jobs, and career opportunities.\n\nThe platform focuses on accessibility, clarity, and giving young people real exposure to the startup ecosystem."
+      },
+      {
+        h: "Empowering the Next Generation",
+        b: "InternAdda aims to become a trusted destination for students looking to start their careers.\n\nBy connecting startups with ambitious students, the platform helps create opportunities that can shape the future workforce of India's innovation economy."
+      }
+    ],
+    pull: "Talent exists everywhere — students just need the right opportunity to prove it.",
+    pullBy: "Lucky Tiwari",
+    lesson: "Sometimes the best startups are built by solving problems you personally faced.",
+    stats: [
+      { l: "Platform", v: "InternAdda" },
+      { l: "Founded", v: "2024" },
+      { l: "Funding", v: "Bootstrapped" },
+      { l: "Focus", v: "Student Opportunities" }
+    ],
+  },
+  {
+    no: "09", edition: "No. 09",
+    category: "FINTECH",
+    name: "Kunal Shah",
+    nameShort: "Kunal Shah",
+    initials: "KS",
+    company: "CRED",
+    slug: "cred",
+    role: "Founder & CEO",
+    city: "Bangalore",
+    context: "Built two unicorn fintech startups",
+    valuation: "$6B+",
+    funding: "$800M+",
+    founded: "2018",
+    imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Kunal_Shah_2019.jpg/800px-Kunal_Shah_2019.jpg",
+    accent: "#111827",
+    accentBg: "#F3F4F6",
+    accentBorder: "#9CA3AF",
+    headline: "He built CRED by rewarding people for paying their credit card bills on time.",
+    deck: "Kunal Shah is known for his deep thinking on consumer behaviour and fintech. After selling FreeCharge, he launched CRED to reward financial discipline.",
+    cols: [
+      {
+        h: "The FreeCharge Exit",
+        b: "Kunal Shah first built FreeCharge, a digital payments company that was later acquired by Snapdeal for $400M."
+      },
+      {
+        h: "Birth of CRED",
+        b: "He launched CRED in 2018 to reward creditworthy users who paid their bills on time."
+      },
+      {
+        h: "Premium Community",
+        b: "CRED built an exclusive ecosystem for financially responsible users."
+      }
+    ],
+    pull: "Trust is the most powerful currency in fintech.",
+    pullBy: "Kunal Shah",
+    lesson: "Understand human behaviour better than technology.",
+    stats: [
+      { l: "Valuation", v: "$6B+" },
+      { l: "Users", v: "12M+" },
+      { l: "Founded", v: "2018" },
+      { l: "Previous Exit", v: "FreeCharge $400M" }
+    ],
+  },
+  {
+    no: "10", edition: "No. 10",
+    category: "FINTECH / PAYMENTS",
+    name: "Vijay Shekhar Sharma",
+    nameShort: "Vijay Sharma",
+    initials: "VS",
+    company: "Paytm",
+    slug: "paytm",
+    role: "Founder & CEO",
+    city: "Noida",
+    context: "Built India's biggest digital wallet",
+    valuation: "$16B+",
+    funding: "$3B+",
+    founded: "2010",
+    imgSrc: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Vijay_Shekhar_Sharma.jpg/800px-Vijay_Shekhar_Sharma.jpg",
+    accent: "#0284C7",
+    accentBg: "#EFF6FF",
+    accentBorder: "#7DD3FC",
+    headline: "From a small recharge website to India's largest digital payments ecosystem.",
+    deck: "Vijay Shekhar Sharma built Paytm to simplify mobile payments in India, later becoming one of the biggest fintech platforms in the country.",
+    cols: [
+      {
+        h: "Early Struggles",
+        b: "Vijay grew up in a small town and struggled with English during college."
+      },
+      {
+        h: "Birth of Paytm",
+        b: "He launched Paytm initially as a mobile recharge platform."
+      },
+      {
+        h: "Demonetization Boom",
+        b: "During India's 2016 demonetization, Paytm became the default digital wallet."
+      }
+    ],
+    pull: "Technology should make life simpler for millions.",
+    pullBy: "Vijay Shekhar Sharma",
+    lesson: "Persistence beats privilege.",
+    stats: [
+      { l: "Valuation", v: "$16B+" },
+      { l: "Users", v: "300M+" },
+      { l: "Founded", v: "2010" },
+      { l: "IPO", v: "2021" }
+    ],
+  },
+]
+
+// ─── JSON-LD structured data (injected client-side since page is a client component)
+// For server-side injection, move this to app/layout.tsx
+const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "WebSite", "@id": "https://upforge.in/#website",
-      url: "https://upforge.in", name: "UpForge", inLanguage: "en-IN",
-      potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: "https://upforge.in/startup?q={search_term_string}" }, "query-input": "required name=search_term_string" },
+      "@type": "WebSite",
+      "@id": "https://upforge.in/#website",
+      "url": "https://upforge.in",
+      "name": "UpForge",
+      "description": "India's independent startup registry — verified founder profiles, startup data and editorial chronicles.",
+      "publisher": { "@id": "https://upforge.in/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://upforge.in/startup?q={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      }
     },
     {
-      "@type": "Organization", "@id": "https://upforge.in/#organization",
-      name: "UpForge", url: "https://upforge.in",
-      logo: { "@type": "ImageObject", url: "https://upforge.in/logo.png", width: 512, height: 512 },
-      sameAs: ["https://twitter.com/upforge_in", "https://linkedin.com/company/upforge"],
-      foundingDate: "2025", areaServed: "IN",
+      "@type": "Organization",
+      "@id": "https://upforge.in/#organization",
+      "name": "UpForge",
+      "url": "https://upforge.in",
+      "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" },
+      "sameAs": ["https://twitter.com/upforge_in"]
     },
     {
-      "@type": "FAQPage",
-      mainEntity: [
-        { "@type": "Question", name: "How many Indian startups are on UpForge?", acceptedAnswer: { "@type": "Answer", text: "72,000+ verified Indian startups across 30+ sectors, manually reviewed." } },
-        { "@type": "Question", name: "Is listing on UpForge free?", acceptedAnswer: { "@type": "Answer", text: "Yes, completely free. Submit at upforge.in/submit." } },
-      ],
+      "@type": "Article",
+      "@id": "https://upforge.in/#article",
+      "headline": "The Founder Chronicle — India's Greatest Startup Builders 2026",
+      "description": "10 real stories from the founders behind India's most consequential startups — Zepto, PhysicsWallah, Zomato, Zerodha, Nykaa, OYO, Ola, InternAdda, CRED, Paytm. Verified by UpForge. March 2026.",
+      "url": "https://upforge.in",
+      "datePublished": "2026-03-01T00:00:00+05:30",
+      "dateModified": "2026-03-08T00:00:00+05:30",
+      "inLanguage": "en-IN",
+      "isPartOf": { "@id": "https://upforge.in/#website" },
+      "publisher": { "@id": "https://upforge.in/#organization" },
+      "image": { "@type": "ImageObject", "url": "https://upforge.in/og/founder-chronicle.png", "width": 1200, "height": 630 },
+      "about": FOUNDERS.map(f => ({
+        "@type": "Person",
+        "name": f.name,
+        "jobTitle": f.role,
+        "worksFor": { "@type": "Organization", "name": f.company },
+        "address": { "@type": "PostalAddress", "addressLocality": f.city, "addressCountry": "IN" }
+      }))
     },
-  ],
-};
-
-// ─── DATA FETCHERS ────────────────────────────────────────────────────────────
-async function getLiveNews() {
-  try {
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    const url = new URL("https://newsapi.org/v2/everything");
-    url.searchParams.set("q", "(Indian startup OR startup India OR VC funding India OR unicorn India)");
-    url.searchParams.set("from", threeDaysAgo.toISOString().split("T")[0]);
-    url.searchParams.set("language", "en");
-    url.searchParams.set("sortBy", "publishedAt");
-    url.searchParams.set("pageSize", "8");
-    url.searchParams.set("apiKey", process.env.NEWSAPI_KEY || "");
-    const res = await fetch(url.toString(), { cache: "no-store" });
-    if (!res.ok) throw new Error("NewsAPI failed");
-    const data = await res.json();
-    if (!data.articles?.length) throw new Error("No articles");
-    return data.articles
-      .filter((a: any) => a.title && a.source?.name && a.title !== "[Removed]")
-      .slice(0, 6)
-      .map((a: any) => {
-        const diffH = Math.floor((Date.now() - new Date(a.publishedAt).getTime()) / 3600000);
-        const diffD = Math.floor(diffH / 24);
-        const timestamp = diffH < 1 ? "Just now" : diffH < 24 ? `${diffH}h ago` : diffD === 1 ? "1d ago" : `${diffD}d ago`;
-        const t = a.title.toLowerCase();
-        const impact = t.match(/raises|funding|unicorn|launch|growth|profit|surge|ipo/) ? "positive"
-          : t.match(/shutdown|layoff|fraud|crisis|loss|decline|fail/) ? "negative" : "neutral";
-        return { headline: a.title.length > 100 ? a.title.slice(0, 97) + "…" : a.title, source: a.source.name, url: a.url, impact, timestamp };
-      });
-  } catch {
-    return [
-      { headline: "India startup ecosystem raises $9B+ in Q1 2026, up 34% year-on-year", source: "Inc42", impact: "positive", timestamp: "6h ago", url: null },
-      { headline: "SEBI eases startup IPO norms, reduces mandatory lock-in to 6 months", source: "Economic Times", impact: "positive", timestamp: "12h ago", url: null },
-      { headline: "Government's ₹1,000Cr DeepTech Fund opens applications for Indian startups", source: "PIB India", impact: "positive", timestamp: "1d ago", url: null },
-      { headline: "Indian SaaS companies cross $1.8B in new ARR, global expansion accelerates", source: "Mint", impact: "positive", timestamp: "1d ago", url: null },
-      { headline: "Krutrim AI hits 1M enterprise users; eyes Southeast Asia expansion", source: "Inc42", impact: "positive", timestamp: "2d ago", url: null },
-      { headline: "Zepto valued at $5B after latest funding round; profitability in sight", source: "TechCrunch", impact: "positive", timestamp: "2d ago", url: null },
-    ];
-  }
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" },
+        { "@type": "ListItem", "position": 2, "name": "The Founder Chronicle", "item": "https://upforge.in" }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "Indian Startup Founders 2026",
+      "description": "India's top startup founders profiled by UpForge — verified data, editorial format.",
+      "numberOfItems": FOUNDERS.length,
+      "itemListElement": FOUNDERS.map((f, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": `${f.name} — ${f.company}`,
+        "url": `https://upforge.in/startup/${f.slug}`,
+        "description": f.deck
+      }))
+    }
+  ]
 }
 
-async function getEcosystemData() {
-  const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
-  try {
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
-      cache: "no-store",
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          {
-            role: "system",
-            content: `Indian startup market analyst. Today: ${dateStr}. Return ONLY valid JSON, no markdown.
-{
-  "marketMood": { "sentiment": "Bullish/Neutral/Bearish", "score": "0-100 string", "reason": "max 8 words" },
-  "topRisingStartups": [{"name":"string","sector":"string","insight":"max 12 words","growthIndicator":"+XX%","momentum":"high/medium"}],
-  "sectorMomentum": [{"sector":"string","deals":"number","funding":"$XB or $XM","trend":"max 6 words","growth":"+XX%"}],
-  "fundingNews": [{"startup":"string","amount":"$XXM","round":"Series X","investors":"string","valuation":"$XXB or null"}],
-  "ecosystemMetrics": {"totalActiveStartups":"XX,000+","totalFundingYTD":"$X.XB","activeVCFirms":"X,XXX+","unicorns":"XXX","soonicorns":"XXX+","avgDealSize":"$XX.XM","mostActiveSector":"string","topCity":"string","monthlyGrowth":"+XX%","activeAngels":"X,XXX+"}
-}
-EXACTLY: 6 topRisingStartups, 6 sectorMomentum, 5 fundingNews.`,
-          },
-          { role: "user", content: `Indian startup market data for ${dateStr}. Q1 2026. Real names only.` },
-        ],
-        temperature: 0.15, max_tokens: 1600, response_format: { type: "json_object" },
-      }),
-    });
-    if (!res.ok) throw new Error("Groq failed");
-    const data = await res.json();
-    const parsed = JSON.parse(data.choices?.[0]?.message?.content || "");
-    if (!parsed.marketMood || !parsed.ecosystemMetrics) throw new Error("Bad structure");
-    return parsed;
-  } catch {
-    return {
-      marketMood: { sentiment: "Bullish", score: "76", reason: "Q1 2026 funding momentum strong" },
-      topRisingStartups: [
-        { name: "Krutrim AI",    sector: "AI",           insight: "India's first sovereign AI cloud, expanding fast",   growthIndicator: "+312%", momentum: "high" },
-        { name: "Zepto",         sector: "Quick Commerce", insight: "10-min delivery, profitable in 50+ cities",         growthIndicator: "+189%", momentum: "high" },
-        { name: "Pixxel",        sector: "Space Tech",   insight: "Hyperspectral satellites for enterprise agriculture", growthIndicator: "+156%", momentum: "high" },
-        { name: "PhysicsWallah", sector: "EdTech",       insight: "100+ offline centres, India's largest ed-network",   growthIndicator: "+145%", momentum: "high" },
-        { name: "Rapido",        sector: "Mobility",     insight: "Bike taxi dominating Tier 2/3 cities",               growthIndicator: "+98%",  momentum: "medium" },
-        { name: "Ather Energy",  sector: "EV",           insight: "450+ touchpoints, 40% premium EV market share",      growthIndicator: "+87%",  momentum: "medium" },
-      ],
-      sectorMomentum: [
-        { sector: "AI / ML",      deals: "127", funding: "$1.2B", trend: "Enterprise AI adoption accelerating", growth: "+156%" },
-        { sector: "SaaS",         deals: "178", funding: "$1.8B", trend: "Global expansion by Indian SaaS",     growth: "+134%" },
-        { sector: "FinTech",      deals: "143", funding: "$2.1B", trend: "Credit infra & UPI 3.0 innovation",   growth: "+112%" },
-        { sector: "Climate Tech", deals: "89",  funding: "$845M", trend: "EV infra & carbon markets boom",      growth: "+89%"  },
-        { sector: "HealthTech",   deals: "98",  funding: "$678M", trend: "Telemedicine & diagnostics scaling",  growth: "+78%"  },
-        { sector: "D2C Brands",   deals: "156", funding: "$923M", trend: "Profitable growth after reset",       growth: "+67%"  },
-      ],
-      fundingNews: [
-        { startup: "Zepto",        amount: "$300M", round: "Series F", investors: "General Catalyst, Lightspeed",       valuation: "$3.5B" },
-        { startup: "Krutrim AI",   amount: "$150M", round: "Series B", investors: "Matrix Partners, Elevation Capital", valuation: "$1.2B" },
-        { startup: "Rapido",       amount: "$120M", round: "Series D", investors: "Nexus VP, WestBridge Capital",       valuation: "$1.2B" },
-        { startup: "Pixxel",       amount: "$70M",  round: "Series C", investors: "Google Ventures, Radical Ventures",  valuation: "$450M" },
-        { startup: "PhysicsWallah", amount: "$50M", round: "Series B", investors: "GSV Ventures, Westbridge",           valuation: "$2.8B" },
-      ],
-      ecosystemMetrics: {
-        totalActiveStartups: "72,000+", totalFundingYTD: "$9.2B", activeVCFirms: "1,450+",
-        unicorns: "118", soonicorns: "210+", avgDealSize: "$12.4M",
-        mostActiveSector: "SaaS", topCity: "Bengaluru", monthlyGrowth: "+23%", activeAngels: "8,500+",
-      },
-    };
-  }
-}
-
-export const revalidate = 3600;
-
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
-export default async function Home() {
-  const supabase = await createClient();
-  const [liveNews, eco, startupsCount, industriesData, recentData] = await Promise.all([
-    getLiveNews(),
-    getEcosystemData(),
-    supabase.from("startups").select("*", { count: "exact", head: true }),
-    supabase.from("startups").select("industry").not("industry", "is", null),
-    supabase.from("startups").select("*").order("created_at", { ascending: false }).limit(6),
-  ]);
-
-  const total     = startupsCount.count ?? 0;
-  const sectors   = industriesData.data ? new Set(industriesData.data.map((i: any) => i.industry)).size : 30;
-  const recent    = recentData.data ?? [];
-  const updatedAt = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata", hour12: true });
-  const todayStr  = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
-  const sentColor = eco.marketMood.sentiment === "Bullish" ? "#1a6b3a" : eco.marketMood.sentiment === "Bearish" ? "#b91c1c" : "#92400e";
+// ─── FOUNDER PHOTO COMPONENT ──────────────────────────────────────────────────
+function FounderPhoto({
+  src, alt, initials, accent, accentBg,
+  className = "", style = {}
+}: {
+  src: string; alt: string; initials: string
+  accent: string; accentBg: string
+  className?: string; style?: React.CSSProperties
+}) {
+  const isPlaceholder = src.includes("www.sample.com")
+  const [failed, setFailed] = useState(false)
+  const show = !isPlaceholder && !failed
 
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <div
+      className={`relative overflow-hidden ${className}`}
+      style={{ background: accentBg, ...style }}
+    >
+      {show && (
+        <img
+          src={src}
+          alt={alt}
+          onError={() => setFailed(true)}
+          className="absolute inset-0 w-full h-full object-cover object-top"
+          loading="eager"
+          width={400}
+          height={500}
+        />
+      )}
+      {!show && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+          <div
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center text-white font-black"
+            style={{ background: accent, fontSize: "2.2rem", fontFamily: "Georgia,serif" }}
+          >
+            {initials}
+          </div>
+          <p
+            className="text-[9px] uppercase tracking-[0.22em] text-center px-6 leading-relaxed"
+            style={{ color: accent, fontFamily: "system-ui,sans-serif" }}
+          >
+            {alt}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── PAGE ─────────────────────────────────────────────────────────────────────
+export default function HomePage() {
+  const [idx, setIdx] = useState(0)
+  const f = FOUNDERS[idx]
+  const isFirst = idx === 0
+  const isLast = idx === FOUNDERS.length - 1
+
+  // Inject JSON-LD structured data (client-side since this is a client component)
+  // For best SEO, move this logic to app/layout.tsx as a server component
+  useEffect(() => {
+    const existingScript = document.getElementById("founder-chronicle-jsonld")
+    if (!existingScript) {
+      const script = document.createElement("script")
+      script.id = "founder-chronicle-jsonld"
+      script.type = "application/ld+json"
+      script.textContent = JSON.stringify(JSON_LD)
+      document.head.appendChild(script)
+    }
+    return () => {
+      const s = document.getElementById("founder-chronicle-jsonld")
+      if (s) s.remove()
+    }
+  }, [])
+
+  // Update document title per founder for SPA navigation signals
+  useEffect(() => {
+    document.title = `${f.name} · ${f.company} Founder Story | UpForge`
+    return () => {
+      document.title = "The Founder Chronicle — India's Greatest Startup Builders 2026 | UpForge"
+    }
+  }, [idx, f.name, f.company])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [idx])
+
+  return (
+    <div
+      style={{ minHeight: "100vh", background: "#F3EFE5", fontFamily: "'Georgia','Times New Roman',serif" }}
+      // aria attributes for SEO / accessibility
+      role="main"
+      aria-label="The Founder Chronicle — India's greatest startup founders"
+    >
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap');
-        *,*::before,*::after{box-sizing:border-box}
-        .uf{background:#fff;color:#1a1a1a;font-family:'Source Serif 4',Georgia,serif;-webkit-font-smoothing:antialiased}
-        .uf-d{font-family:'Playfair Display',Georgia,serif;letter-spacing:-.02em}
-        .uf-m{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
-        .uf-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#888;font-family:'Source Serif 4',Georgia,serif}
-        :root{--ink:#1a1a1a;--ink2:#444;--ink3:#777;--ink4:#aaa;--rule:#e5e5e5;--rl:#f0f0f0;--bg:#fff;--off:#fafaf8;--warm:#fdf8f0;--gold:#b8860b;--gr:#c9960d;--pos:#1a6b3a;--neg:#b91c1c}
-        .uf-wrap{max-width:1400px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
 
-        /* ticker */
-        @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-        .tk-track{display:inline-flex;white-space:nowrap;animation:tick 70s linear infinite}
-        .tk-track:hover{animation-play-state:paused}
+        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
 
-        /* animations */
-        @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-        .a0{animation:up .5s .00s cubic-bezier(.16,1,.3,1) both}
-        .a1{animation:up .5s .08s cubic-bezier(.16,1,.3,1) both}
-        .a2{animation:up .5s .16s cubic-bezier(.16,1,.3,1) both}
-        .a3{animation:up .5s .24s cubic-bezier(.16,1,.3,1) both}
-        .a4{animation:up .5s .32s cubic-bezier(.16,1,.3,1) both}
+        @keyframes storyIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .story-in { animation: storyIn .3s ease both; }
 
-        /* live dot */
-        .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0;position:relative}
-        .dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(22,163,74,.2);animation:pulse 2s ease-in-out infinite}
-        @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:0}}
-
-        /* nav links (sub-nav) */
-        .snav-link{font-size:13px;color:#555;padding:0 14px;height:42px;display:flex;align-items:center;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;font-family:'Source Serif 4',Georgia,serif}
-        .snav-link:hover{color:#1a1a1a;border-color:var(--gr)}
-
-        /* buttons */
-        .btn-d{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;font-size:13px;font-weight:600;letter-spacing:.04em;padding:12px 28px;border:2px solid var(--ink);transition:background .18s;font-family:'Source Serif 4',Georgia,serif}
-        .btn-d:hover{background:#333}
-        .btn-g{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ink);font-size:13px;font-weight:600;letter-spacing:.04em;padding:11px 28px;border:2px solid var(--ink);transition:background .18s,color .18s;font-family:'Source Serif 4',Georgia,serif}
-        .btn-g:hover{background:var(--ink);color:#fff}
-        .btn-sm{font-size:11px !important;padding:7px 16px !important;letter-spacing:.12em !important}
-
-        /* search */
-        .srch{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--ink);padding:4px 2px;transition:border-color .18s}
-        .srch:focus-within{border-color:var(--gr)}
-        .srch input{flex:1;font-size:14px;color:var(--ink);background:transparent;border:none;outline:none;padding:8px 0;font-family:'Source Serif 4',Georgia,serif}
-        .srch input::placeholder{color:var(--ink4)}
-
-        /* cards */
-        .card{border:1px solid var(--rule);background:#fff;transition:border-color .18s,box-shadow .18s}
-        .card:hover{border-color:#bbb;box-shadow:0 3px 16px rgba(0,0,0,.07)}
-
-        /* rows */
-        .row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--rl)}
-        .row:last-child{border-bottom:none}
-        .row:hover{background:var(--off)}
-
-        /* pill */
-        .pill{display:inline-flex;align-items:center;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;font-family:'Source Serif 4',Georgia,serif}
-
-        /* verified badge */
-        .vbadge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pos);border:1px solid var(--pos);padding:2px 7px;font-family:'Source Serif 4',Georgia,serif}
-
-        /* stat cell */
-        .stat{padding:18px 14px;border-right:1px solid var(--rule);text-align:center}
-        .stat:last-child{border-right:none}
-
-        /* grid-divider feature grid */
-        .feat-grid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule)}
-        .feat-cell{background:#fff;padding:22px;transition:background .18s}
-        .feat-cell:hover{background:var(--off)}
-
-        /* bar */
-        .bar-tr{flex:1;height:2px;background:var(--rl);border-radius:1px;overflow:hidden}
-        .bar-fi{height:100%;background:var(--ink);border-radius:1px}
-
-        /* section header */
-        .sh{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-        .sh::after{content:'';flex:1;height:1px;background:var(--rule)}
-
-        /* thick rule */
-        .rule-t{height:2px;background:var(--ink)}
-
-        /* blockquote */
-        .bq{border-left:3px solid var(--gr);padding:4px 0 4px 16px;font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:1rem;line-height:1.6;color:var(--ink2)}
-
-        /* no scroll */
-        .noscroll::-webkit-scrollbar{display:none}
-        .noscroll{-ms-overflow-style:none;scrollbar-width:none}
-
-        /* article hover */
-        .art{transition:opacity .15s}
-        .art:hover{opacity:.65}
-
-        .masthead-container {
-          padding-top: 20px; /* Navbar ke neeche space ke liye */
-          margin-top: 10px;
+        @media (min-width: 640px) {
+          .newspaper-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+          }
+          .newspaper-cols > div {
+            padding: 0 1.4rem;
+            border-right: 1px solid #C8C2B4;
+          }
+          .newspaper-cols > div:first-child { padding-left: 0; }
+          .newspaper-cols > div:last-child { border-right: none; padding-right: 0; }
         }
 
-        /* ── SECTOR TABLE ── */
-        .s-row{display:grid;grid-template-columns:24px 1fr;gap:0 8px;padding:9px 0;border-bottom:1px solid var(--rl)}
-        .s-row:last-child{border-bottom:none}
-        .s-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink4);padding-top:2px}
-        .s-body{min-width:0}
-        .s-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-        .s-name{font-size:14px;font-weight:600;color:var(--ink);font-family:'Source Serif 4',Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-        .s-nums{display:flex;align-items:center;gap:10px;flex-shrink:0}
-        .s-growth{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--pos);min-width:50px;text-align:right}
-        .s-fund{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink2);min-width:44px;text-align:right}
-        .s-deals{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink4);min-width:26px;text-align:right}
-        .s-bar{display:flex;align-items:center;gap:8px;margin-top:5px}
+        .dropcap::first-letter {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 3.9em;
+          font-weight: 900;
+          line-height: 0.82;
+          float: left;
+          margin-right: 0.07em;
+          margin-top: 0.05em;
+          color: #1A1208;
+        }
+        @media (max-width: 639px) {
+          .dropcap::first-letter { font-size: 3em; }
+        }
 
-        /* ── RESPONSIVE ── */
-        @media(max-width:1024px){
-          .hide-tab{display:none !important}
-          .three-col{grid-template-columns:1fr !important}
-          .sector-grid{grid-template-columns:1fr !important}
+        .nbtn:not([disabled]):hover {
+          background: #1A1208 !important;
+          color: white !important;
         }
-        @media(max-width:640px){
-          .hide-mob{display:none !important}
-          .stat{border-right:none;border-bottom:1px solid var(--rule)}
-          .stat:last-child{border-bottom:none}
-          .stats-g{grid-template-columns:repeat(2,1fr) !important}
-          .card-g{grid-template-columns:1fr !important}
-          .three-col>div{padding-left:0 !important;padding-right:0 !important;border-right:none !important;border-bottom:1px solid var(--rule) !important;padding-bottom:20px !important;margin-bottom:8px !important}
-          .three-col>div:last-child{border-bottom:none !important}
-          .center-mob{text-align:center !important;align-items:center !important}
-          .jc-center{justify-content:center !important}
-          .btn-d,.btn-g{width:100%;justify-content:center}
-          .sh{justify-content:center}
-          .sh::after{display:none}
-          .srch{max-width:100% !important;width:100% !important}
-          .bq{text-align:left !important}
-          /* hide sector section entirely on mobile */
-          .sector-section{display:none !important}
-          @media(max-width:360px){.s-deals{display:none}}
+
+        .thumb { transition: opacity .18s ease; }
+        .thumb:hover { opacity: 1 !important; }
+
+        @media (min-width: 1024px) {
+          .right-sticky {
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
+            overflow-y: auto;
+          }
         }
+
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: #C8C2B4; }
       `}</style>
 
-      {/* ── NAVBAR ────────────────────────────────────────────────────────── */}
-      <Navbar />
+      {/* ══════════════════════════════════════════
+          SEO: Visually hidden H1 for homepage keyword targeting
+          Visible to Google, hidden from design
+      ══════════════════════════════════════════ */}
+      <h1
+        className="sr-only"
+        aria-label="Indian startup founder stories 2026"
+      >
+        Indian Startup Founder Stories 2026 — Zepto, PhysicsWallah, Zomato, Zerodha, Nykaa, OYO, Ola, CRED, Paytm, InternAdda | UpForge Founder Chronicle
+      </h1>
 
-      <div className="uf">
+      {/* ══════════════════════════════════════════
+          SEO: Breadcrumb nav (visible + schema-aligned)
+      ══════════════════════════════════════════ */}
+      <nav
+        aria-label="Breadcrumb"
+        className="px-4 sm:px-8 py-2"
+        style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}
+      >
+        <ol
+          className="flex items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest"
+          itemScope
+          itemType="https://schema.org/BreadcrumbList"
+        >
+          <li
+            itemScope
+            itemProp="itemListElement"
+            itemType="https://schema.org/ListItem"
+          >
+            <Link
+              href="/"
+              itemProp="item"
+              className="hover:text-[#1A1208] transition-colors"
+            >
+              <span itemProp="name">UpForge</span>
+            </Link>
+            <meta itemProp="position" content="1" />
+          </li>
+          <li aria-hidden="true" className="text-[#C8C2B4]">/</li>
+          <li
+            itemScope
+            itemProp="itemListElement"
+            itemType="https://schema.org/ListItem"
+          >
+            <span itemProp="name" className="text-[#666]">The Founder Chronicle</span>
+            <meta itemProp="position" content="2" />
+          </li>
+          <li aria-hidden="true" className="text-[#C8C2B4]">/</li>
+          <li
+            itemScope
+            itemProp="itemListElement"
+            itemType="https://schema.org/ListItem"
+          >
+            <span itemProp="name" className="text-[#1A1208] font-semibold">{f.nameShort} · {f.company}</span>
+            <meta itemProp="position" content="3" />
+          </li>
+        </ol>
+      </nav>
 
-        {/* ══ LIVE TICKER ══════════════════════════════════════════════════ */}
-        <div style={{ background: "var(--off)", borderBottom: "1px solid var(--rule)", overflow: "hidden" }}>
-          <div style={{ display: "flex", alignItems: "stretch", height: "36px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "0 16px", flexShrink: 0, borderRight: "1px solid var(--rule)", background: "var(--warm)" }}>
-              <div className="dot" />
-              <span className="uf-lbl">Live</span>
-            </div>
-            <div style={{ flex: 1, overflow: "hidden" }}>
-              <div className="tk-track" style={{ height: "36px", alignItems: "center" }}>
-                {[...liveNews, ...liveNews].map((n: any, i: number) => (
-                  <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "0 28px", borderRight: "1px solid var(--rl)" }}>
-                    <span style={{ fontSize: "10px", fontWeight: 700, color: n.impact === "positive" ? "var(--pos)" : n.impact === "negative" ? "var(--neg)" : "var(--ink4)" }}>
-                      {n.impact === "positive" ? "▲" : n.impact === "negative" ? "▼" : "●"}
-                    </span>
-                    <span style={{ fontSize: "12px", color: "var(--ink2)", fontFamily: "'Source Serif 4',serif" }}>{n.headline}</span>
-                    <span style={{ fontSize: "10px", color: "var(--ink4)", flexShrink: 0, fontFamily: "'Source Serif 4',serif" }}>{n.source} · {n.timestamp}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="hide-mob" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "0 18px", borderLeft: "1px solid var(--rule)", flexShrink: 0 }}>
-              <span className="uf-lbl">Market</span>
-              <span className="uf-m" style={{ fontSize: "12px", fontWeight: 600, color: sentColor }}>{eco.marketMood.sentiment} {eco.marketMood.score}/100</span>
-            </div>
+      {/* ══════════════════════════════════════════
+          MASTHEAD
+      ══════════════════════════════════════════ */}
+      <header
+        style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }}
+        role="banner"
+      >
+
+        {/* Dateline bar */}
+        <div
+          className="flex items-center justify-between px-4 sm:px-8 py-1.5"
+          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}
+        >
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="text-[9px] text-[#888] uppercase tracking-widest hover:text-[#1A1208] transition-colors"
+              aria-label="UpForge homepage"
+            >
+              upforge.in
+            </Link>
+            <span className="text-[#C8C2B4]"> / </span>
+            <span className="text-[9px] text-[#888] uppercase tracking-widest">Founder Series</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="hidden sm:block text-[9px] text-[#AAA] uppercase tracking-widest">Vol. I · India</span>
+            <time
+              dateTime="2026-03"
+              className="text-[9px] text-[#AAA] uppercase tracking-widest"
+            >
+              March 2026
+            </time>
           </div>
         </div>
 
-        <div className="uf-wrap">
+        {/* Publication name */}
+        <div className="text-center px-4 py-6 sm:py-9" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
+            UpForge · Independent Startup Registry · India Edition
+          </p>
+          {/* This is styled as display title — real H1 is hidden above for SEO */}
+          <p
+            className="pf font-black leading-none tracking-tight text-[#1A1208]"
+            aria-hidden="true"
+            style={{ fontSize: "clamp(2.2rem, 6vw, 5rem)" }}
+          >
+            The Founder Chronicle
+          </p>
+          <p className="italic mt-2.5 text-[#6B5C40]" style={{ fontSize: "clamp(13px, 2vw, 16px)" }}>
+            Stories of the builders reshaping India — verified, editorial, March 2026
+          </p>
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <div className="h-px w-24 sm:w-40" style={{ background: "#C8C2B4" }} />
+            <span style={{ color: "#C8C2B4", fontSize: 13 }} aria-hidden="true">✦</span>
+            <div className="h-px w-24 sm:w-40" style={{ background: "#C8C2B4" }} />
+          </div>
+        </div>
 
-{/* ── MASTHEAD ──────────────────────────────────────────────────── */}
-          {/* Added masthead-container for better readability and spacing */}
-          <header className="a0 masthead-container">
-            {/* Meta strip - Time and Volume */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--rule)", flexWrap: "wrap", gap: "8px" }}>
-              <span className="uf-lbl" style={{ color: "var(--ink2)", fontWeight: "700" }}>{todayStr} · Vol. II</span>
-              <div className="hide-mob" style={{ display: "flex", gap: "20px" }}>
-                {["Independent", "Ad-Free", "Verified"].map((t) => (
-                  <span key={t} style={{ fontSize: "10px", color: "var(--ink4)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'Source Serif 4',serif" }}>✓ {t}</span>
-                ))}
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <div className="dot" />
-                <span className="uf-lbl" style={{ color: "var(--ink4)" }}>Updated {updatedAt} IST</span>
-              </div>
-            </div>
-
-            {/* Wordmark */}
-            <div style={{ textAlign: "center", padding: "clamp(30px,6vw,50px) 0 clamp(16px,4vw,28px)", borderBottom: "2px solid var(--ink)" }}>
-              <p style={{ fontSize: "11px", letterSpacing: "0.35em", textTransform: "uppercase", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif", marginBottom: "16px" }}>
-                India's Independent Startup Intelligence Platform
-              </p>
-              <h1 className="uf-d" style={{ fontSize: "clamp(3.2rem,11vw,8.5rem)", fontWeight: 900, lineHeight: 0.85, color: "var(--ink)", marginBottom: "20px" }}>UpForge</h1>
-              <div style={{ display: "flex", justifyContent: "center", gap: "clamp(12px,2.5vw,28px)", flexWrap: "wrap" }}>
-                {[`${total.toLocaleString()}+ Verified`, "100% Independent", "AI Reports", "Real-Time Data"].map((t) => (
-                  <span key={t} className="uf-lbl" style={{ color: "var(--gold)", fontSize: "10px", fontWeight: "700" }}>{t}</span>
-                ))}
-              </div>
-            </div>
-          </header>
-
-          {/* ── THREE-COLUMN BROADSHEET ───────────────────────────────────── */}
-          <section className="a1" style={{ borderBottom: "1px solid var(--rule)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "clamp(230px,22%,290px) 1px 1fr 1px clamp(250px,24%,330px)", padding: "clamp(18px,4vw,36px) 0" }} className="three-col">
-
-              {/* LEFT: Market Pulse + Latest Deals */}
-              <div style={{ paddingRight: "clamp(14px,3vw,28px)" }}>
-                <div className="sh"><span className="uf-lbl" style={{ color: "var(--gold)" }}>Market Pulse</span></div>
-
-                {/* Mood card */}
-                <div style={{ background: "var(--warm)", border: "1px solid var(--rule)", padding: "16px", marginBottom: "20px" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "12px" }}>
-                    <span className="uf-d" style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: sentColor, lineHeight: 1 }}>{eco.marketMood.sentiment}</span>
-                    <span className="uf-m" style={{ fontSize: "1.2rem", fontWeight: 600, color: "var(--ink4)" }}>{eco.marketMood.score}</span>
-                  </div>
-                  <div style={{ height: "4px", background: "var(--rule)", borderRadius: "2px", marginBottom: "6px", position: "relative" }}>
-                    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${eco.marketMood.score}%`, background: "linear-gradient(90deg,#dc2626 0%,#ca8a04 45%,#16a34a 100%)", borderRadius: "2px" }} />
-                    <div style={{ position: "absolute", top: "50%", left: `${eco.marketMood.score}%`, transform: "translate(-50%,-50%)", width: "9px", height: "9px", background: "#fff", borderRadius: "50%", border: "2px solid var(--ink)", boxShadow: "0 1px 4px rgba(0,0,0,.15)" }} />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                    {["Bearish","Neutral","Bullish"].map((l) => <span key={l} style={{ fontSize: "9px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{l}</span>)}
-                  </div>
-                  <p style={{ fontSize: "11px", color: "var(--ink3)", lineHeight: 1.5, fontFamily: "'Source Serif 4',serif" }}>{eco.marketMood.reason}</p>
-                </div>
-
-                {/* Latest Deals — 5 items */}
-                <div className="sh"><span className="uf-lbl">Latest Deals</span></div>
-                {eco.fundingNews.map((f: any, i: number) => (
-                  <div key={i} className="row">
-                    <div style={{ flex: 1, minWidth: 0, paddingRight: "10px" }}>
-                      <div style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--ink)", marginBottom: "2px", fontFamily: "'Source Serif 4',serif" }}>{f.startup}</div>
-                      <div style={{ fontSize: "10.5px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{f.round} · {f.investors.split(",")[0]}</div>
-                    </div>
-                    <div style={{ textAlign: "right", flexShrink: 0 }}>
-                      <div className="uf-m" style={{ fontSize: "13px", fontWeight: 600, color: "var(--pos)" }}>{f.amount}</div>
-                      {f.valuation && <div style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>@ {f.valuation}</div>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ background: "var(--rule)", width: "1px" }} className="hide-tab" />
-
- {/* CENTER: Hero */}
-
-<div style={{ padding: "0 clamp(16px,3vw,40px)" }} className="center-mob">
-
-  {/* Editorial label */}
-
-  <span
-    className="pill"
-    style={{
-      color: "var(--gold)",
-      marginBottom: "16px",
-      display: "inline-flex",
-      letterSpacing: "0.06em",
-      fontSize: "11px",
-      textTransform: "uppercase",
-      fontWeight: 600
-    }}
-  >
-    India's Independent Startup Registry
-  </span>
-
-
-  {/* Headline */}
-
-  <h2
-    className="uf-d"
-    style={{
-      fontSize: "clamp(1.9rem,3.6vw,2.8rem)",
-      fontWeight: 700,
-      lineHeight: 1.08,
-      color: "var(--ink)",
-      marginBottom: "18px",
-      marginTop: "6px",
-      fontFamily: "'Playfair Display','Source Serif 4',serif",
-      letterSpacing: "-0.01em"
-    }}
-  >
-    India's most comprehensive registry of{" "}
-    <em
-      style={{
-        fontStyle: "italic",
-        color: "var(--gr)"
-      }}
-    >
-      72,000+ verified startups
-    </em>
-    {" "}— researched, ranked and continuously updated
-    to map the evolving startup ecosystem.
-  </h2>
-
-
-  {/* Supporting editorial line */}
-
-  <p
-    style={{
-      fontSize: "15px",
-      color: "var(--ink3)",
-      maxWidth: "560px",
-      lineHeight: 1.65,
-      fontFamily: "'Source Serif 4',serif",
-      marginBottom: "26px"
-    }}
-  >
-    UpForge tracks emerging companies, funding movements, and
-    founder insights across India's startup ecosystem — providing
-    a neutral and independently verified database used by founders,
-    investors, and researchers.
-  </p>
-
-
-  {/* CTA buttons */}
-
-  <div
-    className="jc-center"
-    style={{
-      display: "flex",
-      gap: "12px",
-      flexWrap: "wrap",
-      marginBottom: "22px"
-    }}
-  >
-    <Link href="/startup" className="btn-d">
-      Explore Registry
-      <ArrowRight style={{ width: "13px", height: "13px" }} />
-    </Link>
-
-    <Link href="/submit" className="btn-g">
-      List Your Startup — Free
-    </Link>
-  </div>
-
-
-  {/* Trust signals */}
-
-  <div
-    className="jc-center"
-    style={{
-      display: "flex",
-      gap: "22px",
-      paddingTop: "18px",
-      borderTop: "1px solid var(--rule)",
-      flexWrap: "wrap"
-    }}
-  >
-    {[
-      { icon: CheckCircle2, text: "Free & open registry" },
-      { icon: BadgeCheck, text: "Manual verification" },
-      { icon: Sparkles, text: "AI-powered insights" }
-    ].map((p) => (
-      <div
-        key={p.text}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "7px"
-        }}
-      >
-        <p.icon
-          style={{
-            width: "13px",
-            height: "13px",
-            color: "var(--pos)"
-          }}
-        />
-
-        <span
-          style={{
-            fontSize: "12px",
-            color: "var(--ink3)",
-            fontFamily: "'Source Serif 4',serif"
-          }}
+        {/* Story tabs */}
+        <nav
+          aria-label="Founder stories navigation"
+          className="flex items-stretch overflow-x-auto"
+          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif", scrollbarWidth: "none" }}
         >
-          {p.text}
-        </span>
-      </div>
-    ))}
-  </div>
+          <span className="text-[7.5px] text-[#BBB] uppercase tracking-widest px-4 py-3 self-center flex-shrink-0">
+            In this edition:
+          </span>
+          {FOUNDERS.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              aria-label={`Read ${s.nameShort}'s story — ${s.company}`}
+              aria-current={i === idx ? "true" : undefined}
+              className="flex-shrink-0 px-4 py-3 text-[9px] font-bold uppercase tracking-wider border-l transition-colors"
+              style={{
+                borderColor: "#D8D2C4",
+                color: i === idx ? s.accent : "#888",
+                borderBottom: `2.5px solid ${i === idx ? s.accent : "transparent"}`,
+                background: i === idx ? "rgba(255,255,255,0.55)" : "transparent",
+                marginBottom: "-1px",
+              }}
+            >
+              {s.edition} · {s.nameShort}
+            </button>
+          ))}
+        </nav>
+      </header>
 
-</div>
+      {/* ══════════════════════════════════════════
+          STORY CONTENT
+      ══════════════════════════════════════════ */}
+      <main
+        key={idx}
+        className="story-in max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pb-16"
+        id="main-content"
+      >
 
+        {/* Two-column layout: story text | photo sidebar */}
+        <div
+          className="grid lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px]"
+          style={{ borderBottom: "2px solid #1A1208" }}
+          itemScope
+          itemType="https://schema.org/Article"
+        >
+          {/* Hidden schema metadata */}
+          <meta itemProp="headline" content={f.headline} />
+          <meta itemProp="datePublished" content="2026-03-01" />
+          <meta itemProp="dateModified" content="2026-03-08" />
+          <meta itemProp="author" content="UpForge Editorial" />
+          <meta itemProp="publisher" content="UpForge" />
+          <meta itemProp="description" content={f.deck} />
+          <link itemProp="url" href={`https://upforge.in/startup/${f.slug}`} />
 
-<div
-  style={{ background: "var(--rule)", width: "1px" }}
-  className="hide-tab"
-/>
-              {/* RIGHT: Live Dispatch */}
-              <div style={{ paddingLeft: "clamp(14px,3vw,28px)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <div className="dot" />
-                    <span className="uf-lbl">Startup Dispatch</span>
-                  </div>
-                  <span className="pill" style={{ color: "var(--pos)" }}>Live</span>
-                </div>
-                {liveNews.map((n: any, i: number) => (
-                  <div key={i} className="art" style={{ paddingBottom: "12px", marginBottom: "12px", borderBottom: i < liveNews.length - 1 ? "1px solid var(--rl)" : "none" }}>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                      <div style={{ width: "3px", minHeight: "36px", flexShrink: 0, background: n.impact === "positive" ? "var(--pos)" : n.impact === "negative" ? "var(--neg)" : "var(--rule)", borderRadius: "2px", marginTop: "2px" }} />
-                      <div>
-                        {n.url
-                          ? <a href={n.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: "12.5px", color: "var(--ink)", lineHeight: 1.5, display: "block", marginBottom: "4px", fontFamily: "'Source Serif 4',serif" }}>{n.headline}</a>
-                          : <p style={{ fontSize: "12.5px", color: "var(--ink)", lineHeight: 1.5, marginBottom: "4px", fontFamily: "'Source Serif 4',serif" }}>{n.headline}</p>
-                        }
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <span style={{ fontSize: "10px", color: "var(--gold)", fontWeight: 700, fontFamily: "'Source Serif 4',serif", textTransform: "uppercase", letterSpacing: "0.08em" }}>{n.source}</span>
-                          <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{n.timestamp}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <div style={{ display: "flex", alignItems: "center", gap: "5px", paddingTop: "8px", borderTop: "1px solid var(--rl)" }}>
-                  <Clock style={{ width: "10px", height: "10px", color: "var(--ink4)" }} />
-                  <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>Hourly via NewsAPI · {updatedAt} IST</span>
-                </div>
-              </div>
+          {/* ════ LEFT: EDITORIAL TEXT ════ */}
+          <article className="py-8 lg:pr-8" style={{ borderRight: "1px solid #C8C2B4" }}>
+
+            {/* Category + edition pill */}
+            <div className="flex items-center gap-3 mb-6" style={{ fontFamily: "system-ui,sans-serif" }}>
+              <span
+                className="text-[8.5px] font-black tracking-[0.28em] uppercase px-3 py-1.5 text-white"
+                style={{ background: f.accent }}
+              >
+                {f.category}
+              </span>
+              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">
+                {f.edition} · March 2026
+              </span>
             </div>
-          </section>
 
-          {/* ── ECOSYSTEM METRICS ─────────────────────────────────────────── */}
-          <section className="a2">
-            <div className="stats-g" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", borderBottom: "1px solid var(--rule)" }}>
+            {/* HEADLINE — H2 for article (H1 is the hidden SEO title above) */}
+            <h2
+              className="pf font-black leading-[1.06] text-[#1A1208] mb-5"
+              style={{ fontSize: "clamp(1.75rem, 3.8vw, 3rem)" }}
+              itemProp="headline"
+            >
+              {f.headline}
+            </h2>
+
+            {/* DECK */}
+            <p
+              className="italic leading-[1.72] mb-6 pb-6"
+              style={{
+                color: "#5A4A30",
+                fontSize: "clamp(14px, 2vw, 17px)",
+                borderBottom: "1px solid #C8C2B4"
+              }}
+              itemProp="description"
+            >
+              {f.deck}
+            </p>
+
+            {/* Byline */}
+            <div
+              className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8"
+              style={{ fontFamily: "system-ui,sans-serif" }}
+            >
               {[
-                { label: "Active Startups", v: eco.ecosystemMetrics.totalActiveStartups,  sub: "+2,300 / month" },
-                { label: "Funding YTD",     v: eco.ecosystemMetrics.totalFundingYTD,      sub: `${eco.ecosystemMetrics.monthlyGrowth} YoY`, warm: true },
-                { label: "VC Firms",        v: eco.ecosystemMetrics.activeVCFirms,        sub: `${eco.ecosystemMetrics.activeAngels} angels` },
-                { label: "Unicorns",        v: eco.ecosystemMetrics.unicorns,             sub: `${eco.ecosystemMetrics.soonicorns} soonicorns`, warm: true },
-                { label: "Avg Deal",        v: eco.ecosystemMetrics.avgDealSize,          sub: "Seed → Series A" },
-                { label: "Hot Sector",      v: eco.ecosystemMetrics.mostActiveSector,     sub: `${eco.sectorMomentum[0]?.deals} deals` },
-                { label: "Top City",        v: eco.ecosystemMetrics.topCity,              sub: "Leading hub" },
-                { label: "Our Registry",    v: `${total.toLocaleString() || 0}+`,        sub: `${sectors} sectors`, warm: true },
-              ].map((s, i) => (
-                <div key={i} className="stat" style={{ background: s.warm ? "var(--warm)" : "#fff" }}>
-                  <div className="uf-d" style={{ fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1.1, marginBottom: "4px" }}>{s.v}</div>
-                  <div className="uf-lbl" style={{ marginBottom: "2px", color: "var(--ink3)" }}>{s.label}</div>
-                  <div style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{s.sub}</div>
-                </div>
+                "By UpForge Editorial",
+                f.city,
+                `Est. ${f.founded}`,
+                f.context
+              ].map((item, i, arr) => (
+                <span key={i} className="flex items-center gap-2">
+                  <span className="text-[9px] text-[#AAA] uppercase tracking-wider">{item}</span>
+                  {i < arr.length - 1 && <span className="text-[#C8C2B4] text-[10px]">·</span>}
+                </span>
               ))}
             </div>
-          </section>
 
-          {/* ══ SECTOR MOMENTUM — hidden on mobile ═══════════════════════════ */}
-          <section className="a3 sector-section" style={{ padding: "clamp(18px,4vw,36px) 0", borderBottom: "1px solid var(--rule)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr clamp(260px,27%,340px)" }} className="sector-grid">
-
-              {/* Sector table */}
-              <div style={{ paddingRight: "clamp(0px,3vw,28px)" }}>
-                {/* Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", paddingBottom: "8px", borderBottom: "1px solid var(--rule)" }}>
-                  <span className="uf-lbl">Sector Momentum · Q1 2026</span>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {["Deals","Funding","Growth"].map((h, i) => (
-                      <span key={h} style={{ fontSize: "9px", color: i === 2 ? "var(--pos)" : "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.1em", textTransform: "uppercase", minWidth: i === 0 ? 26 : i === 1 ? 44 : 50, textAlign: "right" }}>{h}</span>
-                    ))}
-                  </div>
-                </div>
-                {eco.sectorMomentum.map((s: any, i: number) => {
-                  const pct = Math.min(parseFloat(s.growth.replace("+","").replace("%","")), 160);
-                  return (
-                    <div key={i} className="s-row">
-                      <span className="s-num">{String(i+1).padStart(2,"0")}</span>
-                      <div className="s-body">
-                        <div className="s-top">
-                          <span className="s-name">{s.sector}</span>
-                          <div className="s-nums">
-                            <span className="s-deals">{s.deals}</span>
-                            <span className="s-fund">{s.funding}</span>
-                            <span className="s-growth">{s.growth}</span>
-                          </div>
-                        </div>
-                        <div className="s-bar">
-                          <div className="bar-tr"><div className="bar-fi" style={{ width: `${(pct/160)*100}%` }} /></div>
-                          <span style={{ fontSize: "9.5px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", flexShrink: 0, maxWidth: "130px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.trend}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* ── MOBILE ONLY: photo block ── */}
+            <div className="lg:hidden mb-8">
+              <FounderPhoto
+                src={f.imgSrc}
+                alt={`${f.name}, ${f.role} at ${f.company}`}
+                initials={f.initials}
+                accent={f.accent}
+                accentBg={f.accentBg}
+                className="w-full"
+                style={{ height: "min(280px, 56vw)", minHeight: 200 }}
+              />
+              <div className="px-4 py-3" style={{ background: "#1A1208" }}>
+                <p className="pf text-white font-bold" style={{ fontSize: 13 }}>{f.name}</p>
+                <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  {f.role} · {f.company}
+                </p>
               </div>
+            </div>
 
-              {/* Leaders sidebar */}
-              <div style={{ borderLeft: "1px solid var(--rule)", paddingLeft: "clamp(14px,3vw,28px)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
-                  <span className="uf-lbl">Business Leaders</span>
-                  <a href="https://www.forbes.com/billionaires/" target="_blank" rel="noopener noreferrer"
-                    style={{ fontSize: "10px", color: "var(--gold)", fontFamily: "'Source Serif 4',serif", display: "flex", alignItems: "center", gap: "3px" }}>
-                    Forbes <ExternalLink style={{ width: "10px", height: "10px" }} />
-                  </a>
-                </div>
-                {[
-                  { name: "Mukesh Ambani", netWorth: "$96.3B", rank: "10", source: "Reliance", yoy: "+4.4%" },
-                  { name: "Gautam Adani",  netWorth: "$68.7B", rank: "17", source: "Adani Group", yoy: "+3.2%" },
-                  { name: "Shiv Nadar",    netWorth: "$29.4B", rank: "56", source: "HCL Tech", yoy: "+14.8%" },
-                ].map((p, i) => (
-                  <div key={i} className="row">
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
-                      <div style={{ width: "20px", height: "20px", background: "var(--off)", border: "1px solid var(--rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <span className="uf-m" style={{ fontSize: "8px", fontWeight: 700, color: "var(--ink3)" }}>{p.rank}</span>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)", fontFamily: "'Source Serif 4',serif" }}>{p.name}</div>
-                        <div style={{ display: "flex", gap: "6px" }}>
-                          <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{p.source}</span>
-                          <span style={{ fontSize: "10px", color: "var(--pos)", fontWeight: 600, fontFamily: "'Source Serif 4',serif" }}>{p.yoy}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="uf-m" style={{ fontSize: "12px", fontWeight: 600, color: "var(--ink)", flexShrink: 0 }}>{p.netWorth}</span>
-                  </div>
-                ))}
-                <div style={{ marginTop: "16px", padding: "14px", background: "var(--warm)", border: "1px solid var(--rule)" }}>
-                  <div className="uf-lbl" style={{ marginBottom: "8px" }}>Q1 2026 Snapshot</div>
-                  {[
-                    { l: "Funding YTD", v: eco.ecosystemMetrics.totalFundingYTD },
-                    { l: "Avg Deal",    v: eco.ecosystemMetrics.avgDealSize },
-                    { l: "Unicorns",   v: eco.ecosystemMetrics.unicorns },
-                    { l: "Soonicorns", v: eco.ecosystemMetrics.soonicorns },
-                  ].map((s, i) => (
-                    <div key={i} className="row" style={{ padding: "6px 0" }}>
-                      <span style={{ fontSize: "11px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif" }}>{s.l}</span>
-                      <span className="uf-d" style={{ fontSize: "14px", fontWeight: 700, color: "var(--ink)" }}>{s.v}</span>
-                    </div>
+            {/* ── 3-COLUMN NEWSPAPER BODY ── */}
+            <div className="newspaper-cols" itemProp="articleBody">
+              {f.cols.map((col, ci) => (
+                <div key={ci} className="mb-6 sm:mb-0">
+                  <h3
+                    className="font-black uppercase tracking-[0.13em] mb-3 pb-1.5"
+                    style={{
+                      fontSize: 11,
+                      color: "#1A1208",
+                      borderBottom: `1.5px solid ${f.accent}`,
+                      fontFamily: "system-ui,sans-serif",
+                    }}
+                  >
+                    {col.h}
+                  </h3>
+
+                  {col.b.split("\n\n").map((para, pi) => (
+                    <p
+                      key={pi}
+                      className={`leading-[1.9] mb-3 text-[#2C2010] ${ci === 0 && pi === 0 ? "dropcap" : ""}`}
+                      style={{
+                        fontSize: "clamp(12.5px, 1.3vw, 13.5px)",
+                        fontFamily: "'Georgia','Times New Roman',serif",
+                      }}
+                    >
+                      {para}
+                    </p>
                   ))}
                 </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ── TOP RISING STARTUPS ───────────────────────────────────────── */}
-          <section className="a3" style={{ padding: "clamp(20px,5vw,44px) 0", borderBottom: "1px solid var(--rule)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-              <div className="sh" style={{ flex: 1, marginBottom: 0 }}><span className="uf-lbl">Top Rising Startups · 2026</span></div>
-              <Link href="/startup" style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif", marginLeft: "14px", flexShrink: 0 }}>
-                Full registry <ChevronRight style={{ width: "12px", height: "12px" }} />
-              </Link>
+              ))}
             </div>
 
-            {/* Hero card */}
-            {eco.topRisingStartups[0] && (
-              <div style={{ background: "var(--warm)", border: "1px solid var(--rule)", padding: "clamp(16px,3vw,28px)", marginBottom: "14px" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "16px", alignItems: "start" }}>
-                  <div>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "10px", flexWrap: "wrap" }}>
-                      <span className="pill" style={{ color: "var(--gold)" }}>Editor's Pick</span>
-                      <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>{eco.topRisingStartups[0].sector}</span>
-                      {eco.topRisingStartups[0].momentum === "high" && <span className="pill" style={{ color: "var(--pos)" }}>🔥 High Momentum</span>}
-                    </div>
-                    <h3 className="uf-d" style={{ fontSize: "clamp(1.5rem,3.5vw,2.2rem)", fontWeight: 700, color: "var(--ink)", marginBottom: "8px", lineHeight: 1.1 }}>{eco.topRisingStartups[0].name}</h3>
-                    <p style={{ fontSize: "13.5px", color: "var(--ink2)", lineHeight: 1.65, maxWidth: "480px", marginBottom: "14px", fontFamily: "'Source Serif 4',serif" }}>{eco.topRisingStartups[0].insight}</p>
-                    <Link href="/startup" className="btn-d" style={{ fontSize: "12px", padding: "9px 20px" }}>
-                      View Profile <ArrowUpRight style={{ width: "12px", height: "12px" }} />
-                    </Link>
-                  </div>
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <div className="uf-m" style={{ fontSize: "clamp(1.8rem,4vw,3rem)", fontWeight: 700, color: "var(--pos)", lineHeight: 1 }}>{eco.topRisingStartups[0].growthIndicator}</div>
-                    <div className="uf-lbl" style={{ fontSize: "9px", marginTop: "4px" }}>Growth Rate</div>
-                  </div>
+            {/* ── PULL QUOTE ── */}
+            <div
+              className="mt-10 pt-6 pb-6 text-center"
+              style={{
+                borderTop: `3px solid ${f.accent}`,
+                borderBottom: "1px solid #C8C2B4",
+              }}
+            >
+              <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, marginBottom: 10 }} aria-hidden="true">❧</span>
+              <blockquote
+                className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
+                style={{ fontSize: "clamp(15px, 2vw, 20px)" }}
+                cite={`https://upforge.in/startup/${f.slug}`}
+              >
+                "{f.pull}"
+              </blockquote>
+              <span style={{ display: "block", color: "#C8C2B4", fontSize: 16, margin: "10px 0 8px" }} aria-hidden="true">❧</span>
+              <p
+                className="text-[9px] uppercase tracking-[0.24em] text-[#AAA]"
+                style={{ fontFamily: "system-ui,sans-serif" }}
+              >
+                — {f.pullBy}, {f.company}
+              </p>
+            </div>
+
+          </article>
+
+          {/* ════ RIGHT: PHOTO + FACTS (desktop) ════ */}
+          <aside
+            className="hidden lg:block"
+            aria-label={`${f.name} profile and key metrics`}
+            itemScope
+            itemType="https://schema.org/Person"
+          >
+            <meta itemProp="name" content={f.name} />
+            <meta itemProp="jobTitle" content={f.role} />
+            <meta itemProp="worksFor" content={f.company} />
+            <meta itemProp="address" content={f.city} />
+
+            <div className="right-sticky pl-8 pt-8 pb-8 flex flex-col gap-5">
+
+              {/* FOUNDER PHOTO */}
+              <div className="relative w-full" style={{ height: 380 }}>
+                <FounderPhoto
+                  src={f.imgSrc}
+                  alt={`${f.name}, ${f.role} at ${f.company} — UpForge Founder Chronicle`}
+                  initials={f.initials}
+                  accent={f.accent}
+                  accentBg={f.accentBg}
+                  className="w-full h-full"
+                />
+                <div
+                  className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
+                  style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 55%, transparent)" }}
+                >
+                  <p className="pf text-white font-bold leading-snug" style={{ fontSize: 13.5 }}>{f.name}</p>
+                  <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>
+                    {f.role} · {f.company}
+                  </p>
                 </div>
               </div>
-            )}
 
-            <div className="card-g" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "10px" }}>
-              {eco.topRisingStartups.slice(1).map((s: any, i: number) => (
-                <Link key={i} href="/startup" className="card" style={{ display: "block", padding: "16px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: "9px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "3px" }}>{s.sector}</div>
-                      <h4 className="uf-d" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.2 }}>{s.name}</h4>
+              {/* BY THE NUMBERS */}
+              <div style={{ border: "2px solid #1A1208" }} role="region" aria-label="Key metrics">
+                <div className="px-4 py-2.5" style={{ background: "#1A1208" }}>
+                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white" style={{ fontFamily: "system-ui,sans-serif" }}>
+                    By the Numbers
+                  </p>
+                </div>
+                <dl className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
+                  {f.stats.map((s, si) => (
+                    <div key={si} className="px-4 py-3.5" style={{ borderColor: "#D8D2C4" }}>
+                      <dt className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "system-ui,sans-serif" }}>
+                        {s.l}
+                      </dt>
+                      <dd className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "1.35rem" }}>
+                        {s.v}
+                      </dd>
                     </div>
-                    <span className="uf-m" style={{ fontSize: ".95rem", fontWeight: 700, color: "var(--pos)", flexShrink: 0, marginLeft: "8px" }}>{s.growthIndicator}</span>
-                  </div>
-                  <p style={{ fontSize: "11.5px", color: "var(--ink3)", lineHeight: 1.6, marginBottom: "10px", fontFamily: "'Source Serif 4',serif" }}>{s.insight}</p>
-                  <div style={{ height: "2px", background: "var(--rl)", borderRadius: "1px", overflow: "hidden" }}>
-                    <div style={{ height: "100%", background: "var(--ink)", width: `${Math.min(parseFloat(s.growthIndicator.replace("+","").replace("%","")),200)/2}%` }} />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* ── RECENTLY VERIFIED ─────────────────────────────────────────── */}
-          <section className="a4" style={{ padding: "clamp(20px,5vw,44px) 0", borderBottom: "1px solid var(--rule)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <span className="uf-lbl">Recently Verified</span>
-                <span className="vbadge">✓ Live Registry</span>
+                  ))}
+                </dl>
               </div>
-              <Link href="/startup" style={{ fontSize: "12px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif", display: "flex", alignItems: "center", gap: "4px" }}>
-                View all {total.toLocaleString()}+ <ChevronRight style={{ width: "12px", height: "12px" }} />
-              </Link>
-            </div>
-            <div className="card-g" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "10px" }}>
-              {recent.slice(0, 6).map((s: any) => (
-                <Link key={s.id} href={`/startup/${s.slug}`} className="card" style={{ display: "block", padding: "16px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-                    <h4 className="uf-d" style={{ fontSize: ".95rem", fontWeight: 700, color: "var(--ink)", lineHeight: 1.25, flex: 1 }}>{s.name}</h4>
-                    <BadgeCheck style={{ width: "12px", height: "12px", color: "var(--pos)", flexShrink: 0, marginLeft: "8px", marginTop: "2px" }} />
-                  </div>
-                  <p style={{ fontSize: "11.5px", color: "var(--ink3)", lineHeight: 1.6, marginBottom: "12px", fontFamily: "'Source Serif 4',serif", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{s.description}</p>
-                  <div style={{ display: "flex", gap: "8px", paddingTop: "10px", borderTop: "1px solid var(--rl)" }}>
-                    <span style={{ fontSize: "10px", color: "var(--ink4)", fontFamily: "'Source Serif 4',serif" }}>{s.founded_year || "—"}</span>
-                    <span style={{ color: "var(--rule)" }}>·</span>
-                    <span style={{ fontSize: "10px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>{s.industry || "Startup"}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
 
-          {/* ── INTELLIGENCE HUB ──────────────────────────────────────────── */}
-          <section className="a4" style={{ padding: "clamp(20px,5vw,44px) 0", borderBottom: "1px solid var(--rule)" }}>
-            <div className="sh"><span className="uf-lbl">Intelligence Hub</span></div>
-            <div className="feat-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))" }}>
-              {[
-                { label: "AI Startup Reports",     desc: "Deep dives on India's fastest-growing AI companies — valuation, growth signals, competitive moats.", href: "/top-ai-startups",      icon: Sparkles,   stat: "1,779+ companies", tag: "AI / ML" },
-                { label: "Indian Unicorn Tracker", desc: "118 verified unicorn profiles with funding history, investor networks, and growth trajectory.",       href: "/indian-unicorns",     icon: Gem,        stat: "118 unicorns",     tag: "Unicorns" },
-                { label: "Funding Database",       desc: "Track every major round — angel to Series F — with investor and valuation data.",                     href: "/top-funded-startups", icon: DollarSign, stat: "$14B+ tracked",    tag: "Funding" },
-                { label: "Founder Stories",        desc: "In-depth profiles of India's most ambitious founders — journey, decisions, and lessons.",             href: "/founder-stories",     icon: Users,      stat: "Curated profiles", tag: "Founders" },
-                { label: "Full Startup Registry",  desc: `${total.toLocaleString() || "72,000"}+ verified startups across ${sectors} sectors.`,               href: "/startup",             icon: BookOpen,   stat: `${total.toLocaleString() || "72,000"}+`, tag: "Registry" },
-              ].map((item, i) => (
-                <Link key={i} href={item.href} className="feat-cell" style={{ display: "block" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
-                    <div style={{ width: "34px", height: "34px", background: "var(--warm)", border: "1px solid var(--rule)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <item.icon style={{ width: "15px", height: "15px", color: "var(--ink3)" }} />
-                    </div>
-                    <ArrowUpRight style={{ width: "13px", height: "13px", color: "var(--ink4)" }} />
-                  </div>
-                  <div style={{ fontSize: "9px", color: "var(--gold)", fontFamily: "'Source Serif 4',serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "5px" }}>{item.tag}</div>
-                  <h3 className="uf-d" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--ink)", marginBottom: "7px", lineHeight: 1.2 }}>{item.label}</h3>
-                  <p style={{ fontSize: "12px", color: "var(--ink3)", lineHeight: 1.6, marginBottom: "14px", fontFamily: "'Source Serif 4',serif" }}>{item.desc}</p>
-                  <div style={{ paddingTop: "10px", borderTop: "1px solid var(--rl)" }}>
-                    <span className="uf-m" style={{ fontSize: "11.5px", fontWeight: 600, color: "var(--ink2)" }}>{item.stat}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* ── AI REPORTS CTA ────────────────────────────────────────────── */}
-          <section style={{ padding: "clamp(28px,6vw,56px) 0", borderBottom: "1px solid var(--rule)" }}>
-            <div style={{ background: "var(--warm)", border: "1px solid var(--rule)", padding: "clamp(24px,5vw,48px)", display: "grid", gridTemplateColumns: "1fr auto", gap: "clamp(16px,4vw,40px)", alignItems: "center" }}>
-              <div>
-                <span className="uf-lbl" style={{ color: "var(--gold)", display: "block", marginBottom: "10px" }}>Premium Intelligence</span>
-                <h2 className="uf-d" style={{ fontSize: "clamp(1.6rem,4vw,2.8rem)", fontWeight: 900, color: "var(--ink)", lineHeight: 1.06, marginBottom: "14px" }}>
-                  AI-Powered Deep Research Reports on Indian Startups
-                </h2>
-                <p style={{ fontSize: "14px", color: "var(--ink2)", lineHeight: 1.8, maxWidth: "520px", marginBottom: "24px", fontFamily: "'Source Serif 4',serif" }}>
-                  Institutional-grade analysis — valuation insights, competitive landscape, market positioning, and risk signals. Built for founders, investors, and analysts.
+              {/* THE LESSON */}
+              <div className="px-4 py-4" style={{ background: f.accentBg, border: `1px solid ${f.accentBorder}` }}>
+                <p
+                  className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                  style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}
+                >
+                  The Lesson
                 </p>
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                  <Link href="/reports" className="btn-d">Explore Reports <ArrowRight style={{ width: "13px", height: "13px" }} /></Link>
-                  <Link href="/startup" className="btn-g">Browse Registry</Link>
-                </div>
+                <p
+                  className="italic text-[#1A1208] leading-[1.72]"
+                  style={{ fontSize: 13.5, fontFamily: "'Georgia',serif" }}
+                >
+                  {f.lesson}
+                </p>
               </div>
-              <div className="hide-tab" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", width: "220px" }}>
-                {["Valuation Analysis","Market Positioning","Risk Signals","Growth Trajectory"].map((t) => (
-                  <div key={t} style={{ padding: "14px", background: "#fff", border: "1px solid var(--rule)", textAlign: "center" }}>
-                    <Newspaper style={{ width: "16px", height: "16px", color: "var(--ink4)", margin: "0 auto 7px" }} />
-                    <p style={{ fontSize: "10.5px", fontWeight: 600, color: "var(--ink2)", lineHeight: 1.4, fontFamily: "'Source Serif 4',serif" }}>{t}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
 
-          {/* ── TRUST STRIP ───────────────────────────────────────────────── */}
-          <div className="rule-t" />
-          <div style={{ padding: "16px 0", display: "flex", flexWrap: "wrap", gap: "8px 24px", alignItems: "center", justifyContent: "center", background: "var(--off)" }}>
-            {[
-              { icon: Shield,     text: "100% Independent · Zero paid rankings" },
-              { icon: BadgeCheck, text: "Every startup manually reviewed" },
-              { icon: Sparkles,   text: "AI-powered research reports" },
-              { icon: Globe,      text: "Open, public & Google-indexed" },
-              { icon: Clock,      text: `Refreshed hourly · ${updatedAt} IST` },
-            ].map((item) => (
-              <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <item.icon style={{ width: "12px", height: "12px", color: "var(--ink3)" }} />
-                <span style={{ fontSize: "11px", color: "var(--ink3)", fontFamily: "'Source Serif 4',serif" }}>{item.text}</span>
-              </div>
+              {/* PROFILE LINK */}
+              <Link
+                href={`/startup/${f.slug}`}
+                className="group flex items-center justify-between px-4 py-3 transition-opacity hover:opacity-70"
+                style={{ border: `1.5px solid ${f.accent}` }}
+                aria-label={`View ${f.company} full profile on UpForge`}
+              >
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider"
+                  style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}
+                >
+                  View {f.company} on UpForge
+                </span>
+                <ArrowUpRight className="w-4 h-4" style={{ color: f.accent }} aria-hidden="true" />
+              </Link>
+
+              {/* Context footnote */}
+              <p
+                className="text-[9px] text-[#AAA] italic pt-2"
+                style={{ borderTop: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}
+              >
+                {f.context} · {f.city} · Est. {f.founded}
+              </p>
+
+            </div>
+          </aside>
+
+        </div>
+
+        {/* ══════════════════════════════════════════
+            PAGE NAVIGATION — prev / dots / next
+        ══════════════════════════════════════════ */}
+        <nav
+          className="flex items-center justify-between py-5"
+          style={{ borderBottom: "1px solid #C8C2B4" }}
+          aria-label="Story pagination"
+        >
+          <button
+            onClick={() => !isFirst && setIdx(i => i - 1)}
+            disabled={isFirst}
+            className="nbtn flex items-center gap-2 px-4 py-2.5 font-bold uppercase tracking-wider transition-all"
+            aria-label={isFirst ? "First story" : `Previous: ${FOUNDERS[idx - 1].nameShort}`}
+            style={{
+              border: `1px solid ${isFirst ? "#D8D2C4" : "#1A1208"}`,
+              color: isFirst ? "#C8C2B4" : "#1A1208",
+              cursor: isFirst ? "not-allowed" : "pointer",
+              fontSize: 10,
+              background: "transparent",
+              fontFamily: "system-ui,sans-serif",
+            }}
+          >
+            <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
+            {isFirst ? "First Story" : FOUNDERS[idx - 1].nameShort}
+          </button>
+
+          {/* Progress dots */}
+          <div className="flex items-center gap-1.5" role="tablist" aria-label="Story selector">
+            {FOUNDERS.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                role="tab"
+                aria-selected={i === idx}
+                aria-label={`Story ${i + 1}: ${s.nameShort}`}
+                className="h-1.5 rounded-sm transition-all"
+                style={{
+                  width: i === idx ? 28 : 6,
+                  background: i === idx ? f.accent : "#C8C2B4",
+                }}
+              />
             ))}
           </div>
 
-        </div>{/* /uf-wrap */}
-      </div>{/* /uf */}
-    </>
-  );
+          <button
+            onClick={() => !isLast && setIdx(i => i + 1)}
+            disabled={isLast}
+            className="nbtn flex items-center gap-2 px-4 py-2.5 font-bold uppercase tracking-wider transition-all"
+            aria-label={isLast ? "Last story" : `Next: ${FOUNDERS[idx + 1].nameShort}`}
+            style={{
+              border: `1px solid ${isLast ? "#D8D2C4" : "#1A1208"}`,
+              color: isLast ? "#C8C2B4" : "#1A1208",
+              cursor: isLast ? "not-allowed" : "pointer",
+              fontSize: 10,
+              background: "transparent",
+              fontFamily: "system-ui,sans-serif",
+            }}
+          >
+            {isLast ? "Last Story" : FOUNDERS[idx + 1].nameShort}
+            <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
+          </button>
+        </nav>
+
+        {/* ══════════════════════════════════════════
+            ALL STORIES — thumbnail index
+        ══════════════════════════════════════════ */}
+        <section
+          className="py-8"
+          style={{ borderBottom: "1px solid #C8C2B4" }}
+          aria-label="All founder stories in this edition"
+        >
+          <p
+            className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-5"
+            style={{ fontFamily: "system-ui,sans-serif" }}
+          >
+            All Stories in This Edition
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4" role="list">
+            {FOUNDERS.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                role="listitem"
+                className="thumb text-left"
+                style={{ opacity: i === idx ? 1 : 0.48 }}
+                aria-label={`${s.nameShort} — ${s.company} founder story`}
+                aria-current={i === idx ? "true" : undefined}
+              >
+                <div
+                  className="relative w-full overflow-hidden mb-2.5"
+                  style={{
+                    height: 116,
+                    borderTop: `3px solid ${s.accent}`,
+                    background: s.accentBg,
+                  }}
+                >
+                  <FounderPhoto
+                    src={s.imgSrc}
+                    alt={`${s.nameShort}, ${s.company} founder`}
+                    initials={s.initials}
+                    accent={s.accent}
+                    accentBg={s.accentBg}
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+                <p
+                  className="text-[8.5px] font-black uppercase tracking-wider mb-0.5"
+                  style={{ color: s.accent, fontFamily: "system-ui,sans-serif" }}
+                >
+                  {s.edition}
+                </p>
+                <p className="pf font-bold text-[#1A1208] leading-snug" style={{ fontSize: 12.5 }}>
+                  {s.nameShort}
+                </p>
+                <p className="text-[9.5px] text-[#AAA] mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  {s.company}
+                </p>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════
+            INSIGHT STRIP
+        ══════════════════════════════════════════ */}
+        <section
+          className="py-8"
+          style={{ borderBottom: "1px solid #C8C2B4" }}
+          aria-label="UpForge founder insights"
+        >
+          <p
+            className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-5"
+            style={{ fontFamily: "system-ui,sans-serif" }}
+          >
+            UpForge Founder Insights
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              {
+                v: "~80%", l: "First-generation founders",
+                b: "India's under-40 unicorn builders mostly had no inherited capital or legacy networks. They built in public — which is exactly why their stories are worth studying."
+              },
+              {
+                v: "$950B", l: "Value created by under-40s",
+                b: "Avendus-Hurun India 2025: founders under 40 manage businesses worth more than Switzerland's entire GDP — and most started with nothing."
+              },
+              {
+                v: "126", l: "Unicorns — and rising",
+                b: "India just crossed 126 unicorns. The founders reading these stories today will build the next 126. UpForge exists to help them get discovered."
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="p-4"
+                style={{ background: "white", border: "1px solid #D8D2C4" }}
+                itemScope
+                itemType="https://schema.org/StatisticalVariable"
+              >
+                <p className="pf font-black text-[#1A1208] leading-none mb-1" style={{ fontSize: "2.1rem" }}>
+                  {item.v}
+                </p>
+                <p
+                  className="text-[8px] font-black uppercase tracking-[0.18em] mb-2.5"
+                  style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}
+                >
+                  {item.l}
+                </p>
+                <p
+                  className="text-[11.5px] leading-relaxed"
+                  style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}
+                >
+                  {item.b}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════
+            INTERNAL LINKS SECTION (SEO: keyword-rich anchor text)
+        ══════════════════════════════════════════ */}
+        <section
+          className="py-8"
+          style={{ borderBottom: "1px solid #C8C2B4" }}
+          aria-label="Explore more on UpForge"
+        >
+          <p
+            className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-5"
+            style={{ fontFamily: "system-ui,sans-serif" }}
+          >
+            Explore on UpForge
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { l: "Top AI Startups India", h: "/top-ai-startups", desc: "Best AI companies 2026" },
+              { l: "Best SaaS Startups", h: "/best-saas-startups", desc: "B2B SaaS unicorns" },
+              { l: "Indian Unicorns List", h: "/indian-unicorns", desc: "All 126 unicorns" },
+              { l: "Startup Registry", h: "/startup", desc: "Full verified database" },
+              { l: "Edtech Startups", h: "/edtech-startups", desc: "PhysicsWallah & more" },
+              { l: "Fintech Startups", h: "/fintech-startups", desc: "Zerodha, CRED, Paytm" },
+              { l: "D2C Startups India", h: "/d2c-startups", desc: "Nykaa & next wave" },
+              { l: "Submit Your Startup", h: "/submit", desc: "Get listed free" },
+            ].map((lnk) => (
+              <Link
+                key={lnk.h}
+                href={lnk.h}
+                className="flex flex-col gap-1 p-3 transition-all hover:border-[#1A1208]"
+                style={{ border: "1px solid #D8D2C4", background: "white" }}
+              >
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#1A1208] flex items-center gap-1"
+                  style={{ fontFamily: "system-ui,sans-serif" }}
+                >
+                  {lnk.l} <ChevronRight className="w-2.5 h-2.5 flex-shrink-0" aria-hidden="true" />
+                </span>
+                <span className="text-[9px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>
+                  {lnk.desc}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════
+            FOOTER CTA
+        ══════════════════════════════════════════ */}
+        <section
+          className="pt-8 grid sm:grid-cols-2 gap-6 items-center"
+          aria-label="List your startup on UpForge"
+        >
+          <div>
+            <p
+              className="text-[8.5px] font-black uppercase tracking-[0.24em] mb-2.5"
+              style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}
+            >
+              UpForge Registry
+            </p>
+            <p className="pf font-bold text-[#1A1208] leading-snug mb-2" style={{ fontSize: "1.3rem" }}>
+              Your founder story starts with a verified profile.
+            </p>
+            <p
+              className="text-[12px] leading-relaxed"
+              style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}
+            >
+              Get independently verified and indexed in India's most trusted startup registry. Free forever.
+            </p>
+          </div>
+          <div className="flex flex-col sm:items-end gap-3">
+            <Link
+              href="/submit"
+              className="inline-flex items-center gap-2 px-6 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
+              style={{ background: "#1A1208", fontSize: 11, fontFamily: "system-ui,sans-serif" }}
+              aria-label="List your Indian startup on UpForge for free"
+            >
+              List Your Startup — Free <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════
+            FOOTER DISCLAIMER
+        ══════════════════════════════════════════ */}
+        <footer className="mt-8 pb-2">
+          <p
+            className="text-[9px] leading-relaxed"
+            style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif", borderTop: "1px solid #D8D2C4", paddingTop: "1rem" }}
+          >
+            * Story details sourced from public interviews, Forbes India, Inc42, Hurun India 2025, Tracxn, and company announcements as of March 2026.
+            UpForge is an independent registry — no paid placements, no sponsored rankings.
+            Founder valuations are approximate and reflect latest available public data.
+          </p>
+          {/* SEO: keyword-dense footer links */}
+          <nav aria-label="Footer navigation" className="mt-4">
+            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+              {[
+                { l: "Indian Startup Founders", h: "/" },
+                { l: "Startup Registry India", h: "/startup" },
+                { l: "Indian Unicorns 2026", h: "/indian-unicorns" },
+                { l: "Top AI Startups", h: "/top-ai-startups" },
+                { l: "Fintech Startups India", h: "/fintech-startups" },
+                { l: "Edtech Founders", h: "/edtech-startups" },
+                { l: "Submit Startup", h: "/submit" },
+              ].map(lnk => (
+                <li key={lnk.h}>
+                  <Link
+                    href={lnk.h}
+                    className="text-[9px] text-[#AAA] hover:text-[#1A1208] uppercase tracking-wider transition-colors"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    {lnk.l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </footer>
+
+      </main>
+
+    </div>
+  )
 }
