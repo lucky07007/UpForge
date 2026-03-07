@@ -169,7 +169,7 @@ export function ReportGenerator() {
             <div className="uf-sh"><span className="uf-m" style={{fontSize:"9px",color:"var(--gold)",fontWeight:700}}>01</span><span className="uf-lbl" style={{color:"var(--ink2)"}}>Startup Identity</span></div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px",marginBottom:"24px"}} className="mc">
               {[{l:"Startup Name *",f:"startupName",p:"e.g. Krutrim AI"},{l:"Founder Name *",f:"founderName",p:"e.g. Bhavish Aggarwal"},{l:"Headquarters City",f:"city",p:"e.g. Bengaluru"},{l:"Website URL",f:"website",p:"https://yourstartup.com"}].map(({l,f,p})=>(
-                <div key={f}><label className="uf-lbl2">{l}</label><input className="uf-inp" placeholder={p} value={(form as Record<string,string>)[f]} onChange={upd(f as keyof FormData)}/></div>
+                <div key={f}><label className="uf-lbl2">{l}</label><input className="uf-inp" placeholder={p} value={(form as unknown as Record<string,string>)[f]} onChange={upd(f as keyof FormData)}/></div>
               ))}
               <div><label className="uf-lbl2">Founded Year *</label><input className="uf-inp" placeholder="e.g. 2022" type="number" min="2000" max="2025" value={form.foundedYear} onChange={upd("foundedYear")}/></div>
               <div><label className="uf-lbl2">Industry / Sector *</label>
