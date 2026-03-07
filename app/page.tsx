@@ -15,29 +15,81 @@ import {
 export const metadata: Metadata = {
   title: "UpForge — India's #1 Independent Startup Registry & Database 2026",
   description:
-    "Discover, research and track 72,000+ verified Indian startups. Free listings, AI-powered growth reports, real-time funding news, unicorn tracker and live market intelligence.",
+    "Discover, research and track 72,000+ verified Indian startups across AI, SaaS, FinTech, HealthTech and more. Free listings, AI-powered growth reports, real-time funding news, unicorn tracker, and live market intelligence. India's most trusted startup database.",
   keywords: [
     "Indian startups 2026", "India startup database", "startup registry India",
     "verified Indian startups", "Indian unicorns 2026", "startup funding India",
+    "list your startup India free", "startup ecosystem India", "Indian founders database",
+    "VC deals India", "startup news India today", "Bengaluru startups",
+    "Mumbai startups", "Delhi NCR startups", "SaaS startups India",
+    "fintech startups India", "edtech startups India", "healthtech India",
+    "AI startups India", "deeptech India startups", "startup valuation India",
+    "angel investors India", "startup growth report India", "UpForge",
+    "India startup intelligence", "Indian soonicorns", "startup funding tracker India",
+    "top Indian startups", "Indian startup news", "startup research India",
+    "best startup database India", "free startup listing India",
   ].join(", "),
   authors: [{ name: "UpForge", url: "https://upforge.in" }],
+  creator: "UpForge",
+  publisher: "UpForge",
+  category: "Business & Technology",
   metadataBase: new URL("https://upforge.in"),
-  alternates: { canonical: "https://upforge.in" },
+  alternates: {
+    canonical: "https://upforge.in",
+    languages: { "en-IN": "https://upforge.in", "en-US": "https://upforge.in" },
+  },
   openGraph: {
-    type: "website", locale: "en_IN", url: "https://upforge.in", siteName: "UpForge",
+    type: "website",
+    locale: "en_IN",
+    url: "https://upforge.in",
+    siteName: "UpForge",
     title: "UpForge — India's #1 Independent Startup Registry 2026",
-    description: "72,000+ verified Indian startups. Free listings · AI growth reports · Live funding news.",
-    images: [{ url: "https://upforge.in/og-image.png", width: 1200, height: 630, alt: "UpForge" }],
+    description: "72,000+ verified Indian startups. Free listings · AI growth reports · Real-time funding news · Unicorn tracker · Live market intelligence.",
+    images: [
+      { url: "https://upforge.in/og-image.png", width: 1200, height: 630, alt: "UpForge — India's Independent Startup Registry" },
+      { url: "https://upforge.in/og-image-square.png", width: 600, height: 600, alt: "UpForge" },
+    ],
   },
   twitter: {
-    card: "summary_large_image", site: "@upforge_in", creator: "@upforge_in",
+    card: "summary_large_image",
+    site: "@upforge_in",
+    creator: "@upforge_in",
     title: "UpForge — India's #1 Independent Startup Registry 2026",
-    description: "72,000+ verified Indian startups. AI growth reports · Live funding news.",
+    description: "72,000+ verified Indian startups. Free listings · AI growth reports · Real-time funding news.",
     images: ["https://upforge.in/og-image.png"],
   },
   robots: {
-    index: true, follow: true,
-    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#1a1a1a" }],
+  },
+  manifest: "/site.webmanifest",
+  verification: {
+    google: "YOUR_GOOGLE_SEARCH_CONSOLE_TOKEN",
+    yandex: "YOUR_YANDEX_TOKEN",
+  },
+  other: {
+    "og:locale:alternate": "hi_IN",
+    "article:publisher": "https://upforge.in",
+    "theme-color": "#ffffff",
+    "msapplication-TileColor": "#1a1a1a",
   },
 };
 
@@ -46,10 +98,13 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "WebSite", "@id": "https://upforge.in/#website",
-      url: "https://upforge.in", name: "UpForge",
-      description: "India's Independent Startup Registry & Live Market Intelligence",
+      "@type": "WebSite",
+      "@id": "https://upforge.in/#website",
+      url: "https://upforge.in",
+      name: "UpForge",
+      description: "India's Independent Startup Registry & Live Market Intelligence Platform",
       inLanguage: "en-IN",
+      publisher: { "@id": "https://upforge.in/#organization" },
       potentialAction: {
         "@type": "SearchAction",
         target: { "@type": "EntryPoint", urlTemplate: "https://upforge.in/startup?q={search_term_string}" },
@@ -57,9 +112,103 @@ const jsonLd = {
       },
     },
     {
-      "@type": "Organization", "@id": "https://upforge.in/#organization",
-      name: "UpForge", url: "https://upforge.in",
-      description: "India's most trusted independent startup registry.",
+      "@type": "Organization",
+      "@id": "https://upforge.in/#organization",
+      name: "UpForge",
+      url: "https://upforge.in",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://upforge.in/logo.png",
+        width: 512,
+        height: 512,
+      },
+      sameAs: [
+        "https://twitter.com/upforge_in",
+        "https://linkedin.com/company/upforge",
+      ],
+      description: "India's most trusted independent startup registry — verified listings, AI growth reports, and real-time market intelligence.",
+      areaServed: "IN",
+      foundingDate: "2025",
+      knowsAbout: ["Indian Startups", "Startup Ecosystem India", "Venture Capital India", "Startup Funding", "Indian Unicorns", "SaaS India", "AI Startups India"],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        url: "https://upforge.in/contact",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://upforge.in/#webpage",
+      url: "https://upforge.in",
+      name: "UpForge — India's #1 Independent Startup Registry & Database 2026",
+      isPartOf: { "@id": "https://upforge.in/#website" },
+      about: { "@id": "https://upforge.in/#organization" },
+      description: "Discover and research 72,000+ verified Indian startups. Free listings, AI growth reports, live funding news, unicorn tracker.",
+      inLanguage: "en-IN",
+      dateModified: new Date().toISOString(),
+      breadcrumb: { "@id": "https://upforge.in/#breadcrumb" },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: ["h1", "h2", ".uf-blockquote"],
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://upforge.in/#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://upforge.in",
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      name: "Top Indian Startup Sectors 2026",
+      description: "Most active startup sectors in India by funding and deal count — Q1 2026",
+      url: "https://upforge.in/startup",
+      numberOfItems: 6,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "AI / ML", url: "https://upforge.in/top-ai-startups" },
+        { "@type": "ListItem", position: 2, name: "SaaS", url: "https://upforge.in/best-saas-startups" },
+        { "@type": "ListItem", position: 3, name: "FinTech", url: "https://upforge.in/startup" },
+        { "@type": "ListItem", position: 4, name: "Climate Tech", url: "https://upforge.in/startup" },
+        { "@type": "ListItem", position: 5, name: "HealthTech", url: "https://upforge.in/startup" },
+        { "@type": "ListItem", position: 6, name: "D2C Brands", url: "https://upforge.in/startup" },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "How many Indian startups are listed on UpForge?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "UpForge lists 72,000+ verified Indian startups across 30+ sectors including AI, SaaS, FinTech, HealthTech, EdTech, D2C, and more. Every listing is manually reviewed before publication.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is listing a startup on UpForge free?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, listing your startup on UpForge is completely free. We are India's independent, ad-free startup registry. Submit your startup at upforge.in/submit.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What is UpForge?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "UpForge is India's most trusted independent startup registry and intelligence platform. It provides verified startup profiles, AI-powered research reports, real-time funding news, unicorn tracking, and live market data — all free and ad-free.",
+          },
+        },
+      ],
     },
   ],
 };
@@ -509,6 +658,63 @@ export default async function Home() {
           .uf-stat:last-child { border-bottom: none; }
           .uf-hide-mobile { display: none !important; }
           .uf-full-mobile { grid-column: 1 / -1 !important; }
+
+          /* Mobile: center-align all hero/CTA content */
+          .uf-hero-center {
+            text-align: center !important;
+            align-items: center !important;
+          }
+          .uf-btn-row {
+            justify-content: center !important;
+          }
+          .uf-trust-row {
+            justify-content: center !important;
+          }
+          .uf-search-bar {
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+          .uf-blockquote {
+            text-align: left !important;
+          }
+          /* Mobile: full width buttons */
+          .uf-btn-dark,
+          .uf-btn-ghost {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+          }
+          /* Mobile: center masthead trust chips */
+          .uf-chips-row {
+            justify-content: center !important;
+          }
+          /* Stat grid 2 columns on mobile */
+          .uf-stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          /* Three col stacked on mobile */
+          .uf-three-col > div {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            border-right: none !important;
+            border-bottom: 1px solid var(--rule) !important;
+            padding-bottom: 24px !important;
+            margin-bottom: 8px !important;
+          }
+          .uf-three-col > div:last-child {
+            border-bottom: none !important;
+          }
+          /* Center section labels on mobile */
+          .uf-sec-head {
+            justify-content: center;
+          }
+          .uf-sec-head::after {
+            display: none;
+          }
+          /* Cards fill full width on mobile */
+          .uf-card-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
 
         /* Scrollbar */
@@ -581,6 +787,30 @@ export default async function Home() {
         </nav>
 
         <div className="uf-wrap">
+
+          {/* ── BREADCRUMB (SEO + visible) ────────────────────────────── */}
+          <nav aria-label="Breadcrumb" style={{ padding: "8px 0", borderBottom: "1px solid var(--rulel)" }}>
+            <ol
+              itemScope
+              itemType="https://schema.org/BreadcrumbList"
+              style={{ display: "flex", alignItems: "center", gap: "6px", listStyle: "none", padding: 0, margin: 0, flexWrap: "wrap" }}
+            >
+              <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                <Link href="/" itemProp="item" style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }}>
+                  <span itemProp="name">Home</span>
+                </Link>
+                <meta itemProp="position" content="1" />
+              </li>
+              <li style={{ fontSize: "10px", color: "var(--ink4)" }} aria-hidden="true">›</li>
+              <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                <span itemProp="name" style={{ fontSize: "11px", color: "var(--gold)", fontFamily: "'Source Serif 4', serif", fontWeight: 600 }} aria-current="page">
+                  Startup Registry
+                </span>
+                <meta itemProp="item" content="https://upforge.in" />
+                <meta itemProp="position" content="2" />
+              </li>
+            </ol>
+          </nav>
 
           {/* ── MASTHEAD ──────────────────────────────────────────────── */}
           <header className="uf-a0">
@@ -689,8 +919,25 @@ export default async function Home() {
               <div style={{ background: "var(--rule)", width: "1px" }} className="uf-hide-tablet" />
 
               {/* ── CENTER: Hero ── */}
-              <div style={{ padding: "0 clamp(16px, 3vw, 40px)" }}>
-                <span className="uf-pill" style={{ color: "var(--gold)", marginBottom: "12px", display: "inline-flex" }}>Feature</span>
+              <div style={{ padding: "0 clamp(16px, 3vw, 40px)" }} className="uf-hero-center">
+                {/* Breadcrumb — visible, SEO-friendly */}
+                <nav aria-label="Breadcrumb" style={{ marginBottom: "12px" }}>
+                  <ol style={{ display: "flex", alignItems: "center", gap: "6px", listStyle: "none", padding: 0, margin: 0, flexWrap: "wrap", justifyContent: "inherit" }}>
+                    <li>
+                      <Link href="/" style={{ fontSize: "11px", color: "var(--ink4)", fontFamily: "'Source Serif 4', serif" }} aria-label="Home">
+                        Home
+                      </Link>
+                    </li>
+                    <li style={{ fontSize: "10px", color: "var(--ink4)" }}>›</li>
+                    <li>
+                      <span style={{ fontSize: "11px", color: "var(--gold)", fontFamily: "'Source Serif 4', serif", fontWeight: 600 }} aria-current="page">
+                        Startup Registry
+                      </span>
+                    </li>
+                  </ol>
+                </nav>
+
+                <span className="uf-pill" style={{ color: "var(--gold)", marginBottom: "12px", display: "inline-flex" }}>India's #1 Startup Database</span>
                 <h2 className="uf-display" style={{
                   fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)",
                   fontWeight: 700,
@@ -699,29 +946,31 @@ export default async function Home() {
                   marginBottom: "16px",
                   marginTop: "10px",
                 }}>
-                  Documenting India's{" "}
+                  India's most comprehensive registry of{" "}
                   <em style={{ fontStyle: "italic", color: "var(--goldr)" }}>
-                    {totalStartups.toLocaleString() || "72,000"}+
+                    72,000+ verified startups
                   </em>{" "}
-                  emerging founders — one verified listing at a time.
+                  — researched, ranked, and updated daily.
                 </h2>
                 <p className="uf-serif" style={{ fontSize: "15px", color: "var(--ink2)", lineHeight: 1.8, marginBottom: "20px" }}>
                   UpForge is India's only fully independent, ad-free startup registry — built for founders, investors, and researchers who demand verified data, not sponsored noise. Every single listing is manually reviewed before appearing in our registry.
                 </p>
-                <div className="uf-blockquote" style={{ marginBottom: "24px" }}>
+                <div className="uf-blockquote" style={{ marginBottom: "24px", textAlign: "left" }}>
                   "The most comprehensive free database of verified Indian startups — used by 340+ VC firms and research teams."
                 </div>
 
-                {/* Search */}
+                {/* Search — no button, just clean underline input */}
                 <div className="uf-search-bar" style={{ marginBottom: "24px" }}>
                   <Search style={{ width: "15px", height: "15px", color: "var(--ink4)", flexShrink: 0 }} />
-                  <input type="text" placeholder="Search startups, sectors, founders…" className="uf-search-input" />
-                  <Link href="/startup" style={{ fontSize: "11px", color: "var(--ink3)", fontFamily: "'Source Serif 4', serif", fontWeight: 700, flexShrink: 0, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                    Go →
-                  </Link>
+                  <input
+                    type="text"
+                    placeholder="Search startups, sectors, founders…"
+                    className="uf-search-input"
+                    aria-label="Search Indian startups on UpForge"
+                  />
                 </div>
 
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                <div className="uf-btn-row" style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <Link href="/startup" className="uf-btn-dark">
                     Open Registry <ArrowRight style={{ width: "14px", height: "14px" }} />
                   </Link>
@@ -730,7 +979,7 @@ export default async function Home() {
                   </Link>
                 </div>
 
-                <div style={{ display: "flex", gap: "20px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--rule)", flexWrap: "wrap" }}>
+                <div className="uf-trust-row" style={{ display: "flex", gap: "20px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--rule)", flexWrap: "wrap" }}>
                   {[
                     { icon: CheckCircle2, text: "Free forever" },
                     { icon: BadgeCheck, text: "Manual verification" },
@@ -794,7 +1043,7 @@ export default async function Home() {
 
           {/* ── ECOSYSTEM METRICS STRIP ───────────────────────────────── */}
           <section className="uf-a2">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", borderBottom: "1px solid var(--rule)" }}>
+            <div className="uf-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", borderBottom: "1px solid var(--rule)" }}>
               {[
                 { label: "Active Startups",  value: ecosystem.ecosystemMetrics.totalActiveStartups, sub: "+2,300 / month" },
                 { label: "Funding YTD",      value: ecosystem.ecosystemMetrics.totalFundingYTD,    sub: `${ecosystem.ecosystemMetrics.monthlyGrowth} YoY`, accent: true },
@@ -955,7 +1204,7 @@ export default async function Home() {
             )}
 
             {/* Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
+            <div className="uf-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
               {ecosystem.topRisingStartups.slice(1).map((s: any, i: number) => (
                 <Link key={i} href="/startup" className="uf-card" style={{ display: "block", padding: "18px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
@@ -986,7 +1235,7 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
+            <div className="uf-card-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
               {verifiedStartups.slice(0, 6).map((startup: any) => (
                 <Link key={startup.id} href={`/startup/${startup.slug}`} className="uf-card" style={{ display: "block", padding: "18px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
@@ -1016,7 +1265,6 @@ export default async function Home() {
               {[
                 { label: "AI Startup Reports",    desc: "Deep dives into India's fastest-growing AI companies — valuation, growth signals, competitive moats.", href: "/top-ai-startups",     icon: Sparkles,  stat: "1,779+ companies", tag: "AI / ML" },
                 { label: "Indian Unicorn Tracker",desc: "118 verified unicorn profiles with funding history, investor networks, and growth trajectory data.",  href: "/indian-unicorns",   icon: Gem,       stat: "118 unicorns",     tag: "Unicorns" },
-                { label: "SaaS Intelligence",     desc: "India's $26B SaaS landscape — ranked by ARR growth, global reach, and category leadership.",          href: "/best-saas-startups",icon: BarChart3,  stat: "$26B market",      tag: "SaaS" },
                 { label: "Funding Database",      desc: "Track every major round in India — from angel to Series F, with investor and valuation data.",         href: "/top-funded-startups",icon: DollarSign,stat: "$14B+ tracked",    tag: "Funding" },
                 { label: "Founder Stories",       desc: "In-depth profiles of India's most ambitious founders — their journey, decisions, and lessons.",        href: "/founder-stories",   icon: Users,     stat: "Curated profiles", tag: "Founders" },
                 { label: "Full Startup Registry", desc: `${totalStartups.toLocaleString() || "72,000"}+ verified startups across ${uniqueIndustries} sectors — India's most comprehensive free database.`, href: "/startup", icon: BookOpen, stat: `${totalStartups.toLocaleString() || "72,000"}+`, tag: "Registry" },
