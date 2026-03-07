@@ -386,18 +386,6 @@ export default async function StartupPage({ searchParams }: Props) {
         >
           <div style={{ maxWidth: 1300, margin: "0 auto", padding: "0 clamp(16px,3vw,32px)" }}>
 
-            {/* ── Publication wordmark ── */}
-            <div
-              style={{
-                textAlign: "center",
-                padding: "clamp(28px,5vw,52px) 0 clamp(16px,3vw,28px)",
-                borderBottom: "1px solid var(--rule2)",
-              }}
-            >
-              <p className="sf" style={{ fontSize: 9, letterSpacing: "0.36em", textTransform: "uppercase", color: "var(--ink5)", marginBottom: 14 }}>
-                UpForge · Public Startup Registry · India Edition
-              </p>
-
               {/* Ornament rule */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 18 }}>
                 <div style={{ height: 1, width: 60, background: "var(--rule)" }} />
