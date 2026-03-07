@@ -1,9 +1,11 @@
 //components/navbar.tsx
+
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronRight, BadgeCheck, Shield } from "lucide-react";
+import { Menu, X, ChevronRight } from "lucide-react";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,16 +13,17 @@ export function Navbar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on route change
   useEffect(() => setIsOpen(false), [pathname]);
 
   const links = [
+    { name: "Home", href: "/" },
     { name: "Registry", href: "/startup" },
-    { name: "Unicorns", href: "/indian-unicorns" },
     { name: "Founders", href: "/founder-stories" },
     { name: "Reports", href: "/reports" },
     { name: "About", href: "/about" },
@@ -28,118 +31,52 @@ export function Navbar() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
-        .nav-playfair { font-family: 'Playfair Display', Georgia, serif; }
-        .nav-bask { font-family: 'Libre Baskerville', Georgia, serif; }
-        .nav-sys { font-family: system-ui, sans-serif; }
-        @keyframes navPing {
-          0%, 100% { transform: scale(1); opacity: .75; }
-          50% { transform: scale(1.8); opacity: 0; }
-        }
-        .live-ping { animation: navPing 2s ease-in-out infinite; }
-      `}</style>
-
       <header
         className={`fixed top-0 w-full z-50 transition-all duration-200 ${
           scrolled
-            ? "shadow-[0_2px_20px_rgba(26,18,8,.10)]"
-            : ""
+            ? "bg-white/95 backdrop-blur-md border-b border-[#D5D0C8] shadow-[0_1px_12px_rgba(0,0,0,0.06)]"
+            : "bg-[#F7F5F0] border-b border-[#D5D0C8]"
         }`}
-        style={{
-          background: scrolled ? "rgba(245,240,232,.97)" : "#F5F0E8",
-          backdropFilter: scrolled ? "blur(8px)" : "none",
-          borderBottom: "2px solid #1A1208",
-        }}
+        style={{ fontFamily: "system-ui, sans-serif" }}
       >
-        {/* ── TOP DATELINE STRIP ── */}
-        <div
-          className="nav-sys hidden sm:flex items-center justify-between px-5 lg:px-10 py-1"
-          style={{ borderBottom: "1px solid #C8BCA8", background: "#EDE7DA" }}
-        >
-          <div className="flex items-center gap-5">
-            {[
-              { icon: Shield, text: "100% Independent" },
-              { icon: BadgeCheck, text: "Manually Verified" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-1.5">
-                <item.icon style={{ width: 10, height: 10, color: "#8B7355" }} />
-                <span style={{ fontSize: 9, color: "#8B7355", letterSpacing: ".18em", textTransform: "uppercase" }}>
-                  {item.text}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-6">
 
-          {/* Pulse live indicator */}
-          <div className="flex items-center gap-4">
-            <span style={{ fontSize: 9, color: "#B0A090", letterSpacing: ".18em", textTransform: "uppercase" }}>
-              Est. 2025 · New Delhi, India
-            </span>
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex" style={{ width: 7, height: 7 }}>
-                <span className="live-ping absolute inline-flex rounded-full"
-                  style={{ inset: 0, background: "#22c55e", opacity: .6 }} />
-                <span className="relative inline-flex rounded-full"
-                  style={{ width: 7, height: 7, background: "#22c55e" }} />
-              </span>
-              <span style={{ fontSize: 9, color: "#8B7355", letterSpacing: ".18em", textTransform: "uppercase" }}>
-                Live Registry
-              </span>
+          {/* ── Brand ── */}
+          <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <div className="relative w-7 h-7 overflow-hidden flex-shrink-0">
+              <Image
+                src="/logo.jpg"
+                alt="UpForge"
+                fill
+                className="object-cover"
+              />
             </div>
-          </div>
-        </div>
-
-        {/* ── MAIN NAV ROW ── */}
-        <div className="max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-10 h-14 flex items-center justify-between gap-6">
-
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-            {/* Monogram block — matches page masthead style */}
-            <div
-              className="flex items-center justify-center flex-shrink-0"
-              style={{ width: 32, height: 32, background: "#1A1208" }}
-            >
-              <span className="nav-playfair font-black" style={{ color: "#C9A84C", fontSize: 13, lineHeight: 1 }}>
-                UF
-              </span>
-            </div>
-            <div>
+            <div className="flex items-baseline gap-2">
               <span
-                className="nav-playfair font-black leading-none block transition-colors group-hover:text-[#8B5E3C]"
-                style={{ fontSize: "1.25rem", color: "#1A1208", letterSpacing: "-.02em" }}
+                className="text-lg tracking-tight text-[#1C1C1C] group-hover:text-[#444] transition-colors"
+                style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
               >
                 UpForge
               </span>
-              <span
-                className="nav-sys hidden sm:block"
-                style={{ fontSize: 8, color: "#B0A090", letterSpacing: ".22em", textTransform: "uppercase", lineHeight: 1.2 }}
-              >
-                India's Startup Registry
+              <span className="text-[8px] text-[#AAA] tracking-[0.18em] uppercase hidden sm:block">
+                Startup Registry
               </span>
             </div>
           </Link>
 
-          {/* Desktop nav — separator-rule style like newspaper section tabs */}
-          <nav className="hidden md:flex items-stretch flex-1 justify-center">
+          {/* ── Desktop Nav ── */}
+          <nav className="hidden md:flex items-center gap-0 flex-1 justify-center">
             {links.map((link) => {
-              const active = pathname === link.href || pathname.startsWith(link.href + "/");
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
               return (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="nav-sys relative px-4 flex items-center transition-colors"
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: ".14em",
-                    textTransform: "uppercase",
-                    color: active ? "#1A1208" : "#8B7355",
-                    borderBottom: active ? "2px solid #C9A84C" : "2px solid transparent",
-                    borderRight: "1px solid #DDD9CF",
-                  }}
-                  onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "#1A1208"; }}
-                  onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.color = "#8B7355"; }}
+                  className={`relative px-4 py-1 text-[12px] font-medium tracking-wide uppercase transition-colors border-b-2 ${
+                    isActive
+                      ? "text-[#1C1C1C] border-[#1C1C1C]"
+                      : "text-[#888] border-transparent hover:text-[#1C1C1C] hover:border-[#D5D0C8]"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -147,32 +84,28 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Right actions */}
+          {/* ── Right Side ── */}
           <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+            {/* Live dot */}
+            <div className="flex items-center gap-1.5 border border-[#DDD] bg-white px-2.5 py-1">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+              </span>
+              <span className="text-[9px] text-[#666] font-medium tracking-wider uppercase">Live</span>
+            </div>
+
             <Link
               href="/submit"
-              className="nav-sys flex items-center gap-1.5 transition-colors"
-              style={{
-                fontSize: 10, fontWeight: 800, letterSpacing: ".16em", textTransform: "uppercase",
-                background: "#1A1208", color: "#C9A84C", padding: "8px 16px",
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = "#C9A84C";
-                (e.currentTarget as HTMLElement).style.color = "#1A1208";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = "#1A1208";
-                (e.currentTarget as HTMLElement).style.color = "#C9A84C";
-              }}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#1C1C1C] text-white text-[11px] font-bold tracking-wider uppercase hover:bg-[#333] transition-colors"
             >
-              + List Free
+              List Startup <ChevronRight className="w-3 h-3" />
             </Link>
           </div>
 
-          {/* Mobile toggle */}
+          {/* ── Mobile Toggle ── */}
           <button
-            className="md:hidden p-1.5 transition-colors"
-            style={{ color: "#1A1208" }}
+            className="md:hidden p-1.5 text-[#1C1C1C] hover:bg-[#E8E4DC] transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -181,7 +114,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* ── MOBILE DRAWER ── */}
+      {/* ── Mobile Menu ── */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-all duration-200 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -189,74 +122,56 @@ export function Navbar() {
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0"
-          style={{ background: "rgba(26,18,8,.35)", backdropFilter: "blur(3px)" }}
+          className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
           onClick={() => setIsOpen(false)}
         />
 
-        {/* Drawer panel */}
+        {/* Drawer */}
         <div
-          className={`absolute top-14 left-0 right-0 transition-transform duration-200 ${
+          className={`absolute top-14 left-0 right-0 bg-[#F7F5F0] border-b-2 border-[#1C1C1C] transition-transform duration-200 ${
             isOpen ? "translate-y-0" : "-translate-y-2"
           }`}
-          style={{
-            background: "#F5F0E8",
-            borderBottom: "3px solid #1A1208",
-            borderTop: "1px solid #C8BCA8",
-          }}
+          style={{ fontFamily: "system-ui, sans-serif" }}
         >
-          {/* Links */}
-          <div style={{ borderBottom: "1px solid #C8BCA8" }}>
-            {[{ name: "Home", href: "/" }, ...links].map((link) => {
-              const active = pathname === link.href || pathname.startsWith(link.href + "/");
+          {/* Nav links */}
+          <div className="divide-y divide-[#E8E4DC]">
+            {links.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
               return (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="nav-sys flex items-center justify-between px-6 py-4 transition-colors"
-                  style={{
-                    fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase",
-                    color: active ? "#1A1208" : "#8B7355",
-                    background: active ? "#EDE7DA" : "transparent",
-                    borderBottom: "1px solid #E8E2D8",
-                  }}
+                  className={`flex items-center justify-between px-5 py-4 text-sm font-medium tracking-wide uppercase transition-colors ${
+                    isActive
+                      ? "text-[#1C1C1C] bg-white"
+                      : "text-[#666] hover:text-[#1C1C1C] hover:bg-white/60"
+                  }`}
                 >
                   {link.name}
-                  {active && (
-                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A84C", display: "block" }} />
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1C1C1C]" />
                   )}
                 </Link>
               );
             })}
           </div>
 
-          {/* Bottom bar */}
-          <div
-            className="px-6 py-4 flex items-center justify-between gap-3"
-            style={{ background: "#EDE7DA" }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="relative flex" style={{ width: 7, height: 7 }}>
-                <span className="live-ping absolute inline-flex rounded-full"
-                  style={{ inset: 0, background: "#22c55e", opacity: .6 }} />
-                <span className="relative inline-flex rounded-full"
-                  style={{ width: 7, height: 7, background: "#22c55e" }} />
+          {/* Bottom CTA + Live */}
+          <div className="px-5 py-4 flex items-center justify-between gap-3 border-t border-[#D5D0C8] bg-white/40">
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
               </span>
-              <span className="nav-sys" style={{ fontSize: 9, color: "#8B7355", letterSpacing: ".16em", textTransform: "uppercase" }}>
-                Live Registry
-              </span>
+              <span className="text-[10px] text-[#888] font-medium uppercase tracking-wider">Live · Updated every 10 min</span>
             </div>
             <Link
               href="/submit"
               onClick={() => setIsOpen(false)}
-              className="nav-sys flex items-center gap-1.5"
-              style={{
-                fontSize: 10, fontWeight: 800, letterSpacing: ".14em", textTransform: "uppercase",
-                background: "#1A1208", color: "#C9A84C", padding: "8px 16px",
-              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1C1C1C] text-white text-[11px] font-bold tracking-wider uppercase"
             >
-              List Free <ChevronRight style={{ width: 12, height: 12 }} />
+              List Startup <ChevronRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
