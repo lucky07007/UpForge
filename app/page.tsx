@@ -8,9 +8,9 @@ import {
   DollarSign, IndianRupee, Newspaper, Rocket, Activity,
   Gem, CheckCircle2, ChevronRight, BarChart3, Users,
   Github, Twitter, Linkedin, Mail, Search, Menu,
-  X, ExternalLink, Filter, Download, BookOpen,
-  PieChart, Target, Camera, Video, Mic,
+  ExternalLink, Download, BookOpen,
 } from "lucide-react";
+import HomeClient from "@/components/HomeClient";
 
 // ─── METADATA ─────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -301,7 +301,7 @@ export default async function Home() {
 
           {/* Market Ticker */}
           <div className="border-t border-[#E5E5E5] bg-[#F5F5F5] overflow-hidden">
-            <div className="animate-marquee whitespace-nowrap py-2">
+            <div className="whitespace-nowrap py-2" style={{ animation: 'marquee 30s linear infinite' }}>
               <span className="inline-flex items-center gap-6 mx-4">
                 <LiveIndicator />
                 <span className="text-xs font-mono">NIFTY 22,345 ▲ 0.8%</span>
@@ -422,7 +422,7 @@ export default async function Home() {
               </div>
               
               <div className="space-y-1">
-                {ecosystem.sectors.map((sector, i) => (
+                {ecosystem.sectors.map((sector: any, i: number) => (
                   <SectorRow key={i} sector={sector} index={i} />
                 ))}
               </div>
@@ -437,7 +437,7 @@ export default async function Home() {
               </div>
               
               <div className="grid sm:grid-cols-2 gap-4">
-                {ecosystem.risingStartups.map((startup, i) => (
+                {ecosystem.risingStartups.map((startup: any, i: number) => (
                   <div key={i} className="border border-[#E5E5E5] p-3 hover:border-[#C9A84C] transition-colors">
                     <div className="flex items-start justify-between mb-2">
                       <p className="font-serif font-bold text-sm">{startup.name}</p>
@@ -462,7 +462,7 @@ export default async function Home() {
                 href="/startup" 
                 className="text-xs font-mono hover:text-[#C9A84C] transition-colors inline-flex items-center gap-1"
               >
-                View All {totalStartouts}+ <ChevronRight className="w-3 h-3" />
+                View All {totalStartups}+ <ChevronRight className="w-3 h-3" />
               </Link>
             </div>
 
@@ -599,7 +599,7 @@ export default async function Home() {
         </footer>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
