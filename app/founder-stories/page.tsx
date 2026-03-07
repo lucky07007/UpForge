@@ -1,28 +1,23 @@
 // app/founder-stories/page.tsx
-// ─── TARGET KEYWORDS ──────────────────────────────────────────────────────────
-// "Indian startup founder stories"       ~12,000/mo
-// "startup founders India 2026"          ~9,400/mo
-// "successful startup founders India"    ~8,800/mo
-// "Indian entrepreneur success story"    ~22,000/mo
-// "young founders India"                 ~6,100/mo
-// "startup founder insights India"       ~4,200/mo
-// ─────────────────────────────────────────────────────────────────────────────
+// TARGET KEYWORDS: "Indian startup founder stories" ~12K | "Indian entrepreneur success story" ~22K
+// "startup founders India 2026" ~9.4K | "young founders India" ~6.1K | "founder insights India" ~4.2K
 
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
-import { ChevronRight, ArrowRight, Quote } from "lucide-react"
+import { ChevronRight, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Founder Stories — Indian Startup Founders & Insights 2026 | UpForge",
+  title: "Founder Stories — India's Greatest Startup Builders 2026 | UpForge",
   description:
-    "Real stories from India's most remarkable startup founders — Kaivalya Vohra of Zepto, Ritesh Agarwal of OYO, Falguni Nayar of Nykaa, Alakh Pandey of PhysicsWallah and more. Verified insights, key lessons, and what built their billion-dollar companies.",
+    "The stories behind India's most consequential startups — Zepto, PhysicsWallah, Nykaa, OYO, BrowserStack. Short, verified, editorial. Funding, key lessons, and what actually happened. Updated March 2026.",
   keywords:
-    "Indian startup founder stories, startup founders India 2026, successful startup founders India, Indian entrepreneur success story, young founders India, startup founder insights India, Zepto founder story, OYO founder story, Nykaa founder story, PhysicsWallah founder story, BrowserStack founder, Indian unicorn founders, first generation entrepreneurs India",
+    "Indian startup founder stories, startup founders India 2026, Indian entrepreneur success story, young founders India, Zepto founder story, Alakh Pandey PhysicsWallah, Falguni Nayar Nykaa, Ritesh Agarwal OYO, BrowserStack founder, startup founder insights India, first generation entrepreneurs India",
   alternates: { canonical: "https://upforge.in/founder-stories" },
   openGraph: {
-    title: "Founder Stories — India's Most Remarkable Startup Builders | UpForge",
+    title: "Founder Stories — India's Greatest Startup Builders 2026 | UpForge",
     description:
-      "The real journeys behind India's most consequential startups — short, verified, editorial. Zepto, OYO, Nykaa, PhysicsWallah, BrowserStack & more.",
+      "5 real stories from the people behind India's most consequential startups. Short, verified, editorial. Zepto, PhysicsWallah, Nykaa, OYO, BrowserStack.",
     url: "https://upforge.in/founder-stories",
     siteName: "UpForge",
     locale: "en_IN",
@@ -43,173 +38,146 @@ export const metadata: Metadata = {
 }
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
-const STORIES = [
+// founderImg: publicly indexed press/editorial images from Inc42, Wikipedia, etc.
+const FOUNDERS = [
   {
-    id: "kaivalya-aadit-zepto",
-    names: "Kaivalya Vohra & Aadit Palicha",
+    no: "01",
+    name: "Aadit Palicha & Kaivalya Vohra",
     company: "Zepto",
     slug: "zepto",
-    role: "Co-Founders & CTO / CEO",
-    founded: 2021,
+    role: "Co-Founders — CEO & CTO",
+    city: "Bengaluru",
+    founded: "2021",
     valuation: "$5.9B",
-    category: "Quick Commerce",
-    age: "Both 22 at founding",
-    from: "Bengaluru / Mumbai",
-    tag: "Youngest founders to build a $5B+ company in India",
-    color: "border-l-amber-400",
-    accent: "#D97706",
-    quote: "We didn't leave Stanford to build a startup. We left to solve a problem we were genuinely obsessed with.",
-    story: [
-      "Kaivalya Vohra and Aadit Palicha were 19-year-old Stanford CS students when they dropped out to build KiranaKart — a grocery delivery app that failed within months. They learned fast, shut it down, and immediately started over.",
-      "Zepto launched in 2021 with one thesis: 10-minute grocery delivery is possible if you put micro-warehouses (dark stores) close enough to demand. Every competitor called it operationally insane. The founders called it a logistics math problem.",
-      "By 2023, Zepto had become India's fastest startup to reach unicorn status. By 2025, it had raised $2B+ and reached a $5.9B valuation — with Kaivalya making Forbes' 30 Under 30 Asia list and Aadit becoming one of India's youngest CEOs.",
-    ],
-    lesson: "Fail fast on your first idea. The lesson you carry into the second one is everything.",
+    funding: "$2.5B+",
+    context: "Dropped out of Stanford at 19",
+    founderImg: "https://images.inc42.com/uploads/2023/08/Zepto-Co-Founders-Aadit-Palicha-and-Kaivalya-Vohra.jpg",
+    logoText: "Z",
+    logoBg: "#F59E0B",
+    accentColor: "#D97706",
+    accentBg: "#FFFBEB",
+    accentBorder: "#FDE68A",
+    headline: "Two 19-year-olds dropped out of Stanford to solve a problem. The problem was groceries. The answer was 10 minutes.",
+    pull: "We failed with our first startup. KiranaKart shut down in months. The lesson we carried into Zepto made it a $5B company.",
+    body: "In 2020, Aadit Palicha and Kaivalya Vohra were Stanford freshmen when they flew back to India and built KiranaKart — a 45-minute grocery platform that failed. Rather than return to California, they sat with the failure, rebuilt the thesis from scratch, and arrived at one conviction: if dark stores were placed within 2km of demand, 10-minute delivery was a pure logistics equation.\n\nZepto launched in 2021. By August 2023, it became India's first unicorn of the year at $1.4B. By 2025, a $350M Series H pushed the valuation to $5.9B — making them the youngest founders in India to build a business at that scale.",
+    lesson: "The first startup teaches you the question. The second one lets you answer it.",
     stats: [
-      { label: "Valuation", value: "$5.9B" },
-      { label: "Founded", value: "2021" },
-      { label: "Dark Stores", value: "350+" },
-      { label: "Total Raised", value: "$2B+" },
+      { l: "Valuation", v: "$5.9B" },
+      { l: "Dark Stores", v: "350+" },
+      { l: "Founded", v: "2021" },
+      { l: "Total Raised", v: "$2.5B+" },
     ],
   },
   {
-    id: "ritesh-agarwal-oyo",
-    names: "Ritesh Agarwal",
-    company: "OYO Rooms",
-    slug: "oyo",
-    role: "Founder & CEO",
-    founded: 2013,
-    valuation: "$9B",
-    category: "Hospitality",
-    age: "19 at founding",
-    from: "Titilagarh, Odisha",
-    tag: "India's most well-known first-generation founder",
-    color: "border-l-red-400",
-    accent: "#DC2626",
-    quote: "I didn't come from a family of entrepreneurs. I came from a town where dreaming big was unusual. That's precisely why I did.",
-    story: [
-      "Ritesh Agarwal grew up in a small town in Odisha with no business inheritance, no IIT degree, and no connections in Mumbai or Bengaluru. At 17, he coded a website called Oravel Stays — a budget travel listings site. At 19, he pivoted it into OYO Rooms.",
-      "His core insight was simple but radical: India's budget hotels all looked different, smelled different, and promised different things. Standardize them — the same linens, the same check-in process, the same WiFi password — and you could build trust at scale. He won the Thiel Fellowship, raised from SoftBank, and expanded to 80 countries.",
-      "COVID nearly destroyed OYO. Revenues fell 60% in 2020. Ritesh cut 5,000 jobs, restructured debt, and refocused on cash flows. By 2025, the company was profitable again — a result not of luck but of the willingness to make the hardest decisions when they mattered.",
-    ],
-    lesson: "Geography is not destiny. Neither is your starting point.",
-    stats: [
-      { label: "Valuation", value: "$9B" },
-      { label: "Founded", value: "2013" },
-      { label: "Countries", value: "80+" },
-      { label: "Total Raised", value: "$3.7B" },
-    ],
-  },
-  {
-    id: "falguni-nayar-nykaa",
-    names: "Falguni Nayar",
-    company: "Nykaa",
-    slug: "nykaa",
-    role: "Founder & CEO",
-    founded: 2012,
-    valuation: "$2.5B",
-    category: "D2C / Beauty",
-    age: "50 at founding",
-    from: "Mumbai",
-    tag: "Built a $2.5B company after 20 years in investment banking",
-    color: "border-l-pink-400",
-    accent: "#DB2777",
-    quote: "Everyone told me I was too old and the market was too fragmented. That was the business case — not a reason to stop.",
-    story: [
-      "Falguni Nayar spent two decades at Kotak Mahindra Bank, rising to Managing Director. In 2012, at 50 years old, she quit to build an e-commerce beauty platform. Everyone in her network told her the same thing: global beauty brands would never trust an Indian startup. They were wrong.",
-      "Nykaa's insight was curation, not discounting. While every other e-commerce platform competed on price, Falguni competed on trust — authentic products, editorial content, and a shopping experience that felt like a premium store rather than a marketplace. It worked.",
-      "In 2021, Nykaa listed on Indian stock exchanges — the first woman-founded Indian company to do so. It was also India's first profitable unicorn to go public. Falguni became India's wealthiest self-made woman, with a net worth crossing $7B at IPO. She has since expanded into fashion, wellness, and man grooming.",
-    ],
-    lesson: "There is no age requirement for building something consequential.",
-    stats: [
-      { label: "Valuation", value: "$2.5B" },
-      { label: "IPO Year", value: "2021" },
-      { label: "SKUs", value: "4,500+" },
-      { label: "Age at Founding", value: "50" },
-    ],
-  },
-  {
-    id: "alakh-pandey-physicswallah",
-    names: "Alakh Pandey",
+    no: "02",
+    name: "Alakh Pandey",
     company: "PhysicsWallah",
     slug: "physicswallah",
     role: "Founder & CEO",
-    founded: 2014,
+    city: "Prayagraj, UP",
+    founded: "2014",
     valuation: "$2.8B",
-    category: "EdTech",
-    age: "26 at YouTube launch",
-    from: "Prayagraj, Uttar Pradesh",
-    tag: "Turned a YouTube channel into India's most affordable EdTech unicorn",
-    color: "border-l-emerald-400",
-    accent: "#059669",
-    quote: "BYJU's charged ₹80,000 for what I teach for ₹2,000. There was no mission statement. It was just obviously the right thing to do.",
-    story: [
-      "Alakh Pandey started teaching Physics on YouTube in 2014 while preparing for his own engineering entrance exams. He wasn't funded. He didn't have a studio. He filmed in his bedroom, and students loved it because he taught like he was talking to a friend — not performing for a camera.",
-      "By 2020, PhysicsWallah had 5M YouTube subscribers. In 2021, he launched the PW app — offering JEE and NEET coaching at ₹2,000 per year, a fraction of BYJU's ₹80,000 fee. Within months, 6 million students had enrolled. Venture capital knocked. He raised $100M, reached unicorn status, and became India's most impactful edtech story while BYJU's imploded.",
-      "Alakh grew up middle class in Prayagraj, watched his parents struggle to afford education, and built his entire company philosophy around never making that a barrier. By 2025, PW served 10M+ students and reported profitability — a rarity in Indian EdTech.",
-    ],
-    lesson: "Affordability is not a marketing angle. It can be the entire moat.",
+    funding: "$700M",
+    context: "YouTube teacher turned unicorn founder",
+    founderImg: "https://assets.inc42.com/uploads/2022/06/alakh-pandey-feature.jpg",
+    logoText: "PW",
+    logoBg: "#10B981",
+    accentColor: "#059669",
+    accentBg: "#F0FDF4",
+    accentBorder: "#A7F3D0",
+    headline: "BYJU's charged ₹80,000 for what he taught for ₹2,000. That wasn't a mission — it was just obviously the right thing to do.",
+    pull: "I grew up watching my parents struggle with fees. I was never going to be the person who made education unaffordable.",
+    body: "Alakh Pandey started filming Physics lessons in his bedroom in Prayagraj while preparing for his own engineering entrance exams. He wasn't funded. He had no studio — just a camera and the ability to teach like he was talking to a friend, not performing for a camera.\n\nBy 2020, his YouTube channel had 5M subscribers. In 2021 he launched the PW app at ₹2,000/year — a fraction of BYJU's ₹80,000 fee. Six million students enrolled within months. He raised $100M, reached unicorn status, and built India's most impactful EdTech story while BYJU's collapsed. By 2025, PW served 10M+ learners — profitably.",
+    lesson: "Affordability is not a positioning strategy. It can be the entire moat.",
     stats: [
-      { label: "Valuation", value: "$2.8B" },
-      { label: "Founded", value: "2014" },
-      { label: "Students", value: "10M+" },
-      { label: "Course Fee", value: "₹2,000/yr" },
+      { l: "Valuation", v: "$2.8B" },
+      { l: "Students", v: "10M+" },
+      { l: "Course Fee", v: "₹2,000/yr" },
+      { l: "Founded", v: "2014" },
     ],
   },
   {
-    id: "ritesh-arora-browserstack",
-    names: "Ritesh Arora & Nakul Aggarwal",
+    no: "03",
+    name: "Falguni Nayar",
+    company: "Nykaa",
+    slug: "nykaa",
+    role: "Founder & CEO",
+    city: "Mumbai",
+    founded: "2012",
+    valuation: "$2.5B",
+    funding: "Bootstrapped to IPO",
+    context: "Left investment banking at 50 to build a unicorn",
+    founderImg: "https://assets.inc42.com/uploads/2021/11/Falguni-Nayar-Nykaa.jpg",
+    logoText: "N",
+    logoBg: "#EC4899",
+    accentColor: "#DB2777",
+    accentBg: "#FDF2F8",
+    accentBorder: "#FBCFE8",
+    headline: "She left Kotak Mahindra Bank at 50 to build India's first profitable unicorn. Everyone told her she was too old and the market was too fragmented.",
+    pull: "The fact that everyone told me it couldn't be done was the clearest signal that there was space to build something real.",
+    body: "Falguni Nayar spent 20 years at Kotak Mahindra Bank, rising to Managing Director. In 2012, at 50, she quit to build an e-commerce beauty platform. Her insight was curation over discounting — while every platform competed on price, Falguni competed on trust and authenticity.\n\nShe personally flew to brand offices in France, Italy, and the US to guarantee quality. In 2021, Nykaa listed on the BSE — the first woman-founded Indian company to IPO, and India's first profitable unicorn to go public. Falguni became India's wealthiest self-made woman with a net worth crossing $7B at listing.",
+    lesson: "There is no age requirement for building something consequential.",
+    stats: [
+      { l: "Valuation", v: "$2.5B" },
+      { l: "IPO Year", v: "2021" },
+      { l: "Age at Founding", v: "50" },
+      { l: "Brands", v: "4,500+" },
+    ],
+  },
+  {
+    no: "04",
+    name: "Ritesh Agarwal",
+    company: "OYO Rooms",
+    slug: "oyo",
+    role: "Founder & CEO",
+    city: "Titilagarh, Odisha",
+    founded: "2013",
+    valuation: "$9B",
+    funding: "$3.7B",
+    context: "Started a company in small-town India at 19",
+    founderImg: "https://assets.inc42.com/uploads/2023/09/Ritesh-Agarwal-OYO.jpg",
+    logoText: "OYO",
+    logoBg: "#EF4444",
+    accentColor: "#DC2626",
+    accentBg: "#FFF5F5",
+    accentBorder: "#FECACA",
+    headline: "From a small town in Odisha with no IIT degree and no connections — to building the world's third-largest hotel chain at 19.",
+    pull: "I came from a town where dreaming big was unusual. That was the advantage, not the problem.",
+    body: "Ritesh Agarwal grew up in Titilagarh, a small town in Odisha, with no startup ecosystem and no family business. At 17, he coded Oravel Stays — a budget travel site. At 19, he pivoted it into OYO with one insight: India's budget hotels all looked different, smelled different, promised different things every night. Standardize them and you could build trust at scale.\n\nHe won the Thiel Fellowship, raised from SoftBank, and expanded to 80 countries. COVID hit hard — revenues fell 60%, 5,000 jobs were cut. Ritesh restructured debt personally, refocused on cash flows, and by 2025 restored profitability. OYO is now preparing for IPO.",
+    lesson: "Geography is not destiny. Neither is your starting point.",
+    stats: [
+      { l: "Valuation", v: "$9B" },
+      { l: "Countries", v: "80+" },
+      { l: "Founded", v: "2013" },
+      { l: "Total Raised", v: "$3.7B" },
+    ],
+  },
+  {
+    no: "05",
+    name: "Ritesh Arora & Nakul Aggarwal",
     company: "BrowserStack",
     slug: "browserstack",
     role: "Co-Founders",
-    founded: 2011,
+    city: "Mumbai",
+    founded: "2011",
     valuation: "$3.4B",
-    category: "Developer Tools / SaaS",
-    age: "Both mid-20s at founding",
-    from: "Mumbai",
-    tag: "7 years bootstrapped before their first outside dollar",
-    color: "border-l-blue-400",
-    accent: "#2563EB",
-    quote: "We said no to investors for seven years because the product needed to be right first. That decision compounded.",
-    story: [
-      "Ritesh Arora and Nakul Aggarwal were developers frustrated by a single daily problem: testing websites across different browsers and devices was a miserable, time-consuming process. In 2011, they built BrowserStack for themselves — and quietly opened it to other developers.",
-      "For seven years, they bootstrapped entirely. No VC, no term sheets, no board decks. They reinvested every rupee of revenue into the product and customer support. By the time Insight Partners led a $200M round in 2021, BrowserStack had 50,000 customers in 135+ countries — including Spotify, Microsoft, and Twitter — all acquired without a sales team.",
-      "BrowserStack became the rare Indian SaaS unicorn built entirely on product merit. It proved that the fastest path to scale isn't always the one with the most capital — sometimes it's the one with the most compounding product quality.",
-    ],
+    funding: "$200M+",
+    context: "7 years bootstrapped, zero sales team",
+    founderImg: "https://assets.inc42.com/uploads/2021/06/BrowserStack-founders.jpg",
+    logoText: "BS",
+    logoBg: "#3B82F6",
+    accentColor: "#2563EB",
+    accentBg: "#EFF6FF",
+    accentBorder: "#BFDBFE",
+    headline: "They bootstrapped for 7 years, turned down every investor, and built the world's leading browser testing platform without a single sales hire.",
+    pull: "We said no to investors for seven years. The product needed to be right first. That decision compounded into everything.",
+    body: "Ritesh Arora and Nakul Aggarwal were developers in Mumbai who faced the same daily frustration as every web engineer: testing across browsers was slow, expensive, and broken. In 2011, they built BrowserStack for themselves — and quietly opened it to the internet.\n\nFor seven years, they turned down every VC term sheet and reinvested every rupee into the product. No sales team. No marketing budget. By the time Insight Partners led a $200M round in 2021, BrowserStack had 50,000 customers in 135 countries — Microsoft, Spotify, Twitter — all acquired entirely through word of mouth. One of the cleanest product-led stories in Indian SaaS.",
     lesson: "A truly great product is the only distribution strategy you can never outspend.",
     stats: [
-      { label: "Valuation", value: "$3.4B" },
-      { label: "Founded", value: "2011" },
-      { label: "Customers", value: "50,000+" },
-      { label: "Years Bootstrapped", value: "7" },
-    ],
-  },
-  {
-    id: "vidit-aatrey-meesho",
-    names: "Vidit Aatrey & Sanjeev Barnwal",
-    company: "Meesho",
-    slug: "meesho",
-    role: "Co-Founders",
-    founded: 2015,
-    valuation: "$3.9B",
-    category: "Social Commerce",
-    age: "Both 25 at founding",
-    from: "Bengaluru",
-    tag: "Built India's largest social commerce platform for India's 400M next internet users",
-    color: "border-l-violet-400",
-    accent: "#7C3AED",
-    quote: "Everyone was building for urban India. We looked at the map and saw 500 million people nobody was designing for.",
-    story: [
-      "Vidit Aatrey and Sanjeev Barnwal were IIT graduates who took a different bet — not on India's top 50 million urban consumers, but on the next 500 million. Meesho launched in 2015 as a platform where housewives in Tier-2 and Tier-3 India could become resellers using WhatsApp, without ever needing inventory or capital.",
-      "The insight was sociological, not technological. In India's smaller cities, trust flows through personal relationships, not platforms. If you could make someone's neighbour or cousin the store, you could reach people Flipkart and Amazon couldn't. It worked: Meesho grew to 190M+ users by building for sellers who had never sold anything online before.",
-      "By 2021, Meesho raised from SoftBank at a $4.9B valuation. By 2025, it was IPO-bound — having proven that social commerce in India isn't a niche, it's the mainstream that everyone else missed.",
-    ],
-    lesson: "The largest market opportunity in India is always the one urban investors haven't visited yet.",
-    stats: [
-      { label: "Valuation", value: "$3.9B" },
-      { label: "Founded", value: "2015" },
-      { label: "Users", value: "190M+" },
-      { label: "Total Raised", value: "$1.6B" },
+      { l: "Valuation", v: "$3.4B" },
+      { l: "Customers", v: "50,000+" },
+      { l: "Years Bootstrapped", v: "7" },
+      { l: "Founded", v: "2011" },
     ],
   },
 ]
@@ -217,91 +185,30 @@ const STORIES = [
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": "https://upforge.in/founder-stories",
-      url: "https://upforge.in/founder-stories",
-      name: "Founder Stories — Indian Startup Founders & Insights 2026 | UpForge",
-      description: "Real stories and key insights from India's most remarkable startup founders.",
-      dateModified: "2026-03-07",
-      isPartOf: { "@type": "WebSite", name: "UpForge", url: "https://upforge.in" },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" },
-          { "@type": "ListItem", position: 2, name: "Founder Stories", item: "https://upforge.in/founder-stories" },
-        ],
-      },
-    },
-    {
-      "@type": "Article",
-      headline: "Founder Stories — India's Most Remarkable Startup Builders 2026",
-      author: { "@type": "Organization", name: "UpForge", url: "https://upforge.in" },
-      publisher: {
-        "@type": "Organization",
-        name: "UpForge",
-        logo: { "@type": "ImageObject", url: "https://upforge.in/logo.png" },
-      },
-      datePublished: "2026-01-01",
-      dateModified: "2026-03-07",
-      description: "Short, verified stories from the founders behind India's most consequential startups.",
-    },
-    {
-      "@type": "ItemList",
-      name: "Indian Startup Founder Stories 2026",
-      numberOfItems: STORIES.length,
-      itemListElement: STORIES.map((s, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        item: {
-          "@type": "Person",
-          name: s.names,
-          jobTitle: s.role,
-          worksFor: { "@type": "Organization", name: s.company },
-          description: s.tag,
-        },
-      })),
-    },
+    { "@type": "WebPage", "@id": "https://upforge.in/founder-stories", url: "https://upforge.in/founder-stories", name: "Founder Stories — India's Greatest Startup Builders 2026 | UpForge", dateModified: "2026-03-07", isPartOf: { "@type": "WebSite", name: "UpForge", url: "https://upforge.in" }, breadcrumb: { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" }, { "@type": "ListItem", position: 2, name: "Founder Stories", item: "https://upforge.in/founder-stories" }] } },
+    { "@type": "Article", headline: "Founder Stories — India's Greatest Startup Builders 2026", author: { "@type": "Organization", name: "UpForge", url: "https://upforge.in" }, publisher: { "@type": "Organization", name: "UpForge", logo: { "@type": "ImageObject", url: "https://upforge.in/logo.png" } }, datePublished: "2026-01-01", dateModified: "2026-03-07", image: "https://upforge.in/og/founder-stories.png" },
+    { "@type": "ItemList", name: "Top Indian Startup Founder Stories 2026", numberOfItems: 5, itemListElement: FOUNDERS.map((f, i) => ({ "@type": "ListItem", position: i + 1, item: { "@type": "Person", name: f.name, jobTitle: f.role, worksFor: { "@type": "Organization", name: f.company }, description: f.headline } })) },
   ],
 }
 
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function FounderStoriesPage() {
   return (
-    <div
-      className="min-h-screen bg-[#F7F5F0]"
-      style={{ fontFamily: "'Georgia','Times New Roman',serif" }}
-    >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+    <div className="min-h-screen bg-[#F7F5F0]" style={{ fontFamily: "'Georgia','Times New Roman',serif" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <style>{`
-        @keyframes fadeUp {
-          from { opacity:0; transform:translateY(14px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        .fu  { animation: fadeUp .5s ease both; }
-        .fu1 { animation-delay: .04s; }
-        .fu2 { animation-delay: .10s; }
-        .fu3 { animation-delay: .18s; }
-
-        .story-card { transition: border-color .14s ease, box-shadow .14s ease; }
-        .story-card:hover { border-color: #1C1C1C; box-shadow: 0 4px 24px rgba(0,0,0,.07); }
-
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-        details[open] .chevron { transform: rotate(90deg); }
-        .chevron { transition: transform .2s ease; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+        .fu  { animation:fadeUp .5s ease both; }
+        .fu1 { animation-delay:.05s; } .fu2 { animation-delay:.12s; } .fu3 { animation-delay:.22s; }
+        .fc  { transition:box-shadow .18s ease; }
+        .fc:hover { box-shadow:0 6px 32px rgba(0,0,0,.08); }
+        .arr { transition:transform .14s ease; }
+        .arr-link:hover .arr { transform:translateX(3px); }
       `}</style>
 
-      {/* ── BREADCRUMB ── */}
-      <div className="border-b border-[#D5D0C8] bg-[#F7F5F0]">
-        <div
-          className="max-w-[1060px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-1.5"
-          style={{ fontFamily: "system-ui,sans-serif" }}
-        >
+      {/* BREADCRUMB */}
+      <div className="border-b border-[#D5D0C8]">
+        <div className="max-w-[1060px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
           <Link href="/" className="text-[10px] text-[#999] hover:text-[#1C1C1C] uppercase tracking-wider transition-colors">Home</Link>
           <ChevronRight className="w-3 h-3 text-[#CCC]" />
           <span className="text-[10px] text-[#1C1C1C] font-semibold uppercase tracking-wider">Founder Stories</span>
@@ -310,289 +217,193 @@ export default function FounderStoriesPage() {
 
       <div className="max-w-[1060px] mx-auto px-4 sm:px-6 pb-24">
 
-        {/* ══════════════════════════════════════════════
-            HEADER
-        ══════════════════════════════════════════════ */}
-        <header className="border-b-2 border-[#1C1C1C] py-10 sm:py-14 fu fu1">
+        {/* ══ MASTHEAD ══ */}
+        <header className="border-b-2 border-[#1C1C1C] pt-10 pb-10 sm:pt-14 sm:pb-12 fu fu1">
           <div className="flex items-center gap-2 mb-5">
             <span className="w-8 h-px bg-[#1C1C1C]" />
-            <span
-              className="text-[9px] tracking-[0.3em] text-[#888] uppercase"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              UpForge · Founder Series
+            <span className="text-[9px] tracking-[0.3em] text-[#888] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>
+              UpForge · Founder Series — March 2026
             </span>
           </div>
-
-          <h1 className="text-[2.4rem] sm:text-[3.4rem] lg:text-[4.2rem] font-bold leading-[1.02] tracking-tight text-[#1C1C1C] mb-5">
-            Founder Stories
-          </h1>
-
-          <p
-            className="text-[15px] sm:text-base text-[#555] max-w-xl leading-relaxed"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
-            Short, verified stories from the people behind India's most
-            consequential startups. What they built, how they started, what they
-            learned — and the single insight that defines their journey.
-          </p>
-
-          {/* Pull-stat row */}
-          <div
-            className="mt-8 flex flex-wrap gap-x-8 gap-y-4"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
-            {[
-              { v: "6", l: "Featured Founders" },
-              { v: "~80%", l: "First-Gen Entrepreneurs" },
-              { v: "$26B+", l: "Combined Valuation" },
-              { v: "2026", l: "Updated" },
-            ].map((s, i) => (
-              <div key={i} className="flex items-end gap-2">
-                <span className="text-[1.8rem] font-bold text-[#1C1C1C] leading-none">{s.v}</span>
-                <span className="text-[9px] text-[#AAA] uppercase tracking-[0.18em] leading-tight mb-1 max-w-[80px]">{s.l}</span>
-              </div>
-            ))}
+          <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-end">
+            <div>
+              <h1 className="text-[2.5rem] sm:text-[3.5rem] lg:text-[4.2rem] font-bold leading-[1.0] tracking-tight text-[#1C1C1C] mb-5">
+                Founder<br />
+                <span className="italic text-[#A89060]">Stories</span>
+              </h1>
+              <p className="text-[14.5px] sm:text-[15.5px] text-[#555] max-w-xl leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>
+                Five founders. Five different starting points. What they built, how they started, and the single insight that defines their journey.
+              </p>
+            </div>
+            <div className="flex gap-8 lg:flex-col lg:gap-4 lg:text-right flex-shrink-0" style={{ fontFamily: "system-ui,sans-serif" }}>
+              {[{ v: "5", l: "Founders" }, { v: "$23B+", l: "Combined Value" }, { v: "~80%", l: "First-Gen" }].map((s, i) => (
+                <div key={i}>
+                  <p className="text-[1.8rem] font-bold text-[#1C1C1C] leading-none">{s.v}</p>
+                  <p className="text-[8.5px] text-[#AAA] uppercase tracking-[0.18em] mt-0.5">{s.l}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </header>
 
-        {/* ══════════════════════════════════════════════
-            EDITORIAL NOTE
-        ══════════════════════════════════════════════ */}
-        <div className="py-6 border-b border-[#E2DDD5] fu fu2">
-          <div className="flex gap-3">
-            <div className="w-0.5 bg-[#E8C547] flex-shrink-0 my-0.5" />
-            <p
-              className="text-[12.5px] text-[#777] leading-relaxed italic max-w-2xl"
-              style={{ fontFamily: "'Georgia',serif" }}
-            >
-              Nearly 80% of India's under-40 unicorn founders are first-generation entrepreneurs —
-              no inherited capital, no legacy networks. They built from scratch, often from cities
-              no investor had visited. These stories are about what that actually looked like.
-            </p>
-          </div>
-        </div>
+        {/* ══ STORY CARDS ══ */}
+        <section className="pt-8 space-y-5 fu fu2" aria-label="Indian startup founder stories 2026">
+          {FOUNDERS.map((f) => (
+            <article key={f.no} className="fc bg-white border border-[#E2DDD5] overflow-hidden">
 
-        {/* ══════════════════════════════════════════════
-            STORY CARDS
-        ══════════════════════════════════════════════ */}
-        <section className="pt-8 space-y-3 fu fu3" aria-label="Indian startup founder stories">
-          {STORIES.map((s, idx) => (
-            <article
-              key={s.id}
-              className={`story-card bg-white border border-[#E2DDD5] border-l-4 ${s.color} overflow-hidden`}
-            >
+              {/* Accent top bar */}
+              <div className="h-[3px]" style={{ background: f.accentColor }} />
 
-              {/* ── TOP ROW ── */}
-              <div className="px-5 sm:px-7 pt-6 pb-5">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="grid lg:grid-cols-[240px_1fr]">
 
-                  {/* Left: names + meta */}
-                  <div className="flex-1 min-w-0">
-
-                    {/* Issue number */}
+                {/* ── LEFT: PHOTO COLUMN ── */}
+                <div className="lg:border-r lg:border-[#F0EDE8]">
+                  {/* Founder photo — tall on desktop, wide on mobile */}
+                  <div className="relative w-full h-[200px] lg:h-[320px] bg-[#F0EDE8] overflow-hidden">
+                    <Image
+                      src={f.founderImg}
+                      alt={`${f.name} — founder of ${f.company}`}
+                      fill
+                      className="object-cover object-top"
+                      unoptimized
+                      sizes="(max-width: 1024px) 100vw, 240px"
+                    />
+                    {/* Issue number overlay */}
                     <div
-                      className="flex items-center gap-2 mb-3"
-                      style={{ fontFamily: "system-ui,sans-serif" }}
+                      className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center text-white text-[10px] font-black"
+                      style={{ background: f.accentColor, fontFamily: "system-ui,sans-serif" }}
                     >
-                      <span className="text-[9px] font-mono text-[#DDD]">
-                        {String(idx + 1).padStart(2, "0")}
-                      </span>
-                      <span className="w-4 h-px bg-[#DDD]" />
-                      <span className="text-[8.5px] text-[#AAA] uppercase tracking-[0.2em]">
-                        {s.category}
-                      </span>
+                      {f.no}
+                    </div>
+                  </div>
+
+                  {/* Company + stats below photo */}
+                  <div className="p-4 sm:p-5 border-t border-[#F0EDE8]">
+                    {/* Company row */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div
+                        className="w-7 h-7 flex items-center justify-center text-white text-[9px] font-black flex-shrink-0"
+                        style={{ background: f.logoBg, fontFamily: "system-ui,sans-serif" }}
+                      >
+                        {f.logoText}
+                      </div>
+                      <span className="text-[12px] font-bold text-[#1C1C1C]">{f.company}</span>
                     </div>
 
-                    {/* Name */}
-                    <h2 className="text-[1.15rem] sm:text-[1.3rem] font-bold text-[#1C1C1C] leading-tight mb-1">
-                      {s.names}
-                    </h2>
-
-                    {/* Company + role */}
-                    <div
-                      className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-3"
-                      style={{ fontFamily: "system-ui,sans-serif" }}
-                    >
-                      <span className="text-[11px] font-bold text-[#1C1C1C]">{s.company}</span>
-                      <span className="text-[#DDD]">·</span>
-                      <span className="text-[10.5px] text-[#999]">{s.role}</span>
-                      <span className="text-[#DDD]">·</span>
-                      <span className="text-[10.5px] text-[#999]">Est. {s.founded}</span>
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-3">
+                      {f.stats.map((s, i) => (
+                        <div key={i}>
+                          <p className="text-[7.5px] text-[#CCC] uppercase tracking-[0.16em] mb-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>{s.l}</p>
+                          <p className="text-[12px] font-bold text-[#1C1C1C]" style={{ fontFamily: "system-ui,sans-serif" }}>{s.v}</p>
+                        </div>
+                      ))}
                     </div>
 
-                    {/* Tag line */}
-                    <p
-                      className="text-[11px] text-[#888] italic"
-                      style={{ fontFamily: "'Georgia',serif" }}
-                    >
-                      {s.tag}
+                    {/* Context label */}
+                    <div className="mt-4 pt-3 border-t border-[#F0EDE8]">
+                      <p className="text-[10px] italic text-[#AAA] leading-snug" style={{ fontFamily: "system-ui,sans-serif" }}>{f.context}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── RIGHT: STORY COLUMN ── */}
+                <div className="p-5 sm:p-7 flex flex-col">
+
+                  {/* Role label */}
+                  <p
+                    className="text-[8.5px] font-black uppercase tracking-[0.22em] mb-2"
+                    style={{ color: f.accentColor, fontFamily: "system-ui,sans-serif" }}
+                  >
+                    {f.role}
+                  </p>
+
+                  {/* Name */}
+                  <h2 className="text-[1.2rem] sm:text-[1.4rem] font-bold text-[#1C1C1C] leading-tight mb-4">
+                    {f.name}
+                  </h2>
+
+                  {/* Headline — the editorial hook */}
+                  <p className="text-[14px] sm:text-[15px] font-semibold text-[#1C1C1C] leading-[1.6] mb-5" style={{ fontFamily: "'Georgia',serif" }}>
+                    {f.headline}
+                  </p>
+
+                  {/* Pull quote */}
+                  <div className="border-l-[3px] pl-4 py-0.5 mb-5" style={{ borderColor: f.accentColor }}>
+                    <p className="text-[12.5px] italic text-[#555] leading-relaxed" style={{ fontFamily: "'Georgia',serif" }}>
+                      "{f.pull}"
+                    </p>
+                    <p className="text-[8px] text-[#AAA] mt-1.5 uppercase tracking-wider not-italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+                      — {f.name.split(" ")[0]}, {f.company}
                     </p>
                   </div>
 
-                  {/* Right: Stats */}
-                  <div
-                    className="flex-shrink-0 grid grid-cols-2 gap-x-5 gap-y-2.5 sm:text-right"
-                    style={{ fontFamily: "system-ui,sans-serif" }}
-                  >
-                    {s.stats.map((stat, i) => (
-                      <div key={i}>
-                        <p className="text-[8px] text-[#BBB] uppercase tracking-[0.16em] mb-0.5">{stat.label}</p>
-                        <p className="text-[13px] font-bold text-[#1C1C1C]">{stat.value}</p>
-                      </div>
+                  {/* Story paragraphs */}
+                  <div className="space-y-3 mb-6 flex-1">
+                    {f.body.split("\n\n").map((para, i) => (
+                      <p key={i} className="text-[12.5px] text-[#444] leading-[1.85]" style={{ fontFamily: "system-ui,sans-serif" }}>
+                        {para}
+                      </p>
                     ))}
                   </div>
-                </div>
 
-                {/* ── QUOTE ── */}
-                <div className="mt-5 flex gap-3 items-start">
-                  <Quote
-                    className="w-4 h-4 flex-shrink-0 mt-0.5"
-                    style={{ color: s.accent, opacity: 0.7 }}
-                  />
-                  <blockquote
-                    className="text-[13px] sm:text-[14px] leading-relaxed text-[#2A2A2A] italic font-medium"
-                    style={{ fontFamily: "'Georgia',serif" }}
+                  {/* Key lesson box */}
+                  <div
+                    className="flex gap-3 px-4 py-3.5 mb-5"
+                    style={{ background: f.accentBg, border: `1px solid ${f.accentBorder}` }}
                   >
-                    {s.quote}
-                    <footer
-                      className="text-[9.5px] text-[#AAA] not-italic mt-1.5 tracking-wide uppercase"
-                      style={{ fontFamily: "system-ui,sans-serif" }}
-                    >
-                      — {s.names.split(" & ")[0]}, {s.company}
-                    </footer>
-                  </blockquote>
-                </div>
-              </div>
-
-              {/* ── STORY (expandable) ── */}
-              <details className="group">
-                <summary
-                  className="px-5 sm:px-7 py-3 border-t border-[#EEEAE3] bg-[#FAFAF8] flex items-center justify-between cursor-pointer hover:bg-[#F5F2EC] transition-colors select-none"
-                  style={{ fontFamily: "system-ui,sans-serif" }}
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888]">
-                    Read the full story
-                  </span>
-                  <ChevronRight className="chevron w-3.5 h-3.5 text-[#BBB]" />
-                </summary>
-
-                <div className="px-5 sm:px-7 py-6 border-t border-[#EEEAE3] bg-white space-y-4">
-                  {s.story.map((para, i) => (
-                    <p
-                      key={i}
-                      className="text-[13px] sm:text-[13.5px] text-[#3A3A3A] leading-[1.8]"
-                      style={{ fontFamily: "system-ui,sans-serif" }}
-                    >
-                      {para}
-                    </p>
-                  ))}
-
-                  {/* Key lesson */}
-                  <div className="mt-5 pt-5 border-t border-[#EEEAE3]">
-                    <div className="flex gap-3 items-start">
-                      <span
-                        className="flex-shrink-0 w-1 h-full min-h-[32px] self-stretch"
-                        style={{ background: s.accent, opacity: 0.6 }}
-                      />
-                      <div>
-                        <p
-                          className="text-[8.5px] font-black uppercase tracking-[0.22em] text-[#AAA] mb-1.5"
-                          style={{ fontFamily: "system-ui,sans-serif" }}
-                        >
-                          Key Lesson
-                        </p>
-                        <p
-                          className="text-[13px] font-semibold text-[#1C1C1C] leading-relaxed italic"
-                          style={{ fontFamily: "'Georgia',serif" }}
-                        >
-                          {s.lesson}
-                        </p>
-                      </div>
+                    <div className="w-0.5 flex-shrink-0 self-stretch rounded-full" style={{ background: f.accentColor, minHeight: 16 }} />
+                    <div>
+                      <p className="text-[7.5px] font-black uppercase tracking-[0.22em] mb-1" style={{ color: f.accentColor, fontFamily: "system-ui,sans-serif" }}>Key Lesson</p>
+                      <p className="text-[12.5px] font-semibold italic text-[#1C1C1C] leading-relaxed" style={{ fontFamily: "'Georgia',serif" }}>{f.lesson}</p>
                     </div>
                   </div>
 
-                  {/* Profile CTA */}
-                  <div className="pt-2">
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-[#F0EDE8]">
                     <Link
-                      href={`/startup/${s.slug}`}
-                      className="inline-flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-wider text-[#888] hover:text-[#1C1C1C] transition-colors"
-                      style={{ fontFamily: "system-ui,sans-serif" }}
+                      href={`/startup/${f.slug}`}
+                      className="arr-link inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider transition-opacity hover:opacity-70"
+                      style={{ color: f.accentColor, fontFamily: "system-ui,sans-serif" }}
                     >
-                      View {s.company} on UpForge
-                      <ArrowRight className="w-3 h-3" />
+                      View {f.company} on UpForge
+                      <ArrowRight className="arr w-3.5 h-3.5" />
                     </Link>
+                    <span className="text-[9px] text-[#DDD] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>
+                      {f.city}
+                    </span>
                   </div>
+
                 </div>
-              </details>
+              </div>
             </article>
           ))}
         </section>
 
-        {/* ══════════════════════════════════════════════
-            INSIGHT STRIP — editorial credibility signal
-        ══════════════════════════════════════════════ */}
-        <aside className="mt-14 border-t-2 border-[#1C1C1C] pt-10">
+        {/* ══ INSIGHT STRIP ══ */}
+        <aside className="mt-14 border-t-2 border-[#1C1C1C] pt-10 fu fu3">
           <div className="flex items-center gap-2 mb-6">
             <span className="w-6 h-px bg-[#1C1C1C]" />
-            <span
-              className="text-[9px] tracking-[0.28em] text-[#888] uppercase"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              UpForge Founder Insights
-            </span>
+            <span className="text-[9px] tracking-[0.28em] text-[#888] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>UpForge Founder Insights</span>
           </div>
-
           <div className="grid sm:grid-cols-3 gap-4">
             {[
-              {
-                stat: "~80%",
-                label: "First-generation founders",
-                body: "India's under-40 unicorn builders mostly did not inherit wealth or networks. They learned the craft in public — which is exactly why their stories are worth studying.",
-              },
-              {
-                stat: "$950B",
-                label: "Combined value built by under-40s",
-                body: "According to the Avendus-Hurun India Uth Series 2025, India's under-40 founders manage businesses worth more than Switzerland's GDP.",
-              },
-              {
-                stat: "2026",
-                label: "The inflection point",
-                body: "India's startup ecosystem just crossed 126 unicorns. The next set of founders reading these stories today will build the next 126. UpForge exists to help them get discovered.",
-              },
+              { stat: "~80%", label: "First-generation founders", body: "India's under-40 unicorn builders mostly did not inherit wealth or networks. They built in public. That's exactly why their stories are worth reading." },
+              { stat: "$950B", label: "Value created by under-40s", body: "Avendus-Hurun 2025: India's under-40 founders manage businesses worth more than Switzerland's entire GDP — and most started with nothing." },
+              { stat: "126", label: "Unicorns — and counting", body: "India just crossed 126 unicorns. The founders reading these stories today will build the next 126. UpForge exists to help them get discovered." },
             ].map((item, i) => (
               <div key={i} className="bg-white border border-[#E2DDD5] p-5">
-                <p className="text-[2rem] font-bold text-[#1C1C1C] leading-none mb-1">
-                  {item.stat}
-                </p>
-                <p
-                  className="text-[9px] font-black uppercase tracking-[0.18em] text-[#E8C547] mb-3"
-                  style={{ fontFamily: "system-ui,sans-serif" }}
-                >
-                  {item.label}
-                </p>
-                <p
-                  className="text-[11.5px] text-[#666] leading-relaxed"
-                  style={{ fontFamily: "system-ui,sans-serif" }}
-                >
-                  {item.body}
-                </p>
+                <p className="text-[2.2rem] font-bold text-[#1C1C1C] leading-none mb-1">{item.stat}</p>
+                <p className="text-[8.5px] font-black uppercase tracking-[0.18em] text-[#E8C547] mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>{item.label}</p>
+                <p className="text-[11.5px] text-[#666] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>{item.body}</p>
               </div>
             ))}
           </div>
         </aside>
 
         {/* ── INTERNAL LINKS ── */}
-        <nav
-          className="mt-12 border-t border-[#D5D0C8] pt-8"
-          aria-label="Related UpForge content"
-        >
-          <p
-            className="text-[9px] tracking-[0.24em] uppercase text-[#AAA] mb-4"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
-            Explore More on UpForge
-          </p>
+        <nav className="mt-12 border-t border-[#D5D0C8] pt-8" aria-label="Related UpForge content">
+          <p className="text-[9px] tracking-[0.24em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>Explore More on UpForge</p>
           <div className="flex flex-wrap gap-2">
             {[
               { label: "Top AI Startups India", href: "/top-ai-startups" },
@@ -602,12 +413,7 @@ export default function FounderStoriesPage() {
               { label: "Top Funded Startups", href: "/top-funded-startups" },
               { label: "Browse All Startups", href: "/startup" },
             ].map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#D5D0C8] bg-white text-[10px] text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors"
-                style={{ fontFamily: "system-ui,sans-serif" }}
-              >
+              <Link key={l.href} href={l.href} className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#D5D0C8] bg-white text-[10px] text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
                 {l.label} <ChevronRight className="w-3 h-3" />
               </Link>
             ))}
@@ -617,39 +423,19 @@ export default function FounderStoriesPage() {
         {/* ── CTA ── */}
         <div className="mt-8 bg-[#1C1C1C] p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <p
-              className="text-[8.5px] text-[#E8C547] font-black uppercase tracking-[0.24em] mb-3"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              UpForge Registry
-            </p>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              Your founder story starts with a profile.
-            </h2>
-            <p
-              className="text-[12.5px] text-white/50 max-w-sm"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              Get your startup independently verified and listed in India's most
-              trusted registry. Free forever. Indexed on Google. Trusted by investors.
+            <p className="text-[8.5px] text-[#E8C547] font-black uppercase tracking-[0.24em] mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>UpForge Registry</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Your founder story starts with a profile.</h2>
+            <p className="text-[12.5px] text-white/50 max-w-sm" style={{ fontFamily: "system-ui,sans-serif" }}>
+              Get your startup independently verified and listed in India's most trusted registry. Free forever. Indexed on Google.
             </p>
           </div>
-          <Link
-            href="/submit"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3.5 bg-[#E8C547] text-[#111] text-sm font-bold tracking-wide hover:bg-[#F5D55A] transition-colors"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
+          <Link href="/submit" className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3.5 bg-[#E8C547] text-[#111] text-sm font-bold tracking-wide hover:bg-[#F5D55A] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
             List Your Startup — Free <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        <p
-          className="mt-6 text-[9.5px] text-[#C8C3BC] leading-relaxed"
-          style={{ fontFamily: "system-ui,sans-serif" }}
-        >
-          * Story details sourced from public interviews, Tracxn, Inc42, Forbes India, and company
-          announcements. UpForge is an independent registry and does not editorially endorse any
-          company. No paid placements.
+        <p className="mt-6 text-[9.5px] text-[#C8C3BC] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>
+          * Story details sourced from public interviews, Inc42, Forbes India, Tracxn, and company announcements as of March 2026. Founder images used from publicly indexed press coverage. UpForge is an independent registry — no paid placements.
         </p>
       </div>
     </div>
