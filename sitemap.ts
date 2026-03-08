@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient()
   const baseUrl = "https://upforge.in"
 
-  // 1. Fetch all startup slugs from Supabase
+  // 1️⃣ Fetch startup pages
   const { data: startups } = await supabase
     .from('startups')
     .select('slug, updated_at')
@@ -18,7 +18,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // 2. Define static routes
+  // 2️⃣ Fetch blog posts
+  const { data: blogs } = await supabase
+    .from('blogs')
+    .select('slug, updated_at')
+
+  const blogEntries = (blogs || []).map((blog) => ({
+    url: `${baseUrl}/blog/${blog.slug}`,
+    lastModified: new Date(blog.updated_at || new Date()),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
+  // 3️⃣ Static routes
   const staticRoutes = [
     "",
     "/about",
@@ -26,6 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/reports",
     "/industries",
     "/verification",
+    "/blog"
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -33,5 +46,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1.0 : 0.9,
   }))
 
-  return [...staticRoutes, ...startupEntries]
+  // 4️⃣ Combine all entries
+  return [
+    ...staticRoutes,
+    ...startupEntries,
+    ...blogEntries
+  ]
 }
