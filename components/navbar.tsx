@@ -24,7 +24,9 @@ export function Navbar() {
   const links = [
     { name: "Home", href: "/" },
     { name: "Registry", href: "/startup" },
+    { name: "Journal", href: "/blog" },
     { name: "Reports", href: "/reports" },
+    { name: "Archives", href: "/archive" },
     { name: "About", href: "/about" },
     
   ];
