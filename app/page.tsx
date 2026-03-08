@@ -23,7 +23,7 @@ const FOUNDERS = [
   role: "Co-Founder & CEO",
   city: "Bengaluru, KA", context: "Building India's own AI models",
   valuation: "$1B+", funding: "$70M+", founded: "2023",
-  imgSrc: "https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp,
+  imgSrc: "https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp",
   accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
   headline: "If India wants to lead the AI era, it cannot rely only on models built elsewhere.",
   deck: "Sarvam AI is building India's own large language models — designed for Indian languages, Indian scale, and Indian problems.",
