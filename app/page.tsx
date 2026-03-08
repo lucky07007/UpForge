@@ -12,46 +12,6 @@ import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-reac
 // ─── FOUNDER DATA ─────────────────────────────────────────────────────────────
 const FOUNDERS = [
 
-   
-
-   {
-  no: "01", edition: "No. 01",
-  category: "ARTIFICIAL INTELLIGENCE",
-  name: "Vivek Raghavan",
-  nameShort: "Vivek Raghavan",
-  initials: "VR",
-  company: "Sarvam AI", slug: "sarvam-ai",
-  role: "Co-Founder & CEO",
-  city: "Bengaluru, KA", context: "Building India's own AI models",
-  valuation: "$1B+", funding: "$70M+", founded: "2023",
-  imgSrc: "https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp",
-  accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
-  headline: "If India wants to lead the AI era, it cannot rely only on models built elsewhere.",
-  deck: "Sarvam AI is building India's own large language models — designed for Indian languages, Indian scale, and Indian problems.",
-  cols: [
-    {
-      h: "The India-First AI Vision",
-      b: "In 2023, Vivek Raghavan and his co-founders launched Sarvam AI with a simple but ambitious goal: build AI infrastructure designed specifically for India.\n\nWhile global companies were building models optimized for English and Western datasets, Sarvam focused on the massive multilingual reality of India — where hundreds of millions of people interact in Hindi, Tamil, Telugu, Bengali, and dozens of other languages."
-    },
-    {
-      h: "Building India's Own LLM",
-      b: "Sarvam AI began developing large language models optimized for Indian use cases — government services, education platforms, enterprise tools, and regional communication.\n\nTheir models were designed not just to translate languages but to understand context across multiple Indian linguistic structures. This made Sarvam one of the most talked-about AI startups in the country."
-    },
-    {
-      h: "The Sovereign AI Moment",
-      b: "As the global AI race intensified, India began investing heavily in domestic AI infrastructure. Sarvam AI quickly emerged as a key player in this movement.\n\nThe company began collaborating with research institutions, enterprises, and policymakers to build scalable AI systems for India's digital future — positioning itself as one of the country's most important deep-tech startups."
-    }
-  ],
-  pull: "If India wants to lead the AI era, it cannot rely only on models built elsewhere.",
-  pullBy: "Vivek Raghavan",
-  lesson: "In the AI era, infrastructure matters more than applications.",
-  stats: [
-    { l: "Valuation", v: "$1B+" },
-    { l: "Funding", v: "$70M+" },
-    { l: "Models", v: "Indian LLMs" },
-    { l: "Founded", v: "2023" },
-  ],
-},
   {
     no: "02", edition: "No. 02",
     category: "QUICK COMMERCE",
