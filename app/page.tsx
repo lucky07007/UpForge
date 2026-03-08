@@ -13,44 +13,44 @@ import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-reac
 const FOUNDERS = [
 
 
+   {
+  no: "01", edition: "No. 01",
+  category: "ARTIFICIAL INTELLIGENCE",
+  name: "Vivek Raghavan",
+  nameShort: "Vivek Raghavan",
+  initials: "VR",
+  company: "Sarvam AI", slug: "sarvam-ai",
+  role: "Co-Founder & CEO",
+  city: "Bengaluru, KA", context: "Building India's own AI models",
+  valuation: "$1B+", funding: "$70M+", founded: "2023",
+  imgSrc: "https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp,
+  accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
+  headline: "If India wants to lead the AI era, it cannot rely only on models built elsewhere.",
+  deck: "Sarvam AI is building India's own large language models — designed for Indian languages, Indian scale, and Indian problems.",
+  cols: [
     {
-    no: "01", edition: "No. 01",
-    category: "EDTECH",
-    name: "Alakh Pandey",
-    nameShort: "Alakh Pandey",
-    initials: "AP",
-    company: "PhysicsWallah", slug: "physicswallah",
-    role: "Founder & CEO",
-    city: "Prayagraj, UP", context: "YouTube teacher turned unicorn CEO",
-    valuation: "$2.8B", funding: "$700M", founded: "2014",
-    imgSrc: "https://i0.wp.com/globalkashmir.net/wp-content/uploads/2024/08/Physicswallah.jpg",
-    accent: "#059669", accentBg: "#ECFDF5", accentBorder: "#A7F3D0",
-    headline: "BYJU's charged ₹80,000 for what he taught for ₹2,000. That wasn't a mission — it was just obviously the right thing to do.",
-    deck: "Alakh Pandey disrupted Indian edtech without a Harvard MBA or a term sheet — just a bedroom camera and an impossibly fair price.",
-    cols: [
-      {
-        h: "The Bedroom Studio",
-        b: "In 2014, Alakh Pandey was preparing for engineering entrance exams in Prayagraj and teaching the same material to earn money. He set up a camera in his room — not a studio, just a room — and started filming Physics lessons.\n\nThe difference was palpable: he taught like he was talking to a friend, not performing for an institution. No script, no production budget. Just clarity and genuine care for the student sitting somewhere in UP, unable to afford the alternatives."
-      },
-      {
-        h: "The Price That Changed Everything",
-        b: "By 2020, his YouTube channel had 5M subscribers. In 2021, he launched the PW app at ₹2,000/year — against BYJU's ₹80,000. Six million students enrolled within weeks. He raised $100M, hit unicorn status, and built the edtech story India had been waiting for — while BYJU's collapsed under its own weight.\n\nAlakh understood the real market: not 20M rich students, but 350M students who need something they can actually pay for."
-      },
-      {
-        h: "Profitable. By Design.",
-        b: "PhysicsWallah remained profitable through its entire growth — a near-impossibility in a sector that burned billions on celebrity ads. By 2025, it served 10M+ learners across JEE, NEET, and UPSC prep — and successfully listed on Indian exchanges in November 2025.\n\nAlakh grew up watching his parents manage tight budgets. He built his entire company around never making affordability the barrier. It is the only Indian edtech unicorn that is both affordable and profitable."
-      }
-    ],
-    pull: "BYJU's charged ₹80,000 for what I teach for ₹2,000. That wasn't a mission statement. It was just obviously the right thing to do.",
-    pullBy: "Alakh Pandey",
-    lesson: "Affordability is not a positioning strategy. It can be the entire moat.",
-    stats: [
-      { l: "Valuation", v: "$2.8B" },
-      { l: "Students", v: "10M+" },
-      { l: "Annual Fee", v: "₹2,000" },
-      { l: "Founded", v: "2014" },
-    ],
-  },
+      h: "The India-First AI Vision",
+      b: "In 2023, Vivek Raghavan and his co-founders launched Sarvam AI with a simple but ambitious goal: build AI infrastructure designed specifically for India.\n\nWhile global companies were building models optimized for English and Western datasets, Sarvam focused on the massive multilingual reality of India — where hundreds of millions of people interact in Hindi, Tamil, Telugu, Bengali, and dozens of other languages."
+    },
+    {
+      h: "Building India's Own LLM",
+      b: "Sarvam AI began developing large language models optimized for Indian use cases — government services, education platforms, enterprise tools, and regional communication.\n\nTheir models were designed not just to translate languages but to understand context across multiple Indian linguistic structures. This made Sarvam one of the most talked-about AI startups in the country."
+    },
+    {
+      h: "The Sovereign AI Moment",
+      b: "As the global AI race intensified, India began investing heavily in domestic AI infrastructure. Sarvam AI quickly emerged as a key player in this movement.\n\nThe company began collaborating with research institutions, enterprises, and policymakers to build scalable AI systems for India's digital future — positioning itself as one of the country's most important deep-tech startups."
+    }
+  ],
+  pull: "If India wants to lead the AI era, it cannot rely only on models built elsewhere.",
+  pullBy: "Vivek Raghavan",
+  lesson: "In the AI era, infrastructure matters more than applications.",
+  stats: [
+    { l: "Valuation", v: "$1B+" },
+    { l: "Funding", v: "$70M+" },
+    { l: "Models", v: "Indian LLMs" },
+    { l: "Founded", v: "2023" },
+  ],
+},
   {
     no: "02", edition: "No. 02",
     category: "QUICK COMMERCE",
@@ -90,43 +90,43 @@ const FOUNDERS = [
     ],
   },
   {
-    no: "03", edition: "No. 03",
-    category: "FOODTECH",
-    name: "Deepinder Goyal",
-    nameShort: "Deepinder Goyal",
-    initials: "DG",
-    company: "Zomato / Eternal", slug: "zomato",
-    role: "Founder & CEO",
-    city: "Delhi", context: "IIT Delhi → Bain & Co → Foodiebay at 25",
-    valuation: "$33B", funding: "$3.2B+", founded: "2008",
-    imgSrc: "https://pbs.twimg.com/media/GSiTEQ2WcAAwE4b.png",
-    accent: "#DC2626", accentBg: "#FFF1F2", accentBorder: "#FECDD3",
-    headline: "#1 on Hurun India 2025. Zomato is worth ₹3.2 lakh crore. It started as scanned restaurant menus.",
-    deck: "Deepinder Goyal tops India's self-made entrepreneur rankings. The Zomato story is 17 years of pivots, a brutal stock crash, and one very public bet on profitability.",
-    cols: [
-      {
-        h: "Scanned Menus, 2008",
-        b: "Deepinder Goyal was 25, consulting at Bain & Company, when he noticed colleagues spending long lunches passing around printed restaurant menus. He scanned them, put them on a website, and called it Foodiebay. Traffic arrived without advertising.\n\nHe quit Bain within months. Rebranded to Zomato in 2010 — a name that meant nothing but was clean, sticky, and available. What followed was a decade of relentless iteration: discovery, reviews, delivery, groceries, Blinkit quick commerce."
-      },
-      {
-        h: "The Public Company Bet",
-        b: "Zomato's 2021 IPO was the defining moment for Indian startup optimism. It listed at a premium — then fell 70% in 2022 as global markets repriced every loss-making tech company. Deepinder doubled down: cut costs, killed zombie products, set a public profitability target.\n\nZomato posted its first quarterly profit in Q2 FY2024. By 2025, the parent was renamed Eternal and valued at ₹3.2 lakh crore — up 27% year-on-year. Hurun India placed Deepinder at No. 1."
-      },
-      {
-        h: "17 Years. Still Reinventing.",
-        b: "The Eternal of 2025 — profitable food delivery, Blinkit, District ticketing, LAT Aerospace — is unrecognisable from the Foodiebay of 2008. That is the point.\n\nDeepinder's story is about adaptation above everything else. The companies that survive 17 years aren't the ones with the best original idea. They are the ones willing to change — and courageous enough to do it publicly."
-      }
-    ],
-    pull: "We have to keep reinventing Zomato. The product that got us here will not get us to where we need to go.",
-    pullBy: "Deepinder Goyal",
-    lesson: "The company that survives is rarely the one that started. It's the one that kept reinventing.",
-    stats: [
-      { l: "Mkt. Cap", v: "₹3.2L Cr" },
-      { l: "Hurun 2025", v: "#1" },
-      { l: "Founded", v: "2008" },
-      { l: "Raised", v: "$3.2B+" },
-    ],
-  },
+  no: "03", edition: "No. 03",
+  category: "AEROSPACE",
+  name: "Deepinder Goyal",
+  nameShort: "Deepinder Goyal",
+  initials: "DG",
+  company: "LAT Aerospace", slug: "lat-aerospace",
+  role: "Founder",
+  city: "Gurugram, HR", context: "Reimagining regional aviation",
+  valuation: "Stealth", funding: "Undisclosed", founded: "2024",
+  imgSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1FTtR9px3fbhDE8ihpSI_tPLHNaBXBeE9Cw&s",
+  accent: "#EA580C", accentBg: "#FFF7ED", accentBorder: "#FED7AA",
+  headline: "India doesn't just need more airports. It needs a new way to fly.",
+  deck: "LAT Aerospace is exploring electric aircraft designed to connect smaller Indian cities with faster, cheaper regional flights.",
+  cols: [
+    {
+      h: "Beyond Food Delivery",
+      b: "After building Zomato into one of India's most recognized technology companies, Deepinder Goyal turned his attention to a very different challenge — regional aviation.\n\nMillions of Indians live in cities without efficient air connectivity. LAT Aerospace aims to rethink how short-distance flights can work."
+    },
+    {
+      h: "Electric Regional Aircraft",
+      b: "The startup is focused on developing short take-off electric aircraft that can operate from smaller runways and regional airstrips.\n\nThis could drastically reduce travel time between Tier-2 and Tier-3 cities, creating an entirely new aviation network across India."
+    },
+    {
+      h: "The Next Mobility Frontier",
+      b: "Regional aviation has long been one of India's most underdeveloped transport sectors. If electric aircraft technology matures, startups like LAT Aerospace could unlock a new era of affordable short-distance air travel.\n\nThe project reflects a growing trend: tech founders moving into deep-tech industries that reshape physical infrastructure."
+    }
+  ],
+  pull: "India doesn't just need more airports. It needs a new way to fly.",
+  pullBy: "Deepinder Goyal",
+  lesson: "The biggest opportunities often lie in industries that haven't changed for decades.",
+  stats: [
+    { l: "Industry", v: "Aerospace" },
+    { l: "Aircraft", v: "Electric" },
+    { l: "Focus", v: "Regional Aviation" },
+    { l: "Founded", v: "2024" },
+  ],
+},
   {
     no: "04", edition: "No. 04",
     category: "FINTECH",
