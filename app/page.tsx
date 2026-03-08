@@ -12,6 +12,7 @@ import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-reac
 // ─── FOUNDER DATA ─────────────────────────────────────────────────────────────
 const FOUNDERS = [
 
+   
 
    {
   no: "01", edition: "No. 01",
