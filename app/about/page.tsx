@@ -548,26 +548,26 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          {/* FOOTER NAV */}
-          <nav style={{ padding:"14px 0", borderTop:"2px solid var(--ink)" }}>
-            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 18px", listStyle:"none", margin:0, padding:0 }}>
+      {/* FOOTER NAV */}
+          <nav style={{ padding: "14px 0", borderTop: "2px solid var(--ink)" }}>
+            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", listStyle: "none", margin: 0, padding: 0 }}>
               {[
-                { l:"Startup Registry",        h:"/startup" },
-                { l:"Indian Startup Founders", h:"/"        },
-                { l:"Indian Unicorns 2026",    h:"/indian-unicorns" },
-                { l:"Submit Your Startup",     h:"/submit"  },
-                { l:"Valuation Tool",          h:"/valuation" },
+                { l: "Startup Registry", h: "/startup" },
+                { l: "Indian Startup Founders", h: "/" },
+                { l: "Indian Unicorns 2026", h: "/indian-unicorns" },
+                { l: "Submit Your Startup", h: "/submit" },
+                { l: "Valuation Tool", h: "/valuation" },
               ].map(lnk => (
                 <li key={lnk.h}>
-                  <Link href={lnk.h} className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>
+                  <Link href={lnk.h} className="sf" style={{ fontSize: 8.5, color: "var(--ink5)", textTransform: "uppercase", letterSpacing: "0.14em", textDecoration: "none" }}>
                     {lnk.l}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
-        </div>
-      </div>
+        </div> {/* This closes the main container <div style={{ maxWidth: 1300... }}> */}
+      </div>   {/* This closes the wrapper <div className="rp"...> */}
     </>
   );
 }
