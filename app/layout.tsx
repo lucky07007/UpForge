@@ -1,4 +1,3 @@
-// app/layout.tsx
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -135,12 +134,9 @@ export const metadata: Metadata = {
   },
 }
 
-// ── JSON-LD Structured Data ───────────────────────────────────────────────────
-// Server-side injection — best for SEO (no client JS needed)
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    // Website entity
     {
       "@type": "WebSite",
       "@id": "https://upforge.in/#website",
@@ -159,7 +155,6 @@ const jsonLd = {
         "query-input": "required name=search_term_string",
       },
     },
-    // Organization entity
     {
       "@type": "Organization",
       "@id": "https://upforge.in/#organization",
@@ -175,7 +170,6 @@ const jsonLd = {
         "https://twitter.com/upforge_in",
       ],
     },
-    // Homepage WebPage entity
     {
       "@type": "WebPage",
       "@id": "https://upforge.in/#webpage",
@@ -190,7 +184,6 @@ const jsonLd = {
       "inLanguage": "en-IN",
       "breadcrumb": { "@id": "https://upforge.in/#breadcrumb" },
     },
-    // Article entity
     {
       "@type": "Article",
       "@id": "https://upforge.in/#article",
@@ -224,7 +217,6 @@ const jsonLd = {
         { "@type": "Person", "name": "Vijay Shekhar Sharma", "jobTitle": "Founder & CEO, Paytm", "worksFor": { "@type": "Organization", "name": "Paytm" } },
       ],
     },
-    // Breadcrumb entity
     {
       "@type": "BreadcrumbList",
       "@id": "https://upforge.in/#breadcrumb",
@@ -243,7 +235,6 @@ const jsonLd = {
         },
       ],
     },
-    // ItemList — all 10 founders for Google rich results
     {
       "@type": "ItemList",
       "name": "Indian Startup Founders 2026 — UpForge Chronicle",
@@ -264,7 +255,6 @@ const jsonLd = {
         { "@type": "ListItem", "position": 10, "name": "Vijay Shekhar Sharma — Paytm", "url": "https://upforge.in/startup/paytm", "description": "From small-town recharge site to India's largest digital payments platform with 300M+ users." },
       ],
     },
-    // FAQPage — targets "People Also Ask" Google feature
     {
       "@type": "FAQPage",
       "mainEntity": [
@@ -321,12 +311,10 @@ export default function RootLayout({
   return (
     <html lang="en-IN" className={inter.variable}>
       <head>
-        {/* JSON-LD — server-rendered for best SEO crawlability */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Preconnect to Google Fonts (performance) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
