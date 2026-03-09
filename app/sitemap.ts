@@ -1,4 +1,3 @@
-// app/sitemap.ts
 import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
@@ -38,7 +37,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/reports",
     "/industries",
     "/verification",
-    "/blog"
+    "/blog",
+    "/contact",
+    "/submit"
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
