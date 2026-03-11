@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "https://upforge.in/:path*",
+      "destination": "https://www.upforge.in/:path*",
+      "permanent": true
+    }
+  ]
+}
