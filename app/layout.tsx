@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "startup registry India",
     "Indian unicorn founders",
     "startup ecosystem India",
-  ].join(", "),
+  ],
 
   authors: [{ name: "UpForge Editorial", url: "https://www.upforge.in" }],
   creator: "UpForge",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   category: "Business",
 
   alternates: {
-    canonical: "https://www.upforge.in/",
+    canonical: "/",
   },
 
   icons: {
@@ -90,15 +90,10 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
   },
 }
+
+/* VALID STRUCTURED DATA (NO BREADCRUMB) */
 
 const jsonLd = {
   "@context": "https://schema.org",
