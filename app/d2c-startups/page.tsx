@@ -11,6 +11,7 @@
 //   sector accent: #C026D3 (fuchsia — D2C/Beauty brand)
 //   fonts: Playfair Display · Georgia · system-ui
 // ────────────────────────────────────────────────────────────────────────────
+"use client";
 
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -444,17 +445,7 @@ export default function D2CStartupsPage() {
 
                 <div style={{ background: c.accent, display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", textAlign: "center", padding: "clamp(16px,3vw,28px) clamp(10px,2vw,18px)", order: i % 2 === 0 ? 1 : 0, position: "relative", overflow: "hidden", minHeight: 180 }}>
                   <div style={{ width: "100%", flex: 1, position: "relative", marginBottom: 12, overflow: "hidden" }}>
-                    <img
-                      src={c.imgSrc}
-                      alt={`${c.founder}, ${c.name} founder`}
-                      style={{ width: "100%", height: "clamp(100px,15vw,180px)", objectFit: "cover", objectPosition: "top", display: "block", opacity: 0.88, filter: "contrast(108%) saturate(85%)" }}
-                      onError={(e) => {
-                        const t = e.target as HTMLImageElement
-                        t.style.display = "none"
-                        const fb = t.nextSibling as HTMLElement
-                        if (fb) fb.style.display = "flex"
-                      }}
-                    />
+
                     <div style={{ display: "none", width: "100%", height: "clamp(100px,15vw,180px)", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,.15)", fontSize: "2rem", fontFamily: "Georgia,serif", fontWeight: 900, color: "#fff" }}>{c.initials}</div>
                   </div>
                   <div>
