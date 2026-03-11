@@ -15,7 +15,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.upforge.in"),
 
   title: {
-    default: "The Founder Chronicle — India's Greatest Startup Builders 2026 | UpForge",
+    default:
+      "The Founder Chronicle — India's Greatest Startup Builders 2026 | UpForge",
     template: "%s | UpForge",
   },
 
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
   category: "Business",
 
   alternates: {
-    canonical: "https://www.upforge.in",
+    canonical: "/",
   },
 
   icons: {
@@ -88,13 +89,19 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 }
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-
     {
       "@type": "Organization",
       "@id": "https://www.upforge.in/#organization",
@@ -104,9 +111,7 @@ const jsonLd = {
         "@type": "ImageObject",
         url: "https://www.upforge.in/logo.png",
       },
-      sameAs: [
-        "https://twitter.com/upforge_in"
-      ]
+      sameAs: ["https://twitter.com/upforge_in"],
     },
 
     {
@@ -115,13 +120,14 @@ const jsonLd = {
       url: "https://www.upforge.in",
       name: "UpForge",
       publisher: {
-        "@id": "https://www.upforge.in/#organization"
+        "@id": "https://www.upforge.in/#organization",
       },
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://www.upforge.in/startup?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+        target:
+          "https://www.upforge.in/startup?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
     },
 
     {
@@ -132,18 +138,21 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://www.upforge.in/"
+          item: {
+            "@id": "https://www.upforge.in/",
+          },
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "The Founder Chronicle",
-          item: "https://www.upforge.in/"
-        }
-      ]
-    }
-
-  ]
+          item: {
+            "@id": "https://www.upforge.in/startup",
+          },
+        },
+      ],
+    },
+  ],
 }
 
 export default function RootLayout({
