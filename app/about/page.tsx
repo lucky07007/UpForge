@@ -96,7 +96,33 @@ const IMAGES = {
   believe:  "https://miro.medium.com/0*OzIZRmuVzMtG9M9X",
 };
 
-
+// FAQ data for structured data + on-page rendering
+const FAQ_ITEMS = [
+  {
+    q: "What is UpForge?",
+    a: "UpForge is India's independent startup registry — a free, structured, and permanently accessible public record of verified Indian startups across 30+ sectors.",
+  },
+  {
+    q: "Is UpForge free for founders?",
+    a: "Yes. Listing your startup on UpForge is completely free. We believe every serious builder deserves institutional-grade digital credibility without paying for it.",
+  },
+  {
+    q: "How does UpForge verify startups?",
+    a: "Every startup profile is manually reviewed before listing. We check basic company details, founders, and operational status to ensure accuracy.",
+  },
+  {
+    q: "Is UpForge a media company or accelerator?",
+    a: "No. UpForge is neither a media outlet nor an accelerator. We are India's neutral, independent registry — no paid rankings, no sponsored placements.",
+  },
+  {
+    q: "Who can use UpForge?",
+    a: "Founders use UpForge to build a verified digital paper trail. Investors use it to discover startups before they hit headlines. Press use it to cite reliable startup data.",
+  },
+  {
+    q: "How many startups are on UpForge?",
+    a: "UpForge lists thousands of verified Indian startups and grows daily across sectors like AI/ML, FinTech, SaaS, HealthTech, Climate Tech, and more.",
+  },
+];
 
 export default async function AboutPage() {
   const supabase = await createClient();
@@ -113,7 +139,7 @@ export default async function AboutPage() {
 
   const uniqueIndustries = industries ? new Set(industries.map((i) => i.industry)).size : 0;
 
-  // Structured data: Organization + BreadcrumbList only
+  // Structured data: Organization + BreadcrumbList + FAQPage
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -147,6 +173,17 @@ export default async function AboutPage() {
             "item": "https://www.upforge.in/about",
           },
         ],
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": FAQ_ITEMS.map((faq) => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.a,
+          },
+        })),
       },
     ],
   };
@@ -225,7 +262,17 @@ export default async function AboutPage() {
 
         .rlink:hover { background:var(--parch2)!important; }
 
-
+        /* FAQ accordion */
+        .faq-item { border-bottom:1px solid var(--rule2); }
+        .faq-q {
+          width:100%;text-align:left;background:none;border:none;
+          padding:16px 0;cursor:pointer;display:flex;align-items:center;
+          justify-content:space-between;gap:12px;
+        }
+        .faq-q:hover .faq-q-text { color:var(--ink)!important; }
+        details[open] .faq-arrow { transform:rotate(180deg); }
+        .faq-arrow { transition:transform .2s;flex-shrink:0; }
+        .faq-a { padding:0 0 14px; }
 
         /* ── RESPONSIVE (taken from startup page patterns) ── */
         @media (max-width: 900px) {
@@ -449,32 +496,22 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          {/* ── ABOUT UPFORGE ── */}
+          {/* ── FAQ SECTION (SEO) ── */}
           <section className="a4" style={{ padding: "clamp(28px,4vw,44px) 0", borderBottom: "1px solid var(--rule2)" }}>
-            <div className="sh"><span className="sh-l">About UpForge</span><div className="sh-r" /></div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px,1fr))", gap: 1, background: "var(--rule2)", border: "1px solid var(--rule2)" }}>
-              {[
-                {
-                  heading: "What is UpForge?",
-                  body: "UpForge is India's independent startup registry — a free, structured, and permanently accessible public record of verified Indian startups across 30+ sectors.",
-                },
-                {
-                  heading: "Is listing free for founders?",
-                  body: "Yes. Listing your startup on UpForge is completely free. Every serious builder deserves institutional-grade digital credibility without paying for it.",
-                },
-                {
-                  heading: "How are startups verified?",
-                  body: "Every startup profile is manually reviewed before listing. We check company details, founders, and operational status to ensure accuracy and trust.",
-                },
-                {
-                  heading: "Who uses UpForge?",
-                  body: "Founders build a verified paper trail. Investors discover startups before they hit headlines. Press cites reliable, structured startup data with confidence.",
-                },
-              ].map((item, i) => (
-                <div key={i} style={{ background: "var(--white)", padding: "22px 20px" }}>
-                  <h3 className="pf" style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--ink)", marginBottom: 10, lineHeight: 1.3 }}>{item.heading}</h3>
-                  <p className="rp" style={{ fontSize: 12.5, color: "var(--ink3)", lineHeight: 1.82 }}>{item.body}</p>
-                </div>
+            <div className="sh"><span className="sh-l">Frequently Asked Questions</span><div className="sh-r" /></div>
+            <div style={{ border: "1px solid var(--rule2)", background: "var(--white)", padding: "0 clamp(16px,3vw,28px)" }}>
+              {FAQ_ITEMS.map((faq, i) => (
+                <details key={i} className="faq-item" style={{ borderBottom: i === FAQ_ITEMS.length - 1 ? "none" : "1px solid var(--rule2)" }}>
+                  <summary className="faq-q" style={{ listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 0", cursor: "pointer" }}>
+                    <span className="rp faq-q-text" style={{ fontSize: "clamp(13px,1.6vw,14.5px)", fontWeight: 600, color: "var(--ink3)", lineHeight: 1.4 }}>{faq.q}</span>
+                    <svg className="faq-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+                      <path d="M2 4L6 8L10 4" stroke="var(--ink4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </summary>
+                  <div className="faq-a">
+                    <p className="rp" style={{ fontSize: 13, color: "var(--ink4)", lineHeight: 1.82, paddingBottom: 14 }}>{faq.a}</p>
+                  </div>
+                </details>
               ))}
             </div>
           </section>
