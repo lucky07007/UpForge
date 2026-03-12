@@ -1,4 +1,3 @@
-
 // app/startup/internadda/page.tsx
 // UpForge — InternAdda · Lucky Tiwari Founder Chronicle
 
@@ -391,13 +390,13 @@ export default function InternAddaPage() {
               <div>
                 <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2" style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
                 <a href="https://youtu.be/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ" target="_blank" rel="noopener noreferrer" className="block relative group" aria-label="Watch InternAdda founder interview on YouTube">
+                  {/* hqdefault always exists — no onError needed */}
                   <img
-                    src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
+                    src="https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg"
                     alt="Lucky Tiwari — InternAdda founder interview"
                     className="w-full object-cover"
                     style={{ height: 140, border: `1px solid ${accentBorder}` }}
                     loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.3)" }}>
                     <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,0,0,0.9)" }}>
