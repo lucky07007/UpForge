@@ -1,11 +1,14 @@
+// app/sitemap.ts
 import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient()
-  const baseUrl = "https://upforge.in"
+  
+  // SEO Upgrade: 'www' domain consistency maintain karna sabse zaroori hai
+  const baseUrl = "https://www.upforge.in"
 
-  // 1️⃣ Fetch startup pages
+  // 1️⃣ Fetch startup pages with fresh data
   const { data: startups } = await supabase
     .from('startups')
     .select('slug, updated_at')
@@ -13,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const startupEntries = (startups || []).map((startup) => ({
     url: `${baseUrl}/startup/${startup.slug}`,
     lastModified: new Date(startup.updated_at || new Date()),
-    changeFrequency: 'weekly' as const,
+    changeFrequency: 'weekly' as const, // Startups update frequency weekly search engine ke liye optimize hai
     priority: 0.8,
   }))
 
@@ -29,25 +32,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  // 3️⃣ Static routes
+  // 3️⃣ Static routes with hierarchy optimization
+  // Humne priorities ko logical order mein set kiya hai taaki Google important pages pehle crawl kare
   const staticRoutes = [
-    "",
-    "/about",
-    "/startup",
-    "/reports",
-    "/industries",
-    "/verification",
-    "/blog",
-    "/contact",
-    "/submit"
+    { path: "", priority: 1.0, freq: 'daily' },           // Homepage - Highest Priority
+    { path: "/startup", priority: 0.9, freq: 'daily' },    // Registry Hub
+    { path: "/submit", priority: 0.9, freq: 'monthly' },   // Lead Gen Page
+    { path: "/about", priority: 0.8, freq: 'monthly' },    // Brand Story
+    { path: "/reports", priority: 0.8, freq: 'daily' },    // Data Content
+    { path: "/industries", priority: 0.8, freq: 'weekly' },
+    { path: "/verification", priority: 0.7, freq: 'monthly' },
+    { path: "/blog", priority: 0.7, freq: 'daily' },
+    { path: "/contact", priority: 0.5, freq: 'monthly' },
   ].map((route) => ({
-    url: `${baseUrl}${route}`,
+    url: `${baseUrl}${route.path}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === "" ? 1.0 : 0.9,
+    changeFrequency: route.freq as any,
+    priority: route.priority,
   }))
 
-  // 4️⃣ Combine all entries
+  // 4️⃣ Combine and export
+  // SEO Best Practice: Homepage aur High Priority pages list mein upar rakhein
   return [
     ...staticRoutes,
     ...startupEntries,
