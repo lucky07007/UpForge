@@ -1,7 +1,5 @@
-
 // app/layout.tsx
-
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ClientLayout } from "@/components/client-layout"
@@ -12,35 +10,38 @@ const inter = Inter({
   display: "swap",
 })
 
+// Viewport settings for better mobile SEO
+export const viewport: Viewport = {
+  themeColor: "#F3EFE5",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+}
+
 export const metadata: Metadata = {
+  // Sabhi links ko 'www' par force karne ke liye
   metadataBase: new URL("https://www.upforge.in"),
 
   title: {
-    default:
-      "The Founder Chronicle — India's Greatest Startup Builders 2026 | UpForge",
+    default: "The Founder Chronicle — India's Greatest Startup Builders 2026 | UpForge",
     template: "%s | UpForge",
   },
 
   description:
-    "Verified stories of India's most influential startup founders — Zepto, PhysicsWallah, Zomato, Zerodha, Nykaa, OYO, Ola, CRED, Paytm and more. Independent startup registry by UpForge.",
+    "Verified stories and deep-dive chronicles of India's most influential startup founders — Zepto, PhysicsWallah, Zomato, Zerodha, InternAdda and more. Independent registry by UpForge.",
 
   keywords: [
     "Indian startup founders",
-    "startup founders India",
-    "Indian entrepreneurs",
+    "Indian entrepreneurs 2026",
     "Zepto founder Aadit Palicha",
-    "Alakh Pandey PhysicsWallah founder",
-    "Deepinder Goyal Zomato founder",
-    "Nithin Kamath Zerodha founder",
-    "Falguni Nayar Nykaa founder",
-    "Ritesh Agarwal OYO founder",
-    "Bhavish Aggarwal Ola founder",
-    "Kunal Shah CRED founder",
-    "Vijay Shekhar Sharma Paytm founder",
-    "Indian startup database",
+    "Lucky Tiwari InternAdda",
+    "Alakh Pandey PhysicsWallah",
+    "Deepinder Goyal Zomato",
+    "Nithin Kamath Zerodha",
+    "Indian unicorn database",
     "startup registry India",
-    "Indian unicorn founders",
-    "startup ecosystem India",
+    "verified startup stories",
+    "Indian deep-tech startups",
   ],
 
   authors: [{ name: "UpForge Editorial", url: "https://www.upforge.in" }],
@@ -48,16 +49,20 @@ export const metadata: Metadata = {
   publisher: "UpForge",
   category: "Business",
 
+  // Canonical error fix: Explicitly using 'www' version
   alternates: {
-    canonical: "/",
+    canonical: "https://www.upforge.in",
   },
 
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
     apple: "/apple-touch-icon.png",
   },
 
-  manifest: "/site.webmanifest",
+  manifest: "https://www.upforge.in/site.webmanifest",
 
   openGraph: {
     type: "website",
@@ -65,14 +70,13 @@ export const metadata: Metadata = {
     url: "https://www.upforge.in",
     siteName: "UpForge",
     title: "The Founder Chronicle — India's Greatest Startup Builders 2026",
-    description:
-      "Explore verified founder stories behind India's most influential startups.",
+    description: "Explore verified founder stories behind India's most influential and consequential startups.",
     images: [
       {
         url: "/og/founder-chronicle.png",
         width: 1200,
         height: 630,
-        alt: "UpForge Founder Chronicle",
+        alt: "UpForge Founder Chronicle 2026",
       },
     ],
   },
@@ -81,47 +85,51 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@upforge_in",
     creator: "@upforge_in",
-    title: "India's Top Startup Founders | UpForge",
-    description:
-      "Verified founder stories from Zepto, PhysicsWallah, Zomato, Zerodha, Nykaa and more.",
+    title: "India's Top Startup Founders | UpForge Chronicle",
+    description: "Verified stories of India's top builders: Zepto, Zomato, Zerodha, InternAdda and more.",
     images: ["/og/founder-chronicle.png"],
   },
 
+  // Advanced Robots rules to help indexing
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 
-/* VALID STRUCTURED DATA (NO BREADCRUMB) */
-
+/* UPDATED STRUCTURED DATA WITH WWW CONSISTENCY */
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
       "@id": "https://www.upforge.in/#organization",
-      name: "UpForge",
-      url: "https://www.upforge.in",
-      logo: {
+      "name": "UpForge",
+      "url": "https://www.upforge.in",
+      "logo": {
         "@type": "ImageObject",
-        url: "https://www.upforge.in/logo.png",
+        "url": "https://www.upforge.in/logo.png",
       },
-      sameAs: ["https://twitter.com/upforge_in"],
+      "sameAs": ["https://twitter.com/upforge_in"],
     },
-
     {
       "@type": "WebSite",
       "@id": "https://www.upforge.in/#website",
-      url: "https://www.upforge.in",
-      name: "UpForge",
-      publisher: {
+      "url": "https://www.upforge.in",
+      "name": "UpForge",
+      "publisher": {
         "@id": "https://www.upforge.in/#organization",
       },
-      potentialAction: {
+      "potentialAction": {
         "@type": "SearchAction",
-        target:
-          "https://www.upforge.in/startup?q={search_term_string}",
+        "target": "https://www.upforge.in/startup?q={search_term_string}",
         "query-input": "required name=search_term_string",
       },
     },
