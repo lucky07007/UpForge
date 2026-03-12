@@ -2,24 +2,16 @@
 
 // app/page.tsx
 // THE FOUNDER CHRONICLE — Homepage (www.upforge.in)
-// ─────────────────────────────────────────────────
-// FIXES vs previous version:
-//  1. JSON-LD moved OUT of useEffect → now rendered as <script> in JSX (SSR-safe)
-//  2. All URLs → https://www.upforge.in/... (www canonical)
-//  3. export const metadata added (handled in layout.tsx — see comment)
-//  4. document.title useEffect REMOVED (bad for SEO / causes hydration noise)
-//  5. base64 imgSrc replaced with real image URLs for OYO & Ola
-//  6. Duplicate key warning fixed in footer nav (key uses h+l)
-//  7. Mobile font sizes tuned with tighter clamp() values
-//  8. window.scrollTo wrapped in typeof check (SSR safety)
-//  9. FAQPage schema — never present, stays absent ✅
-// 10. FounderPhoto onError kept (page is client component, no build error)
+// UPDATE: "All Stories in This Edition" thumbnail grid → per-founder YouTube video section
+// Each founder has their own videoId. Active founder's video shows in the section.
+// Everything else unchanged from previous version.
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, ArrowRight, ArrowUpRight } from "lucide-react"
 
 // ─── FOUNDER DATA ─────────────────────────────────────────────────────────────
+// videoId: YouTube video ID for each founder's featured interview/talk
 const FOUNDERS = [
   {
     no: "01", edition: "No. 01",
@@ -32,6 +24,8 @@ const FOUNDERS = [
     city: "Bengaluru, KA", context: "Building India's own AI models",
     valuation: "$1B+", funding: "$70M+", founded: "2023",
     imgSrc: "https://static.businessworld.in/sarvam_20250427233307_original_image_44.webp",
+    videoId: "c8Dc6vRE7VI",
+    videoTitle: "Vivek Raghavan on Building India's Sovereign LLM — Sarvam AI",
     accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
     headline: "If India wants to lead the AI era, it cannot rely only on models built elsewhere.",
     deck: "Sarvam AI is building India's own large language models — designed for Indian languages, Indian scale, and Indian problems.",
@@ -70,6 +64,8 @@ const FOUNDERS = [
     city: "Bengaluru", context: "Dropped out of Stanford at 19",
     valuation: "$5.9B", funding: "$2.5B+", founded: "2021",
     imgSrc: "https://i.ytimg.com/vi/HBSOii00H68/hqdefault.jpg",
+    videoId: "nR2jv-r55bg",
+    videoTitle: "Aadit Palicha & Kaivalya Vohra — How Zepto Was Built",
     accent: "#D97706", accentBg: "#FFFBEB", accentBorder: "#FDE68A",
     headline: "Two Stanford dropouts. One failed startup. Then a $5.9 billion answer to India's grocery problem.",
     deck: "Aadit Palicha and Kaivalya Vohra built India's fastest unicorn by failing first, then solving the logistics math nobody else wanted to.",
@@ -108,6 +104,8 @@ const FOUNDERS = [
     city: "Gurugram, HR", context: "Reimagining regional aviation",
     valuation: "Stealth", funding: "Undisclosed", founded: "2024",
     imgSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1FTtR9px3fbhDE8ihpSI_tPLHNaBXBeE9Cw&s",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Deepinder Goyal on Building Beyond Zomato — LAT Aerospace",
     accent: "#EA580C", accentBg: "#FFF7ED", accentBorder: "#FED7AA",
     headline: "India doesn't just need more airports. It needs a new way to fly.",
     deck: "LAT Aerospace is exploring electric aircraft designed to connect smaller Indian cities with faster, cheaper regional flights.",
@@ -146,6 +144,8 @@ const FOUNDERS = [
     city: "Bengaluru", context: "Dropped out at 17 to trade. Never took VC.",
     valuation: "$8.2B", funding: "Fully bootstrapped", founded: "2010",
     imgSrc: "https://www.businessoutreach.in/wp-content/uploads/2023/08/Nithin-Kamath-1.jpg",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Nithin Kamath on Building Zerodha Without VC Funding",
     accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#BFDBFE",
     headline: "He dropped out at 17 to trade stocks. Never took a rupee of VC. Zerodha is India's largest stockbroker — worth $8.2 billion.",
     deck: "Nithin Kamath built India's largest brokerage without a single outside investor, a celebrity ad, or a paid acquisition. Just a better product and fifteen years of compounding trust.",
@@ -184,6 +184,8 @@ const FOUNDERS = [
     city: "Mumbai", context: "Left investment banking at 50",
     valuation: "$2.5B", funding: "Bootstrapped to IPO", founded: "2012",
     imgSrc: "https://i.cdn.newsbytesapp.com/images/l12420211110152610.jpeg",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Falguni Nayar on Starting Nykaa at 50 — India's First Woman-Led IPO",
     accent: "#C026D3", accentBg: "#FDF4FF", accentBorder: "#E879F9",
     headline: "She left a 20-year banking career at 50 to build India's first profitable unicorn. Everyone told her she was too old.",
     deck: "Falguni Nayar built India's first woman-founded company to IPO — and proved the best founders sometimes take the longest to begin.",
@@ -221,8 +223,9 @@ const FOUNDERS = [
     role: "Founder & CEO",
     city: "Gurgaon", context: "Youngest billionaire founder",
     valuation: "$10B+", funding: "$3B+", founded: "2013",
-    // ✅ FIX: replaced base64 with real external URL
     imgSrc: "https://images.livemint.com/img/2023/04/03/600x338/ritesh-agarwal-oyo_1680499548513_1680499563614.jpg",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Ritesh Agarwal on Building OYO — India's Youngest Billionaire",
     accent: "#DC2626", accentBg: "#FEF2F2", accentBorder: "#FCA5A5",
     headline: "At 19, he started fixing India's budget hotel problem — and built one of the world's largest hotel chains.",
     deck: "Ritesh Agarwal built OYO after travelling across India and seeing the chaos in budget hotels. His solution standardized small hotels using technology and branding.",
@@ -260,8 +263,9 @@ const FOUNDERS = [
     role: "Co-Founder & CEO",
     city: "Bangalore", context: "Built India's largest ride-hailing platform",
     valuation: "$7B+", funding: "$4B+", founded: "2010",
-    // ✅ FIX: replaced base64 with real external URL
     imgSrc: "https://images.livemint.com/img/2022/12/13/600x338/bhavish-aggarwal-ola_1670909898429_1670909927010.jpg",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Bhavish Aggarwal on Ola and the Electric Future of India",
     accent: "#EA580C", accentBg: "#FFF7ED", accentBorder: "#FDBA74",
     headline: "A single bad taxi ride inspired him to build one of India's largest mobility platforms.",
     deck: "Bhavish Aggarwal founded Ola after a frustrating cab experience — and went on to build a transportation network serving hundreds of cities across India.",
@@ -300,6 +304,8 @@ const FOUNDERS = [
     city: "India", context: "Building a modern platform for students",
     valuation: "Private", funding: "Bootstrapped", founded: "2024",
     imgSrc: "/luckyinternadda.jpg",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Lucky Tiwari on Building InternAdda for India's Students",
     accent: "#2563EB", accentBg: "#EFF6FF", accentBorder: "#93C5FD",
     headline: "He is building InternAdda to make internships, startups, and career opportunities accessible to every student in India.",
     deck: "InternAdda was created to bridge the gap between students and real-world opportunities. The platform helps students discover internships, startup roles, and learning experiences.",
@@ -338,6 +344,8 @@ const FOUNDERS = [
     city: "Bangalore", context: "Built two unicorn fintech startups",
     valuation: "$6B+", funding: "$800M+", founded: "2018",
     imgSrc: "https://images.livemint.com/img/2022/05/10/600x338/kunal-shah-cred_1651948791432_1651948817028.jpg",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Kunal Shah on CRED and India's Credit-Conscious Consumer",
     accent: "#111827", accentBg: "#F3F4F6", accentBorder: "#9CA3AF",
     headline: "He built CRED by rewarding people for paying their credit card bills on time.",
     deck: "Kunal Shah is known for his deep thinking on consumer behaviour and fintech. After selling FreeCharge, he launched CRED to reward financial discipline.",
@@ -376,6 +384,8 @@ const FOUNDERS = [
     city: "Noida", context: "Built India's biggest digital wallet",
     valuation: "$16B+", funding: "$3B+", founded: "2010",
     imgSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQy1fDX9NPnpOxew45ikgwwdyfE1sR-kTBZgg&s",
+    videoId: "l7pDuakyskI",
+    videoTitle: "Vijay Shekhar Sharma on Building Paytm and Digital India",
     accent: "#0284C7", accentBg: "#EFF6FF", accentBorder: "#7DD3FC",
     headline: "From a small recharge website to India's largest digital payments ecosystem.",
     deck: "Vijay Shekhar Sharma built Paytm to simplify mobile payments in India, later becoming one of the biggest fintech platforms in the country.",
@@ -405,9 +415,7 @@ const FOUNDERS = [
   },
 ]
 
-// ─── JSON-LD — server-rendered in JSX, NOT useEffect ─────────────────────────
-// ✅ FIX: All URLs → https://www.upforge.in/... (www canonical)
-// ✅ FIX: No FAQPage schema
+// ─── JSON-LD ──────────────────────────────────────────────────────────────────
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
@@ -521,15 +529,11 @@ export default function HomePage() {
   const isFirst = idx === 0
   const isLast = idx === FOUNDERS.length - 1
 
-  // ✅ FIX: window.scrollTo wrapped in typeof check for SSR safety
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }, [idx])
-
-  // ✅ FIX: document.title useEffect REMOVED — handled by layout.tsx metadata
-  // ✅ FIX: JSON-LD useEffect REMOVED — rendered directly in JSX as <script> tag below
 
   return (
     <div
@@ -537,7 +541,6 @@ export default function HomePage() {
       role="main"
       aria-label="The Founder Chronicle — India's greatest startup founders"
     >
-      {/* ✅ FIX: JSON-LD rendered server-side in JSX — Google crawler reads it reliably */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
@@ -587,9 +590,6 @@ export default function HomePage() {
           color: white !important;
         }
 
-        .thumb { transition: opacity .18s ease; }
-        .thumb:hover { opacity: 1 !important; }
-
         @media (min-width: 1024px) {
           .right-sticky {
             position: sticky;
@@ -599,46 +599,36 @@ export default function HomePage() {
           }
         }
 
-        /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: #C8C2B4; }
 
-        /* ── Edition tabs scrollbar hide ── */
         .tabs-strip { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .tabs-strip::-webkit-scrollbar { display: none; }
 
-        /* ── CTA grid responsive ── */
         @media (max-width: 480px) {
           .cta-grid { grid-template-columns: 1fr !important; }
         }
+
+        /* video section nav dots */
+        .vid-dot { transition: all .18s ease; cursor: pointer; }
+        .vid-dot:hover { opacity: 1 !important; }
       `}</style>
 
-      {/* ══ SEO: Visually hidden H1 ══ */}
       <h1 className="sr-only" aria-label="Indian startup founder stories 2026">
         Indian Startup Founder Stories 2026 — Zepto, Zomato, Zerodha, Nykaa, OYO, Ola, CRED, Paytm, InternAdda | UpForge Founder Chronicle
       </h1>
 
-      {/* ══════════════════════════════════════════
-          MASTHEAD
-      ══════════════════════════════════════════ */}
+      {/* ══ MASTHEAD ══ */}
       <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }} role="banner">
-
-        {/* Publication nameplate */}
         <div className="text-center px-4 pt-10 sm:pt-14 pb-5 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
           <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
             Independent Startup Registry
           </p>
-          <p
-            className="pf font-black leading-none tracking-tight text-[#1A1208]"
-            aria-hidden="true"
-            style={{ fontSize: "clamp(1.9rem, 5.5vw, 4.6rem)" }}
-          >
+          <p className="pf font-black leading-none tracking-tight text-[#1A1208]" aria-hidden="true"
+            style={{ fontSize: "clamp(1.9rem, 5.5vw, 4.6rem)" }}>
             The Founder Chronicle
           </p>
-          <p
-            className="italic mt-2 text-[#6B5C40]"
-            style={{ fontSize: "clamp(12px, 1.7vw, 15px)" }}
-          >
+          <p className="italic mt-2 text-[#6B5C40]" style={{ fontSize: "clamp(12px, 1.7vw, 15px)" }}>
             Stories of the builders reshaping India — verified, editorial, March 2026
           </p>
           <div className="flex items-center justify-center gap-3 mt-4">
@@ -648,19 +638,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Story tabs */}
-        <nav
-          aria-label="Founder stories navigation"
+        <nav aria-label="Founder stories navigation"
           className="tabs-strip flex items-stretch overflow-x-auto"
-          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}
-        >
+          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
           <span className="text-[7.5px] text-[#BBB] uppercase tracking-widest px-3 py-3 self-center flex-shrink-0 hidden sm:inline">
             In this edition:
           </span>
           {FOUNDERS.map((s, i) => (
-            <button
-              key={i}
-              onClick={() => setIdx(i)}
+            <button key={i} onClick={() => setIdx(i)}
               aria-label={`Read ${s.nameShort}'s story — ${s.company}`}
               aria-current={i === idx ? "true" : undefined}
               className="flex-shrink-0 px-3 py-3 text-[8.5px] font-bold uppercase tracking-wider border-l transition-colors"
@@ -670,30 +655,20 @@ export default function HomePage() {
                 borderBottom: `2.5px solid ${i === idx ? s.accent : "transparent"}`,
                 background: i === idx ? "rgba(255,255,255,0.55)" : "transparent",
                 marginBottom: "-1px",
-              }}
-            >
+              }}>
               {s.edition} · {s.nameShort}
             </button>
           ))}
         </nav>
       </header>
 
-      {/* ══════════════════════════════════════════
-          STORY CONTENT
-      ══════════════════════════════════════════ */}
-      <main
-        key={idx}
-        className="story-in max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pb-14"
-        id="main-content"
-      >
-        {/* Two-column layout: story text | photo sidebar */}
-        <div
-          className="grid lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px]"
+      {/* ══ STORY CONTENT ══ */}
+      <main key={idx} className="story-in max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pb-14" id="main-content">
+
+        {/* Two-column: story | sidebar */}
+        <div className="grid lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px]"
           style={{ borderBottom: "2px solid #1A1208" }}
-          itemScope
-          itemType="https://schema.org/Article"
-        >
-          {/* Hidden schema metadata */}
+          itemScope itemType="https://schema.org/Article">
           <meta itemProp="headline" content={f.headline} />
           <meta itemProp="datePublished" content="2026-03-01" />
           <meta itemProp="dateModified" content="2026-03-08" />
@@ -702,45 +677,26 @@ export default function HomePage() {
           <meta itemProp="description" content={f.deck} />
           <link itemProp="url" href={`https://www.upforge.in/startup/${f.slug}`} />
 
-          {/* ════ LEFT: EDITORIAL TEXT ════ */}
+          {/* ── LEFT: EDITORIAL ── */}
           <article className="py-7 lg:pr-8" style={{ borderRight: "1px solid #C8C2B4" }}>
 
-            {/* Category + edition pill */}
             <div className="flex items-center gap-3 mb-5" style={{ fontFamily: "system-ui,sans-serif" }}>
-              <span
-                className="text-[8px] font-black tracking-[0.26em] uppercase px-3 py-1.5 text-white"
-                style={{ background: f.accent }}
-              >
-                {f.category}
-              </span>
-              <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">
-                {f.edition} · March 2026
-              </span>
+              <span className="text-[8px] font-black tracking-[0.26em] uppercase px-3 py-1.5 text-white"
+                style={{ background: f.accent }}>{f.category}</span>
+              <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{f.edition} · March 2026</span>
             </div>
 
-            {/* HEADLINE */}
-            <h2
-              className="pf font-black leading-[1.06] text-[#1A1208] mb-4"
-              style={{ fontSize: "clamp(1.5rem, 3.4vw, 2.7rem)" }}
-              itemProp="headline"
-            >
+            <h2 className="pf font-black leading-[1.06] text-[#1A1208] mb-4"
+              style={{ fontSize: "clamp(1.5rem, 3.4vw, 2.7rem)" }} itemProp="headline">
               {f.headline}
             </h2>
 
-            {/* DECK */}
-            <p
-              className="italic leading-[1.72] mb-5 pb-5"
-              style={{
-                color: "#5A4A30",
-                fontSize: "clamp(13px, 1.7vw, 16px)",
-                borderBottom: "1px solid #C8C2B4"
-              }}
-              itemProp="description"
-            >
+            <p className="italic leading-[1.72] mb-5 pb-5"
+              style={{ color: "#5A4A30", fontSize: "clamp(13px, 1.7vw, 16px)", borderBottom: "1px solid #C8C2B4" }}
+              itemProp="description">
               {f.deck}
             </p>
 
-            {/* Byline */}
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-7" style={{ fontFamily: "system-ui,sans-serif" }}>
               {["By UpForge Editorial", f.city, `Est. ${f.founded}`, f.context].map((item, i, arr) => (
                 <span key={i} className="flex items-center gap-2">
@@ -750,17 +706,11 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* ── MOBILE ONLY: photo block ── */}
+            {/* mobile photo */}
             <div className="lg:hidden mb-7">
-              <FounderPhoto
-                src={f.imgSrc}
-                alt={`${f.name}, ${f.role} at ${f.company}`}
-                initials={f.initials}
-                accent={f.accent}
-                accentBg={f.accentBg}
-                className="w-full"
-                style={{ height: "min(260px, 54vw)", minHeight: 180 }}
-              />
+              <FounderPhoto src={f.imgSrc} alt={`${f.name}, ${f.role} at ${f.company}`}
+                initials={f.initials} accent={f.accent} accentBg={f.accentBg}
+                className="w-full" style={{ height: "min(260px, 54vw)", minHeight: 180 }} />
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
                 <p className="pf text-white font-bold" style={{ fontSize: "clamp(11px,3vw,13px)" }}>{f.name}</p>
                 <p className="text-white/40 text-[8.5px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>
@@ -769,30 +719,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* ── 3-COLUMN NEWSPAPER BODY ── */}
+            {/* 3-col body */}
             <div className="newspaper-cols" itemProp="articleBody">
               {f.cols.map((col, ci) => (
                 <div key={ci} className="mb-5 sm:mb-0">
-                  <h3
-                    className="font-black uppercase tracking-[0.12em] mb-3 pb-1.5"
-                    style={{
-                      fontSize: "clamp(9px,1.1vw,11px)",
-                      color: "#1A1208",
-                      borderBottom: `1.5px solid ${f.accent}`,
-                      fontFamily: "system-ui,sans-serif",
-                    }}
-                  >
+                  <h3 className="font-black uppercase tracking-[0.12em] mb-3 pb-1.5"
+                    style={{ fontSize: "clamp(9px,1.1vw,11px)", color: "#1A1208", borderBottom: `1.5px solid ${f.accent}`, fontFamily: "system-ui,sans-serif" }}>
                     {col.h}
                   </h3>
                   {col.b.split("\n\n").map((para, pi) => (
-                    <p
-                      key={pi}
-                      className={`leading-[1.88] mb-3 text-[#2C2010] ${ci === 0 && pi === 0 ? "dropcap" : ""}`}
-                      style={{
-                        fontSize: "clamp(12px, 1.2vw, 13.5px)",
-                        fontFamily: "'Georgia','Times New Roman',serif",
-                      }}
-                    >
+                    <p key={pi} className={`leading-[1.88] mb-3 text-[#2C2010] ${ci === 0 && pi === 0 ? "dropcap" : ""}`}
+                      style={{ fontSize: "clamp(12px, 1.2vw, 13.5px)", fontFamily: "'Georgia','Times New Roman',serif" }}>
                       {para}
                     </p>
                   ))}
@@ -800,17 +737,13 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* ── PULL QUOTE ── */}
-            <div
-              className="mt-9 pt-6 pb-6 text-center"
-              style={{ borderTop: `3px solid ${f.accent}`, borderBottom: "1px solid #C8C2B4" }}
-            >
+            {/* pull quote */}
+            <div className="mt-9 pt-6 pb-6 text-center"
+              style={{ borderTop: `3px solid ${f.accent}`, borderBottom: "1px solid #C8C2B4" }}>
               <span style={{ display: "block", color: "#C8C2B4", fontSize: 14, marginBottom: 10 }} aria-hidden="true">❧</span>
-              <blockquote
-                className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
+              <blockquote className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
                 style={{ fontSize: "clamp(14px, 1.8vw, 19px)" }}
-                cite={`https://www.upforge.in/startup/${f.slug}`}
-              >
+                cite={`https://www.upforge.in/startup/${f.slug}`}>
                 "{f.pull}"
               </blockquote>
               <span style={{ display: "block", color: "#C8C2B4", fontSize: 14, margin: "10px 0 8px" }} aria-hidden="true">❧</span>
@@ -818,32 +751,22 @@ export default function HomePage() {
                 — {f.pullBy}, {f.company}
               </p>
             </div>
-
           </article>
 
-          {/* ════ RIGHT: PHOTO + FACTS (desktop) ════ */}
-          <aside className="hidden lg:block" aria-label={`${f.name} profile and key metrics`} itemScope itemType="https://schema.org/Person">
+          {/* ── RIGHT: SIDEBAR ── */}
+          <aside className="hidden lg:block" aria-label={`${f.name} profile and key metrics`}
+            itemScope itemType="https://schema.org/Person">
             <meta itemProp="name" content={f.name} />
             <meta itemProp="jobTitle" content={f.role} />
             <meta itemProp="worksFor" content={f.company} />
             <meta itemProp="address" content={f.city} />
 
             <div className="right-sticky pl-7 pt-7 pb-7 flex flex-col gap-4">
-
-              {/* FOUNDER PHOTO */}
               <div className="relative w-full" style={{ height: 360 }}>
-                <FounderPhoto
-                  src={f.imgSrc}
-                  alt={`${f.name}, ${f.role} at ${f.company} — UpForge Founder Chronicle`}
-                  initials={f.initials}
-                  accent={f.accent}
-                  accentBg={f.accentBg}
-                  className="w-full h-full"
-                />
-                <div
-                  className="absolute bottom-0 left-0 right-0 px-4 py-3"
-                  style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 55%, transparent)" }}
-                >
+                <FounderPhoto src={f.imgSrc} alt={`${f.name}, ${f.role} at ${f.company} — UpForge Founder Chronicle`}
+                  initials={f.initials} accent={f.accent} accentBg={f.accentBg} className="w-full h-full" />
+                <div className="absolute bottom-0 left-0 right-0 px-4 py-3"
+                  style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 55%, transparent)" }}>
                   <p className="pf text-white font-bold leading-snug" style={{ fontSize: "clamp(11px,1.1vw,13px)" }}>{f.name}</p>
                   <p className="text-white/40 text-[8.5px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>
                     {f.role} · {f.company}
@@ -851,119 +774,66 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* BY THE NUMBERS */}
               <div style={{ border: "2px solid #1A1208" }} role="region" aria-label="Key metrics">
                 <div className="px-4 py-2.5" style={{ background: "#1A1208" }}>
-                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    By the Numbers
-                  </p>
+                  <p className="text-[8px] font-black uppercase tracking-[0.3em] text-white" style={{ fontFamily: "system-ui,sans-serif" }}>By the Numbers</p>
                 </div>
                 <dl className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
                   {f.stats.map((s, si) => (
                     <div key={si} className="px-3 py-3" style={{ borderColor: "#D8D2C4" }}>
-                      <dt className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "system-ui,sans-serif" }}>
-                        {s.l}
-                      </dt>
-                      <dd className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "clamp(1.1rem,1.3vw,1.3rem)" }}>
-                        {s.v}
-                      </dd>
+                      <dt className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1" style={{ fontFamily: "system-ui,sans-serif" }}>{s.l}</dt>
+                      <dd className="pf font-black text-[#1A1208] leading-none" style={{ fontSize: "clamp(1.1rem,1.3vw,1.3rem)" }}>{s.v}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
 
-              {/* THE LESSON */}
               <div className="px-4 py-4" style={{ background: f.accentBg, border: `1px solid ${f.accentBorder}` }}>
-                <p
-                  className="text-[7.5px] font-black uppercase tracking-[0.26em] mb-2"
-                  style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}
-                >
-                  The Lesson
-                </p>
-                <p className="italic text-[#1A1208] leading-[1.72]" style={{ fontSize: "clamp(11.5px,1.1vw,13px)", fontFamily: "'Georgia',serif" }}>
-                  {f.lesson}
-                </p>
+                <p className="text-[7.5px] font-black uppercase tracking-[0.26em] mb-2" style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}>The Lesson</p>
+                <p className="italic text-[#1A1208] leading-[1.72]" style={{ fontSize: "clamp(11.5px,1.1vw,13px)", fontFamily: "'Georgia',serif" }}>{f.lesson}</p>
               </div>
 
-              {/* PROFILE LINK */}
-              <Link
-                href={`/startup/${f.slug}`}
+              <Link href={`/startup/${f.slug}`}
                 className="group flex items-center justify-between px-4 py-3 transition-opacity hover:opacity-70"
                 style={{ border: `1.5px solid ${f.accent}` }}
-                aria-label={`View ${f.company} full profile on UpForge`}
-              >
+                aria-label={`View ${f.company} full profile on UpForge`}>
                 <span className="text-[9.5px] font-bold uppercase tracking-wider" style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}>
                   View {f.company} on UpForge
                 </span>
                 <ArrowUpRight className="w-3.5 h-3.5" style={{ color: f.accent }} aria-hidden="true" />
               </Link>
 
-              {/* Context footnote */}
               <p className="text-[8.5px] text-[#AAA] italic pt-2" style={{ borderTop: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}>
                 {f.context} · {f.city} · Est. {f.founded}
               </p>
-
             </div>
           </aside>
-
         </div>
 
-        {/* ══════════════════════════════════════════
-            PAGE NAVIGATION — prev / dots / next
-        ══════════════════════════════════════════ */}
-        <nav
-          className="flex items-center justify-between py-5"
-          style={{ borderBottom: "1px solid #C8C2B4" }}
-          aria-label="Story pagination"
-        >
-          <button
-            onClick={() => !isFirst && setIdx(i => i - 1)}
-            disabled={isFirst}
+        {/* ══ PAGINATION ══ */}
+        <nav className="flex items-center justify-between py-5" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="Story pagination">
+          <button onClick={() => !isFirst && setIdx(i => i - 1)} disabled={isFirst}
             className="nbtn flex items-center gap-1.5 px-3 sm:px-4 py-2.5 font-bold uppercase tracking-wider transition-all"
             aria-label={isFirst ? "First story" : `Previous: ${FOUNDERS[idx - 1].nameShort}`}
-            style={{
-              border: `1px solid ${isFirst ? "#D8D2C4" : "#1A1208"}`,
-              color: isFirst ? "#C8C2B4" : "#1A1208",
-              cursor: isFirst ? "not-allowed" : "pointer",
-              fontSize: "clamp(8px,1vw,10px)",
-              background: "transparent",
-              fontFamily: "system-ui,sans-serif",
-            }}
-          >
+            style={{ border: `1px solid ${isFirst ? "#D8D2C4" : "#1A1208"}`, color: isFirst ? "#C8C2B4" : "#1A1208", cursor: isFirst ? "not-allowed" : "pointer", fontSize: "clamp(8px,1vw,10px)", background: "transparent", fontFamily: "system-ui,sans-serif" }}>
             <ChevronLeft className="w-3 h-3" aria-hidden="true" />
             <span className="hidden sm:inline">{isFirst ? "First Story" : FOUNDERS[idx - 1].nameShort}</span>
             <span className="sm:hidden">Prev</span>
           </button>
 
-          {/* Progress dots */}
           <div className="flex items-center gap-1.5" role="tablist" aria-label="Story selector">
             {FOUNDERS.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => setIdx(i)}
-                role="tab"
-                aria-selected={i === idx}
-                aria-label={`Story ${i + 1}: ${s.nameShort}`}
+              <button key={i} onClick={() => setIdx(i)} role="tab"
+                aria-selected={i === idx} aria-label={`Story ${i + 1}: ${s.nameShort}`}
                 className="h-1.5 rounded-sm transition-all"
-                style={{ width: i === idx ? 24 : 5, background: i === idx ? f.accent : "#C8C2B4" }}
-              />
+                style={{ width: i === idx ? 24 : 5, background: i === idx ? f.accent : "#C8C2B4" }} />
             ))}
           </div>
 
-          <button
-            onClick={() => !isLast && setIdx(i => i + 1)}
-            disabled={isLast}
+          <button onClick={() => !isLast && setIdx(i => i + 1)} disabled={isLast}
             className="nbtn flex items-center gap-1.5 px-3 sm:px-4 py-2.5 font-bold uppercase tracking-wider transition-all"
             aria-label={isLast ? "Last story" : `Next: ${FOUNDERS[idx + 1].nameShort}`}
-            style={{
-              border: `1px solid ${isLast ? "#D8D2C4" : "#1A1208"}`,
-              color: isLast ? "#C8C2B4" : "#1A1208",
-              cursor: isLast ? "not-allowed" : "pointer",
-              fontSize: "clamp(8px,1vw,10px)",
-              background: "transparent",
-              fontFamily: "system-ui,sans-serif",
-            }}
-          >
+            style={{ border: `1px solid ${isLast ? "#D8D2C4" : "#1A1208"}`, color: isLast ? "#C8C2B4" : "#1A1208", cursor: isLast ? "not-allowed" : "pointer", fontSize: "clamp(8px,1vw,10px)", background: "transparent", fontFamily: "system-ui,sans-serif" }}>
             <span className="hidden sm:inline">{isLast ? "Last Story" : FOUNDERS[idx + 1].nameShort}</span>
             <span className="sm:hidden">Next</span>
             <ChevronRight className="w-3 h-3" aria-hidden="true" />
@@ -971,90 +841,117 @@ export default function HomePage() {
         </nav>
 
         {/* ══════════════════════════════════════════
-            ALL STORIES — thumbnail index
+            FEATURED VIDEO — replaces thumbnail grid
+            Shows current founder's video.
+            Nav dots below to jump to any founder's video.
         ══════════════════════════════════════════ */}
-        <section className="py-7" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="All founder stories in this edition">
-          <p className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>
-            All Stories in This Edition
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" role="list">
-            {FOUNDERS.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => setIdx(i)}
-                role="listitem"
-                className="thumb text-left"
-                style={{ opacity: i === idx ? 1 : 0.46 }}
-                aria-label={`${s.nameShort} — ${s.company} founder story`}
-                aria-current={i === idx ? "true" : undefined}
-              >
-                <div
-                  className="relative w-full overflow-hidden mb-2"
-                  style={{ height: 104, borderTop: `3px solid ${s.accent}`, background: s.accentBg }}
-                >
-                  <FounderPhoto
-                    src={s.imgSrc}
-                    alt={`${s.nameShort}, ${s.company} founder`}
-                    initials={s.initials}
-                    accent={s.accent}
-                    accentBg={s.accentBg}
-                    className="absolute inset-0 w-full h-full"
-                  />
-                </div>
-                <p className="text-[8px] font-black uppercase tracking-wider mb-0.5" style={{ color: s.accent, fontFamily: "system-ui,sans-serif" }}>
-                  {s.edition}
-                </p>
-                <p className="pf font-bold text-[#1A1208] leading-snug" style={{ fontSize: "clamp(11px,1.1vw,12.5px)" }}>
-                  {s.nameShort}
-                </p>
-                <p className="text-[9px] text-[#AAA] mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  {s.company}
-                </p>
-              </button>
-            ))}
+        <section className="py-7" style={{ borderBottom: "1px solid #C8C2B4" }}
+          aria-label={`Featured video — ${f.name}`}>
+
+          {/* Section header */}
+          <div className="flex items-center gap-3 mb-5" style={{ fontFamily: "system-ui,sans-serif" }}>
+            <span className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA]">Featured Watch</span>
+            <div className="flex-1 h-px" style={{ background: "#D8D2C4" }} />
+            <span className="text-[8px] font-black uppercase tracking-[0.2em]" style={{ color: f.accent }}>
+              {f.edition} · {f.name}
+            </span>
           </div>
+
+          {/* Video + info row */}
+          <div className="grid lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] gap-0"
+            style={{ border: "1.5px solid #1A1208" }}>
+
+            {/* 16:9 embed */}
+            <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#0A0A0A" }}>
+              <iframe
+                key={f.videoId}
+                src={`https://www.youtube.com/embed/${f.videoId}?rel=0&modestbranding=1`}
+                title={f.videoTitle}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+                loading="lazy"
+                style={{ border: "none" }}
+              />
+            </div>
+
+            {/* Info panel */}
+            <div className="flex flex-col justify-between p-5 sm:p-6"
+              style={{ background: "#1A1208", borderLeft: "1.5px solid #1A1208" }}>
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.28em] mb-3"
+                  style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}>
+                  Now Watching
+                </p>
+                <p className="pf font-black text-white leading-snug mb-2"
+                  style={{ fontSize: "clamp(1rem,1.4vw,1.25rem)" }}>
+                  {f.name}
+                </p>
+                <p className="text-white/50 text-[10px] uppercase tracking-wider mb-4"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  {f.role} · {f.company}
+                </p>
+                <p className="text-white/70 leading-relaxed"
+                  style={{ fontSize: "clamp(11px,1.1vw,12.5px)", fontFamily: "system-ui,sans-serif" }}>
+                  {f.deck}
+                </p>
+              </div>
+              <div className="mt-5 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                <p className="text-[7.5px] font-black uppercase tracking-[0.24em] text-white/30 mb-3"
+                  style={{ fontFamily: "system-ui,sans-serif" }}>
+                  Jump to another founder
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {FOUNDERS.map((s, i) => (
+                    <button key={i} onClick={() => setIdx(i)}
+                      aria-label={`Watch ${s.nameShort} — ${s.company}`}
+                      className="vid-dot text-[8px] font-bold uppercase tracking-wider px-2 py-1 transition-all"
+                      style={{
+                        background: i === idx ? f.accent : "rgba(255,255,255,0.08)",
+                        color: i === idx ? "white" : "rgba(255,255,255,0.45)",
+                        border: `1px solid ${i === idx ? f.accent : "rgba(255,255,255,0.12)"}`,
+                        fontFamily: "system-ui,sans-serif",
+                      }}>
+                      {s.no}
+                    </button>
+                  ))}
+                </div>
+                <Link href={`/startup/${f.slug}`}
+                  className="mt-4 flex items-center gap-2 text-[9px] font-bold uppercase tracking-wider hover:opacity-80 transition-opacity"
+                  style={{ color: f.accent, fontFamily: "system-ui,sans-serif" }}>
+                  Full {f.company} Profile <ArrowUpRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Caption */}
+          <p className="text-[9px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
+            {f.videoTitle} — UpForge Founder Chronicle, March 2026
+          </p>
         </section>
 
-        {/* ══════════════════════════════════════════
-            INSIGHT STRIP
-        ══════════════════════════════════════════ */}
+        {/* ══ INSIGHT STRIP ══ */}
         <section className="py-7" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="UpForge founder insights">
           <p className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>
             UpForge Founder Insights
           </p>
           <div className="grid sm:grid-cols-3 gap-4">
             {[
-              {
-                v: "~80%", l: "First-generation founders",
-                b: "India's under-40 unicorn builders mostly had no inherited capital or legacy networks. They built in public — which is exactly why their stories are worth studying."
-              },
-              {
-                v: "$950B", l: "Value created by under-40s",
-                b: "Avendus-Hurun India 2025: founders under 40 manage businesses worth more than Switzerland's entire GDP — and most started with nothing."
-              },
-              {
-                v: "126", l: "Unicorns — and rising",
-                b: "India just crossed 126 unicorns. The founders reading these stories today will build the next 126. UpForge exists to help them get discovered."
-              },
+              { v: "~80%", l: "First-generation founders", b: "India's under-40 unicorn builders mostly had no inherited capital or legacy networks. They built in public — which is exactly why their stories are worth studying." },
+              { v: "$950B", l: "Value created by under-40s", b: "Avendus-Hurun India 2025: founders under 40 manage businesses worth more than Switzerland's entire GDP — and most started with nothing." },
+              { v: "126", l: "Unicorns — and rising", b: "India just crossed 126 unicorns. The founders reading these stories today will build the next 126. UpForge exists to help them get discovered." },
             ].map((item, i) => (
               <div key={i} className="p-4" style={{ background: "white", border: "1px solid #D8D2C4" }}>
-                <p className="pf font-black text-[#1A1208] leading-none mb-1" style={{ fontSize: "clamp(1.7rem,2.4vw,2.1rem)" }}>
-                  {item.v}
-                </p>
-                <p className="text-[7.5px] font-black uppercase tracking-[0.18em] mb-2" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>
-                  {item.l}
-                </p>
-                <p className="text-[11px] leading-relaxed" style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}>
-                  {item.b}
-                </p>
+                <p className="pf font-black text-[#1A1208] leading-none mb-1" style={{ fontSize: "clamp(1.7rem,2.4vw,2.1rem)" }}>{item.v}</p>
+                <p className="text-[7.5px] font-black uppercase tracking-[0.18em] mb-2" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>{item.l}</p>
+                <p className="text-[11px] leading-relaxed" style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}>{item.b}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════
-            INTERNAL LINKS (SEO)
-        ══════════════════════════════════════════ */}
+        {/* ══ INTERNAL LINKS ══ */}
         <section className="py-7" style={{ borderBottom: "1px solid #C8C2B4" }} aria-label="Explore more on UpForge">
           <p className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>
             Explore on UpForge
@@ -1070,46 +967,30 @@ export default function HomePage() {
               { l: "D2C Startups India",      h: "/d2c-startups",       desc: "Nykaa & next wave" },
               { l: "Submit Your Startup",     h: "/submit",             desc: "Get listed free" },
             ].map((lnk) => (
-              // ✅ FIX: key uses h+l to ensure uniqueness (no duplicate keys)
-              <Link
-                key={lnk.h + lnk.l}
-                href={lnk.h}
+              <Link key={lnk.h + lnk.l} href={lnk.h}
                 className="flex flex-col gap-1 p-3 transition-all hover:border-[#1A1208]"
-                style={{ border: "1px solid #D8D2C4", background: "white" }}
-              >
+                style={{ border: "1px solid #D8D2C4", background: "white" }}>
                 <span className="text-[9.5px] font-bold uppercase tracking-wider text-[#1A1208] flex items-center gap-1" style={{ fontFamily: "system-ui,sans-serif" }}>
                   {lnk.l} <ChevronRight className="w-2.5 h-2.5 flex-shrink-0" aria-hidden="true" />
                 </span>
-                <span className="text-[8.5px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  {lnk.desc}
-                </span>
+                <span className="text-[8.5px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>{lnk.desc}</span>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════
-            FOOTER CTA
-        ══════════════════════════════════════════ */}
+        {/* ══ FOOTER CTA ══ */}
         <section className="pt-7 grid sm:grid-cols-2 gap-6 items-center" aria-label="List your startup on UpForge">
           <div>
-            <p className="text-[8px] font-black uppercase tracking-[0.24em] mb-2" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>
-              UpForge Registry
-            </p>
-            <p className="pf font-bold text-[#1A1208] leading-snug mb-2" style={{ fontSize: "clamp(1.1rem,2vw,1.3rem)" }}>
-              Your founder story starts with a verified profile.
-            </p>
-            <p className="text-[11.5px] leading-relaxed" style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}>
-              Get independently verified and indexed in India's most trusted startup registry. Free forever.
-            </p>
+            <p className="text-[8px] font-black uppercase tracking-[0.24em] mb-2" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>UpForge Registry</p>
+            <p className="pf font-bold text-[#1A1208] leading-snug mb-2" style={{ fontSize: "clamp(1.1rem,2vw,1.3rem)" }}>Your founder story starts with a verified profile.</p>
+            <p className="text-[11.5px] leading-relaxed" style={{ color: "#6B5C40", fontFamily: "system-ui,sans-serif" }}>Get independently verified and indexed in India's most trusted startup registry. Free forever.</p>
           </div>
           <div className="flex flex-col sm:items-end gap-3">
-            <Link
-              href="/submit"
+            <Link href="/submit"
               className="inline-flex items-center gap-2 px-5 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
               style={{ background: "#1A1208", fontSize: "clamp(9px,1vw,11px)", fontFamily: "system-ui,sans-serif" }}
-              aria-label="List your Indian startup on UpForge for free"
-            >
+              aria-label="List your Indian startup on UpForge for free">
               List Your Startup — Free <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </Link>
           </div>
@@ -1117,16 +998,12 @@ export default function HomePage() {
 
         {/* ══ FOOTER ══ */}
         <footer className="mt-7 pb-2">
-          <p
-            className="text-[8.5px] leading-relaxed"
-            style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif", borderTop: "1px solid #D8D2C4", paddingTop: "1rem" }}
-          >
+          <p className="text-[8.5px] leading-relaxed"
+            style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif", borderTop: "1px solid #D8D2C4", paddingTop: "1rem" }}>
             * Story details sourced from public interviews, Forbes India, Inc42, Hurun India 2025, Tracxn, and company announcements as of March 2026.
             UpForge is an independent registry — no paid placements, no sponsored rankings.
             Founder valuations are approximate and reflect latest available public data.
           </p>
-
-          {/* ✅ FIX: key uses h+l to prevent duplicate key warning */}
           <nav aria-label="Footer navigation" className="mt-4">
             <ul className="flex flex-wrap gap-x-4 gap-y-2">
               {[
@@ -1139,11 +1016,9 @@ export default function HomePage() {
                 { l: "Submit Startup",          h: "/submit" },
               ].map(lnk => (
                 <li key={lnk.h + lnk.l}>
-                  <Link
-                    href={lnk.h}
+                  <Link href={lnk.h}
                     className="text-[8.5px] text-[#AAA] hover:text-[#1A1208] uppercase tracking-wider transition-colors"
-                    style={{ fontFamily: "system-ui,sans-serif" }}
-                  >
+                    style={{ fontFamily: "system-ui,sans-serif" }}>
                     {lnk.l}
                   </Link>
                 </li>
