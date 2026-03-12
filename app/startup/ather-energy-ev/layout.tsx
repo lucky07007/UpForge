@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     description: "From IIT Madras to India's most-loved electric scooter brand and a landmark IPO. Ather Energy founder story, funding, 450X & the road ahead on UpForge.",
     url: "https://upforge.in/startup/ather-energy-ev",
     siteName: "UpForge",
-    images: [{ url: "https://upforge.in/og/ather-energy-ev.png", width: 1200, height: 630 }],
+    images: [{ url: "https://media.fortuneindia.com/fortune-india/import/2025-03-29/hgwivhxj/tarun-mehta.jpg?rect=0,0,10100,5303&w=1200&ar=40:21&auto=format,compress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100", width: 1200, height: 630 }],
     locale: "en_IN",
     type: "article",
   },
