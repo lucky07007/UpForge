@@ -238,18 +238,18 @@ export default async function StartupPage({ searchParams }: Props) {
         {/* MASTHEAD */}
         <header className="a0" style={{ background: "var(--parch)", borderBottom: "3px solid var(--ink)" }}>
           <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px)" }}>
-            <div style={{ textAlign: "center", padding: "clamp(32px,5vw,60px) 0 clamp(18px,3vw,32px)", borderBottom: "1px solid var(--rule2)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 20 }}>
+            <div style={{ textAlign: "center", padding: "clamp(16px,2.5vw,28px) 0 clamp(12px,1.8vw,18px)", borderBottom: "1px solid var(--rule2)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginBottom: 12 }}>
                 <div style={{ height: 1, width: 48, background: "var(--rule)" }} />
                 <span className="sf" style={{ fontSize: 8.5, letterSpacing: "0.36em", textTransform: "uppercase", color: "var(--ink5)", fontWeight: 700 }}>
                   UpForge · India Edition · 2026
                 </span>
                 <div style={{ height: 1, width: 48, background: "var(--rule)" }} />
               </div>
-              <h1 className="pf" style={{ fontSize: "clamp(2.6rem,7vw,5.8rem)", fontWeight: 900, lineHeight: 0.9, color: "var(--ink)", letterSpacing: "-0.025em", marginBottom: 22 }}>
+              <h1 className="pf" style={{ fontSize: "clamp(2.6rem,7vw,5.8rem)", fontWeight: 900, lineHeight: 0.9, color: "var(--ink)", letterSpacing: "-0.025em", marginBottom: 12 }}>
                 Startup Registry
               </h1>
-              <p className="rp" style={{ fontSize: "clamp(13px,1.8vw,16px)", fontStyle: "italic", color: "var(--ink4)", marginBottom: 24, lineHeight: 1.5 }}>
+              <p className="rp" style={{ fontSize: "clamp(13px,1.8vw,16px)", fontStyle: "italic", color: "var(--ink4)", marginBottom: 14, lineHeight: 1.5 }}>
                 India's independent registry of verified builders — free, structured, permanent.
               </p>
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
@@ -271,10 +271,10 @@ export default async function StartupPage({ searchParams }: Props) {
         </header>
 
         {/* MAIN */}
-        <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
+        <div style={{ maxWidth: 1340, margin: "0 auto", padding: "0 clamp(16px,3vw,36px) clamp(32px,5vw,60px)" }}>
 
           {/* SECTOR FILTER */}
-          <div className="a1 strip" style={{ padding: "14px 0", borderBottom: "1px solid var(--rule2)" }}>
+          <div className="a1 strip" style={{ padding: "10px 0", borderBottom: "1px solid var(--rule2)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: "max-content" }}>
               <span className="sf" style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--ink5)", flexShrink: 0 }}>Sector:</span>
               <Link href="/startup" className={`pill ${!sectorFilter ? "on" : ""}`}>All</Link>
@@ -298,7 +298,7 @@ export default async function StartupPage({ searchParams }: Props) {
           </div>
 
           {/* RESULTS HEADER */}
-          <div className="a1" style={{ display: "flex", alignItems: "center", gap: 10, margin: "22px 0 18px" }}>
+          <div className="a1" style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0 12px" }}>
             <span className="sh-l">{sectorFilter || "All Startups"}</span>
             <span className="rp" style={{ fontSize: 11, fontStyle: "italic", color: "var(--gold2)", fontWeight: 400 }}>
               — {totalCount.toLocaleString()} profiles
@@ -503,7 +503,7 @@ export default async function StartupPage({ searchParams }: Props) {
           </PageTransition>
 
           {/* INSIGHT STRIP */}
-          <div style={{ marginTop: "clamp(52px,7vw,80px)" }}>
+          <div style={{ marginTop: "clamp(28px,4vw,44px)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <span className="sh-l">UpForge Registry Insights</span>
               <div className="sh-r" />
