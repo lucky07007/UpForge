@@ -624,7 +624,7 @@ export default function HomePage() {
       <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }} role="banner">
 
         {/* Publication nameplate */}
-        <div className="text-center px-4 pt-3 pb-5 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
+        <div className="text-center px-4 pt-10 sm:pt-14 pb-5 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
           <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
             UpForge · Independent Startup Registry · India Edition
           </p>
