@@ -45,6 +45,54 @@ interface ArchiveFounder {
 // Structured by edition (month/year) for easy filtering
 const ARCHIVE_FOUNDERS: ArchiveFounder[] = [
   // March 2026 Edition (Current)
+
+  {
+  no: "11",
+  edition: "No. 11",
+  editionDate: "March 2026",
+  category: "CONSUMER ELECTRONICS",
+  name: "Aman Gupta",
+  nameShort: "Aman Gupta",
+  initials: "AG",
+  company: "boAt",
+  slug: "boat",
+  role: "Co-Founder & CMO",
+  city: "New Delhi, DL",
+  context: "Building India's youth lifestyle audio brand",
+  valuation: "$1.4B+",
+  funding: "$170M+",
+  founded: "2016",
+  imgSrc: "https://www.cheggindia.com/wp-content/uploads/2023/06/eo-35893-founder-of-boat-v2-1024x683.png",
+  accent: "#F97316",
+  accentBg: "#FFF7ED",
+  accentBorder: "#FED7AA",
+  headline: "India didn't need another audio brand. It needed a youth lifestyle brand.",
+  deck: "boAt became one of India's fastest-growing consumer electronics brands by combining stylish design, affordable pricing, and aggressive digital marketing.",
+  cols: [
+    {
+      h: "The Lifestyle Brand Strategy",
+      b: "When Aman Gupta co-founded boAt in 2016, the audio market in India was dominated by global giants like Sony, JBL, and Bose.\n\nInstead of competing purely on sound quality, boAt focused on creating a lifestyle brand for India's youth — colorful products, bold branding, and strong influencer marketing."
+    },
+    {
+      h: "Winning the E-commerce Battlefield",
+      b: "boAt aggressively leveraged e-commerce platforms like Amazon and Flipkart to scale distribution quickly.\n\nFlash sales, influencer campaigns, and sports partnerships helped the company dominate the online audio accessories market in India."
+    },
+    {
+      h: "From Earphones to Ecosystem",
+      b: "Over time, boAt expanded beyond earphones into smartwatches, speakers, gaming accessories, and personal audio devices.\n\nThe brand built a massive community of loyal customers, turning boAt into one of India's most recognizable D2C electronics brands."
+    }
+  ],
+  pull: "India didn't need another audio brand. It needed a youth lifestyle brand.",
+  pullBy: "Aman Gupta",
+  lesson: "Branding and community can be as powerful as technology.",
+  stats: [
+    { l: "Valuation", v: "$1.4B+" },
+    { l: "Funding", v: "$170M+" },
+    { l: "Category", v: "Audio & Wearables" },
+    { l: "Founded", v: "2016" }
+  ],
+  tags: ["D2C", "ConsumerTech", "Audio", "Delhi"]
+},
   {
     no: "01", 
     edition: "No. 01",
@@ -188,6 +236,107 @@ const ARCHIVE_FOUNDERS: ArchiveFounder[] = [
   },
 
   // February 2026 Edition
+
+
+  {
+  no: "12",
+  edition: "No. 12",
+  editionDate: "March 2026",
+  category: "AUTOMOTIVE MARKETPLACE",
+  name: "Niraj Singh",
+  nameShort: "Niraj Singh",
+  initials: "NS",
+  company: "Spinny",
+  slug: "spinny",
+  role: "Founder & CEO",
+  city: "Gurugram, HR",
+  context: "Building trust in India's used car market",
+  valuation: "$1.8B+",
+  funding: "$500M+",
+  founded: "2015",
+  imgSrc: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxhEGcchrkMFMKY10CKmOUHWAIo3T06-9dPA&s",
+  accent: "#2563EB",
+  accentBg: "#EFF6FF",
+  accentBorder: "#BFDBFE",
+  headline: "Buying a used car in India shouldn't feel like a gamble.",
+  deck: "Spinny built a full-stack digital platform that makes buying and selling used cars transparent, standardized, and trustworthy.",
+  cols: [
+    {
+      h: "Fixing the Trust Problem",
+      b: "India's used car market has historically been fragmented and unorganized, filled with brokers and inconsistent quality.\n\nNiraj Singh launched Spinny to bring structure and transparency to the process."
+    },
+    {
+      h: "Full-Stack Car Marketplace",
+      b: "Spinny controls the entire transaction journey — from inspection and refurbishment to pricing, logistics, and delivery.\n\nThis model allowed the company to maintain quality standards and build customer trust."
+    },
+    {
+      h: "Technology Meets Automotive",
+      b: "Spinny uses pricing algorithms, inspection technology, and digital documentation to streamline car transactions.\n\nThe company has rapidly expanded across India's largest cities and continues scaling its logistics and inventory network."
+    }
+  ],
+  pull: "Buying a used car in India shouldn't feel like a gamble.",
+  pullBy: "Niraj Singh",
+  lesson: "In broken markets, trust can become the biggest product.",
+  stats: [
+    { l: "Valuation", v: "$1.8B+" },
+    { l: "Funding", v: "$500M+" },
+    { l: "Industry", v: "Used Cars" },
+    { l: "Founded", v: "2015" }
+  ],
+  tags: ["Marketplace", "Automotive", "Startup", "Gurugram"]
+},
+
+
+
+  {
+  no: "13",
+  edition: "No. 13",
+  editionDate: "March 2026",
+  category: "CLEAN ENERGY",
+  name: "Anirudh Bhuwalka",
+  nameShort: "Anirudh Bhuwalka",
+  initials: "AB",
+  company: "Blue Energy Motors",
+  slug: "blue-energy-motors",
+  role: "Founder & CEO",
+  city: "Mumbai, MH",
+  context: "Decarbonizing heavy trucking with clean fuels",
+  valuation: "$500M+",
+  funding: "$150M+",
+  founded: "2019",
+  imgSrc: "https://i.ytimg.com/vi/bHMYuTFe0LE/maxresdefault.jpg",
+  accent: "#0EA5E9",
+  accentBg: "#F0F9FF",
+  accentBorder: "#BAE6FD",
+  headline: "Heavy trucks are one of the biggest carbon emitters. That has to change.",
+  deck: "Blue Energy Motors is building zero-emission heavy-duty trucks powered by LNG and hydrogen technologies for India's logistics sector.",
+  cols: [
+    {
+      h: "The Trucking Emissions Problem",
+      b: "Heavy commercial vehicles contribute significantly to global carbon emissions.\n\nAnirudh Bhuwalka founded Blue Energy Motors to build sustainable alternatives for long-haul trucking."
+    },
+    {
+      h: "Alternative Fuel Innovation",
+      b: "The company initially focused on LNG-powered trucks, which significantly reduce emissions compared to diesel.\n\nIt is also developing hydrogen-powered trucks for the next generation of clean logistics."
+    },
+    {
+      h: "Building India's Clean Logistics Future",
+      b: "Blue Energy Motors is working with major logistics companies to deploy clean trucks across freight networks.\n\nThe startup represents a new wave of deep-tech manufacturing companies emerging from India."
+    }
+  ],
+  pull: "Heavy trucks are one of the biggest carbon emitters. That has to change.",
+  pullBy: "Anirudh Bhuwalka",
+  lesson: "Climate innovation will reshape entire industries.",
+  stats: [
+    { l: "Valuation", v: "$500M+" },
+    { l: "Funding", v: "$150M+" },
+    { l: "Sector", v: "Clean Trucking" },
+    { l: "Founded", v: "2019" }
+  ],
+  tags: ["ClimateTech", "EV", "Logistics", "Mumbai"]
+},
+
+  
   {
     no: "04", 
     edition: "No. 04",
@@ -284,6 +433,54 @@ const ARCHIVE_FOUNDERS: ArchiveFounder[] = [
   },
 
   // January 2026 Edition
+
+  {
+  no: "14",
+  edition: "No. 14",
+  editionDate: "March 2026",
+  category: "ELECTRIC VEHICLES",
+  name: "Tarun Mehta",
+  nameShort: "Tarun Mehta",
+  initials: "TM",
+  company: "Ather Energy",
+  slug: "ather-energy",
+  role: "Co-Founder & CEO",
+  city: "Bengaluru, KA",
+  context: "Building India's premium electric scooter ecosystem",
+  valuation: "$2B+",
+  funding: "$450M+",
+  founded: "2013",
+  imgSrc: "https://media.fortuneindia.com/fortune-india/import/2025-03-29/hgwivhxj/tarun-mehta.jpg?rect=0,0,10100,5303&w=1200&ar=40:21&auto=format,compress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100",
+  accent: "#10B981",
+  accentBg: "#ECFDF5",
+  accentBorder: "#A7F3D0",
+  headline: "Electric vehicles aren't just about batteries — they are about the entire ecosystem.",
+  deck: "Ather Energy built one of India's most advanced electric scooter platforms along with a nationwide fast-charging infrastructure.",
+  cols: [
+    {
+      h: "Engineering-First Approach",
+      b: "Tarun Mehta and Swapnil Jain started Ather Energy in 2013 with a focus on deep engineering.\n\nInstead of importing components, the company built its own battery systems, software stack, and vehicle architecture."
+    },
+    {
+      h: "Smart Electric Scooters",
+      b: "Ather scooters introduced features like touchscreen dashboards, OTA updates, navigation, and performance analytics.\n\nThis positioned the brand as a premium EV alternative in India."
+    },
+    {
+      h: "Charging Infrastructure",
+      b: "Ather didn't just build scooters — it built charging infrastructure.\n\nThe Ather Grid network of fast chargers across cities helped solve one of the biggest barriers to EV adoption."
+    }
+  ],
+  pull: "Electric vehicles aren't just about batteries — they are about the entire ecosystem.",
+  pullBy: "Tarun Mehta",
+  lesson: "Hardware companies win by controlling the full ecosystem.",
+  stats: [
+    { l: "Valuation", v: "$2B+" },
+    { l: "Funding", v: "$450M+" },
+    { l: "Sector", v: "Electric Vehicles" },
+    { l: "Founded", v: "2013" }
+  ],
+  tags: ["EV", "Mobility", "CleanTech", "Bengaluru"]
+},
   {
     no: "06", 
     edition: "No. 06",
