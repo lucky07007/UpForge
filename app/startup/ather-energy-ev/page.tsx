@@ -21,7 +21,7 @@ const JSON_LD = {
       "datePublished": "2026-03-01T00:00:00+05:30",
       "dateModified": "2026-03-10T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "image": { "@type": "ImageObject", "url": "https://upforge.in/og/ather-energy-ev.png", "width": 1200, "height": 630 },
+      "image": { "@type": "ImageObject", "url": "https://media.fortuneindia.com/fortune-india/import/2025-03-29/hgwivhxj/tarun-mehta.jpg?rect=0,0,10100,5303&w=1200&ar=40:21&auto=format,compress&ogImage=true&mode=crop&enlarge=true&overlay=false&overlay_position=bottom&overlay_width=100", "width": 1200, "height": 630 },
       "publisher": {
         "@type": "Organization", "name": "UpForge", "url": "https://upforge.in",
         "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
