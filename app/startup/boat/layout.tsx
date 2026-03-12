@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     description: "From a Delhi café to India's No.1 earwear brand and world's 5th-largest wearable company. boAt founder story, funding, IPO & insights on UpForge.",
     url: "https://upforge.in/startup/boat",
     siteName: "UpForge",
-    images: [{ url: "https://upforge.in/og/boat.png", width: 1200, height: 630 }],
+    images: [{ url: "https://www.cheggindia.com/wp-content/uploads/2023/06/eo-35893-founder-of-boat-v2-1024x683.png", width: 1200, height: 630 }],
     locale: "en_IN",
     type: "article",
   },
