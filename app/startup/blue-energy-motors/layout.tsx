@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description: "Building India's green highway — LNG-powered trucks that cut emissions without compromising performance. Blue Energy Motors founder story & insights on UpForge.",
     url: "https://upforge.in/startup/blue-energy-motors",
     siteName: "UpForge",
-    images: [{ url: "https://upforge.in/og/blue-energy-motors.png", width: 1200, height: 630 }],
+    images: [{ url: "https://i.ytimg.com/vi/bHMYuTFe0LE/maxresdefault.jpg", width: 1200, height: 630 }],
     locale: "en_IN",
     type: "article",
   },
