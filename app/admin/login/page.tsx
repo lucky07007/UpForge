@@ -122,15 +122,17 @@ export default function AdminLoginPage() {
         .uf-logo-mark {
           width: 44px;
           height: 44px;
-          background: #1A1208;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: 1rem;
-          font-weight: 900;
-          color: #F3EFE5;
           margin-bottom: 1rem;
+          overflow: hidden;
+        }
+
+        .uf-logo-mark img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
 
         .uf-ornament {
@@ -306,7 +308,9 @@ export default function AdminLoginPage() {
         <div className={`uf-card${loginSuccess ? " success" : ""}`}>
 
           <div className="uf-masthead">
-            <div className="uf-logo-mark">UF</div>
+            <div className="uf-logo-mark">
+              <img src="/logo.jpg" alt="UpForge" />
+            </div>
 
             <div className="uf-ornament">
               <div className="uf-ornament-line" />
