@@ -1,283 +1,436 @@
 // app/blog/top-indian-unicorns-2026/page.tsx
-import type { Metadata } from "next";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled | UpForge",
+  title: "Top Indian Unicorns 2026: The Stories Behind India's $1B+ Startups | UpForge Blog",
   description:
-    "Complete list of Indian unicorn startups in 2026. Profiles, valuations, founders, sectors, and the lessons every Indian entrepreneur can steal from billion-dollar companies built in India.",
+    "The stories behind India's top unicorns in 2026 — Flipkart, Zomato, PhonePe, CRED, Zerodha, Razorpay, and the new generation of $1B+ companies. What made them unicorns, what keeps them there, and what every founder can learn from their journeys.",
   keywords: [
-    "Indian unicorns 2026",
-    "unicorn startups India",
-    "India unicorn list 2026",
-    "billion dollar startups India",
-    "Zepto unicorn",
-    "Zerodha valuation 2026",
-    "PhysicsWallah unicorn",
-    "CRED valuation",
-    "Indian startup valuation 2026",
-    "fastest growing startups India",
-  ],
-  openGraph: {
-    title: "Top Indian Unicorns 2026 | UpForge",
-    description:
-      "Every Indian startup worth over $1 billion — profiles, valuations, founders, and the growth secrets behind India's most valuable companies.",
-    url: "https://upforge.in/blog/top-indian-unicorns-2026",
-    type: "article",
-    images: [{ url: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=85", width: 1200, height: 630, alt: "Top Indian Unicorn Startups 2026" }],
-  },
+    "top indian unicorns 2026",
+    "india unicorn startup stories",
+    "indian startups worth 1 billion 2026",
+    "flipkart zomato cred zerodha unicorn",
+    "indian unicorn founder stories",
+    "how indian startups became unicorns",
+    "india decacorn companies 2026",
+    "indian unicorn list 2026",
+    "billion dollar startups india",
+  ].join(", "),
   alternates: { canonical: "https://upforge.in/blog/top-indian-unicorns-2026" },
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  headline: "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled",
-  datePublished: "2026-03-09",
-  dateModified: "2026-03-09",
-  author: { "@type": "Organization", name: "UpForge Editorial", url: "https://upforge.in" },
-  publisher: { "@type": "Organization", name: "UpForge", logo: { "@type": "ImageObject", url: "https://upforge.in/logo.jpg" } },
-  mainEntityOfPage: { "@type": "WebPage", "@id": "https://upforge.in/blog/top-indian-unicorns-2026" },
-  breadcrumb: {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://upforge.in/blog" },
-      { "@type": "ListItem", position: 3, name: "Indian Unicorns 2026", item: "https://upforge.in/blog/top-indian-unicorns-2026" },
-    ],
+  openGraph: {
+    title: "Top Indian Unicorns 2026: The Stories Behind India's $1B+ Startups",
+    description: "The founding stories, growth inflection points, and hard-won lessons from India's most valuable startups in 2026.",
+    url: "https://upforge.in/blog/top-indian-unicorns-2026",
+    siteName: "UpForge",
+    images: [{ url: "https://upforge.in/og-blog-unicorns.png", width: 1200, height: 630 }],
+    locale: "en_IN", type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Top Indian Unicorns 2026: Founding Stories & Lessons | UpForge",
+    description: "Flipkart, Zomato, CRED, Zerodha — how India's unicorns were built, what made them $1B+ companies, and what every founder can learn.",
   },
 };
 
-const T = { parch: "#F5F1E8", parch2: "#EDE9DF", ink: "#1A1208", ink2: "#2C2010", ink3: "#5A4A30", ink4: "#8C7D65", ink5: "#BBB0A0", rule: "#C8C2B4", rule2: "#D8D2C4", gold: "#B45309", gold2: "#D97706", gold3: "#92400E", goldlt: "#FEF3C7", white: "#FDFCF9", green: "#15803D", red: "#B91C1C" };
+const IMGS = {
+  hero:      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=85&auto=format",
+  flipkart:  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=900&q=80&auto=format",
+  zomato:    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=80&auto=format",
+  cred:      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=900&q=80&auto=format",
+  zerodha:   "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80&auto=format",
+  phonepe:   "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80&auto=format",
+  razorpay:  "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format",
+  nykaa:     "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format",
+  closing:   "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=80&auto=format",
+};
 
 const UNICORNS = [
-  { name: "Zepto", founder: "Aadit Palicha & Kaivalya Vohra", sector: "Quick Commerce", valuation: "$5B+", founded: 2021, city: "Mumbai", accent: "#D97706", moat: "10-minute grocery delivery, dark store network", lesson: "Age is irrelevant — Palicha was 19 when he raised his first VC round. Speed of execution trumps experience.", slug: "zepto" },
-  { name: "Zerodha", founder: "Nithin Kamath", sector: "FinTech", valuation: "$3.6B", founded: 2010, city: "Bengaluru", accent: "#2563EB", moat: "Profitable, bootstrapped, built for traders by traders", lesson: "You don't need VC money to build a unicorn. Zerodha never took external funding and is India's most profitable broker.", slug: "zerodha" },
-  { name: "PhysicsWallah", founder: "Alakh Pandey", sector: "EdTech", valuation: "$2.8B", founded: 2016, city: "Lucknow", accent: "#059669", moat: "Affordable education for Bharat, brand loyalty", lesson: "The biggest market in India is Bharat — Tier 2 and Tier 3 cities. Pandey built for them before anyone else did.", slug: "physicswallah" },
-  { name: "Zomato / Eternal", founder: "Deepinder Goyal", sector: "FoodTech", valuation: "$20B+", founded: 2008, city: "Gurugram", accent: "#DC2626", moat: "Delivery network, Blinkit, brand", lesson: "Pivoting is not failure. Zomato pivoted from restaurant listings to delivery to quick commerce — each time correctly.", slug: "zomato" },
-  { name: "CRED", founder: "Kunal Shah", sector: "FinTech", valuation: "$6.4B", founded: 2018, city: "Bengaluru", accent: "#111827", moat: "Premium credit card user base, data network effects", lesson: "Serving the top 3% of users is a valid strategy. CRED bet on high-value customers when others chased mass market.", slug: "cred" },
-  { name: "Nykaa", founder: "Falguni Nayar", sector: "D2C Beauty", valuation: "$7B", founded: 2012, city: "Mumbai", accent: "#C026D3", moat: "Beauty category expertise, private labels", lesson: "Industry experience is a moat. A former investment banker building a beauty platform — nobody thought it would work.", slug: "nykaa" },
-  { name: "OYO", founder: "Ritesh Agarwal", sector: "Hospitality", valuation: "$2.7B", founded: 2013, city: "Gurugram", accent: "#DC2626", moat: "Global scale, brand in budget hospitality", lesson: "Building globally from India is possible. OYO operates in 80+ countries. Scale ambition early.", slug: "oyo" },
-  { name: "Razorpay", founder: "Harshil Mathur & Shashank Kumar", sector: "FinTech", valuation: "$7.5B", founded: 2014, city: "Bengaluru", accent: "#3B82F6", moat: "Developer-first payment infrastructure", lesson: "B2B infrastructure businesses in India can be massive. Payments are a utility — own the pipes.", slug: "razorpay" },
-  { name: "Meesho", founder: "Vidit Aatrey & Sanjeev Barnwal", sector: "Social Commerce", valuation: "$4.9B", founded: 2015, city: "Bengaluru", accent: "#8B5CF6", moat: "Social selling network, Tier 3 penetration", lesson: "Trust your instinct on distribution. Meesho bet on WhatsApp resellers when everyone laughed. 13M sellers later, they stopped laughing.", slug: "meesho" },
-  { name: "Paytm", founder: "Vijay Shekhar Sharma", sector: "FinTech", valuation: "$1.8B", founded: 2010, city: "Noida", accent: "#0284C7", moat: "Payment brand recognition, merchant network", lesson: "Resilience matters more than valuations. Paytm's 2023 crisis would have killed most companies. It survived.", slug: "paytm" },
+  {
+    num: "01",
+    name: "Flipkart",
+    founders: "Sachin & Binny Bansal",
+    val: "$35B",
+    year: 2007,
+    sector: "E-Commerce",
+    city: "Bengaluru",
+    stage: "Walmart-Owned",
+    img: IMGS.flipkart,
+    slug: "flipkart",
+    story: `Sachin and Binny Bansal both worked at Amazon before leaving in 2007 to build India's version of it — starting with books shipped from a rented apartment in Koramangala, Bengaluru. The idea seemed pedestrian. The execution was anything but.
+
+Flipkart cracked the two hardest problems in Indian e-commerce simultaneously: logistics (by building Ekart, their own delivery network) and consumer trust (by introducing cash on delivery at scale before most companies had tried it). By solving infrastructure problems that no marketplace player could avoid, Flipkart created a moat that Snapdeal and others never fully crossed.
+
+The $16B Walmart acquisition in 2018 was the moment India's startup ecosystem grew up. It proved — definitively and at scale — that Indian consumer internet companies could reach global valuation thresholds. Every Indian unicorn that followed owes a small debt of proof to the Bansals.`,
+    lesson: "Build the infrastructure your market needs, not just the product your market wants. The infrastructure is the moat.",
+    keyword: "Flipkart Startup Story India",
+  },
+  {
+    num: "02",
+    name: "Zomato",
+    founders: "Deepinder Goyal & Pankaj Chaddah",
+    val: "$17B",
+    year: 2008,
+    sector: "Food Delivery & Quick Commerce",
+    city: "Gurugram",
+    stage: "NSE/BSE Listed",
+    img: IMGS.zomato,
+    slug: "zomato",
+    story: `Deepinder Goyal noticed that colleagues in his consulting firm were crowding around a scanned lunch menu. He photographed it, uploaded it, and watched the traffic pour in. That single observation — that people wanted restaurant information online before they wanted food delivery — became the founding insight of a $17B company.
+
+Zomato's story is not about a linear ascent. It is about six near-death experiences and one stubborn founder who refused to accept any of them as the final one. There was the pivot from restaurant discovery to food delivery. The failed Uber Eats acquisition talks. The disastrous Grofers acquisition that turned into Blinkit — and then became Zomato's fastest-growing revenue line.
+
+Zomato went public at ₹76 per share. The stock fell to ₹40. Then it climbed to ₹280. The arc of the stock chart mirrors the arc of every great startup: absurd volatility around a long-term line that goes up.`,
+    lesson: "Resilience is not about never failing. It is about refusing to let any failure be the last one.",
+    keyword: "Zomato Unicorn Story India",
+  },
+  {
+    num: "03",
+    name: "CRED",
+    founders: "Kunal Shah",
+    val: "$6.4B",
+    year: 2018,
+    sector: "FinTech · Premium Consumer",
+    city: "Bengaluru",
+    stage: "Series F",
+    img: IMGS.cred,
+    slug: "cred",
+    story: `Kunal Shah's first startup FreeCharge was acquired by Snapdeal for $400M. His second, CRED, is valued at $6.4B. The pattern suggests a founder who learns at an unusually high rate — but the CRED story is more interesting than that trajectory implies.
+
+CRED was built on an insight most fintech founders ignored: India's 25M+ credit card holders are the country's most high-value consumer segment — and they were being served by terrible bank apps and zero rewards for responsible financial behaviour. CRED rewarded credit card bill payments with points redeemable for premium experiences, and in doing so, built an extraordinarily loyal member base that became the distribution for every subsequent product.
+
+The sceptics asked for years how CRED would monetise. The answer — lending, commerce, and a UPI app with premium positioning — is now generating meaningful revenue from a base that trusts the brand completely. Kunal Shah's delta 4 theory (the idea that for a behaviour to change permanently, the new behaviour must be at least 4 points better on a 10-point scale) is the strategic framework behind every CRED product decision.`,
+    lesson: "Premium positioning in a market dominated by value players is not a niche strategy — it is the highest-margin strategy available.",
+    keyword: "CRED Startup Story Kunal Shah",
+  },
+  {
+    num: "04",
+    name: "Zerodha",
+    founders: "Nithin & Nikhil Kamath",
+    val: "$3.6B",
+    year: 2010,
+    sector: "FinTech · Stock Broking",
+    city: "Bengaluru",
+    stage: "Bootstrapped",
+    img: IMGS.zerodha,
+    slug: "zerodha",
+    story: `Nithin Kamath was a day trader before he was a founder. He understood the brokerage industry from the inside — as a customer who knew exactly how badly incumbents were treating their users and how much of his returns were being captured in fees.
+
+Zerodha's zero-brokerage model on delivery trades was not an act of charity. It was the most calculated customer acquisition strategy in Indian fintech history: eliminate the fee that matters most to long-term investors, acquire 13M+ clients at effectively zero marginal cost, and monetise through trading commissions from the fraction of users who are active traders.
+
+The company has never taken external funding. Revenues exceeded ₹8,320Cr in FY24 on a bootstrapped capital structure. Nithin Kamath's approach to growth — transparent, contrarian, and relentlessly focused on customer outcomes — has made Zerodha not just India's most profitable fintech but its most trusted one. In an industry where trust is the only durable moat, that distinction is worth considerably more than the $3.6B headline valuation.`,
+    lesson: "Bootstrapping forces the discipline that venture capital can mask. Build for profitability first — scale is the consequence, not the goal.",
+    keyword: "Zerodha Nithin Kamath Startup Story",
+  },
+  {
+    num: "05",
+    name: "Razorpay",
+    founders: "Harshil Mathur & Shashank Kumar",
+    val: "$7.5B",
+    year: 2014,
+    sector: "Payments Infrastructure",
+    city: "Bengaluru",
+    stage: "Series F",
+    img: IMGS.razorpay,
+    slug: "razorpay",
+    story: `Harshil Mathur and Shashank Kumar were IIT Roorkee graduates when they got into Y Combinator's Winter 2015 batch with a problem most Indian entrepreneurs had stopped trying to solve: payment integrations in India were broken, slow, and inaccessible to small businesses.
+
+Their insight was developer-first: if you make it trivially easy to integrate payments (5 lines of code instead of weeks of bank liaison), every startup in India will use you by default. That developer-first positioning, borrowed from Stripe's US playbook, worked with extraordinary effectiveness in the Indian context — where thousands of startups were building products and needed payments infrastructure immediately.
+
+Razorpay has since expanded from payment gateway to neobanking (RazorpayX), payroll (Opfin), and lending — building a full financial operating system for Indian businesses. Processing $150B+ in annual TPV through 8M+ businesses, Razorpay is now the default financial infrastructure layer for the Indian startup ecosystem itself.`,
+    lesson: "Developer-first distribution is the most capital-efficient B2B go-to-market strategy in technology. Make the integration frictionless and the business follows.",
+    keyword: "Razorpay Startup Story India",
+  },
+  {
+    num: "06",
+    name: "PhonePe",
+    founders: "Sameer Nigam & Rahul Chari",
+    val: "$12B",
+    year: 2015,
+    sector: "Digital Payments · UPI",
+    city: "Bengaluru",
+    stage: "Pre-IPO",
+    img: IMGS.phonepe,
+    slug: "phonepe",
+    story: `PhonePe was acquired by Flipkart in 2016 for $10M — a transaction that seemed like a reasonable acqui-hire at the time. By 2022, Walmart had spun it out as a standalone business at a $12B valuation, making it one of the most remarkable value creation stories in the history of corporate acquisitions.
+
+The secret was UPI. PhonePe was one of the first movers on the National Payments Corporation of India's Unified Payments Interface — betting on the infrastructure before it had reached critical mass. By the time the UPI hockey stick inflected (2018–2020), PhonePe had built a user base and merchant network that was almost impossible to dislodge.
+
+Today PhonePe processes 48% of all UPI transactions in India — more than Google Pay, Paytm, and every bank-owned UPI app combined. The company has expanded into insurance, mutual funds, and international payments. An IPO is expected in 2026 at a valuation that will make it one of the largest fintech listings in Asian history.`,
+    lesson: "Betting on infrastructure before it reaches critical mass is the highest-risk, highest-reward strategy in consumer technology. The founders who get the timing right become category monopolists.",
+    keyword: "PhonePe Startup Story UPI India",
+  },
+  {
+    num: "07",
+    name: "Nykaa",
+    founders: "Falguni Nayar",
+    val: "$6.5B",
+    year: 2012,
+    sector: "Beauty & D2C",
+    city: "Mumbai",
+    stage: "NSE/BSE Listed",
+    img: IMGS.nykaa,
+    slug: "nykaa",
+    story: `Falguni Nayar was 49 years old and managing director at Kotak Mahindra Capital when she decided to start Nykaa. She had spent two decades as an investment banker — studying industries, valuing companies, and understanding market structures. When she identified the Indian beauty market as a broken distribution problem with a digital solution, she had more conviction than most 25-year-old founders could muster.
+
+Nykaa solved a trust problem. Indian women buying beauty products online faced a simple question: how do I know what I am getting is genuine? Nykaa's answer — a curated, brand-authorised marketplace with content and education built around every product — solved that trust problem in a way that neither Amazon nor Myntra fully could.
+
+Nykaa's 2021 IPO made Falguni Nayar one of India's wealthiest self-made women. More importantly for the ecosystem, it demonstrated that D2C commerce and content businesses built for Indian consumers could command premium public market valuations — a proof point that unlocked a wave of D2C funding that continues in 2026.`,
+    lesson: "Content builds trust. Trust enables commerce. The brands that invest in educating their customers before selling to them build the most durable customer relationships.",
+    keyword: "Nykaa Falguni Nayar Startup Story",
+  },
 ];
 
-export default function BlogIndianUnicorns() {
+const RELATED = [
+  { name: "Indian Unicorns Registry",         slug: "/indian-unicorns",                              sector: "Full List"  },
+  { name: "India Startup Ecosystem 2026",     slug: "/blog/india-startup-ecosystem-2026",            sector: "Ecosystem"  },
+  { name: "Top Indian Founders to Follow",   slug: "/blog/best-indian-startup-founders-to-follow-2026", sector: "People" },
+  { name: "How to Get Startup Funding",      slug: "/blog/how-to-get-startup-funding-india-2026",   sector: "Guide"     },
+];
+
+export default function BlogUnicorns() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <article style={{ background: T.parch, fontFamily: "'Georgia','Times New Roman',serif", color: T.ink, lineHeight: 1.75 }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+        .pf{font-family:'Playfair Display',Georgia,serif!important}
+        .rp{font-family:'Georgia','Times New Roman',serif}
+        .sf{font-family:system-ui,-apple-system,sans-serif}
+        :root{
+          --parch:#F5F1E8;--parch2:#EDE9DF;--ink:#1A1208;--ink3:#5A4A30;
+          --ink4:#8C7D65;--ink5:#BBB0A0;--rule:#C8C2B4;--rule2:#D8D2C4;
+          --gold:#B45309;--gold2:#D97706;--gold3:#92400E;--white:#FDFCF9;
+        }
+        body{background:var(--parch)}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+        .a0{animation:fadeUp .44s .00s cubic-bezier(.16,1,.3,1) both}
+        .a1{animation:fadeUp .44s .08s cubic-bezier(.16,1,.3,1) both}
+        .imgf{position:relative;overflow:hidden}
+        .imgf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:sepia(14%) contrast(108%);transition:transform .6s ease}
+        .imgf:hover img{transform:scale(1.03)}
+        .lesson-card{border:1.5px solid var(--ink);background:var(--white);overflow:hidden;position:relative}
+        .lesson-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,#FCD34D);background-size:200% auto;animation:shimmer 3s linear infinite}
+        .qblock{background:var(--ink);border-left:4px solid var(--gold2);padding:16px 20px;margin-top:14px}
+        .insight{display:inline-flex;align-items:center;gap:8px;background:#FEF3C7;border:1px solid rgba(180,83,9,.25);padding:9px 14px;width:100%;margin-top:10px}
+        .sh{display:flex;align-items:center;gap:10px}
+        .sh-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.28em;color:var(--ink5);font-family:system-ui;white-space:nowrap}
+        .sh-r{flex:1;height:1px;background:var(--rule2)}
+        .rel-card{display:flex;flex-direction:column;background:var(--white);text-decoration:none;transition:transform .15s,box-shadow .15s;position:relative}
+        .rel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:transparent;transition:background .15s}
+        .rel-card:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);z-index:1}
+        .rel-card:hover::before{background:var(--gold2)}
+        .dropcap::first-letter{font-family:'Playfair Display',Georgia,serif;font-size:3.8em;font-weight:900;float:left;line-height:.82;margin-right:8px;margin-top:6px;color:var(--ink)}
+        .val-chip{display:inline-flex;align-items:center;background:rgba(180,83,9,.1);border:1px solid rgba(180,83,9,.25);padding:3px 10px}
+        @media(max-width:900px){.lesson-two{grid-template-columns:1fr!important}}
+      `}</style>
 
-        {/* Breadcrumb */}
-        <div style={{ background: T.parch2, borderBottom: `1px solid ${T.rule}`, padding: "10px clamp(16px,4vw,40px)" }}>
-          <nav>
-            <ol style={{ display: "flex", gap: 6, listStyle: "none", margin: 0, padding: 0, flexWrap: "wrap" }}>
-              {[["Home", "/"], ["Blog", "/blog"], ["Indian Unicorns 2026", "#"]].map(([label, href], i, arr) => (
-                <li key={label as string} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  {href === "#" ? <span style={{ fontSize: 11, color: T.ink4, fontFamily: "system-ui" }}>{label}</span> : <Link href={href as string} style={{ fontSize: 11, color: T.gold, textDecoration: "none", fontFamily: "system-ui" }}>{label}</Link>}
-                  {i < arr.length - 1 && <span style={{ color: T.rule, fontSize: 10 }}>›</span>}
-                </li>
-              ))}
+      <article itemScope itemType="https://schema.org/Article" style={{ minHeight:"100vh", background:"var(--parch)" }}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context":"https://schema.org","@type":"Article",
+          headline:"Top Indian Unicorns 2026: The Stories Behind India's $1B+ Startups",
+          description:"The founding stories and lessons from India's top unicorn startups — Flipkart, Zomato, CRED, Zerodha, Razorpay, PhonePe, and Nykaa.",
+          author:{"@type":"Organization","name":"UpForge"},
+          publisher:{"@type":"Organization","name":"UpForge","url":"https://upforge.in"},
+          datePublished:new Date().toISOString().split("T")[0],
+          url:"https://upforge.in/blog/top-indian-unicorns-2026",
+          keywords:"top indian unicorns 2026, flipkart zomato cred zerodha startup stories, indian billion dollar startups",
+        })}} />
+
+        {/* BREADCRUMB */}
+        <nav className="sf a0" style={{ background:"var(--parch2)", borderBottom:"1px solid var(--rule2)", padding:"8px 0" }}>
+          <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+            <ol style={{ display:"flex", alignItems:"center", gap:6, fontSize:9, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.18em", listStyle:"none", margin:0, padding:0 }}>
+              <li><Link href="/" style={{ color:"var(--ink5)", textDecoration:"none" }}>UpForge</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li><Link href="/blog" style={{ color:"var(--ink5)", textDecoration:"none" }}>Blog</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li style={{ color:"var(--ink4)", fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:220 }}>Top Indian Unicorns 2026</li>
             </ol>
-          </nav>
+          </div>
+        </nav>
+
+        {/* HERO */}
+        <div className="a0" style={{ borderBottom:"3px solid var(--ink)" }}>
+          <div className="imgf" style={{ height:"clamp(280px,38vw,480px)" }}>
+            <img src={IMGS.hero} alt="Top Indian Unicorns 2026 — Founding Stories" />
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(26,18,8,.35) 0%,rgba(26,18,8,.88) 100%)" }} />
+            <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 clamp(16px,5vw,64px)", textAlign:"center" }}>
+              <div style={{ display:"flex", gap:8, marginBottom:18, flexWrap:"wrap", justifyContent:"center" }}>
+                {["Unicorns","Founder Stories","India 2026"].map(t=>(
+                  <span key={t} className="sf" style={{ fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,0.65)", border:"1px solid rgba(255,255,255,0.2)", padding:"3px 10px" }}>{t}</span>
+                ))}
+              </div>
+              <h1 className="pf" itemProp="headline" style={{ fontSize:"clamp(1.8rem,5.5vw,4.2rem)", fontWeight:900, lineHeight:1.02, color:"white", letterSpacing:"-0.02em", marginBottom:18, maxWidth:860 }}>
+                Top Indian Unicorns 2026:{" "}
+                <em style={{ color:"#FCD34D", fontStyle:"italic" }}>The Stories Behind India's $1B+ Startups</em>
+              </h1>
+              <p className="rp" style={{ fontSize:"clamp(13px,1.8vw,16px)", color:"rgba(255,255,255,0.62)", fontStyle:"italic", maxWidth:580, lineHeight:1.6 }}>
+                7 unicorn stories. 7 different paths to $1B+. The same founding-era conviction that the Indian market was bigger than anyone believed.
+              </p>
+            </div>
+            <div className="sf" style={{ position:"absolute", top:18, right:18, background:"rgba(26,18,8,.7)", border:"1px solid rgba(255,255,255,.1)", padding:"5px 12px", fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,.55)" }}>
+              UpForge · Blog
+            </div>
+          </div>
+          <div style={{ background:"var(--ink)" }}>
+            <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+              <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center" }}>
+                {[
+                  { l:"Published", v:new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}) },
+                  { l:"Reading Time", v:"~12 min" },
+                  { l:"Unicorns Profiled", v:"7 Companies" },
+                  { l:"Combined Value", v:"$83B+" },
+                ].map((m,i)=>(
+                  <div key={i} style={{ padding:"12px 20px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
+                    <p className="sf" style={{ fontSize:7.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.3)", marginBottom:3 }}>{m.l}</p>
+                    <p className="sf" style={{ fontSize:11, color:"rgba(255,255,255,.6)", fontWeight:600 }}>{m.v}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style={{ maxWidth: 1160, margin: "0 auto", padding: "0 clamp(16px,4vw,40px)" }}>
+        {/* MAIN */}
+        <div style={{ maxWidth:1080, margin:"0 auto", padding:"0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
 
-          {/* Masthead */}
-          <header style={{ borderBottom: `3px solid ${T.ink}`, padding: "clamp(28px,5vw,56px) 0 clamp(20px,4vw,36px)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: 10, borderBottom: `1px solid ${T.rule}`, marginBottom: "clamp(18px,3vw,32px)", flexWrap: "wrap", gap: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: T.ink4, fontFamily: "system-ui", margin: 0 }}>9 March 2026 · UpForge · Startup Intelligence</p>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.gold, fontFamily: "system-ui", border: `1px solid ${T.gold}`, padding: "2px 10px" }}>Unicorn Report</span>
-            </div>
-            <div style={{ textAlign: "center", paddingBottom: "clamp(18px,3vw,32px)", borderBottom: `1px solid ${T.rule}`, marginBottom: "clamp(16px,3vw,28px)" }}>
-              <h1 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(2rem,5.5vw,4.2rem)", fontWeight: 900, lineHeight: 1.06, letterSpacing: "-.02em", color: T.ink, margin: "0 0 14px" }}>
-                India's Top Unicorns in 2026<br />
-                <em style={{ fontStyle: "italic", color: T.gold }}>Ranked, Profiled & Decoded</em>
-              </h1>
-              <p style={{ fontSize: "clamp(14px,1.8vw,17px)", color: T.ink3, maxWidth: 680, margin: "0 auto", fontStyle: "italic" }}>
-                125 Indian startups have crossed the $1 billion valuation mark. Here are the most important ones — and the lessons every founder must extract from their rise.
+          {/* INTRO + TOC */}
+          <div className="a1" style={{ display:"grid", gridTemplateColumns:"1fr auto", gap:0, borderBottom:"1px solid var(--rule2)", alignItems:"start" }}>
+            <div style={{ padding:"clamp(28px,4vw,48px) clamp(16px,3vw,40px) clamp(28px,4vw,48px) 0", borderRight:"1px solid var(--rule2)" }}>
+              <div className="sh" style={{ marginBottom:18 }}><span className="sh-l">Introduction</span><div className="sh-r" /></div>
+              <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.35rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18 }}>
+                India's 111 unicorns are not a list. They are an argument. An argument that the Indian market is real, Indian consumers are discerning, Indian talent is world-class, and Indian founders — when given the right infrastructure and the right amount of belief — can build companies that rival anything built anywhere.
               </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 18 }}>
-                <div style={{ height: 1, width: "clamp(40px,8vw,100px)", background: T.rule }} />
-                <span style={{ color: T.rule, fontSize: 14 }}>✦</span>
-                <div style={{ height: 1, width: "clamp(40px,8vw,100px)", background: T.rule }} />
+              <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85 }}>
+                This article profiles seven of those companies in depth — not the fundraise numbers, not the PowerPoint milestones, but the actual founding stories: the insights that led to the companies, the decisions that made them what they are, and the lessons that every founder building right now can extract from them.
+              </p>
+            </div>
+            <div style={{ padding:"clamp(24px,3vw,40px) 0 clamp(24px,3vw,40px) clamp(16px,3vw,32px)", minWidth:"clamp(200px,26vw,280px)" }}>
+              <div className="sh" style={{ marginBottom:14 }}><span className="sh-l">7 Unicorn Stories</span><div className="sh-r" /></div>
+              {UNICORNS.map((u,i)=>(
+                <a key={i} href={`#unicorn-${u.num}`} style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:9, textDecoration:"none" }}>
+                  <span className="sf" style={{ fontSize:8, fontWeight:700, color:"var(--gold2)", flexShrink:0, minWidth:18 }}>{u.num}</span>
+                  <div>
+                    <span className="rp" style={{ fontSize:11.5, color:"var(--ink)", lineHeight:1.4, fontWeight:600 }}>{u.name}</span>
+                    <span className="sf" style={{ fontSize:8, color:"var(--gold2)", marginLeft:6, fontWeight:700 }}>{u.val}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* UNICORN STORIES */}
+          <div style={{ marginTop:"clamp(32px,5vw,56px)" }}>
+            {UNICORNS.map((u,idx)=>(
+              <div key={idx} id={`unicorn-${u.num}`} className="lesson-card" style={{ marginBottom:20 }}>
+                <div className="lesson-two" style={{ display:"grid", gridTemplateColumns:idx%2===0?"1fr 340px":"340px 1fr", gap:0, minHeight:360 }}>
+                  {idx%2!==0&&(
+                    <div className="imgf" style={{ borderRight:"1.5px solid var(--ink)", minHeight:320 }}>
+                      <img src={u.img} alt={u.name} />
+                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right,rgba(26,18,8,.65) 0%,transparent 60%)" }} />
+                      <div style={{ position:"absolute", bottom:20, left:20 }}>
+                        <span className="pf" style={{ fontSize:"4rem", fontWeight:900, color:"rgba(255,255,255,0.12)", lineHeight:1 }}>{u.num}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ padding:"clamp(20px,3vw,36px)", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+                    <div>
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+                        <span className="sf" style={{ fontSize:9, fontWeight:800, letterSpacing:"0.2em", textTransform:"uppercase", color:"var(--gold2)" }}>{u.num} of 07</span>
+                        <div style={{ flex:1, height:1, background:"var(--rule2)" }} />
+                        <span className="sf" style={{ fontSize:8, color:"var(--ink5)", fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase" }}>{u.keyword}</span>
+                      </div>
+
+                      <div style={{ display:"flex", alignItems:"baseline", gap:12, flexWrap:"wrap", marginBottom:4 }}>
+                        <h2 className="pf" style={{ fontSize:"clamp(1.3rem,2.5vw,1.9rem)", fontWeight:700, color:"var(--ink)", lineHeight:1.1 }}>{u.name}</h2>
+                        <span className="pf val-chip" style={{ fontSize:"1rem", fontWeight:900, color:"var(--gold2)" }}>{u.val}</span>
+                      </div>
+                      <p className="sf" style={{ fontSize:9.5, color:"var(--ink4)", marginBottom:16, textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:600 }}>{u.founders} · {u.sector} · {u.city} · Est. {u.year}</p>
+
+                      {u.story.split("\n\n").map((para,pi)=>(
+                        <p key={pi} className={`rp${pi===0?" dropcap":""}`} style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.88, marginBottom:14 }}>{para}</p>
+                      ))}
+                    </div>
+
+                    <div style={{ marginTop:16 }}>
+                      <div className="qblock">
+                        <p className="sf" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.2em", color:"rgba(232,197,71,.7)", marginBottom:8 }}>The Lesson · {u.name}</p>
+                        <p className="rp" style={{ fontSize:13, color:"rgba(255,255,255,.8)", lineHeight:1.75, fontStyle:"italic" }}>{u.lesson}</p>
+                      </div>
+                      <Link href={`/startup/${u.slug}`} style={{ display:"inline-flex", marginTop:12, alignItems:"center", gap:6, fontSize:9.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em", color:"var(--gold2)", textDecoration:"none", fontFamily:"system-ui" }}>
+                        Read Full {u.name} Story on UpForge →
+                      </Link>
+                    </div>
+                  </div>
+
+                  {idx%2===0&&(
+                    <div className="imgf" style={{ borderLeft:"1.5px solid var(--ink)", minHeight:320 }}>
+                      <img src={u.img} alt={u.name} />
+                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to left,rgba(26,18,8,.65) 0%,transparent 60%)" }} />
+                      <div style={{ position:"absolute", bottom:20, right:20, textAlign:"right" }}>
+                        <span className="pf" style={{ fontSize:"4rem", fontWeight:900, color:"rgba(255,255,255,0.12)", lineHeight:1 }}>{u.num}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CLOSING */}
+          <div style={{ marginTop:"clamp(36px,6vw,64px)", border:"1.5px solid var(--ink)", background:"var(--ink)", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,#FCD34D,#E8C547,var(--gold2),var(--gold3))", backgroundSize:"200% auto", animation:"shimmer 4s linear infinite" }} />
+            <div className="imgf" style={{ height:190 }}>
+              <img src={IMGS.closing} alt="Indian unicorns future" style={{ filter:"sepia(40%) brightness(0.32) contrast(1.1)" }} />
+              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 clamp(20px,5vw,60px)", textAlign:"center" }}>
+                <p className="pf" style={{ fontSize:"clamp(1.3rem,3vw,2.2rem)", fontWeight:700, color:"white", lineHeight:1.22, fontStyle:"italic" }}>
+                  "Every Indian unicorn started as an idea that most people{" "}
+                  <em style={{ color:"#FCD34D" }}>told the founder not to pursue.</em>"
+                </p>
               </div>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 20px", fontSize: 11, color: T.ink4, fontFamily: "system-ui" }}>
-              <span>By <strong style={{ color: T.ink3 }}>UpForge Editorial</strong></span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>15 min read</span>
-              <span style={{ color: T.rule }}>·</span>
-              <span>Updated March 2026</span>
+            <div style={{ padding:"clamp(24px,4vw,40px)" }}>
+              <p className="rp" style={{ fontSize:14, color:"rgba(255,255,255,.75)", lineHeight:1.88, maxWidth:760 }}>
+                The common thread across every unicorn story in India is not genius, not connections, and not timing alone. It is a founder who understood a problem more deeply than anyone else, built a solution more determined than the competition, and kept going long after most rational people would have stopped. India's next unicorn is being built right now — by someone who has not been on this page yet.
+              </p>
             </div>
-          </header>
-
-          {/* Hero Image */}
-          <figure style={{ margin: "clamp(20px,4vw,36px) 0", borderBottom: `1px solid ${T.rule}`, paddingBottom: "clamp(20px,4vw,36px)" }}>
-            <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=85" alt="Indian startup founders" style={{ width: "100%", height: "clamp(220px,35vw,440px)", objectFit: "cover", display: "block", filter: "sepia(10%) contrast(108%)" }} />
-            <figcaption style={{ fontSize: 10, color: T.ink5, marginTop: 8, fontFamily: "system-ui", fontStyle: "italic" }}>India is now the world's third-largest startup ecosystem, home to 125 unicorns collectively valued at hundreds of billions of dollars.</figcaption>
-          </figure>
-
-          {/* Intro */}
-          <section style={{ maxWidth: 760, marginBottom: "clamp(24px,4vw,40px)" }}>
-            <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.85, marginBottom: 16, color: T.ink2 }}>
-              <span style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(2.8rem,5vw,4rem)", fontWeight: 900, float: "left", lineHeight: 0.82, marginRight: 8, marginTop: 8, color: T.ink }}>I</span>
-              n the year 2026, India has 125 startups valued at over $1 billion. That number was 0 in 2011. No other country in history has created unicorn companies at this speed, at this scale, from this socioeconomic starting point. Understanding what these companies did — the specific decisions, the timing, the markets they chose — is the most valuable education available to any Indian founder.
-            </p>
-            <p style={{ fontSize: "clamp(14px,1.6vw,16px)", lineHeight: 1.85, marginBottom: 0, color: T.ink2 }}>
-              This is not a celebration article. It is a dissection. For each company profiled below, we have extracted the single most transferable insight — the thing that made the difference between a startup that died and a startup that became worth billions.
-            </p>
-          </section>
-
-          {/* Ecosystem Stats */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", border: `1.5px solid ${T.ink}`, background: T.ink, gap: "1.5px", marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[["125", "Unicorns", "As of March 2026"], ["$629B", "Total VC Raised", "All-time, India"], ["$3.44B", "Q1 2026 Funding", "First quarter"], ["650K+", "Registered Startups", "DPIIT recognised"]].map(([v, l, s]) => (
-              <div key={l as string} style={{ background: T.white, padding: "18px 16px", textAlign: "center" }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 900, color: T.gold, margin: "0 0 4px", lineHeight: 1 }}>{v}</p>
-                <p style={{ fontSize: 11, fontWeight: 700, color: T.ink, margin: "0 0 3px", fontFamily: "system-ui" }}>{l}</p>
-                <p style={{ fontSize: 9.5, color: T.ink5, margin: 0, fontFamily: "system-ui" }}>{s}</p>
-              </div>
-            ))}
           </div>
 
-          {/* §1 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `2px solid ${T.ink}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§01</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>What Makes an Indian Startup Become a Unicorn</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <p style={{ fontSize: "clamp(14px,1.6vw,15.5px)", lineHeight: 1.85, marginBottom: 16, color: T.ink2 }}>
-            After analysing every Indian unicorn created between 2011 and 2026, four patterns emerge consistently. First, the best Indian unicorns identified a large underserved market before it became obvious — Zepto in quick commerce, Zerodha in retail trading, PhysicsWallah in affordable education. Second, they had founders with deep domain obsession, not just business interest. Third, they chose distribution models that leveraged India's unique characteristics — mobile-first, price-sensitive, Tier 2 aspirational. Fourth, and most critically, they focused on unit economics earlier than their peers.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              { title: "Market Timing", desc: "Indian unicorns almost universally entered their market 12–24 months before it became crowded. Too early and you burn capital educating users. Too late and incumbents dominate. The sweet spot is when the infrastructure just caught up — Jio-era data, UPI-era payments." },
-              { title: "India-Specific Distribution", desc: "WhatsApp for Meesho. Dark stores for Zepto. YouTube for PhysicsWallah. Every major unicorn found a distribution channel native to Indian consumer behaviour rather than copying Western playbooks." },
-              { title: "Unit Economics First", desc: "The 2022 funding winter killed Indian startups that ignored unit economics. Zerodha and bootstrapped companies proved you could build massive without burning cash. Today's investors demand it. Gross margin, CAC payback, and LTV/CAC are table stakes." },
-              { title: "Founder-Market Fit Over Product-Market Fit", desc: "Falguni Nayar in beauty. Alakh Pandey in NEET preparation. Nithin Kamath in trading. The pattern is relentless: the founder's personal obsession with the domain creates a product that outsiders cannot replicate." },
-            ].map(({ title, desc }, i) => (
-              <div key={i} style={{ background: T.white, padding: "16px 18px", borderTop: `3px solid ${T.gold}` }}>
-                <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 14, fontWeight: 700, color: T.ink, margin: "0 0 8px" }}>{title}</p>
-                <p style={{ fontSize: 12, color: T.ink3, margin: 0, fontFamily: "system-ui", lineHeight: 1.65 }}>{desc}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* §2 — The Profiles */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 24px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§02</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>The Unicorn Profiles</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5px", border: `1.5px solid ${T.ink}`, background: T.ink, marginBottom: "clamp(24px,4vw,40px)" }}>
-            {UNICORNS.map((u, i) => (
-              <div key={i} style={{ background: T.white, padding: "clamp(16px,3vw,24px)", borderLeft: `4px solid ${u.accent}`, display: "grid", gridTemplateColumns: "1fr clamp(120px,18%,180px)", gap: 20, alignItems: "start" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
-                    <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.1rem,2vw,1.4rem)", fontWeight: 900, color: T.ink, margin: 0 }}>{u.name}</p>
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: u.accent, border: `1px solid ${u.accent}`, padding: "2px 7px", fontFamily: "system-ui" }}>{u.sector}</span>
+          {/* RELATED */}
+          <div style={{ marginTop:"clamp(44px,6vw,72px)" }}>
+            <div className="sh" style={{ marginBottom:16 }}><span className="sh-l">Related Reading on UpForge</span><div className="sh-r" /></div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", border:"1.5px solid var(--ink)", background:"var(--ink)", gap:1.5 }}>
+              {RELATED.map((r,i)=>(
+                <Link key={i} href={r.slug} className="rel-card">
+                  <div style={{ height:80, background:["#E8E0D0","#E0D8CC","#D8D0C4","#D0C8BC"][i], display:"flex", alignItems:"center", justifyContent:"center", borderBottom:"1px solid var(--rule2)" }}>
+                    <span className="pf" style={{ fontSize:"2.8rem", fontWeight:900, color:"rgba(26,18,8,0.1)" }}>{r.name.charAt(0)}</span>
                   </div>
-                  <p style={{ fontSize: 11.5, color: T.ink4, margin: "0 0 10px", fontFamily: "system-ui" }}>Founded {u.founded} · {u.city} · by {u.founder}</p>
-                  <p style={{ fontSize: 12.5, color: T.ink3, margin: "0 0 10px", lineHeight: 1.65 }}>
-                    <strong style={{ color: T.ink2, fontFamily: "system-ui", fontSize: 10.5, textTransform: "uppercase", letterSpacing: ".1em" }}>Moat: </strong>{u.moat}
-                  </p>
-                  <div style={{ background: T.goldlt, border: `1px solid #FDE68A`, padding: "10px 12px", borderLeft: `3px solid ${T.gold}` }}>
-                    <p style={{ fontSize: 10.5, fontWeight: 700, color: T.gold3, fontFamily: "system-ui", textTransform: "uppercase", letterSpacing: ".1em", margin: "0 0 4px" }}>The Lesson</p>
-                    <p style={{ fontSize: 12, color: T.gold3, margin: 0, fontFamily: "system-ui", lineHeight: 1.6 }}>{u.lesson}</p>
+                  <div style={{ padding:"13px 14px 12px" }}>
+                    <h3 className="pf" style={{ fontSize:"0.9rem", fontWeight:700, color:"var(--ink)", marginBottom:4, lineHeight:1.2 }}>{r.name}</h3>
+                    <span className="sf" style={{ fontSize:8, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:700 }}>{r.sector}</span>
+                    <div style={{ marginTop:8 }}><span className="sf" style={{ fontSize:8.5, color:"var(--gold2)", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em" }}>Read →</span></div>
                   </div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: T.ink4, margin: "0 0 4px", fontFamily: "system-ui" }}>Valuation</p>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.2rem,2.5vw,1.6rem)", fontWeight: 900, color: u.accent, lineHeight: 1, margin: "0 0 12px" }}>{u.valuation}</p>
-                  <Link href={`/startup/${u.slug}`} style={{ display: "block", background: T.ink, color: "#FDFCF9", textAlign: "center", padding: "7px 10px", textDecoration: "none", fontFamily: "system-ui", fontSize: 9, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>
-                    Full Profile →
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* §3 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§03</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>Sectors Producing the Most Indian Unicorns</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", border: `1.5px solid ${T.ink}`, background: T.ink, gap: "1.5px", marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              { sector: "FinTech", count: "34", examples: "Razorpay, Zerodha, Paytm, CRED, Groww", growth: "UPI scale, credit gap, insurance", },
-              { sector: "SaaS / B2B Tech", count: "28", examples: "Freshworks, Postman, Druva, Capillary", growth: "India as global SaaS talent base" },
-              { sector: "Consumer / D2C", count: "22", examples: "Nykaa, Lenskart, Mamaearth, boAt", growth: "Rising middle class, brand premiumisation" },
-              { sector: "EdTech", count: "14", examples: "PhysicsWallah, BYJU's, Unacademy", growth: "500M+ students, aspirational India" },
-              { sector: "HealthTech", count: "12", examples: "Pharmeasy, 1mg, Pristyn Care", growth: "Healthcare digitalisation, insurance" },
-              { sector: "Quick Commerce", count: "6", examples: "Zepto, Swiggy Instamart, Blinkit", growth: "Urban density + cold chain build-out" },
-            ].map(({ sector, count, examples, growth }) => (
-              <div key={sector} style={{ background: T.white, padding: "16px 14px", borderTop: `3px solid ${T.gold}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 15, fontWeight: 900, color: T.ink, margin: 0 }}>{sector}</p>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 22, fontWeight: 900, color: T.gold, margin: 0, lineHeight: 1 }}>{count}</p>
-                </div>
-                <p style={{ fontSize: 10.5, color: T.ink3, margin: "0 0 6px", fontFamily: "system-ui" }}>{examples}</p>
-                <p style={{ fontSize: 10, color: T.ink5, margin: 0, fontFamily: "system-ui", fontStyle: "italic" }}>{growth}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* §4 — Emerging Next Unicorns */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 20px", paddingTop: "clamp(16px,3vw,24px)", borderTop: `1px solid ${T.rule}` }}>
-            <span style={{ fontSize: 9, fontWeight: 800, color: T.gold, letterSpacing: ".2em", fontFamily: "system-ui" }}>§04</span>
-            <h2 style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1.3rem,2.5vw,1.8rem)", fontWeight: 900, margin: 0, color: T.ink }}>India's Next Unicorns: Watch These Companies</h2>
-            <div style={{ flex: 1, height: 1, background: T.rule }} />
-          </div>
-
-          <p style={{ fontSize: "clamp(14px,1.6vw,15.5px)", lineHeight: 1.85, marginBottom: 20, color: T.ink2 }}>
-            India added 5 new unicorns in 2025 alone — Netradyne, Drools, Porter, Fireflies AI, and Jumbotail. The companies most likely to cross the $1 billion threshold next share a common profile: deep B2B focus, AI-integrated workflows, and a Bharat-first rather than metro-first distribution strategy.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", border: `1.5px solid ${T.ink}`, background: T.ink, gap: "1.5px", marginBottom: "clamp(24px,4vw,40px)" }}>
-            {[
-              { name: "Sarvam AI", why: "Indian-language LLMs with enterprise contracts — rare IP moat in AI", sector: "AI/ML" },
-              { name: "Porter", why: "Profitable logistics network now a unicorn — intra-city delivery infrastructure", sector: "Logistics" },
-              { name: "InternAdda", why: "India's largest student career platform — early-career network effects", sector: "EdTech/Career" },
-              { name: "Neysa", why: "AI cloud infrastructure built for India — riding the GPU compute wave", sector: "AI Infrastructure" },
-              { name: "Zelio", why: "Profitable EV two-wheelers for Tier 2–3 India — 200%+ stock growth post-IPO", sector: "EV/Mobility" },
-              { name: "Addverb", why: "Humanoid robotics for warehouses — defence and industrial automation", sector: "Robotics" },
-            ].map(({ name, why, sector }) => (
-              <div key={name} style={{ background: T.white, padding: "14px 16px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                  <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 14, fontWeight: 700, color: T.ink, margin: 0 }}>{name}</p>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: T.green, border: `1px solid ${T.green}`, padding: "2px 6px", fontFamily: "system-ui", flexShrink: 0, marginLeft: 6 }}>{sector}</span>
-                </div>
-                <p style={{ fontSize: 11, color: T.ink3, margin: 0, fontFamily: "system-ui", lineHeight: 1.6 }}>{why}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Verdict */}
-          <div style={{ background: T.ink, padding: "clamp(20px,4vw,36px)", margin: "clamp(24px,4vw,40px) 0" }}>
-            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.gold, fontFamily: "system-ui", margin: "0 0 14px" }}>✦ UpForge Analyst Verdict</p>
-            <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: "clamp(1rem,2vw,1.25rem)", fontStyle: "italic", color: "rgba(253,252,249,.88)", lineHeight: 1.75, margin: 0 }}>
-              "India's unicorn factory is accelerating, not slowing. The companies that will define the next decade are being built right now in Bengaluru, Lucknow, Gurugram, and increasingly in cities that don't yet appear on any investor map. The common thread is not sector — it is obsession, speed, and a product that works for people who earn ₹30,000 a month, not $30,000."
-            </p>
-          </div>
-
-          {/* Internal links */}
-          <div style={{ borderTop: `1px solid ${T.rule}`, paddingTop: "clamp(16px,3vw,28px)", marginBottom: "clamp(24px,4vw,48px)" }}>
-            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: T.ink4, fontFamily: "system-ui", marginBottom: 14 }}>Explore the Registry</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {[["Browse All Indian Startups", "/startup"], ["Get Your Free Valuation Report", "/report"], ["How to Raise Startup Funding India 2026", "/blog/how-to-get-startup-funding-india-2026"], ["Top AI Startups India 2026", "/blog/top-ai-startups-india-2026"]].map(([label, href]) => (
-                <Link key={label as string} href={href as string} style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 12px", background: T.parch2, border: `1px solid ${T.rule2}`, textDecoration: "none", color: T.gold, fontSize: 11.5, fontFamily: "system-ui", fontWeight: 600 }}>
-                  <span>›</span> {label}
                 </Link>
               ))}
             </div>
           </div>
+
+          <nav aria-label="Blog navigation" style={{ padding:"16px 0", borderTop:"2px solid var(--ink)", marginTop:"clamp(32px,5vw,52px)" }}>
+            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 20px", listStyle:"none", margin:0, padding:0 }}>
+              {[
+                { l:"Indian Unicorns Registry", h:"/indian-unicorns"   },
+                { l:"Indian Startups",          h:"/indian-startups"   },
+                { l:"FinTech Startups",         h:"/fintech-startups"  },
+                { l:"D2C Startups",             h:"/d2c-startups"      },
+                { l:"Top AI Startups",          h:"/top-ai-startups"   },
+                { l:"Back to Blog",             h:"/blog"              },
+              ].map(lnk=>(
+                <li key={lnk.h}><Link href={lnk.h} className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>{lnk.l}</Link></li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </article>
     </>
