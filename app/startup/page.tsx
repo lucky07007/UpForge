@@ -1,4 +1,4 @@
-// app/startup/page.tsx — SERVER COMPONENT
+// app/startup/page.tsx  ←  SERVER COMPONENT
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import StartupRegistry from "@/components/StartupRegistry";
@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const n = (count || 72000).toLocaleString();
   return {
     title: `Indian Startup Registry 2026 — ${n}+ Verified Startups | UpForge`,
-    description: `Browse ${n}+ verified Indian startups across AI, SaaS, FinTech, HealthTech and 30+ sectors. India's most trusted free startup database.`,
+    description: `Browse ${n}+ verified Indian startups across AI, SaaS, FinTech, HealthTech and 30+ sectors. India's most trusted free startup database, updated daily.`,
     alternates: { canonical: "https://www.upforge.in/startup" },
     openGraph: {
       title: `Indian Startup Registry — ${n}+ Verified | UpForge`,
@@ -31,14 +31,13 @@ export const revalidate = 0;
 interface PageProps {
   searchParams?: Promise<{
     page?: string;
-    sector?: string;
     q?: string;
     year?: string;
     sort?: string;
   }>;
 }
 
-const FIRST_PAGE_SIZE = 23;
+const FIRST_PAGE_SIZE = 23; // 3 featured (is_featured=true) + 20 grid
 const OTHER_PAGE_SIZE = 20;
 
 const JSON_LD = {
@@ -65,13 +64,12 @@ const JSON_LD = {
 export default async function StartupPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
-  const params       = await searchParams;
-  const sectorFilter = params?.sector?.trim() ?? "";
-  const searchQuery  = params?.q?.trim() ?? "";
-  const yearFilter   = params?.year?.trim() ?? "";
-  const sortBy       = params?.sort?.trim() ?? "name";
-  const currentPage  = Math.max(1, Number(params?.page ?? 1));
-  const isFirstPage  = currentPage === 1;
+  const params      = await searchParams;
+  const searchQuery = params?.q?.trim() ?? "";
+  const yearFilter  = params?.year?.trim() ?? "";
+  const sortBy      = params?.sort?.trim() ?? "name";
+  const currentPage = Math.max(1, Number(params?.page ?? 1));
+  const isFirstPage = currentPage === 1;
 
   const pageSize = isFirstPage ? FIRST_PAGE_SIZE : OTHER_PAGE_SIZE;
   const from     = isFirstPage
@@ -79,13 +77,17 @@ export default async function StartupPage({ searchParams }: PageProps) {
     : FIRST_PAGE_SIZE + (currentPage - 2) * OTHER_PAGE_SIZE;
   const to = from + pageSize - 1;
 
+  // Build query
   let query = supabase.from("startups").select("*", { count: "exact" });
 
-  if (sectorFilter) query = query.ilike("category", `%${sectorFilter}%`);
-  if (searchQuery)  query = query.or(
-    `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,founders.ilike.%${searchQuery}%`
-  );
-  if (yearFilter)   query = query.eq("founded_year", Number(yearFilter));
+  if (searchQuery) {
+    query = query.or(
+      `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,founders.ilike.%${searchQuery}%`
+    );
+  }
+  if (yearFilter) {
+    query = query.eq("founded_year", Number(yearFilter));
+  }
 
   const orderCol = sortBy === "year"   ? "founded_year"
                  : sortBy === "newest" ? "created_at"
@@ -98,10 +100,12 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
   if (error) console.error("Supabase error:", error);
 
+  // Get distinct years from 2016 onwards for the year filter
   const { data: yearRows } = await supabase
     .from("startups")
     .select("founded_year")
     .not("founded_year", "is", null)
+    .gte("founded_year", 2016)
     .order("founded_year", { ascending: false });
 
   const uniqueYears: number[] = [
@@ -129,7 +133,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         totalCount={totalCount}
         totalPages={totalPages}
         currentPage={currentPage}
-        sectorFilter={sectorFilter}
         searchQuery={searchQuery}
         yearFilter={yearFilter}
         sortBy={sortBy}
