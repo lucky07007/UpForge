@@ -4,9 +4,15 @@
 // UpForge — Zepto · Aadit Palicha & Kaivalya Vohra Founder Chronicle
 // SEO: full structured data, breadcrumbs, FAQ, timeline
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
+
+// Updated video ID from https://youtu.be/nR2jv-r55bg
+const VIDEO_ID = "nR2jv-r55bg"
+
+// Founder image
+const FOUNDER_IMG = "https://i.ytimg.com/vi/HBSOii00H68/maxresdefault.jpg"
 
 const JSON_LD = {
   "@context": "https://schema.org",
@@ -14,20 +20,25 @@ const JSON_LD = {
     {
       "@type": "Article",
       "@id": "https://upforge.in/startup/zepto#article",
-      "headline": "Zepto — How Two Stanford Dropouts Built India's Fastest Unicorn",
-      "description": "Aadit Palicha and Kaivalya Vohra built Zepto after failing with KiranaKart. Zepto is now valued at $5.9B with 350+ dark stores across India. Full profile on UpForge.",
+      "headline": "Zepto — How Aadit Palicha & Kaivalya Vohra Built India's Fastest Unicorn at $5.9B",
+      "description": "Full founder story of Zepto: how 19-year-old Stanford dropouts Aadit Palicha and Kaivalya Vohra failed with KiranaKart, pivoted to a dark store model, and built India's fastest-ever unicorn valued at $5.9B. $2.5B+ raised. 350+ dark stores. 10-minute delivery. Read on UpForge.",
       "url": "https://upforge.in/startup/zepto",
       "datePublished": "2026-03-01T00:00:00+05:30",
       "dateModified": "2026-03-10T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "publisher": { "@type": "Organization", "name": "UpForge", "url": "https://upforge.in" },
+      "image": { "@type": "ImageObject", "url": FOUNDER_IMG, "width": 1280, "height": 720 },
+      "publisher": {
+        "@type": "Organization", "name": "UpForge", "url": "https://upforge.in",
+        "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
+      },
       "author": { "@type": "Organization", "name": "UpForge Editorial" },
       "about": [
         {
           "@type": "Person", "name": "Aadit Palicha",
           "jobTitle": "Co-Founder & CEO",
           "worksFor": { "@type": "Organization", "name": "Zepto" },
-          "alumniOf": "Stanford University"
+          "alumniOf": "Stanford University",
+          "sameAs": ["https://www.linkedin.com/in/aaditpalicha/"]
         },
         {
           "@type": "Person", "name": "Kaivalya Vohra",
@@ -42,7 +53,7 @@ const JSON_LD = {
         "url": "https://www.zeptonow.com",
         "foundingDate": "2021",
         "foundingLocation": { "@type": "Place", "addressLocality": "Bengaluru", "addressCountry": "IN" },
-        "description": "Zepto is India's leading quick commerce platform delivering groceries in under 10 minutes via a dark store model.",
+        "description": "Zepto is India's leading quick commerce platform delivering groceries in under 10 minutes via a dark store model. Founded in 2021 by 19-year-old Stanford dropouts, Zepto became India's fastest-ever unicorn.",
         "sameAs": ["https://www.zeptonow.com", "https://twitter.com/zeptonow"]
       }
     },
@@ -59,20 +70,24 @@ const JSON_LD = {
       "@type": "FAQPage",
       "mainEntity": [
         {
-          "@type": "Question", "name": "Who founded Zepto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Zepto was co-founded by Aadit Palicha (CEO) and Kaivalya Vohra (CTO) in 2021. Both were 19-year-old Stanford University students who dropped out to return to India and build Zepto. They had previously attempted a grocery startup called KiranaKart which failed in 2020." }
+          "@type": "Question", "name": "Who founded Zepto and how old were they?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Zepto was co-founded in 2021 by Aadit Palicha (CEO) and Kaivalya Vohra (CTO), both 19 years old at the time. They were Stanford University freshmen who dropped out and returned to India to build the company. They had previously attempted a grocery delivery startup called KiranaKart in 2020, which failed within months, before pivoting to the Zepto dark store model." }
         },
         {
-          "@type": "Question", "name": "What is Zepto's valuation?",
-          "acceptedAnswer": { "@type": "Answer", "text": "As of 2025, Zepto is valued at $5.9 billion. The company achieved unicorn status in August 2023 at a $1.4B valuation, making it India's first unicorn of the year. The Series H in 2025 took the valuation to $5.9B." }
+          "@type": "Question", "name": "What is Zepto's current valuation and total funding?",
+          "acceptedAnswer": { "@type": "Answer", "text": "As of 2025, Zepto is valued at $5.9 billion after its Series H round of $350 million. The company has raised over $2.5 billion in total funding from investors including Y Combinator, Nexus Venture Partners, Dragon Capital, Glade Brook Capital, and StepStone Group. Zepto achieved unicorn status in August 2023 at a $1.4B valuation — making it India's first unicorn of that year." }
         },
         {
-          "@type": "Question", "name": "How many dark stores does Zepto operate?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Zepto operates over 350 dark stores (micro-fulfillment centers) across 10+ Indian cities including Mumbai, Bengaluru, Delhi NCR, Hyderabad, Pune, and Chennai. Each dark store is placed within 1.5km of dense demand zones to enable sub-10-minute delivery." }
+          "@type": "Question", "name": "How does Zepto's dark store model work?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Zepto operates micro-fulfillment centers called dark stores — small warehouses placed within 1.5km of dense residential demand zones. Each dark store stocks 3,000–5,000 high-frequency SKUs covering roughly 80% of typical household grocery runs. Orders are picked, packed and dispatched to enable delivery in under 10 minutes. As of 2025, Zepto operates 350+ dark stores across 10+ Indian cities including Mumbai, Bengaluru, Delhi NCR, Hyderabad, Pune, and Chennai." }
         },
         {
-          "@type": "Question", "name": "How much has Zepto raised in funding?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Zepto has raised over $2.5 billion in total funding. Key investors include Y Combinator, Nexus Venture Partners, Dragon Capital, Glade Brook Capital, and StepStone Group. The most recent Series H raised $350M at a $5.9B valuation." }
+          "@type": "Question", "name": "Who are Zepto's main competitors in India?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Zepto's primary competitors are Blinkit (owned by Zomato) and Swiggy Instamart. These three platforms together dominate India's quick commerce market, which crossed $3.3 billion in 2025. Zepto holds the second-largest market share. Older players like BigBasket have also expanded into quick delivery to compete." }
+        },
+        {
+          "@type": "Question", "name": "Is Kaivalya Vohra India's youngest billionaire?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. As of 2024, Kaivalya Vohra became India's youngest billionaire at age 22, following Zepto's valuation milestone. Co-founder Aadit Palicha is similarly among India's youngest billionaires. Both founders started Zepto at age 19 after dropping out of Stanford University." }
         }
       ]
     }
@@ -94,10 +109,10 @@ const STATS = [
 
 const TIMELINE = [
   { year: "2020", event: "KiranaKart launched — and fails within months. Palicha & Vohra stay in India, don't return to Stanford" },
-  { year: "2021", event: "Zepto founded. Dark store model crystallised: 1.5km radius, <10 min delivery" },
+  { year: "2021", event: "Zepto founded. Dark store model crystallised: 1.5km radius, sub-10-min delivery, 3,000–5,000 SKUs per store" },
   { year: "Aug 2022", event: "Series D raises $200M. Zepto becomes one of India's most talked-about startups" },
-  { year: "Aug 2023", event: "Zepto becomes India's first unicorn of 2023 — valuation $1.4B" },
-  { year: "2024", event: "Zepto crosses 350 dark stores. Kaivalya Vohra, 22, becomes India's youngest billionaire" },
+  { year: "Aug 2023", event: "Zepto becomes India's first unicorn of 2023 — valuation $1.4B at just 2 years old" },
+  { year: "2024", event: "Crosses 350 dark stores. Kaivalya Vohra, 22, becomes India's youngest billionaire" },
   { year: "2025", event: "Series H closes at $350M. Valuation: $5.9B. India quick commerce market crosses $3.3B" },
 ]
 
@@ -119,7 +134,7 @@ export default function ZeptoPage() {
   }, [])
 
   useEffect(() => {
-    document.title = "Aadit Palicha & Kaivalya Vohra — Zepto Founders | $5.9B Quick Commerce | UpForge"
+    document.title = "Zepto Founders Aadit Palicha & Kaivalya Vohra — $5.9B Quick Commerce Unicorn | UpForge"
   }, [])
 
   return (
@@ -144,24 +159,21 @@ export default function ZeptoPage() {
       `}</style>
 
       <h1 className="sr-only">
-        Zepto Founder Story — Aadit Palicha & Kaivalya Vohra | India's Fastest Unicorn | Quick Commerce | UpForge
+        Zepto Founder Story — Aadit Palicha &amp; Kaivalya Vohra | India's Fastest Unicorn at $5.9B | Dark Store Quick Commerce | UpForge
       </h1>
 
       {/* BREADCRUMB */}
       <nav aria-label="Breadcrumb" className="px-4 sm:px-8 py-2"
         style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}>
-        <ol className="flex flex-wrap items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest"
-          itemScope itemType="https://schema.org/BreadcrumbList">
+        <ol className="flex flex-wrap items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest">
           {[
             { n: "UpForge", h: "/" }, { n: "Startup Registry", h: "/startup" },
             { n: "Quick Commerce", h: "/quick-commerce-startups" }, { n: "Zepto", h: "/startup/zepto" },
           ].map((b, i, arr) => (
-            <li key={i} className="flex items-center gap-1.5"
-              itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+            <li key={i} className="flex items-center gap-1.5">
               {i < arr.length - 1
-                ? <Link href={b.h} itemProp="item" className="hover:text-[#1A1208] transition-colors"><span itemProp="name">{b.n}</span></Link>
-                : <span itemProp="name" className="text-[#1A1208] font-semibold">{b.n}</span>}
-              <meta itemProp="position" content={String(i + 1)} />
+                ? <Link href={b.h} className="hover:text-[#1A1208] transition-colors">{b.n}</Link>
+                : <span className="text-[#1A1208] font-semibold">{b.n}</span>}
               {i < arr.length - 1 && <ChevronRight className="w-2.5 h-2.5 text-[#C8C2B4]" />}
             </li>
           ))}
@@ -188,7 +200,7 @@ export default function ZeptoPage() {
         </div>
         <div className="flex items-center px-4 sm:px-8 py-2 gap-4"
           style={{ fontFamily: "system-ui,sans-serif", borderBottom: "1px solid #C8C2B4" }}>
-          <span className="text-[8px] text-[#AAA] uppercase tracking-widest flex-shrink-0">Edition No. 02</span>
+          <span className="text-[8px] text-[#AAA] uppercase tracking-widest flex-shrink-0">Edition No. 03</span>
           <div className="h-3 w-px bg-[#C8C2B4]" />
           <span className="text-[9px] font-black uppercase tracking-wider" style={{ color: accent }}>
             Quick Commerce · March 2026
@@ -201,19 +213,14 @@ export default function ZeptoPage() {
       {/* MAIN */}
       <main className="fade-up max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]"
-          style={{ borderBottom: "2px solid #1A1208" }}
-          itemScope itemType="https://schema.org/Article">
-          <meta itemProp="headline" content="Zepto — How Two Stanford Dropouts Built India's Fastest Unicorn" />
-          <meta itemProp="datePublished" content="2026-03-01" />
-          <meta itemProp="author" content="UpForge Editorial" />
-          <link itemProp="url" href="https://upforge.in/startup/zepto" />
+          style={{ borderBottom: "2px solid #1A1208" }}>
 
           {/* LEFT EDITORIAL */}
           <article className="py-8 lg:pr-8" style={{ borderRight: "1px solid #C8C2B4" }}>
             <div className="flex items-center gap-3 mb-5" style={{ fontFamily: "system-ui,sans-serif" }}>
               <span className="text-[8.5px] font-black tracking-[0.28em] uppercase px-3 py-1.5 text-white"
                 style={{ background: accent }}>QUICK COMMERCE</span>
-              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">No. 02 · March 2026</span>
+              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">No. 03 · March 2026</span>
             </div>
 
             <h2 className="pf font-black leading-[1.05] text-[#1A1208] mb-5"
@@ -222,11 +229,11 @@ export default function ZeptoPage() {
             </h2>
 
             <p className="italic leading-[1.75] mb-6 pb-6 text-[#5A4A30]"
-              style={{ fontSize: "clamp(14px,1.9vw,17px)", borderBottom: "1px solid #C8C2B4" }}
-              itemProp="description">
-              Aadit Palicha and Kaivalya Vohra were Stanford freshmen when they flew back to India and 
-              tried to solve grocery delivery. They failed spectacularly. What they built next — Zepto — 
-              became India's fastest unicorn and redefined what quick commerce means at scale.
+              style={{ fontSize: "clamp(14px,1.9vw,17px)", borderBottom: "1px solid #C8C2B4" }}>
+              Aadit Palicha and Kaivalya Vohra were 19-year-old Stanford freshmen when they flew back to India
+              and tried to solve grocery delivery. KiranaKart failed in months. What they built next —
+              Zepto — became India's fastest-ever unicorn, valued at $5.9B, operating 350+ dark stores
+              and delivering groceries in under 10 minutes across 10 cities.
             </p>
 
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8"
@@ -241,8 +248,8 @@ export default function ZeptoPage() {
 
             {/* MOBILE PHOTO */}
             <div className="lg:hidden mb-8">
-              <img src="https://i.ytimg.com/vi/HBSOii00H68/maxresdefault.jpg"
-                alt="Aadit Palicha and Kaivalya Vohra, co-founders of Zepto — India's fastest unicorn"
+              <img src={FOUNDER_IMG}
+                alt="Aadit Palicha and Kaivalya Vohra, co-founders of Zepto — India's fastest-ever unicorn at $5.9B"
                 className="w-full object-cover object-top"
                 style={{ height: "min(280px,55vw)" }}
                 loading="eager" />
@@ -254,7 +261,7 @@ export default function ZeptoPage() {
             </div>
 
             {/* 3-COL BODY */}
-            <div className="ncols" itemProp="articleBody">
+            <div className="ncols">
               {[
                 {
                   h: "The Failed First Act",
@@ -262,7 +269,7 @@ export default function ZeptoPage() {
                 },
                 {
                   h: "The $5.9B Math Problem",
-                  b: `Zepto launched in 2021. The model was brutally simple: micro-warehouses (dark stores) densely stocked with the 3,000-5,000 SKUs that constitute 80% of household grocery runs, placed at maximum 1.5km from customers in high-density residential zones.\n\nThe delivery promise — under 10 minutes — was not a marketing claim. It was an engineering constraint that shaped every operational decision: store size, inventory depth, picker workflows, last-mile routing.\n\nBy August 2023, India had its first unicorn of the year — at $1.4B. The $350M Series H in 2025 brought the valuation to $5.9B, making them the youngest founders in India to build a business at that scale. Kaivalya Vohra, at 22, became India's youngest billionaire. Zepto now operates 350+ dark stores across 10 cities, fulfilling orders in under 10 minutes — a logistics equation, solved at scale.`
+                  b: `Zepto launched in 2021. The model was brutally simple: micro-warehouses (dark stores) densely stocked with the 3,000–5,000 SKUs that constitute 80% of household grocery runs, placed at maximum 1.5km from customers in high-density residential zones.\n\nThe delivery promise — under 10 minutes — was not a marketing claim. It was an engineering constraint that shaped every operational decision: store size, inventory depth, picker workflows, last-mile routing.\n\nBy August 2023, India had its first unicorn of the year — Zepto, at $1.4B. The $350M Series H in 2025 brought the valuation to $5.9B, making Palicha and Vohra among the youngest founders in the world to build a business at that scale. Kaivalya Vohra, at 22, became India's youngest billionaire. Zepto now operates 350+ dark stores across 10 cities.`
                 },
                 {
                   h: "What the Story Really Is",
@@ -288,16 +295,16 @@ export default function ZeptoPage() {
               <span style={{ display: "block", color: accent, fontSize: 24, marginBottom: 10 }}>❝</span>
               <blockquote className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
                 style={{ fontSize: "clamp(15px,2.1vw,21px)" }}>
-                "We failed with KiranaKart in months. Most people would have gone back to Stanford. 
+                "We failed with KiranaKart in months. Most people would have gone back to Stanford.
                 We stayed in Bengaluru and figured out what we got wrong."
               </blockquote>
               <p className="text-[9px] uppercase tracking-[0.24em] text-[#AAA] mt-4"
                 style={{ fontFamily: "system-ui,sans-serif" }}>
-                — Aadit Palicha, Co-Founder & CEO, Zepto
+                — Aadit Palicha, Co-Founder &amp; CEO, Zepto
               </p>
             </div>
 
-            {/* YOUTUBE VIDEO EMBED */}
+            {/* YOUTUBE VIDEO EMBED — fixed: proper embed URL format */}
             <div className="mt-8">
               <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-3"
                 style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
@@ -305,8 +312,8 @@ export default function ZeptoPage() {
               </p>
               <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
                 <iframe
-                  src="https://youtu.be/nR2jv-r55bg?si=9ic2LLvF2vJXqV0k"
-                  title="Zepto — Aadit Palicha on Building India's Fastest Unicorn | UpForge"
+                  src={`https://www.youtube.com/embed/${VIDEO_ID}?si=sEDA8ZSmkd6skaGA`}
+                  title="Zepto — Aadit Palicha on Building India's Fastest Unicorn, Dark Stores & Quick Commerce | UpForge Founder Interview"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="absolute inset-0 w-full h-full"
@@ -315,7 +322,7 @@ export default function ZeptoPage() {
                 />
               </div>
               <p className="text-[10px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
-                Aadit Palicha on building Zepto — 10-minute delivery, dark stores & India's quick commerce future — UpForge Featured Interview
+                Aadit Palicha on building Zepto — 10-minute delivery, dark stores &amp; India's quick commerce future — UpForge Featured Interview
               </p>
             </div>
 
@@ -346,31 +353,27 @@ export default function ZeptoPage() {
               <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-3"
                 style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>UpForge Takeaway</p>
               <p className="pf italic text-[#1A1208] leading-[1.7]" style={{ fontSize: "clamp(14px,1.8vw,17px)" }}>
-                "The first startup teaches you the question. The second one lets you answer it. 
+                "The first startup teaches you the question. The second one lets you answer it.
                 Zepto didn't succeed despite KiranaKart — it succeeded <em>because</em> of it."
               </p>
             </div>
 
-            {/* FAQ */}
-            <section className="mt-8" itemScope itemType="https://schema.org/FAQPage">
+            {/* FAQ — visual only, NO microdata. JSON-LD above handles schema. */}
+            <section className="mt-8">
               <p className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
                 style={{ color: accent, fontFamily: "system-ui,sans-serif", borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8 }}>
                 Frequently Asked Questions
               </p>
               {[
-                { q: "Who are the founders of Zepto?", a: "Zepto was co-founded by Aadit Palicha (CEO) and Kaivalya Vohra (CTO) in 2021. Both were 19 years old and studying at Stanford University when they returned to India to build the company. They had previously built KiranaKart in 2020, which failed, before pivoting to the Zepto model." },
-                { q: "What is Zepto's business model?", a: "Zepto operates a dark store model — micro-fulfillment warehouses placed within 1.5km of dense residential demand zones. Each dark store carries 3,000-5,000 SKUs and enables delivery in under 10 minutes. Revenue comes from product margins and a delivery fee on orders." },
-                { q: "Is Zepto profitable?", a: "Zepto has been working toward profitability through improving unit economics. The company reported improved contribution margins in FY2025. At $5.9B valuation, investors are betting on long-term dominance in India's quick commerce market rather than immediate profitability." },
-                { q: "Who are Zepto's main competitors?", a: "Zepto competes primarily with Blinkit (owned by Zomato) and Swiggy Instamart. The three companies together control the vast majority of India's quick commerce market. Zepto holds the second-largest market share as of 2025." },
+                { q: "Who are the founders of Zepto and how old were they?", a: "Zepto was co-founded in 2021 by Aadit Palicha (CEO) and Kaivalya Vohra (CTO), both aged 19 at the time. They were Stanford University freshmen who dropped out to return to India. They had previously built KiranaKart in 2020 — a 45-minute grocery delivery app that failed within months — before pivoting to the Zepto dark store model." },
+                { q: "What is Zepto's current valuation and total funding raised?", a: "As of 2025, Zepto is valued at $5.9 billion after its $350M Series H round. The company has raised over $2.5 billion in total funding from Y Combinator, Nexus Venture Partners, Dragon Capital, Glade Brook Capital, and StepStone Group. Zepto became India's first unicorn of 2023 at a $1.4B valuation." },
+                { q: "How does Zepto's dark store model work?", a: "Zepto operates micro-fulfillment warehouses (dark stores) placed within 1.5km of dense residential demand zones. Each store stocks 3,000–5,000 high-frequency SKUs covering ~80% of household grocery runs. This setup enables sub-10-minute delivery as a pure logistics outcome. Zepto operates 350+ dark stores across 10+ cities including Mumbai, Bengaluru, Delhi NCR, Hyderabad, Pune, and Chennai." },
+                { q: "Who are Zepto's main competitors in quick commerce?", a: "Zepto's primary competitors are Blinkit (owned by Zomato) and Swiggy Instamart. These three platforms dominate India's quick commerce market, which crossed $3.3 billion in 2025. Zepto holds the second-largest market share as of 2025. BigBasket has also entered the space with its own rapid delivery offering." },
+                { q: "Is Kaivalya Vohra India's youngest billionaire?", a: "Yes. As of 2024, Kaivalya Vohra became India's youngest billionaire at age 22 following Zepto's valuation crossing $5B. Co-founder Aadit Palicha is similarly among India's youngest billionaires. Both started Zepto at 19 years old after dropping out of Stanford University." },
               ].map((faq, i) => (
-                <div key={i} className="mb-4 pb-4" style={{ borderBottom: "1px solid #D8D2C4" }}
-                  itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                  <h3 className="font-bold text-[#1A1208] mb-1.5" style={{ fontSize: 13, fontFamily: "system-ui,sans-serif" }}
-                    itemProp="name">{faq.q}</h3>
-                  <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                    <p className="text-[12.5px] text-[#5A4A30] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}
-                      itemProp="text">{faq.a}</p>
-                  </div>
+                <div key={i} className="mb-4 pb-4" style={{ borderBottom: "1px solid #D8D2C4" }}>
+                  <h3 className="font-bold text-[#1A1208] mb-1.5" style={{ fontSize: 13, fontFamily: "system-ui,sans-serif" }}>{faq.q}</h3>
+                  <p className="text-[12.5px] text-[#5A4A30] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>{faq.a}</p>
                 </div>
               ))}
             </section>
@@ -381,10 +384,10 @@ export default function ZeptoPage() {
             <div className="sticky top-4 flex flex-col gap-5">
               <div className="relative w-full overflow-hidden" style={{ height: 340 }}>
                 <img
-                  src="https://i.ytimg.com/vi/HBSOii00H68/maxresdefault.jpg"
-                  alt="Aadit Palicha and Kaivalya Vohra, Zepto co-founders — UpForge Founder Chronicle"
+                  src={FOUNDER_IMG}
+                  alt="Aadit Palicha and Kaivalya Vohra, co-founders of Zepto — India's fastest unicorn at $5.9B | UpForge Founder Chronicle"
                   className="w-full h-full object-cover object-top"
-                  loading="eager" itemProp="image"
+                  loading="eager"
                 />
                 <div className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
                   style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 60%, transparent)" }}>
@@ -394,20 +397,20 @@ export default function ZeptoPage() {
                 </div>
               </div>
 
-              {/* VIDEO THUMBNAIL */}
+              {/* VIDEO THUMBNAIL — fixed: now uses correct VIDEO_ID */}
               <div>
                 <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
                   style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
-                <a href="https://youtu.be/nR2jv-r55bg?si=9ic2LLvF2vJXqV0k"
+                <a href={`https://youtu.be/${VIDEO_ID}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="block relative group" aria-label="Watch Zepto founder interview on YouTube">
+                  className="block relative" aria-label="Watch Zepto founder Aadit Palicha interview on YouTube">
                   <img
-                    src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
-                    alt="Zepto — Aadit Palicha interview on quick commerce and India's fastest unicorn"
+                    src={`https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`}
+                    alt="Zepto — Aadit Palicha on building India's fastest unicorn and the dark store model"
                     className="w-full object-cover"
                     style={{ height: 140, border: `1px solid ${accentBorder}` }}
                     loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg` }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center"
                     style={{ background: "rgba(0,0,0,0.3)" }}>
@@ -418,7 +421,7 @@ export default function ZeptoPage() {
                   </div>
                 </a>
                 <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  Aadit Palicha on 10-minute delivery & India's quick commerce future
+                  Aadit Palicha on 10-minute delivery, dark stores &amp; India's quick commerce future
                 </p>
               </div>
 
@@ -442,7 +445,7 @@ export default function ZeptoPage() {
                 <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
                   style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>The Lesson</p>
                 <p className="italic text-[#1A1208] leading-[1.72]" style={{ fontSize: 13 }}>
-                  Treat failure as data. The pivot that created Zepto only became visible after 
+                  Treat failure as data. The pivot that created Zepto only became visible after
                   the founders spent months understanding exactly why KiranaKart didn't work.
                 </p>
               </div>
@@ -528,7 +531,7 @@ export default function ZeptoPage() {
             </div>
           </div>
           <p className="text-[9px] leading-relaxed mt-4" style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif" }}>
-            * Data sourced from public filings, Inc42, Forbes India, Tracxn, and Zepto press releases as of March 2026. 
+            * Data sourced from public filings, Inc42, Forbes India, Tracxn, and Zepto press releases as of March 2026.
             UpForge is an independent registry — no paid placements, no sponsored rankings.
           </p>
           <nav aria-label="Footer navigation" className="mt-3">
