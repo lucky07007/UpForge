@@ -15,13 +15,13 @@ const JSON_LD = {
     {
       "@type": "Article",
       "@id": "https://upforge.in/startup/boat#article",
-      "headline": "boAt — How Aman Gupta Built India's No.1 Audio Brand from a Delhi Garage",
-      "description": "boAt co-founders Aman Gupta and Sameer Mehta turned a bootstrapped audio accessories idea into a $1.3B Indian unicorn. $171M raised. IPO-bound. Full founder story on UpForge.",
+      "headline": "boAt Lifestyle — How Aman Gupta & Sameer Mehta Built India's No.1 Audio Brand",
+      "description": "Full founder story of boAt Lifestyle: how Aman Gupta and Sameer Mehta grew a bootstrapped audio accessories startup into India's #1 earwear brand and a $1.3B unicorn. $171M raised, IPO-bound, 5th-largest wearable brand globally. Read on UpForge.",
       "url": "https://upforge.in/startup/boat",
       "datePublished": "2026-03-01T00:00:00+05:30",
       "dateModified": "2026-03-10T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "image": { "@type": "ImageObject", "url": "https://www.cheggindia.com/wp-content/uploads/2023/06/eo-35893-founder-of-boat-v2-1024x683.png", "width": 1200, "height": 630 },
+      "image": { "@type": "ImageObject", "url": "https://www.cheggindia.com/wp-content/uploads/2023/06/eo-35893-founder-of-boat-v2-1024x683.png", "width": 1024, "height": 683 },
       "publisher": {
         "@type": "Organization", "name": "UpForge", "url": "https://upforge.in",
         "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
@@ -55,7 +55,7 @@ const JSON_LD = {
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" },
         { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://upforge.in/startup" },
         { "@type": "ListItem", "position": 3, "name": "Consumer Tech Startups", "item": "https://upforge.in/consumer-tech-startups" },
-        { "@type": "ListItem", "position": 4, "name": "boAt", "item": "https://upforge.in/startup/boat" }
+        { "@type": "ListItem", "position": 4, "name": "boAt Lifestyle", "item": "https://upforge.in/startup/boat" }
       ]
     },
     {
@@ -63,23 +63,28 @@ const JSON_LD = {
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Who founded boAt?",
-          "acceptedAnswer": { "@type": "Answer", "text": "boAt was co-founded in 2016 by Aman Gupta and Sameer Mehta in New Delhi. Aman Gupta, a CA and MBA from ISB, serves as CMO and is widely known as a judge on Shark Tank India. Sameer Mehta is the CEO and handles operations and supply chain." }
+          "name": "Who founded boAt Lifestyle?",
+          "acceptedAnswer": { "@type": "Answer", "text": "boAt Lifestyle was co-founded in 2016 by Aman Gupta and Sameer Mehta in New Delhi. Aman Gupta, a Chartered Accountant and MBA from ISB Hyderabad, serves as CMO and is widely recognised as a judge on Shark Tank India. Sameer Mehta is the CEO and oversees operations and supply chain. Together they bootstrapped the brand before raising institutional capital." }
         },
         {
           "@type": "Question",
-          "name": "How much funding has boAt raised?",
-          "acceptedAnswer": { "@type": "Answer", "text": "boAt has raised over $171M in total funding. Key investors include Warburg Pincus, Qualcomm Ventures, Innoven Capital, and Fireside Ventures. The company was valued at approximately $1.3 billion, making it a unicorn." }
+          "name": "How much funding has boAt raised and what is its valuation?",
+          "acceptedAnswer": { "@type": "Answer", "text": "boAt Lifestyle has raised over $171 million in total funding from investors including Warburg Pincus, Qualcomm Ventures, Fireside Ventures, and Innoven Capital. The company achieved unicorn status with a valuation of approximately $1.3 billion, making it one of India's fastest-growing consumer electronics unicorns." }
         },
         {
           "@type": "Question",
-          "name": "What makes boAt different from global audio brands?",
-          "acceptedAnswer": { "@type": "Answer", "text": "boAt built a brand for young India — aggressive pricing (₹500–₹5,000), vibrant design, celebrity endorsements and a massive D2C digital strategy. It became India's No.1 earwear brand and world's 5th-largest wearable company by shipments (IDC, 2022)." }
+          "name": "Why is boAt India's No.1 audio brand?",
+          "acceptedAnswer": { "@type": "Answer", "text": "boAt became India's No.1 earwear brand through aggressive pricing (₹500–₹5,000), bold design aimed at 18–30 year olds, celebrity partnerships with Hardik Pandya, Kiara Advani and Kartik Aaryan, and a D2C-first strategy on Amazon and Flipkart. By 2022, IDC ranked boAt as the world's 5th-largest wearable brand by shipments — ahead of many global audio majors." }
         },
         {
           "@type": "Question",
           "name": "Is boAt planning an IPO?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. boAt has filed DRHP with SEBI for an IPO. The company has been profitable and targets a public listing. The IPO is expected to raise primary and secondary capital to fund expansion into newer product categories and global markets." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. boAt filed its Draft Red Herring Prospectus (DRHP) with SEBI for a public listing on Indian stock exchanges. The IPO is expected to raise primary and secondary capital to fund expansion into newer product categories such as smartwatches, home audio and grooming, as well as international markets." }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is boAt Lifestyle headquartered and where are products manufactured?",
+          "acceptedAnswer": { "@type": "Answer", "text": "boAt Lifestyle is headquartered in New Delhi, India. The company initially relied on contract manufacturing in China but has progressively shifted production to India under the PLI (Production Linked Incentive) scheme, aligning with the Make in India initiative." }
         }
       ]
     }
@@ -128,10 +133,11 @@ const LESSON = "Brand is a moat. boAt proved that an Indian startup could out-ma
 const INVESTORS = ["Warburg Pincus", "Qualcomm Ventures", "Fireside Ventures", "Innoven Capital", "Navi Technologies"]
 
 const FAQS = [
-  { q: "Who are the founders of boAt?", a: "boAt was co-founded in 2016 by Aman Gupta (CMO) and Sameer Mehta (CEO) in New Delhi. Gupta, a CA and MBA from ISB Hyderabad, previously worked at KPMG and Citibank before joining Harman. Mehta comes from a trading background and handles supply chain and operations." },
-  { q: "How much funding has boAt raised?", a: "boAt has raised over $171M in total funding. Warburg Pincus led a major growth round. Other investors include Qualcomm Ventures, Fireside Ventures, and Innoven Capital. The company achieved unicorn status with a valuation of approximately $1.3 billion." },
-  { q: "What makes boAt India's top audio brand?", a: "boAt's formula: premium-looking design, sub-₹2,000 pricing, massive celebrity endorsements, and a D2C-first distribution strategy. It consistently ranks #1 in India's earwear market and was the world's 5th-largest wearable brand by shipments in 2022 (IDC data)." },
-  { q: "When will boAt IPO happen?", a: "boAt filed its DRHP with SEBI in 2022 and has been working towards an IPO. The exact timing depends on market conditions. The company has been profitable and the IPO is expected to list on Indian stock exchanges." },
+  { q: "Who are the founders of boAt Lifestyle?", a: "boAt was co-founded in 2016 by Aman Gupta (CMO) and Sameer Mehta (CEO) in New Delhi. Gupta, a Chartered Accountant and MBA from ISB Hyderabad, previously worked at KPMG and Citibank before joining Harman International. Mehta comes from a trading background and oversees supply chain and operations. Together they bootstrapped boAt before raising institutional capital." },
+  { q: "How much funding has boAt raised and what is its valuation?", a: "boAt has raised over $171M in total funding. Warburg Pincus led a major growth round. Other investors include Qualcomm Ventures, Fireside Ventures, and Innoven Capital. The company achieved unicorn status with a valuation of approximately $1.3 billion, making it one of India's fastest-growing consumer electronics unicorns." },
+  { q: "Why is boAt India's No.1 audio and wearable brand?", a: "boAt's formula: premium-looking design, sub-₹2,000 pricing, massive celebrity endorsements with Hardik Pandya, Kiara Advani and Kartik Aaryan, and a D2C-first distribution strategy on Amazon and Flipkart. It consistently ranks #1 in India's earwear market and was the world's 5th-largest wearable brand by shipments in 2022 (IDC data)." },
+  { q: "When will boAt's IPO happen?", a: "boAt filed its Draft Red Herring Prospectus (DRHP) with SEBI and is working towards listing on Indian stock exchanges. The exact timing depends on market conditions. The company has been profitable and the IPO is expected to raise capital for category expansion and international growth." },
+  { q: "Is boAt a Make in India brand?", a: "Yes. boAt has progressively shifted manufacturing to India under the PLI (Production Linked Incentive) scheme. While the brand initially relied on contract manufacturing in China, it has aligned with the Make in India initiative and positioned itself as a homegrown Indian brand built for Indian consumers." },
 ]
 
 const RELATED = [
@@ -139,6 +145,12 @@ const RELATED = [
   { name: "Spinny", slug: "spinny-cars", cat: "Used Cars", val: "$1.8B" },
   { name: "Sarvam AI", slug: "sarvam-ai", cat: "Artificial Intelligence", val: "$1B+" },
 ]
+
+// Updated video ID from https://youtu.be/PRltUBPyDm4
+const VIDEO_ID = "PRltUBPyDm4"
+
+// Updated founder image
+const FOUNDER_IMG = "https://www.cheggindia.com/wp-content/uploads/2023/06/eo-35893-founder-of-boat-v2-1024x683.png"
 
 export default function BoatPage() {
   const accent = "#E85D04"
@@ -178,7 +190,7 @@ export default function BoatPage() {
         ::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-thumb { background:#C8C2B4; }
       `}</style>
 
-      <h1 className="sr-only">boAt Founder Story — Aman Gupta & Sameer Mehta | India's Audio Unicorn | UpForge</h1>
+      <h1 className="sr-only">boAt Lifestyle Founder Story — Aman Gupta &amp; Sameer Mehta | India's No.1 Audio Unicorn | UpForge</h1>
 
       {/* BREADCRUMB */}
       <nav aria-label="Breadcrumb" className="px-4 sm:px-8 py-2"
@@ -186,7 +198,7 @@ export default function BoatPage() {
         <ol className="flex flex-wrap items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest">
           {[
             { n: "UpForge", h: "/" }, { n: "Startup Registry", h: "/startup" },
-            { n: "Consumer Tech", h: "/consumer-tech-startups" }, { n: "boAt", h: "/startup/boat" },
+            { n: "Consumer Tech", h: "/consumer-tech-startups" }, { n: "boAt Lifestyle", h: "/startup/boat" },
           ].map((b, i, arr) => (
             <li key={i} className="flex items-center gap-1.5">
               {i < arr.length - 1
@@ -262,8 +274,8 @@ export default function BoatPage() {
 
             {/* MOBILE PHOTO */}
             <div className="lg:hidden mb-8">
-              <img src="https://images.yourstory.com/cs/2/6d4bbe40d02011e9aa4b5178b9b9e6ab/Imagep7x3-1698133866739.jpg"
-                alt="Aman Gupta, Co-Founder and CMO of boAt Lifestyle"
+              <img src={FOUNDER_IMG}
+                alt="Aman Gupta and Sameer Mehta, Co-Founders of boAt Lifestyle — India's No.1 Audio Brand"
                 className="w-full object-cover object-top" style={{ height: "min(300px,60vw)" }} loading="eager" />
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
                 <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Aman Gupta & Sameer Mehta</p>
@@ -307,14 +319,14 @@ export default function BoatPage() {
                 Watch · boAt Founder in Conversation
               </p>
               <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
-                <iframe src="https://www.youtube.com/embed/l7pDuakyskI?si=ldN2OI7y4ciehvsq"
-                  title="boAt — Aman Gupta on Building India's No.1 Audio Brand | UpForge"
+                <iframe src={`https://www.youtube.com/embed/${VIDEO_ID}?si=83HTuvcalTnOd_6y`}
+                  title="boAt Lifestyle — Aman Gupta on Building India's No.1 Audio Brand | UpForge Founder Interview"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen className="absolute inset-0 w-full h-full" loading="lazy"
                   style={{ border: "none" }} />
               </div>
               <p className="text-[10px] text-[#AAA] mt-2 italic" style={{ fontFamily: "system-ui,sans-serif" }}>
-                Aman Gupta on building boAt and India's consumer brand revolution — UpForge Featured Interview
+                Aman Gupta on building boAt Lifestyle, brand strategy, and the future of Indian consumer electronics — UpForge Featured Interview
               </p>
             </div>
 
@@ -359,32 +371,32 @@ export default function BoatPage() {
           <aside className="hidden lg:block pl-8 pt-8 pb-8">
             <div className="sticky top-4 flex flex-col gap-5">
               <div className="relative w-full overflow-hidden" style={{ height: 340 }}>
-                <img src="https://images.yourstory.com/cs/2/6d4bbe40d02011e9aa4b5178b9b9e6ab/Imagep7x3-1698133866739.jpg"
-                  alt="Aman Gupta, Co-Founder and CMO of boAt — UpForge Founder Chronicle"
+                <img src={FOUNDER_IMG}
+                  alt="Aman Gupta and Sameer Mehta, Co-Founders of boAt Lifestyle — UpForge Founder Chronicle"
                   className="w-full h-full object-cover object-top" loading="eager" />
                 <div className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
                   style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 60%, transparent)" }}>
-                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Aman Gupta</p>
-                  <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founder & CMO · boAt Lifestyle</p>
+                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Aman Gupta & Sameer Mehta</p>
+                  <p className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>Co-Founders · boAt Lifestyle</p>
                 </div>
               </div>
 
               <div>
                 <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2" style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
-                <a href="https://youtu.be/l7pDuakyskI" target="_blank" rel="noopener noreferrer"
-                  className="block relative" aria-label="Watch boAt founder interview on YouTube">
-                  <img src="https://img.youtube.com/vi/l7pDuakyskI/maxresdefault.jpg"
-                    alt="boAt — Aman Gupta founder interview"
+                <a href={`https://youtu.be/${VIDEO_ID}`} target="_blank" rel="noopener noreferrer"
+                  className="block relative" aria-label="Watch boAt founder Aman Gupta interview on YouTube">
+                  <img src={`https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`}
+                    alt="boAt Lifestyle — Aman Gupta founder interview on building India's No.1 audio brand"
                     className="w-full object-cover" style={{ height: 140, border: `1px solid ${accentBorder}` }}
                     loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "https://img.youtube.com/vi/l7pDuakyskI/hqdefault.jpg" }} />
+                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg` }} />
                   <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.3)" }}>
                     <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,0,0,0.9)" }}>
                       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5"><path d="M8 5v14l11-7z" /></svg>
                     </div>
                   </div>
                 </a>
-                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>Aman Gupta on boAt's brand-first strategy</p>
+                <p className="text-[9px] text-[#AAA] mt-1.5 italic" style={{ fontFamily: "system-ui,sans-serif" }}>Aman Gupta on boAt's brand-first strategy and building for India</p>
               </div>
 
               <div style={{ border: "2px solid #1A1208" }}>
