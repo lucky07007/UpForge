@@ -614,51 +614,76 @@ export default function HomePage() {
         .vid-dot:hover { opacity: 1 !important; }
       `}</style>
 
-      <h1 className="sr-only" aria-label="Indian startup founder stories 2026">
-        Indian Startup Founder Stories 2026 — Zepto, Zomato, Zerodha, Nykaa, OYO, Ola, CRED, Paytm, InternAdda | UpForge Founder Chronicle
-      </h1>
-
-      {/* ══ MASTHEAD ══ */}
-      <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }} role="banner">
-        <div className="text-center px-4 pt-10 sm:pt-14 pb-5 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
-          <p className="text-[8px] tracking-[0.42em] text-[#AAA] uppercase mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
-            Independent Startup Registry
+{/* ══ MASTHEAD ══ */}
+      <header 
+        style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }} 
+        role="banner"
+      >
+        <div 
+          className="text-center px-4 pt-10 sm:pt-14 pb-5 sm:pb-8" 
+          style={{ borderBottom: "1px solid #C8C2B4" }}
+        >
+          {/* Tagline for Context */}
+          <p className="text-[9px] tracking-[0.42em] text-[#AAA] uppercase mb-3 font-sans">
+            Independent Indian Startup Registry
           </p>
-          <p className="pf font-black leading-none tracking-tight text-[#1A1208]" aria-hidden="true"
-            style={{ fontSize: "clamp(1.9rem, 5.5vw, 4.6rem)" }}>
+          
+          {/* Main SEO Heading - No longer hidden from Google */}
+          <h1 
+            className="pf font-black leading-none tracking-tight text-[#1A1208]"
+            style={{ fontSize: "clamp(1.9rem, 5.5vw, 4.6rem)" }}
+          >
             The Founder Chronicle
+          </h1>
+
+          {/* Subheading with rich keywords */}
+          <p className="italic mt-3 text-[#6B5C40] leading-relaxed" style={{ fontSize: "clamp(13px, 1.8vw, 16px)" }}>
+            Verified stories of the visionaries building India's future — March 2026 Edition
           </p>
-          <p className="italic mt-2 text-[#6B5C40]" style={{ fontSize: "clamp(12px, 1.7vw, 15px)" }}>
-            Stories of the builders reshaping India — verified, editorial, March 2026
-          </p>
-          <div className="flex items-center justify-center gap-3 mt-4">
-            <div className="h-px w-16 sm:w-32" style={{ background: "#C8C2B4" }} />
-            <span style={{ color: "#C8C2B4", fontSize: 12 }} aria-hidden="true">✦</span>
-            <div className="h-px w-16 sm:w-32" style={{ background: "#C8C2B4" }} />
+
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <div className="h-px w-16 sm:w-32 bg-[#C8C2B4]" />
+            <span className="text-[#C8C2B4] text-xs" aria-hidden="true">✦</span>
+            <div className="h-px w-16 sm:w-32 bg-[#C8C2B4]" />
           </div>
         </div>
 
-        <nav aria-label="Founder stories navigation"
-          className="tabs-strip flex items-stretch overflow-x-auto"
-          style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
-          <span className="text-[7.5px] text-[#BBB] uppercase tracking-widest px-3 py-3 self-center flex-shrink-0 hidden sm:inline">
-            In this edition:
+        {/* Edition Navigation */}
+        <nav 
+          aria-label="Edition Selection"
+          className="tabs-strip flex items-center overflow-x-auto bg-white/30"
+          style={{ borderBottom: "1px solid #C8C2B4", scrollbarWidth: 'none' }}
+        >
+          <span className="text-[8px] text-[#999] uppercase tracking-[0.2em] px-5 py-4 font-bold flex-shrink-0 border-r border-[#D8D2C4] hidden md:inline">
+            In This Edition
           </span>
-          {FOUNDERS.map((s, i) => (
-            <button key={i} onClick={() => setIdx(i)}
-              aria-label={`Read ${s.nameShort}'s story — ${s.company}`}
-              aria-current={i === idx ? "true" : undefined}
-              className="flex-shrink-0 px-3 py-3 text-[8.5px] font-bold uppercase tracking-wider border-l transition-colors"
-              style={{
-                borderColor: "#D8D2C4",
-                color: i === idx ? s.accent : "#888",
-                borderBottom: `2.5px solid ${i === idx ? s.accent : "transparent"}`,
-                background: i === idx ? "rgba(255,255,255,0.55)" : "transparent",
-                marginBottom: "-1px",
-              }}>
-              {s.edition} · {s.nameShort}
-            </button>
-          ))}
+          
+          <ul className="flex flex-nowrap m-0 p-0 list-none">
+            {FOUNDERS.map((s, i) => (
+              <li key={i} className="flex-shrink-0">
+                <button 
+                  onClick={() => setIdx(i)}
+                  aria-label={`Read story of ${s.name} at ${s.company}`}
+                  aria-current={i === idx ? "page" : undefined}
+                  className="px-5 py-4 text-[9px] font-bold uppercase tracking-wider transition-all relative"
+                  style={{
+                    color: i === idx ? "#1A1208" : "#888",
+                    background: i === idx ? "#FFF" : "transparent",
+                    borderRight: "1px solid #D8D2C4",
+                  }}
+                >
+                  {s.edition} · {s.nameShort}
+                  {/* Active Indicator Line */}
+                  {i === idx && (
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 h-[3px]" 
+                      style={{ background: s.accent }} 
+                    />
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
         </nav>
       </header>
 
