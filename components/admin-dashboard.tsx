@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import type { Startup } from "@/types/startup"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { Plus, Pencil, Trash2, LogOut, X, Star, Check } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { Plus, Pencil, Trash2, LogOut, X, Star, Check, CheckCircle2 } from "lucide-react"
 
 interface AdminDashboardProps {
   startups: Startup[]
@@ -69,6 +69,18 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<StartupForm>(emptyForm)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ visible: boolean; message: string; type: "add" | "update" }>({
+    visible: false, message: "", type: "add"
+  })
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const showToast = (message: string, type: "add" | "update") => {
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+    setToast({ visible: true, message, type })
+    toastTimer.current = setTimeout(() => setToast(t => ({ ...t, visible: false })), 3200)
+  }
+
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current) }, [])
 
   const supabase = createClient()
 
@@ -124,8 +136,13 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
         ? await supabase.from("startups").update(payload).eq("id", editingId)
         : await supabase.from("startups").insert([payload])
       if (error) throw error
+      const wasEditing = !!editingId
       setShowForm(false); setForm(emptyForm); setEditingId(null)
       router.refresh()
+      showToast(
+        wasEditing ? "Startup updated successfully" : "Startup added to registry",
+        wasEditing ? "update" : "add"
+      )
     } catch (err: any) {
       alert("Error saving: " + err.message)
     } finally {
@@ -184,15 +201,17 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
         .dash-logo-mark {
           width: 36px;
           height: 36px;
-          background: #1A1208;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: 0.85rem;
-          font-weight: 900;
-          color: #F3EFE5;
           flex-shrink: 0;
+          overflow: hidden;
+        }
+
+        .dash-logo-mark img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
 
         .dash-header-title {
@@ -510,13 +529,96 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
           color: #C8A84B;
           fill: #C8A84B;
         }
+
+        /* ── TOAST ── */
+        .uf-toast {
+          position: fixed;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%) translateY(0);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          padding: 0.75rem 1.25rem 0.75rem 1rem;
+          background: #FFFFFF;
+          border: 1.5px solid #C8C2B4;
+          border-left: 3px solid #1A1208;
+          box-shadow: 0 4px 24px rgba(26,18,8,0.12), 0 1px 4px rgba(26,18,8,0.06);
+          min-width: 240px;
+          max-width: 90vw;
+          animation: toastIn 0.38s cubic-bezier(0.16,1,0.3,1) both;
+          pointer-events: none;
+        }
+
+        .uf-toast.hide {
+          animation: toastOut 0.3s cubic-bezier(0.4,0,1,1) both;
+        }
+
+        @keyframes toastIn {
+          from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @keyframes toastOut {
+          from { opacity: 1; transform: translateX(-50%) translateY(0); }
+          to   { opacity: 0; transform: translateX(-50%) translateY(12px); }
+        }
+
+        .uf-toast-icon {
+          width: 28px;
+          height: 28px;
+          background: #1A1208;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          animation: iconPop 0.4s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+        }
+        @keyframes iconPop {
+          from { transform: scale(0.5); opacity: 0; }
+          to   { transform: scale(1); opacity: 1; }
+        }
+
+        .uf-toast-label {
+          font-size: 0.6rem;
+          text-transform: uppercase;
+          letter-spacing: 0.16em;
+          color: #AAA09A;
+          font-family: 'DM Mono', monospace;
+          line-height: 1;
+          margin-bottom: 2px;
+        }
+
+        .uf-toast-msg {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #1A1208;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          line-height: 1.2;
+        }
+
+        /* progress bar inside toast */
+        .uf-toast-bar {
+          position: absolute;
+          bottom: 0; left: 0;
+          height: 2px;
+          background: #1A1208;
+          animation: toastBar 3.2s linear both;
+        }
+        @keyframes toastBar {
+          from { width: 100%; }
+          to   { width: 0%; }
+        }
       `}</style>
 
       <div className="dash-root">
         {/* HEADER */}
         <header className="dash-header">
           <div className="dash-logo">
-            <div className="dash-logo-mark">UF</div>
+            <div className="dash-logo-mark">
+              <img src="/logo.jpg" alt="UpForge" />
+            </div>
             <div>
               <div className="dash-header-title">UpForge Admin</div>
               <div className="dash-header-email">{userEmail}</div>
@@ -669,6 +771,22 @@ export function AdminDashboard({ startups, userEmail }: AdminDashboardProps) {
             )}
           </div>
         </div>
+
+        {/* ── SAVE/UPDATE TOAST ── */}
+        {toast.visible && (
+          <div className="uf-toast">
+            <div className="uf-toast-icon">
+              <CheckCircle2 size={14} color="#F3EFE5" strokeWidth={2.5} />
+            </div>
+            <div>
+              <div className="uf-toast-label">
+                {toast.type === "update" ? "Registry Updated" : "Registry Entry Added"}
+              </div>
+              <div className="uf-toast-msg">{toast.message}</div>
+            </div>
+            <div className="uf-toast-bar" />
+          </div>
+        )}
       </div>
     </>
   )
