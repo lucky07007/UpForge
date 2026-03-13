@@ -1,250 +1,591 @@
 // app/indian-unicorns/page.tsx
-// ─── TARGET KEYWORDS ──────────────────────────────────────────────────────────
-// "Indian unicorns"                    ~28,000/mo
-// "unicorn startups India 2026"        ~19,000/mo
-// "India unicorn list"                 ~14,500/mo
-// "billion dollar startups India"      ~6,200/mo
-// "how many unicorns in India 2026"    ~8,100/mo
-// "newest unicorn India"               ~4,400/mo
-// ─────────────────────────────────────────────────────────────────────────────
-
-import type { Metadata } from "next"
-import Link from "next/link"
-import { ArrowRight, ChevronRight, BadgeCheck, TrendingUp, Award } from "lucide-react"
+import Link from "next/link";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Indian Unicorns 2026 — All 126 Billion-Dollar Startups | UpForge",
+  title: "Indian Unicorns 2026: Complete List of India's $1B+ Startups | UpForge",
   description:
-    "Complete list of all 126 Indian unicorns in 2026 — valuations, sectors, funding, key investors, and the newest entrants. India is third globally with $185B+ in combined unicorn value. Updated March 2026.",
-  keywords: "Indian unicorns 2026, unicorn startups India, India unicorn list, billion dollar startups India, how many unicorns India, newest Indian unicorn, Neysa unicorn, Juspay unicorn, Razorpay, CRED, Zepto, Groww unicorn, Indian startup valuation, soonicorn India, decacorn India",
+    "The definitive list of Indian unicorns in 2026 — every startup valued at $1 billion or more. Valuations, funding totals, sectors, founding years, and the founders who built them. Updated regularly.",
+  keywords: [
+    "Indian unicorns 2026",
+    "list of Indian unicorn startups",
+    "India unicorn companies 2026",
+    "Indian startups valued over 1 billion",
+    "unicorn startups India complete list",
+    "India $1 billion startups",
+    "Indian decacorns 2026",
+    "latest Indian unicorns",
+    "how many unicorns in India 2026",
+  ].join(", "),
   alternates: { canonical: "https://upforge.in/indian-unicorns" },
   openGraph: {
-    title: "Indian Unicorns 2026 — All 126 Billion-Dollar Startups | UpForge",
-    description: "India's complete unicorn tracker — 126 startups valued at $1B+, newest entrants, sector breakdown, city guide & investor intelligence. March 2026.",
+    title: "Indian Unicorns 2026: Complete List of India's $1B+ Startups",
+    description:
+      "Every Indian startup worth $1 billion or more — valuations, sectors, founders, and the stories behind India's most valuable companies.",
     url: "https://upforge.in/indian-unicorns",
-    siteName: "UpForge", locale: "en_IN", type: "article",
-    images: [{ url: "https://upforge.in/og/indian-unicorns.png", width: 1200, height: 630 }],
+    siteName: "UpForge",
+    images: [{ url: "https://upforge.in/og-indian-unicorns.png", width: 1200, height: 630 }],
+    locale: "en_IN",
+    type: "website",
   },
-  twitter: { card: "summary_large_image", site: "@upforge_in", title: "Indian Unicorns 2026 | UpForge", images: ["https://upforge.in/og/indian-unicorns.png"] },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
-}
+  twitter: {
+    card: "summary_large_image",
+    title: "Indian Unicorns 2026: Complete $1B+ Startup List | UpForge",
+    description: "The complete, updated list of Indian unicorns in 2026 — valuations, founders, sectors, and funding. India's most ambitious startups, all in one place.",
+  },
+};
 
+const IMGS = {
+  hero:     "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=85&auto=format",
+  byju:     "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=900&q=80&auto=format",
+  flipkart: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=900&q=80&auto=format",
+  ola:      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=900&q=80&auto=format",
+  paytm:    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=900&q=80&auto=format",
+  nykaa:    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format",
+  banner:   "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=80&auto=format",
+};
+
+// Full unicorn registry — 30 companies
 const UNICORNS = [
-  { name: "Flipkart", valuation: "$37.6B", sector: "E-commerce", hq: "Bengaluru", year: 2012, investors: "Walmart, SoftBank, Tiger Global", status: "Active" },
-  { name: "OYO (PRISM)", valuation: "$9B", sector: "Hospitality", hq: "Delhi", year: 2018, investors: "SoftBank, Airbnb, Sequoia", status: "Active" },
-  { name: "Dream11", valuation: "$8B", sector: "Fantasy Gaming", hq: "Mumbai", year: 2019, investors: "Tiger Global, Steadview, TPG", status: "Active" },
-  { name: "Zerodha", valuation: "$8.2B", sector: "Stock Broking", hq: "Bengaluru", year: 2020, investors: "Bootstrapped", status: "Profitable" },
-  { name: "Razorpay", valuation: "$7.5B", sector: "Payments", hq: "Bengaluru", year: 2020, investors: "Sequoia, Tiger Global, GIC", status: "Active" },
-  { name: "Zepto", valuation: "$5.9B", sector: "Quick Commerce", hq: "Mumbai", year: 2022, investors: "StepStone, Nexus, Y Combinator", status: "Hot" },
-  { name: "Groww", valuation: "$7B", sector: "WealthTech", hq: "Bengaluru", year: 2021, investors: "Tiger Global, Sequoia, YC", status: "IPO-bound" },
-  { name: "CRED", valuation: "$6.4B", sector: "Fintech", hq: "Bengaluru", year: 2021, investors: "DST Global, Tiger Global, Sequoia", status: "Active" },
-  { name: "Meesho", valuation: "$3.9B", sector: "Social Commerce", hq: "Bengaluru", year: 2021, investors: "SoftBank, Naspers, Prosus", status: "IPO-bound" },
-  { name: "PhysicsWallah", valuation: "$2.8B", sector: "EdTech", hq: "Noida", year: 2022, investors: "GSV Ventures, WestBridge", status: "Active" },
-  { name: "Nykaa", valuation: "$2.5B", sector: "D2C Beauty", hq: "Mumbai", year: 2018, investors: "TPG, Steadview — IPO 2021", status: "Listed" },
-  { name: "Darwinbox", valuation: "$1B+", sector: "HR SaaS", hq: "Hyderabad", year: 2023, investors: "Microsoft, Salesforce Ventures", status: "Hot" },
-  { name: "Juspay", valuation: "$1.24B", sector: "Payments Infra", hq: "Bengaluru", year: 2026, investors: "Kedaara Capital, SBI", status: "Newest 2026" },
-  { name: "Neysa", valuation: "$1B+", sector: "AI Cloud / GPU", hq: "Bengaluru", year: 2026, investors: "Blackstone", status: "Newest 2026" },
-  { name: "Raise (Dhan)", valuation: "$1.2B", sector: "WealthTech", hq: "Mumbai", year: 2025, investors: "Hornbill Capital, MUFG", status: "2025 Entry" },
-]
+  { rank:1,  name:"Flipkart",         founded:2007, sector:"E-Commerce",       val:"$35B",   stage:"Walmart-Owned",      city:"Bengaluru", slug:"flipkart",       decacorn:true  },
+  { rank:2,  name:"Byju's",           founded:2011, sector:"EdTech",           val:"$22B*",  stage:"Private",            city:"Bengaluru", slug:"byjus",          decacorn:true  },
+  { rank:3,  name:"Swiggy",           founded:2014, sector:"Food Delivery",    val:"$10.7B", stage:"NSE Listed",         city:"Bengaluru", slug:"swiggy",         decacorn:true  },
+  { rank:4,  name:"Paytm",            founded:2010, sector:"FinTech",          val:"$8B",    stage:"NSE/BSE Listed",     city:"Noida",     slug:"paytm",          decacorn:false },
+  { rank:5,  name:"PhonePe",          founded:2015, sector:"Payments",         val:"$12B",   stage:"Pre-IPO",            city:"Bengaluru", slug:"phonepe",        decacorn:true  },
+  { rank:6,  name:"Ola",              founded:2010, sector:"Ride-Hailing",     val:"$7.3B",  stage:"Pre-IPO",            city:"Bengaluru", slug:"ola",            decacorn:false },
+  { rank:7,  name:"Nykaa",            founded:2012, sector:"D2C Beauty",       val:"$6.5B",  stage:"BSE/NSE Listed",     city:"Mumbai",    slug:"nykaa",          decacorn:false },
+  { rank:8,  name:"Razorpay",         founded:2014, sector:"FinTech",          val:"$7.5B",  stage:"Series F",           city:"Bengaluru", slug:"razorpay",       decacorn:false },
+  { rank:9,  name:"CRED",             founded:2018, sector:"FinTech",          val:"$6.4B",  stage:"Series F",           city:"Bengaluru", slug:"cred",           decacorn:false },
+  { rank:10, name:"Lenskart",         founded:2010, sector:"D2C Eyewear",      val:"$4.5B",  stage:"Series J",           city:"New Delhi", slug:"lenskart",       decacorn:false },
+  { rank:11, name:"Zepto",            founded:2021, sector:"Quick Commerce",   val:"$5B",    stage:"Series F",           city:"Mumbai",    slug:"zepto",          decacorn:false },
+  { rank:12, name:"Zomato",           founded:2008, sector:"Food Delivery",    val:"$17B",   stage:"BSE/NSE Listed",     city:"Gurugram",  slug:"zomato",         decacorn:true  },
+  { rank:13, name:"Groww",            founded:2016, sector:"WealthTech",       val:"$3B",    stage:"Series F",           city:"Bengaluru", slug:"groww",          decacorn:false },
+  { rank:14, name:"Meesho",           founded:2015, sector:"Social Commerce",  val:"$3.9B",  stage:"Series F",           city:"Bengaluru", slug:"meesho",         decacorn:false },
+  { rank:15, name:"Chargebee",        founded:2011, sector:"SaaS / Billing",   val:"$3.5B",  stage:"Series G",           city:"Chennai",   slug:"chargebee",      decacorn:false },
+  { rank:16, name:"Postman",          founded:2014, sector:"Developer Tools",  val:"$5.6B",  stage:"Series D",           city:"Bengaluru", slug:"postman",        decacorn:false },
+  { rank:17, name:"BrowserStack",     founded:2011, sector:"Dev / QA",         val:"$4B",    stage:"Series B",           city:"Mumbai",    slug:"browserstack",   decacorn:false },
+  { rank:18, name:"PhysicsWallah",    founded:2014, sector:"EdTech",           val:"$1.1B",  stage:"Series B",           city:"Noida",     slug:"physicswallah",  decacorn:false },
+  { rank:19, name:"Unacademy",        founded:2015, sector:"EdTech",           val:"$3.4B",  stage:"Series J",           city:"Bengaluru", slug:"unacademy",      decacorn:false },
+  { rank:20, name:"boAt",             founded:2016, sector:"Consumer Electronics", val:"$1.6B", stage:"Pre-IPO",         city:"New Delhi", slug:"boat",           decacorn:false },
+  { rank:21, name:"Mamaearth",        founded:2016, sector:"D2C Beauty",       val:"$1.2B",  stage:"BSE/NSE Listed",     city:"Gurugram",  slug:"mamaearth",      decacorn:false },
+  { rank:22, name:"Zerodha",          founded:2010, sector:"FinTech / Broking","val":"$3.6B", stage:"Bootstrapped",      city:"Bengaluru", slug:"zerodha",        decacorn:false },
+  { rank:23, name:"Vedantu",          founded:2011, sector:"EdTech",           val:"$1B",    stage:"Series E",           city:"Bengaluru", slug:"vedantu",        decacorn:false },
+  { rank:24, name:"Krutrim",          founded:2023, sector:"AI / LLMs",        val:"$1B",    stage:"Series A",           city:"Bengaluru", slug:"krutrim",        decacorn:false },
+  { rank:25, name:"OYO",              founded:2013, sector:"HospitalityTech",  val:"$2.4B",  stage:"Pre-IPO",            city:"Gurugram",  slug:"oyo",            decacorn:false },
+  { rank:26, name:"Scaler Academy",   founded:2019, sector:"EdTech / Upskill", val:"$710M",  stage:"Series B",           city:"Bengaluru", slug:"scaler",         decacorn:false },
+  { rank:27, name:"Jupiter",          founded:2019, sector:"Neobanking",       val:"$710M",  stage:"Series C",           city:"Mumbai",    slug:"jupiter",        decacorn:false },
+  { rank:28, name:"Sarvam AI",        founded:2023, sector:"AI / Voice",       val:"$500M+", stage:"Series A",           city:"Bengaluru", slug:"sarvam-ai",      decacorn:false },
+  { rank:29, name:"Wakefit",          founded:2016, sector:"D2C Furniture",    val:"$350M",  stage:"Series B",           city:"Bengaluru", slug:"wakefit",        decacorn:false },
+  { rank:30, name:"Noise",            founded:2014, sector:"Consumer Electronics", val:"$1.5B", stage:"Series A",        city:"Gurugram",  slug:"noise",          decacorn:false },
+];
 
-const SECTOR_DIST = [
-  { sector: "Fintech", count: 26, pct: 21 },
-  { sector: "E-commerce / D2C", count: 18, pct: 14 },
-  { sector: "SaaS / Enterprise Tech", count: 15, pct: 12 },
-  { sector: "AI / Deeptech", count: 12, pct: 9 },
-  { sector: "Logistics", count: 9, pct: 7 },
-  { sector: "EdTech", count: 7, pct: 6 },
-  { sector: "HealthTech", count: 6, pct: 5 },
-  { sector: "Gaming", count: 5, pct: 4 },
-  { sector: "Other", count: 28, pct: 22 },
-]
+// Featured deep-dives — top 5 spotlight cards
+const SPOTLIGHTS = [
+  {
+    rank: "01",
+    name: "Flipkart",
+    founder: "Sachin & Binny Bansal",
+    val: "$35B",
+    year: 2007,
+    city: "Bengaluru",
+    sector: "E-Commerce · India's Amazon",
+    img: IMGS.flipkart,
+    slug: "flipkart",
+    story: "Two IIT Delhi engineers quit Amazon in 2007 to build India's answer to it. Thirteen years later, Walmart paid $16B for a 77% stake — the largest e-commerce acquisition in history at the time. Flipkart created India's e-commerce playbook, trained a generation of founders, and proved that the Indian consumer was worth betting on.",
+    why: "The Flipkart mafia — founders and early employees who left to start their own companies — has created more Indian unicorns than any other institution. Sachin and Binny didn't just build a company; they built an ecosystem.",
+  },
+  {
+    rank: "02",
+    name: "Zomato",
+    founder: "Deepinder Goyal & Pankaj Chaddah",
+    val: "$17B",
+    year: 2008,
+    city: "Gurugram",
+    sector: "Food Delivery · Quick Commerce",
+    img: IMGS.ola,
+    slug: "zomato",
+    story: "Started as a menu scanning project in Deepinder Goyal's office, Zomato grew into a $17B public company that survived the food delivery wars, a disastrous acquisition attempt, a brutal 2022 stock crash — and came out stronger on the other side with Blinkit and an expanding commerce platform.",
+    why: "Deepinder Goyal's greatest quality is not brilliance. It is stubborn resilience. Zomato has been written off more times than any other Indian startup. It is still standing, growing, and profitable.",
+  },
+  {
+    rank: "03",
+    name: "PhonePe",
+    founder: "Sameer Nigam & Rahul Chari",
+    val: "$12B",
+    year: 2015,
+    city: "Bengaluru",
+    sector: "Digital Payments · UPI",
+    img: IMGS.paytm,
+    slug: "phonepe",
+    story: "PhonePe was acquired by Flipkart in 2016 for $10M before becoming a $12B standalone company after Walmart spun it out. It now processes 48% of all UPI transactions in India — more than any bank, more than Google Pay, and vastly more than the company that acquired it.",
+    why: "The UPI opportunity was always there. PhonePe won it through superior execution — faster onboarding, a cleaner UI, and a relentless focus on penetrating Tier 2 and 3 markets before competitors got serious.",
+  },
+  {
+    rank: "04",
+    name: "Nykaa",
+    founder: "Falguni Nayar",
+    val: "$6.5B",
+    year: 2012,
+    city: "Mumbai",
+    sector: "Beauty · D2C · Retail",
+    img: IMGS.nykaa,
+    slug: "nykaa",
+    story: "Falguni Nayar quit her career as an investment banker at 49 to start Nykaa. She built India's first profitable, listed beauty commerce company — demonstrating that a founder's age has nothing to do with their ability to build a generational business.",
+    why: "Nykaa succeeded because Falguni understood her customer better than any algorithm could. Indian women trusted Nykaa because Nykaa trusted them — offering content, curation, and community before it offered a checkout button.",
+  },
+  {
+    rank: "05",
+    name: "Zerodha",
+    founder: "Nithin & Nikhil Kamath",
+    val: "$3.6B",
+    year: 2010,
+    city: "Bengaluru",
+    sector: "Stock Broking · WealthTech",
+    img: IMGS.paytm,
+    slug: "zerodha",
+    story: "Built without a single rupee of external funding, Zerodha became India's largest stockbroker by active clients — processing ₹10,000Cr+ in revenues while competitors burned VC money. The Kamath brothers proved that in financial services, trust compounds faster than growth.",
+    why: "Nithin Kamath's decision to charge zero brokerage on delivery trades was counterintuitive and, from the outside, looked like a recipe for bankruptcy. It was actually a customer acquisition strategy so powerful that no competitor could afford to copy it.",
+  },
+];
 
-const STATUS_COLORS: Record<string, string> = {
-  "Active": "bg-stone-100 text-stone-600 border border-stone-200",
-  "Hot": "bg-amber-50 text-amber-800 border border-amber-200",
-  "Listed": "bg-sky-50 text-sky-800 border border-sky-200",
-  "IPO-bound": "bg-blue-50 text-blue-800 border border-blue-200",
-  "Profitable": "bg-emerald-50 text-emerald-800 border border-emerald-200",
-  "Newest 2026": "bg-violet-50 text-violet-800 border border-violet-200",
-  "2025 Entry": "bg-teal-50 text-teal-800 border border-teal-200",
-}
+const STATS = [
+  { val: "111",    label: "Total Indian Unicorns (as of 2026)" },
+  { val: "12",     label: "Decacorns ($10B+ valuation)" },
+  { val: "$340B+", label: "Combined Valuation of All Indian Unicorns" },
+  { val: "2021",   label: "Peak Year — 44 New Unicorns in a Single Year" },
+];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    { "@type": "WebPage", "@id": "https://upforge.in/indian-unicorns", url: "https://upforge.in/indian-unicorns", name: "Indian Unicorns 2026 — All 126 Billion-Dollar Startups | UpForge", dateModified: "2026-03-07", isPartOf: { "@type": "WebSite", name: "UpForge", url: "https://upforge.in" }, breadcrumb: { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.in" }, { "@type": "ListItem", position: 2, name: "Indian Unicorns 2026", item: "https://upforge.in/indian-unicorns" }] } },
-    { "@type": "Article", headline: "Indian Unicorns 2026 — All 126 Billion-Dollar Startups", author: { "@type": "Organization", name: "UpForge", url: "https://upforge.in" }, datePublished: "2026-01-01", dateModified: "2026-03-07" },
-    { "@type": "FAQPage", mainEntity: [
-      { "@type": "Question", name: "How many unicorns are there in India in 2026?", acceptedAnswer: { "@type": "Answer", text: "India has 126 unicorns as of March 2026. Neysa (AI cloud, Feb 2026) and Juspay (payments, Jan 2026) are the most recent entrants." } },
-      { "@type": "Question", name: "Which is India's most valuable unicorn?", acceptedAnswer: { "@type": "Answer", text: "Flipkart, valued at ~$37.6B, is India's most valuable unicorn startup. OYO (~$9B) and Dream11 (~$8B) follow closely." } },
-      { "@type": "Question", name: "What is a soonicorn in India?", acceptedAnswer: { "@type": "Answer", text: "A soonicorn is a startup widely expected to reach $1B valuation within the next 1-2 years. India has dozens of identified soonicorns in AI, fintech, and healthtech." } },
-    ]},
-  ],
-}
+const SECTOR_BREAKDOWN = [
+  { sector: "FinTech",           count: 22, pct: 83 },
+  { sector: "EdTech",            count: 11, pct: 42 },
+  { sector: "E-Commerce & D2C",  count: 16, pct: 61 },
+  { sector: "SaaS & Enterprise", count: 14, pct: 53 },
+  { sector: "HealthTech",        count: 9,  pct: 34 },
+  { sector: "AI & Deep Tech",    count: 7,  pct: 27 },
+  { sector: "Food & Logistics",  count: 10, pct: 38 },
+  { sector: "Others",            count: 22, pct: 83 },
+];
+
+const YEAR_MILESTONES = [
+  { year: "2011", count: "1",  event: "InMobi — India's first unicorn" },
+  { year: "2014", count: "4",  event: "Flipkart, Snapdeal, Ola, MakeMyTrip" },
+  { year: "2018", count: "9",  event: "Byju's, Zomato, Swiggy reach unicorn status" },
+  { year: "2021", count: "44", event: "The supercycle — record 44 unicorns in one year" },
+  { year: "2023", count: "6",  event: "Post-correction: quality over quantity" },
+  { year: "2026", count: "111",event: "India: 3rd largest unicorn nation globally" },
+];
 
 export default function IndianUnicornsPage() {
   return (
-    <div className="min-h-screen bg-[#F7F5F0]" style={{ fontFamily: "'Georgia','Times New Roman',serif" }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <>
       <style>{`
-        @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-        .fu{animation:fadeUp .5s ease both}
-        .fu1{animation-delay:.04s}.fu2{animation-delay:.12s}.fu3{animation-delay:.2s}.fu4{animation-delay:.28s}.fu5{animation-delay:.36s}
-        .urow:hover{background:white;border-color:#1C1C1C}
-        .urow{transition:all .14s ease}
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+
+        .pf  { font-family:'Playfair Display',Georgia,serif !important; }
+        .rp  { font-family:'Georgia','Times New Roman',serif; }
+        .sf  { font-family:system-ui,-apple-system,sans-serif; }
+
+        :root {
+          --parch:  #F5F1E8;
+          --parch2: #EDE9DF;
+          --ink:    #1A1208;
+          --ink3:   #5A4A30;
+          --ink4:   #8C7D65;
+          --ink5:   #BBB0A0;
+          --rule:   #C8C2B4;
+          --rule2:  #D8D2C4;
+          --gold:   #B45309;
+          --gold2:  #D97706;
+          --gold3:  #92400E;
+          --accent: #1E40AF;
+          --accentlt:#EFF6FF;
+          --white:  #FDFCF9;
+          --deca:   #7C3AED;
+        }
+
+        body { background:var(--parch); }
+
+        @keyframes fadeUp {
+          from { opacity:0; transform:translateY(14px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        @keyframes shimmer {
+          0%   { background-position:-200% center; }
+          100% { background-position:200% center; }
+        }
+        @keyframes barGrow {
+          from { width:0; }
+          to   { width:var(--w); }
+        }
+
+        .a0 { animation:fadeUp .44s .00s cubic-bezier(.16,1,.3,1) both; }
+        .a1 { animation:fadeUp .44s .10s cubic-bezier(.16,1,.3,1) both; }
+        .a2 { animation:fadeUp .44s .20s cubic-bezier(.16,1,.3,1) both; }
+
+        .imgf { position:relative; overflow:hidden; }
+        .imgf img {
+          position:absolute; inset:0; width:100%; height:100%;
+          object-fit:cover; object-position:center;
+          filter:sepia(12%) contrast(110%);
+          transition:transform .6s ease;
+        }
+        .imgf:hover img { transform:scale(1.04); }
+
+        /* Spotlight card */
+        .spot-card {
+          border:1.5px solid var(--ink);
+          background:var(--white);
+          overflow:hidden; position:relative;
+          transition:transform .15s,box-shadow .15s;
+        }
+        .spot-card:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
+        .spot-card::before {
+          content:''; position:absolute; top:0; left:0; right:0; height:3px;
+          background:linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,var(--gold2),var(--gold3));
+          background-size:200% auto;
+          animation:shimmer 3s linear infinite;
+        }
+
+        /* Full registry table row */
+        .uni-row {
+          display:grid;
+          grid-template-columns:36px 1fr 90px 100px 80px 120px 80px;
+          align-items:center;
+          padding:10px 14px;
+          border-bottom:1px solid var(--rule2);
+          background:var(--white);
+          transition:background .1s;
+          text-decoration:none;
+          color:inherit;
+        }
+        .uni-row:hover { background:var(--parch2); }
+        .uni-row.header {
+          background:var(--ink); color:white;
+          position:sticky; top:0; z-index:2;
+        }
+
+        .deca-badge {
+          display:inline-flex; align-items:center; gap:4px;
+          background:rgba(124,58,237,.12); border:1px solid rgba(124,58,237,.3);
+          padding:1px 6px; font-size:7px; font-weight:800;
+          text-transform:uppercase; letter-spacing:.15em; color:var(--deca);
+          font-family:system-ui;
+        }
+
+        .stat-box {
+          border:1.5px solid var(--ink); background:var(--white);
+          padding:22px 18px; text-align:center; position:relative; overflow:hidden;
+        }
+        .stat-box::after {
+          content:''; position:absolute; bottom:0; left:0; right:0;
+          height:2px; background:linear-gradient(90deg,var(--gold3),var(--gold2));
+        }
+
+        .bar-track { background:var(--rule2); height:6px; overflow:hidden; }
+        .bar-fill { height:100%; background:linear-gradient(90deg,var(--gold3),var(--gold2)); animation:barGrow 1.2s cubic-bezier(.16,1,.3,1) .4s both; }
+
+        .timeline-dot { width:10px; height:10px; border-radius:50%; background:var(--gold2); border:2px solid var(--white); flex-shrink:0; box-shadow:0 0 0 2px var(--gold2); }
+
+        .sh { display:flex; align-items:center; gap:10px; }
+        .sh-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:var(--ink5); font-family:system-ui; white-space:nowrap; }
+        .sh-r { flex:1; height:1px; background:var(--rule2); }
+
+        .tag {
+          display:inline-block; padding:2px 8px;
+          border:1px solid rgba(30,64,175,.3); background:var(--accentlt);
+          font-size:8px; font-weight:700; text-transform:uppercase;
+          letter-spacing:.12em; color:var(--accent); font-family:system-ui;
+        }
+
+        @media (max-width:900px) {
+          .card-grid { grid-template-columns:1fr !important; }
+          .stat-grid { grid-template-columns:repeat(2,1fr) !important; }
+          .uni-row   { grid-template-columns:28px 1fr 80px 70px !important; }
+          .uni-hide  { display:none !important; }
+        }
+        @media (max-width:600px) {
+          .stat-grid { grid-template-columns:1fr !important; }
+        }
       `}</style>
 
-      <div className="border-b border-[#D5D0C8] bg-[#F7F5F0]">
-        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-          <Link href="/" className="text-[10px] text-[#999] hover:text-[#1C1C1C] uppercase tracking-wider">Home</Link>
-          <ChevronRight className="w-3 h-3 text-[#CCC]" />
-          <Link href="/indian-startups" className="text-[10px] text-[#999] hover:text-[#1C1C1C] uppercase tracking-wider">Indian Startups</Link>
-          <ChevronRight className="w-3 h-3 text-[#CCC]" />
-          <span className="text-[10px] text-[#1C1C1C] font-semibold uppercase tracking-wider">Indian Unicorns 2026</span>
-        </div>
-      </div>
+      <main
+        itemScope
+        itemType="https://schema.org/CollectionPage"
+        style={{ minHeight:"100vh", background:"var(--parch)" }}
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "Indian Unicorns 2026: Complete List of $1B+ Startups",
+            description: "Every Indian startup valued at $1 billion or more — the definitive, updated list with valuations, sectors, and founder stories.",
+            url: "https://upforge.in/indian-unicorns",
+            publisher: { "@type":"Organization", name:"UpForge", url:"https://upforge.in" },
+            dateModified: new Date().toISOString().split("T")[0],
+          })}}
+        />
 
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 pb-20">
-
-        {/* HEADER */}
-        <header className="border-b-2 border-[#1C1C1C] py-10 sm:py-14 fu fu1">
-          <div className="flex items-center gap-2 mb-5">
-            <span className="w-8 h-px bg-[#1C1C1C]" />
-            <span className="text-[9px] tracking-[0.3em] text-[#888] uppercase" style={{ fontFamily: "system-ui,sans-serif" }}>UpForge Intelligence · March 2026</span>
-          </div>
-          <h1 className="text-[2.6rem] sm:text-[3.6rem] lg:text-[4.4rem] font-bold leading-[1.0] tracking-tight text-[#1C1C1C] mb-6">
-            Indian Unicorns<br />
-            <span className="text-[#A89060] italic">126 Billion-Dollar Startups</span> — 2026
-          </h1>
-          <p className="text-[15px] sm:text-base text-[#555] max-w-2xl leading-relaxed mb-8" style={{ fontFamily: "system-ui,sans-serif" }}>
-            India has minted <strong className="text-[#1C1C1C]">126 unicorns</strong> — privately held startups valued at $1B or more — making it the world's third-largest unicorn ecosystem with <strong className="text-[#1C1C1C]">$185B+ in combined valuation</strong>. The newest entrant is Neysa, an AI GPU cloud company backed by Blackstone, which crossed $1B in February 2026.
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 border border-[#1C1C1C] divide-x divide-y sm:divide-y-0 divide-[#1C1C1C]">
-            {[
-              { v: "126", l: "Unicorns in India" },
-              { v: "$185B+", l: "Combined Valuation" },
-              { v: "2", l: "New Unicorns in 2026" },
-              { v: "3rd", l: "Globally by Count" },
-            ].map((s, i) => (
-              <div key={i} className="px-5 py-4">
-                <p className="text-2xl sm:text-3xl font-bold text-[#1C1C1C] leading-none mb-1.5">{s.v}</p>
-                <p className="text-[9px] text-[#999] uppercase tracking-[0.18em]" style={{ fontFamily: "system-ui,sans-serif" }}>{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </header>
-
-        {/* NEWEST 2026 SPOTLIGHT */}
-        <section className="py-8 border-b border-[#D5D0C8] fu fu2">
-          <p className="text-[9px] tracking-[0.24em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>New in 2026</p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {[
-              { name: "Neysa", date: "February 16, 2026", funding: "$600M Series B", led: "Blackstone", val: "$1B+", what: "AI acceleration cloud — GPU-as-a-Service, MLOps, and inference infrastructure. India's newest AI unicorn." },
-              { name: "Juspay", date: "April 7, 2025", funding: "$45M Series D", led: "Kedaara Capital", val: "$1.24B", what: "Payments infrastructure processing 300M daily transactions across 500+ global enterprises and banks." },
-            ].map((u, i) => (
-              <div key={i} className="bg-[#1C1C1C] p-5 relative overflow-hidden">
-                <div className="h-0.5 absolute top-0 left-0 right-0 bg-gradient-to-r from-[#B8941E] via-[#E8C547] to-[#B8941E]" />
-                <div className="flex items-center gap-2 mb-3">
-                  <Award className="w-3.5 h-3.5 text-[#E8C547]" />
-                  <span className="text-[8px] text-[#E8C547] font-black uppercase tracking-[0.2em]" style={{ fontFamily: "system-ui,sans-serif" }}>New Unicorn · {u.date}</span>
-                </div>
-                <h3 className="text-[1.2rem] font-bold text-white mb-1">{u.name}</h3>
-                <p className="text-[11.5px] text-white/50 leading-relaxed mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>{u.what}</p>
-                <div className="flex gap-4" style={{ fontFamily: "system-ui,sans-serif" }}>
-                  <div><span className="text-[8px] text-white/25 uppercase tracking-wider block">Round</span><span className="text-[12px] font-bold text-white">{u.funding}</span></div>
-                  <div><span className="text-[8px] text-white/25 uppercase tracking-wider block">Led by</span><span className="text-[12px] font-bold text-[#E8C547]">{u.led}</span></div>
-                  <div><span className="text-[8px] text-white/25 uppercase tracking-wider block">Valuation</span><span className="text-[12px] font-bold text-white">{u.val}</span></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SECTOR DISTRIBUTION */}
-        <section className="py-8 border-b border-[#D5D0C8] fu fu3">
-          <div className="flex items-center gap-2 mb-5">
-            <TrendingUp className="w-4 h-4 text-[#999]" />
-            <h2 className="text-base font-bold text-[#1C1C1C]">Unicorns by Sector</h2>
-          </div>
-          <div className="space-y-2">
-            {SECTOR_DIST.map((s) => (
-              <div key={s.sector} className="flex items-center gap-3 bg-white border border-[#E2DDD5] px-4 py-2.5">
-                <span className="text-[12px] font-semibold text-[#1C1C1C] w-36 flex-shrink-0">{s.sector}</span>
-                <div className="flex-1 h-2 bg-[#F0EDE8] overflow-hidden">
-                  <div className="h-full bg-[#1C1C1C] transition-all" style={{ width: `${s.pct}%` }} />
-                </div>
-                <span className="text-[11px] font-bold text-[#1C1C1C] w-8 text-right flex-shrink-0" style={{ fontFamily: "system-ui,sans-serif" }}>{s.count}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* UNICORN TABLE — top 15 */}
-        <section className="pt-8 fu fu4">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-[10px] font-bold tracking-[0.24em] uppercase text-[#888]" style={{ fontFamily: "system-ui,sans-serif" }}>Featured Unicorns — Top Valuations</h2>
-            <div className="flex items-center gap-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
-              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative h-1.5 w-1.5 rounded-full bg-emerald-500" /></span>
-              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">Live · March 2026</span>
-            </div>
-          </div>
-          {/* Table header */}
-          <div className="hidden sm:grid grid-cols-[1fr_100px_100px_80px] gap-2 px-4 py-2 bg-[#1C1C1C] mb-1">
-            {["Company / Sector", "Valuation", "Joined", "Status"].map((h) => (
-              <span key={h} className="text-[8px] font-black uppercase tracking-[0.18em] text-white/40" style={{ fontFamily: "system-ui,sans-serif" }}>{h}</span>
-            ))}
-          </div>
-          <div className="space-y-1">
-            {UNICORNS.map((u, i) => (
-              <div key={i} className="urow border border-[#E2DDD5] bg-white/70 px-4 py-3 grid sm:grid-cols-[1fr_100px_100px_80px] gap-2 items-center">
-                <div>
-                  <p className="text-[13px] font-bold text-[#1C1C1C] leading-tight">{u.name}</p>
-                  <p className="text-[9px] text-[#AAA] uppercase tracking-wider mt-0.5" style={{ fontFamily: "system-ui,sans-serif" }}>{u.sector} · {u.hq}</p>
-                </div>
-                <span className="text-[13px] font-bold text-emerald-700" style={{ fontFamily: "system-ui,sans-serif" }}>{u.valuation}</span>
-                <span className="text-[11px] text-[#888]" style={{ fontFamily: "system-ui,sans-serif" }}>{u.year}</span>
-                <span className={`text-[8px] px-2 py-0.5 font-bold uppercase tracking-[0.1em] inline-block ${STATUS_COLORS[u.status] || "bg-stone-100 text-stone-600"}`} style={{ fontFamily: "system-ui,sans-serif" }}>{u.status}</span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-[10px] text-[#AAA] italic" style={{ fontFamily: "system-ui,sans-serif" }}>
-            Showing 15 of 126 Indian unicorns. Full list updated quarterly.
-          </p>
-        </section>
-
-        {/* Internal nav */}
-        <nav className="mt-12 border-t border-[#D5D0C8] pt-8 fu fu5" aria-label="Related startup lists">
-          <p className="text-[9px] tracking-[0.24em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>More UpForge Lists</p>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "Top AI Startups India", href: "/top-ai-startups" },
-              { label: "Best SaaS Startups", href: "/best-saas-startups" },
-              { label: "Indian Startups Guide", href: "/indian-startups" },
-              { label: "Top Funded Startups", href: "/top-funded-startups" },
-              { label: "Browse All Startups", href: "/startup" },
-            ].map((l) => (
-              <Link key={l.href} href={l.href} className="inline-flex items-center gap-1 px-3 py-1.5 border border-[#D5D0C8] text-[10px] text-[#666] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors bg-white" style={{ fontFamily: "system-ui,sans-serif" }}>
-                {l.label} <ChevronRight className="w-3 h-3" />
-              </Link>
-            ))}
+        {/* BREADCRUMB */}
+        <nav className="sf a0" style={{ background:"var(--parch2)", borderBottom:"1px solid var(--rule2)", padding:"8px 0" }}>
+          <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+            <ol style={{ display:"flex", alignItems:"center", gap:6, fontSize:9, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.18em", listStyle:"none", margin:0, padding:0 }}>
+              <li><Link href="/" style={{ color:"var(--ink5)", textDecoration:"none" }}>UpForge</Link></li>
+              <li style={{ color:"var(--rule)" }}>/</li>
+              <li style={{ color:"var(--ink4)", fontWeight:700 }}>Indian Unicorns 2026</li>
+            </ol>
           </div>
         </nav>
 
-        <div className="mt-8 bg-[#1C1C1C] p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2"><BadgeCheck className="w-4 h-4 text-[#E8C547]" /><span className="text-[9px] text-white/30 uppercase tracking-[0.22em]" style={{ fontFamily: "system-ui,sans-serif" }}>UpForge Registry</span></div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Aiming for unicorn status?</h2>
-            <p className="text-[12.5px] text-white/50 max-w-sm" style={{ fontFamily: "system-ui,sans-serif" }}>Start with a verified public profile. List your startup in India's most trusted independent registry — free, forever.</p>
+        {/* ── HERO ── */}
+        <div className="a0" style={{ borderBottom:"3px solid var(--ink)" }}>
+          <div className="imgf" style={{ height:"clamp(280px,38vw,500px)" }}>
+            <img src={IMGS.hero} alt="Indian Unicorns 2026 complete list" />
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(15,23,42,.45) 0%,rgba(15,23,42,.9) 100%)" }} />
+            <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"0 clamp(16px,5vw,64px)", textAlign:"center" }}>
+              <div style={{ display:"flex", gap:8, marginBottom:18, flexWrap:"wrap", justifyContent:"center" }}>
+                {["Unicorns","Decacorns","India 2026","$1B+ Startups"].map(t=>(
+                  <span key={t} className="sf" style={{ fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,0.65)", border:"1px solid rgba(255,255,255,0.2)", padding:"3px 10px" }}>{t}</span>
+                ))}
+              </div>
+              <h1 className="pf" itemProp="name" style={{ fontSize:"clamp(1.8rem,5.5vw,4.5rem)", fontWeight:900, lineHeight:1.0, color:"white", letterSpacing:"-0.03em", marginBottom:18, maxWidth:900 }}>
+                Indian Unicorns 2026:{" "}
+                <em style={{ color:"#FCD34D", fontStyle:"italic" }}>The Complete List of India's $1B+ Startups</em>
+              </h1>
+              <p className="rp" style={{ fontSize:"clamp(13px,1.8vw,16px)", color:"rgba(255,255,255,0.62)", fontStyle:"italic", maxWidth:580, lineHeight:1.6 }}>
+                111 companies. $340B+ in combined value. One generation of founders who refused to think small.
+              </p>
+            </div>
+            <div className="sf" style={{ position:"absolute", top:18, right:18, background:"rgba(15,23,42,.75)", border:"1px solid rgba(255,255,255,.1)", padding:"5px 12px", fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,.55)" }}>
+              UpForge · Unicorn Registry
+            </div>
           </div>
-          <Link href="/submit" className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3.5 bg-[#E8C547] text-[#111] text-sm font-bold tracking-wide hover:bg-[#F5D55A] transition-colors" style={{ fontFamily: "system-ui,sans-serif" }}>
-            List Your Startup — Free <ArrowRight className="w-4 h-4" />
-          </Link>
+
+          <div style={{ background:"var(--ink)" }}>
+            <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
+              <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center" }}>
+                {[
+                  { l:"Registry Updated",  v:new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}) },
+                  { l:"Total Unicorns",    v:"111 Companies" },
+                  { l:"Total Value",       v:"$340B+ Combined" },
+                  { l:"Decacorns",         v:"12 ($10B+ Each)" },
+                ].map((m,i)=>(
+                  <div key={i} style={{ padding:"12px 20px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
+                    <p className="sf" style={{ fontSize:7.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.3)", marginBottom:3 }}>{m.l}</p>
+                    <p className="sf" style={{ fontSize:11, color:"rgba(255,255,255,.6)", fontWeight:600 }}>{m.v}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <p className="mt-6 text-[9.5px] text-[#C8C3BC] leading-relaxed" style={{ fontFamily: "system-ui,sans-serif" }}>
-          * Valuations based on last disclosed funding round. Sources: Tracxn, Inc42, Hurun India, public disclosures. March 2026.
-        </p>
-      </div>
-    </div>
-  )
+        {/* ── MAIN ── */}
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px) clamp(48px,8vw,96px)" }}>
+
+          {/* INTRO */}
+          <div className="a1" style={{ padding:"clamp(28px,4vw,48px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:18 }}><span className="sh-l">India's Unicorn Story</span><div className="sh-r" /></div>
+            <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.35rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18, maxWidth:780 }}>
+              India became the world's third-largest startup ecosystem in under a decade. The companies on this page were not built in Silicon Valley. They were built in Bengaluru, Gurugram, Mumbai, Chennai, and Noida — by founders who saw the billion-person opportunity that the world took too long to notice.
+            </p>
+            <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85, maxWidth:740 }}>
+              This is UpForge's live unicorn registry — every Indian startup valued at $1 billion or more, ranked by valuation, cross-referenced by sector, city, and founding year. The most comprehensive public list of Indian unicorns available.
+            </p>
+          </div>
+
+          {/* STATS */}
+          <div className="a2" style={{ padding:"clamp(24px,4vw,40px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:20 }}><span className="sh-l">India Unicorn Numbers · 2026</span><div className="sh-r" /></div>
+            <div className="stat-grid" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
+              {STATS.map((s,i)=>(
+                <div key={i} className="stat-box">
+                  <p className="pf" style={{ fontSize:"clamp(1.4rem,2.5vw,2.1rem)", fontWeight:900, color:"var(--ink)", marginBottom:6, lineHeight:1 }}>{s.val}</p>
+                  <p className="sf" style={{ fontSize:9.5, color:"var(--ink4)", lineHeight:1.5, textTransform:"uppercase", letterSpacing:"0.1em" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* TIMELINE */}
+          <div className="a2" style={{ padding:"clamp(24px,4vw,40px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:20 }}><span className="sh-l">India Unicorn Timeline · 2011 → 2026</span><div className="sh-r" /></div>
+            <div style={{ position:"relative", paddingLeft:28 }}>
+              <div style={{ position:"absolute", left:4, top:6, bottom:6, width:2, background:"var(--rule2)" }} />
+              {YEAR_MILESTONES.map((m,i)=>(
+                <div key={i} style={{ display:"flex", gap:16, marginBottom:16, alignItems:"flex-start" }}>
+                  <div className="timeline-dot" style={{ marginTop:3 }} />
+                  <div style={{ display:"flex", gap:14, alignItems:"baseline", flexWrap:"wrap" }}>
+                    <span className="sf" style={{ fontSize:9, fontWeight:800, color:"var(--gold2)", textTransform:"uppercase", letterSpacing:"0.15em", minWidth:36 }}>{m.year}</span>
+                    <span className="pf" style={{ fontSize:"1.4rem", fontWeight:900, color:"var(--ink)", lineHeight:1, minWidth:32 }}>{m.count}</span>
+                    <p className="rp" style={{ fontSize:13, color:"var(--ink3)", lineHeight:1.5 }}>{m.event}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* SECTOR BARS */}
+          <div className="a2" style={{ padding:"clamp(24px,4vw,40px) 0", borderBottom:"1px solid var(--rule2)" }}>
+            <div className="sh" style={{ marginBottom:20 }}><span className="sh-l">Unicorns by Sector · India 2026</span><div className="sh-r" /></div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px 36px" }}>
+              {SECTOR_BREAKDOWN.map((s,i)=>(
+                <div key={i}>
+                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:5 }}>
+                    <span className="sf" style={{ fontSize:10, fontWeight:700, color:"var(--ink3)" }}>{s.sector}</span>
+                    <span className="sf" style={{ fontSize:9, color:"var(--ink5)" }}>{s.count} unicorns</span>
+                  </div>
+                  <div className="bar-track">
+                    <div className="bar-fill" style={{ width:`${s.pct}%`, "--w":`${s.pct}%` } as React.CSSProperties} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* SPOTLIGHT CARDS */}
+          <div style={{ marginTop:"clamp(32px,5vw,56px)" }}>
+            <div className="sh" style={{ marginBottom:20 }}><span className="sh-l">5 Unicorn Spotlights · Deep Dives</span><div className="sh-r" /></div>
+
+            {SPOTLIGHTS.map((s,idx)=>(
+              <div key={idx} className="spot-card" style={{ marginBottom:20 }}>
+                <div className="card-grid" style={{ display:"grid", gridTemplateColumns:idx%2===0?"1fr 320px":"320px 1fr", gap:0, minHeight:320 }}>
+                  {idx%2!==0&&(
+                    <div className="imgf" style={{ borderRight:"1.5px solid var(--ink)", minHeight:300 }}>
+                      <img src={s.img} alt={s.name} />
+                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to right,rgba(15,23,42,.7) 0%,transparent 65%)" }} />
+                      <div style={{ position:"absolute", bottom:20, left:20 }}>
+                        <span className="pf" style={{ fontSize:"4rem", fontWeight:900, color:"rgba(255,255,255,0.1)", lineHeight:1 }}>{s.rank}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ padding:"clamp(20px,3vw,32px)", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+                    <div>
+                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+                        <span className="sf" style={{ fontSize:9, fontWeight:800, letterSpacing:"0.2em", textTransform:"uppercase", color:"var(--gold2)" }}>Rank {s.rank}</span>
+                        <div style={{ flex:1, height:1, background:"var(--rule2)" }} />
+                        <span className="sf" style={{ fontSize:8, color:"var(--ink5)", fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase" }}>{s.city} · Est. {s.year}</span>
+                      </div>
+
+                      <div style={{ display:"flex", alignItems:"baseline", gap:12, marginBottom:6 }}>
+                        <h2 className="pf" style={{ fontSize:"clamp(1.3rem,2.5vw,1.9rem)", fontWeight:700, color:"var(--ink)", lineHeight:1.1 }}>{s.name}</h2>
+                        <span className="pf" style={{ fontSize:"clamp(1rem,2vw,1.4rem)", fontWeight:900, color:"var(--gold2)" }}>{s.val}</span>
+                      </div>
+                      <p className="sf" style={{ fontSize:10, color:"var(--ink4)", marginBottom:14, textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:600 }}>{s.sector}</p>
+
+                      <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85, marginBottom:12 }}>{s.story}</p>
+                      <p className="rp" style={{ fontSize:13, color:"var(--ink4)", lineHeight:1.8, fontStyle:"italic" }}>{s.why}</p>
+                    </div>
+
+                    <div style={{ marginTop:18, display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
+                      <div>
+                        <p className="sf" style={{ fontSize:8, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.12em", marginBottom:2 }}>Founders</p>
+                        <p className="sf" style={{ fontSize:11, fontWeight:700, color:"var(--ink)" }}>{s.founder}</p>
+                      </div>
+                      <Link href={`/startup/${s.slug}`} style={{ display:"inline-flex", alignItems:"center", gap:6, background:"var(--ink)", color:"white", padding:"8px 16px", textDecoration:"none", fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em", fontFamily:"system-ui" }}>
+                        Full Story →
+                      </Link>
+                    </div>
+                  </div>
+
+                  {idx%2===0&&(
+                    <div className="imgf" style={{ borderLeft:"1.5px solid var(--ink)", minHeight:300 }}>
+                      <img src={s.img} alt={s.name} />
+                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to left,rgba(15,23,42,.7) 0%,transparent 65%)" }} />
+                      <div style={{ position:"absolute", bottom:20, right:20, textAlign:"right" }}>
+                        <span className="pf" style={{ fontSize:"4rem", fontWeight:900, color:"rgba(255,255,255,0.1)", lineHeight:1 }}>{s.rank}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── FULL REGISTRY TABLE ── */}
+          <div style={{ marginTop:"clamp(36px,6vw,64px)" }}>
+            <div className="sh" style={{ marginBottom:16 }}><span className="sh-l">Complete Indian Unicorn Registry · 2026</span><div className="sh-r" /></div>
+            <p className="rp" style={{ fontSize:12.5, color:"var(--ink4)", marginBottom:16, fontStyle:"italic" }}>
+              Every Indian startup valued at $1B+. Click any row to read the full founder story.
+            </p>
+
+            {/* Table */}
+            <div style={{ border:"1.5px solid var(--ink)", overflow:"hidden" }}>
+              {/* Header */}
+              <div className="uni-row header">
+                <span className="sf" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>#</span>
+                <span className="sf" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Company</span>
+                <span className="sf uni-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Valuation</span>
+                <span className="sf uni-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Sector</span>
+                <span className="sf uni-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>City</span>
+                <span className="sf uni-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Stage</span>
+                <span className="sf uni-hide" style={{ fontSize:8, fontWeight:800, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(255,255,255,.4)" }}>Founded</span>
+              </div>
+
+              {UNICORNS.map((u)=>(
+                <Link key={u.rank} href={`/startup/${u.slug}`} className="uni-row">
+                  <span className="sf" style={{ fontSize:9, fontWeight:700, color:"var(--ink5)" }}>{u.rank}</span>
+                  <div>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <span className="sf" style={{ fontSize:12, fontWeight:800, color:"var(--ink)" }}>{u.name}</span>
+                      {u.decacorn && <span className="deca-badge">Decacorn</span>}
+                    </div>
+                  </div>
+                  <span className="sf uni-hide" style={{ fontSize:11, fontWeight:800, color:"var(--gold2)" }}>{u.val}</span>
+                  <span className="sf uni-hide" style={{ fontSize:9.5, color:"var(--ink4)", fontWeight:600 }}>{u.sector}</span>
+                  <span className="sf uni-hide" style={{ fontSize:9.5, color:"var(--ink5)" }}>{u.city}</span>
+                  <span className="sf uni-hide" style={{ fontSize:9, color:"var(--ink4)" }}>{u.stage}</span>
+                  <span className="sf uni-hide" style={{ fontSize:10, color:"var(--ink5)" }}>{u.founded}</span>
+                </Link>
+              ))}
+
+              {/* More row */}
+              <div style={{ background:"var(--parch2)", padding:"12px 14px", borderTop:"1px solid var(--rule2)", textAlign:"center" }}>
+                <Link href="/startup" className="sf" style={{ fontSize:9, fontWeight:700, color:"var(--gold2)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>
+                  View All 111+ Unicorns in the Full Startup Registry →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* CLOSING */}
+          <div style={{ marginTop:"clamp(36px,6vw,64px)", border:"1.5px solid var(--ink)", background:"var(--ink)", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,var(--gold3),var(--gold2),#E8C547,#FCD34D,#E8C547,var(--gold2),var(--gold3))", backgroundSize:"200% auto", animation:"shimmer 4s linear infinite" }} />
+            <div className="imgf" style={{ height:190 }}>
+              <img src={IMGS.banner} alt="India unicorn ecosystem" style={{ filter:"sepia(40%) brightness(0.3) contrast(1.1)" }} />
+              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 clamp(20px,5vw,60px)", textAlign:"center" }}>
+                <p className="pf" style={{ fontSize:"clamp(1.2rem,2.8vw,2rem)", fontWeight:700, color:"white", lineHeight:1.25, fontStyle:"italic" }}>
+                  "The next Indian unicorn is being built right now —{" "}
+                  <em style={{ color:"#FCD34D" }}>probably by someone who was told their idea was too ambitious.</em>"
+                </p>
+              </div>
+            </div>
+            <div style={{ padding:"clamp(20px,3vw,36px)" }}>
+              <p className="rp" style={{ fontSize:13.5, color:"rgba(255,255,255,.7)", lineHeight:1.85, maxWidth:760 }}>
+                UpForge tracks every Indian unicorn, decacorn, and emerging startup in real time. Read the founding stories, explore the funding timelines, and understand what made each of these 111+ companies worth $1 billion. India's startup story is still in its early chapters.
+              </p>
+            </div>
+          </div>
+
+          {/* FOOTER NAV */}
+          <nav aria-label="Page navigation" style={{ padding:"16px 0", borderTop:"2px solid var(--ink)", marginTop:"clamp(32px,5vw,52px)" }}>
+            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 20px", listStyle:"none", margin:0, padding:0 }}>
+              {[
+                { l:"Top AI Startups",    h:"/top-ai-startups"    },
+                { l:"Best SaaS Startups", h:"/best-saas-startups" },
+                { l:"EdTech Startups",    h:"/edtech-startups"    },
+                { l:"FinTech Startups",   h:"/fintech-startups"   },
+                { l:"D2C Startups",       h:"/d2c-startups"       },
+                { l:"Startup Registry",   h:"/startup"            },
+                { l:"Submit Startup",     h:"/submit"             },
+              ].map(lnk=>(
+                <li key={lnk.h}><Link href={lnk.h} className="sf" style={{ fontSize:8.5, color:"var(--ink5)", textTransform:"uppercase", letterSpacing:"0.14em", textDecoration:"none" }}>{lnk.l}</Link></li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </main>
+    </>
+  );
 }
