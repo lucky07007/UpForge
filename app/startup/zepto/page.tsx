@@ -305,7 +305,7 @@ export default function ZeptoPage() {
               </p>
               <div className="relative w-full" style={{ paddingBottom: "56.25%", background: "#000" }}>
                 <iframe
-                  src="https://www.youtube.com/embed/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ"
+                  src="https://youtu.be/nR2jv-r55bg?si=9ic2LLvF2vJXqV0k"
                   title="Zepto — Aadit Palicha on Building India's Fastest Unicorn | UpForge"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -398,7 +398,7 @@ export default function ZeptoPage() {
               <div>
                 <p className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
                   style={{ color: accent, fontFamily: "system-ui,sans-serif" }}>Featured Watch</p>
-                <a href="https://youtu.be/l7pDuakyskI?si=zAxsfi7fsPWKKrrQ"
+                <a href="https://youtu.be/nR2jv-r55bg?si=9ic2LLvF2vJXqV0k"
                   target="_blank" rel="noopener noreferrer"
                   className="block relative group" aria-label="Watch Zepto founder interview on YouTube">
                   <img
