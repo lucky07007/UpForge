@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ClientLayout } from "@/components/client-layout"
+import Script from "next/script" // Import Script component
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,12 +23,12 @@ export const metadata: Metadata = {
   // Sabhi links ko 'www' par force karne ke liye
   metadataBase: new URL("https://www.upforge.in"),
 
-title: {
+  title: {
     default: "The Founder Chronicle | India's Startup Registry 2026",
     template: "%s | UpForge",
   },
 
- description: "Verified stories of India's top startup founders including Zepto, Zomato, and Zerodha. Explore the 2026 edition of The Founder Chronicle.",
+  description: "Verified stories of India's top startup founders including Zepto, Zomato, and Zerodha. Explore the 2026 edition of The Founder Chronicle.",
   keywords: [
     "Indian startup founders",
     "Indian entrepreneurs 2026",
@@ -151,6 +152,20 @@ export default function RootLayout({
       </head>
 
       <body className="bg-background text-foreground flex flex-col min-h-screen antialiased font-sans">
+        {/* Google Tag Added Below */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18011511989"
+          strategy="afterInteractive"
+        />
+        <Script id="google-tag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18011511989');
+          `}
+        </Script>
+
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
