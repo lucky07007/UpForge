@@ -35,13 +35,13 @@ export const metadata: Metadata = {
 
 const IMGS = {
   hero:      "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=85&auto=format",
-  flipkart:  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=900&q=80&auto=format",
-  zomato:    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=80&auto=format",
-  cred:      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=900&q=80&auto=format",
-  zerodha:   "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80&auto=format",
-  phonepe:   "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80&auto=format",
-  razorpay:  "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format",
-  nykaa:     "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format",
+  flipkart:  "https://seagm-media.seagmcdn.com/item_480/1033.png",
+  zomato:    "https://play-lh.googleusercontent.com/Zqv3j3gWCWrxuHW1VkRKNWso3beRsrwPCj58kG_Ile6iGGSf1YfkPYhKExXKY7_L0lU=w240-h480-rw",
+  cred:      "https://images.indianexpress.com/2021/10/cred-app-fb.jpg",
+  zerodha:   "https://media.assettype.com/freepressjournal/2024-08-23/ulynglaz/Untitled%20design%20-%202023-06-14T135717.704.jpg",
+  phonepe:   "https://etimg.etb2bimg.com/thumb/msid-113378266,width-1200,height-900,resizemode-4/.jpg",
+  razorpay:  "https://www.marcamoney.com/wp-content/uploads/2024/11/Razorpay-launches-Venture-Investment-Programme-in-partnership-with-Peak-XV-Partners-and-Lightspeed.jpg",
+  nykaa:     "https://shyamfuture.com/wp-content/uploads/2025/05/f056d677604d8b19d493e95dbab10fe3.jpg",
   closing:   "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=80&auto=format",
 };
 
@@ -300,11 +300,10 @@ export default function BlogUnicorns() {
             <div style={{ padding:"clamp(28px,4vw,48px) clamp(16px,3vw,40px) clamp(28px,4vw,48px) 0", borderRight:"1px solid var(--rule2)" }}>
               <div className="sh" style={{ marginBottom:18 }}><span className="sh-l">Introduction</span><div className="sh-r" /></div>
               <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.35rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18 }}>
-                India's 111 unicorns are not a list. They are an argument. An argument that the Indian market is real, Indian consumers are discerning, Indian talent is world-class, and Indian founders — when given the right infrastructure and the right amount of belief — can build companies that rival anything built anywhere.
+                India's 126 unicorns are not a list. They are an argument. An argument that the Indian market is real.
               </p>
               <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85 }}>
-                This article profiles seven of those companies in depth — not the fundraise numbers, not the PowerPoint milestones, but the actual founding stories: the insights that led to the companies, the decisions that made them what they are, and the lessons that every founder building right now can extract from them.
-              </p>
+                This article profiles seven of those companies in depth — not the fundraise numbers, not the PowerPoint milestones, but the actual founding stories.
             </div>
             <div style={{ padding:"clamp(24px,3vw,40px) 0 clamp(24px,3vw,40px) clamp(16px,3vw,32px)", minWidth:"clamp(200px,26vw,280px)" }}>
               <div className="sh" style={{ marginBottom:14 }}><span className="sh-l">7 Unicorn Stories</span><div className="sh-r" /></div>
