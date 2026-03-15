@@ -41,6 +41,7 @@ const IMGS = {
   talent:    "https://www.careercounsellingiicc.com/images/service/banner_1696336393.webp",
   future:    "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80&auto=format",
   closing:   "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=80&auto=format",
+  engine:    "https://storage.googleapis.com/referio-cms-hr/talent_engine_b2cd090fd3/talent_engine_b2cd090fd3.png",
 };
 
 const SECTIONS = [
@@ -109,7 +110,7 @@ The India Stack — UPI, Aadhaar, DigiLocker, ONDC, Account Aggregator — repre
     num: "06",
     title: "The Talent Engine",
     keyword: "India Startup Talent 2026",
-    img: IMGS.talent,
+    img: IMGS.engine,
     body: `India produces 1.5 million engineering graduates per year — more than any country on earth. The IIT system, NITs, BITS Pilani, and a network of state engineering colleges create a deep bench of technical talent that gives Indian startups a structural cost and capability advantage over competitors in the US, Europe, or Southeast Asia.
 
 Beyond raw engineering talent, India now has a maturing second generation of startup operators — people who joined Flipkart or Paytm in 2013, left in 2017 to join Series A companies, and are now founding their own businesses with playbooks built from direct experience. This is the Flipkart Mafia, the Paytm Mafia, the Razorpay Mafia — each generation of successful companies producing the founders of the next.
@@ -252,10 +253,9 @@ export default function BlogEcosystem() {
             <div style={{ padding:"clamp(28px,4vw,48px) clamp(16px,3vw,40px) clamp(28px,4vw,48px) 0", borderRight:"1px solid var(--rule2)" }}>
               <div className="sh" style={{ marginBottom:18 }}><span className="sh-l">Introduction</span><div className="sh-r" /></div>
               <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.35rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18 }}>
-                India's startup ecosystem in 2026 is not a story about a single company, a single founder, or a single moment. It is a story about a decade of structural change converging simultaneously — and creating the conditions for the most exciting entrepreneurial environment on earth.
-              </p>
+                India's startup ecosystem in 2026 is not a story about a single company, a single founder, or a single moment.
               <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85 }}>
-                This article covers everything you need to understand where India's startup ecosystem stands today, why it reached this point, and what the next decade looks like for the founders, investors, and companies building within it.
+                This article covers everything you need to understand where India's startup ecosystem stands today, why it reached this point, and what the next decade looks like for the founders.
               </p>
             </div>
             <div style={{ padding:"clamp(24px,3vw,40px) 0 clamp(24px,3vw,40px) clamp(16px,3vw,32px)", minWidth:"clamp(200px,26vw,280px)" }}>
