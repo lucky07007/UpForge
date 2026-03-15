@@ -37,8 +37,8 @@ interface PageProps {
   }>;
 }
 
-const FIRST_PAGE_SIZE = 23; // 3 featured (is_featured=true) + 20 grid
-const OTHER_PAGE_SIZE = 20;
+const FIRST_PAGE_SIZE = 18; // 3 featured (is_featured=true) + 20 grid
+const OTHER_PAGE_SIZE = 15;
 
 const JSON_LD = {
   "@context": "https://schema.org",
