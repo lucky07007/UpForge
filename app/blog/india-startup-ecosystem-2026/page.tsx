@@ -254,6 +254,7 @@ export default function BlogEcosystem() {
               <div className="sh" style={{ marginBottom:18 }}><span className="sh-l">Introduction</span><div className="sh-r" /></div>
               <p className="pf" itemProp="description" style={{ fontSize:"clamp(1.05rem,2.2vw,1.35rem)", fontWeight:400, lineHeight:1.72, color:"var(--ink)", marginBottom:18 }}>
                 India's startup ecosystem in 2026 is not a story about a single company, a single founder, or a single moment.
+              </p>
               <p className="rp" style={{ fontSize:13.5, color:"var(--ink3)", lineHeight:1.85 }}>
                 This article covers everything you need to understand where India's startup ecosystem stands today, why it reached this point, and what the next decade looks like for the founders.
               </p>
