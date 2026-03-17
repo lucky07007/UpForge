@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createClient } from "@/lib/supabase/server"
+import { createReadClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -36,8 +37,23 @@ interface StartupRow {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DATA HELPERS — all use await createClient()
+// DATA HELPERS
+//
+// IMPORTANT: Two different clients are used intentionally:
+//   createReadClient() — no cookies(), safe at build time (generateStaticParams)
+//   createClient()     — uses cookies(), only safe inside request scope (page/metadata)
 // ─────────────────────────────────────────────────────────────────────────────
+
+/** Build-time safe: uses createReadClient (no cookies dependency) */
+async function getAllDbCategoriesStatic(): Promise<string[]> {
+  const supabase = createReadClient()
+  const { data } = await supabase
+    .from("startups").select("category")
+    .eq("status", "approved").not("category", "is", null)
+  return [...new Set((data ?? []).map((r) => r.category as string))].filter(Boolean)
+}
+
+/** Request-time: uses createClient (cookies available) */
 async function getAllDbCategories(): Promise<string[]> {
   const supabase = await createClient()
   const { data } = await supabase
@@ -59,10 +75,11 @@ async function getCategoryStartups(dbCategory: string, page: number) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// generateStaticParams
+// generateStaticParams — runs at BUILD TIME, must use createReadClient
 // ─────────────────────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
-  const dbCats = await getAllDbCategories()
+  // Uses getAllDbCategoriesStatic() — createReadClient, no cookies() call
+  const dbCats = await getAllDbCategoriesStatic()
   const seen = new Set<string>()
   return dbCats.reduce<{ category:string }[]>((acc, cat) => {
     const slug = categoryToSlug(cat)
