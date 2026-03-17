@@ -18,6 +18,7 @@
 
 import { createClient }     from "@/lib/supabase/server"
 import { createReadClient } from "@/lib/supabase/server"
+import { getSectorHero }    from "@/lib/sector-heroes"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -142,6 +143,7 @@ export default async function CategoryPage({params,searchParams}:PageProps) {
   const description = generateCategoryDescription(dbCat,total)
   const longDesc    = generateCategoryLongDescription(dbCat,total)
   const color       = accent(slug)
+  const hero        = getSectorHero(slug)
   const url         = `https://www.upforge.in/startups/${slug}`
   const catSlug     = (c:string) => categoryToSlug(c)
 
@@ -345,9 +347,17 @@ export default async function CategoryPage({params,searchParams}:PageProps) {
         </ol>
       </div>
 
-      {/* HERO — centered editorial */}
-      <header className="cp-hero a0">
+      {/* HERO — centered editorial with unique India-themed sector illustration */}
+      <header className="cp-hero a0" style={{background:hero.bgColor}}>
         <div className="cp-hero-accent" style={{background:color}} />
+
+        {/* India-themed sector illustration — unique per sector */}
+        <div
+          aria-hidden="true"
+          style={{overflow:"hidden",borderBottom:`1px solid ${color}22`,position:"relative"}}
+          dangerouslySetInnerHTML={{__html:hero.svg}}
+        />
+
         <div className="cp-hero-inner">
           <div className="cp-hero-tag">
             <span className="cp-hero-pill" style={{background:color}}>{displayName}</span>
