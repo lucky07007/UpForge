@@ -1,20 +1,15 @@
 // app/startups/[category]/page.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Programmatic SEO category page — FULLY DYNAMIC + NEWSPAPER AESTHETIC
-// Uses await createClient() — same pattern as about page (fixes 0 data bug)
-// Design: #F3EFE5 warm, Playfair Display, golden accents, sepia borders
-// ─────────────────────────────────────────────────────────────────────────────
+// Design: Founder Chronicle editorial · cream/ink/saffron · Playfair + EB Garamond
+// generateStaticParams → createReadClient (build-time safe)
+// page/metadata       → createClient (request-time)
+// Zero event handlers (Server Component)
 
-import { createClient } from "@/lib/supabase/server"
+import { createClient }     from "@/lib/supabase/server"
 import { createReadClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
-import {
-  ArrowLeft, ArrowUpRight, BadgeCheck,
-  Calendar, MapPin, Tag, ChevronRight, TrendingUp, LayoutGrid,
-} from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import {
@@ -25,496 +20,435 @@ import {
 const PAGE_SIZE = 24
 
 interface PageProps {
-  params:      Promise<{ category: string }>
+  params: Promise<{ category: string }>
   searchParams?: Promise<{ page?: string }>
 }
-
 interface StartupRow {
   id: string; name: string; slug: string
-  description?: string | null; logo_url?: string | null
-  founded_year?: number | null; city?: string | null
-  category?: string | null; is_featured?: boolean
+  description?: string|null; logo_url?: string|null
+  founded_year?: number|null; city?: string|null
+  category?: string|null; is_featured?: boolean
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATA HELPERS
-//
-// IMPORTANT: Two different clients are used intentionally:
-//   createReadClient() — no cookies(), safe at build time (generateStaticParams)
-//   createClient()     — uses cookies(), only safe inside request scope (page/metadata)
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Build-time safe: uses createReadClient (no cookies dependency) */
+// ── DATA HELPERS ──────────────────────────────────────────────────────────────
 async function getAllDbCategoriesStatic(): Promise<string[]> {
-  const supabase = createReadClient()
-  const { data } = await supabase
-    .from("startups").select("category")
-    .eq("status", "approved").not("category", "is", null)
-  return [...new Set((data ?? []).map((r) => r.category as string))].filter(Boolean)
+  const sb = createReadClient()
+  const { data } = await sb.from("startups").select("category")
+    .eq("status","approved").not("category","is",null)
+  return [...new Set((data??[]).map(r=>r.category as string))].filter(Boolean)
 }
-
-/** Request-time: uses createClient (cookies available) */
 async function getAllDbCategories(): Promise<string[]> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from("startups").select("category")
-    .eq("status", "approved").not("category", "is", null)
-  return [...new Set((data ?? []).map((r) => r.category as string))].filter(Boolean)
+  const sb = await createClient()
+  const { data } = await sb.from("startups").select("category")
+    .eq("status","approved").not("category","is",null)
+  return [...new Set((data??[]).map(r=>r.category as string))].filter(Boolean)
+}
+async function getCategoryStartups(dbCat:string, page:number) {
+  const sb = await createClient()
+  const from = (page-1)*PAGE_SIZE
+  const { data, count } = await sb.from("startups")
+    .select("id,name,slug,description,logo_url,founded_year,city,category,is_featured",{count:"exact"})
+    .eq("status","approved").eq("category",dbCat)
+    .order("is_featured",{ascending:false}).order("name",{ascending:true})
+    .range(from, from+PAGE_SIZE-1)
+  return { startups:(data??[]) as StartupRow[], total: count??0 }
 }
 
-async function getCategoryStartups(dbCategory: string, page: number) {
-  const supabase = await createClient()
-  const from = (page - 1) * PAGE_SIZE
-  const { data, count } = await supabase
-    .from("startups")
-    .select("id,name,slug,description,logo_url,founded_year,city,category,is_featured", { count:"exact" })
-    .eq("status", "approved").eq("category", dbCategory)
-    .order("is_featured", { ascending:false }).order("name", { ascending:true })
-    .range(from, from + PAGE_SIZE - 1)
-  return { startups:(data ?? []) as StartupRow[], total: count ?? 0 }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// generateStaticParams — runs at BUILD TIME, must use createReadClient
-// ─────────────────────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
-  // Uses getAllDbCategoriesStatic() — createReadClient, no cookies() call
-  const dbCats = await getAllDbCategoriesStatic()
+  const cats = await getAllDbCategoriesStatic()
   const seen = new Set<string>()
-  return dbCats.reduce<{ category:string }[]>((acc, cat) => {
+  return cats.reduce<{category:string}[]>((acc,cat)=>{
     const slug = categoryToSlug(cat)
-    if (!seen.has(slug)) { seen.add(slug); acc.push({ category:slug }) }
+    if(!seen.has(slug)){ seen.add(slug); acc.push({category:slug}) }
     return acc
-  }, [])
+  },[])
 }
-
 export const revalidate = 86400
 
-// ─────────────────────────────────────────────────────────────────────────────
-// METADATA
-// ─────────────────────────────────────────────────────────────────────────────
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { category: slug } = await params
-  const allDbCats = await getAllDbCategories()
-  const dbCategory = slugToDbCategory(slug, allDbCats)
-  if (!dbCategory) return { title:"Category Not Found | UpForge", robots:{ index:false, follow:false } }
-
-  const supabase = await createClient()
-  const { count } = await supabase.from("startups")
-    .select("id", { count:"exact", head:true })
-    .eq("status","approved").eq("category", dbCategory)
-
-  const displayName = getDisplayName(dbCategory)
-  const description = generateCategoryDescription(dbCategory, count ?? 0)
-  const title = `${displayName} Startups in India 2026 | UpForge`
+export async function generateMetadata({params}:PageProps): Promise<Metadata> {
+  const {category:slug} = await params
+  const all = await getAllDbCategories()
+  const dbCat = slugToDbCategory(slug,all)
+  if(!dbCat) return { title:"Category Not Found | UpForge", robots:{index:false,follow:false} }
+  const sb = await createClient()
+  const {count} = await sb.from("startups").select("id",{count:"exact",head:true})
+    .eq("status","approved").eq("category",dbCat)
+  const displayName = getDisplayName(dbCat)
+  const description = generateCategoryDescription(dbCat, count??0)
+  const title = `${displayName} Startups in India 2026 — Verified | UpForge`
   const url = `https://www.upforge.in/startups/${slug}`
-
   return {
     title, description,
-    alternates: { canonical: url },
-    openGraph: { title, description, url, siteName:"UpForge",
-      images:[{ url:"https://www.upforge.in/og/registry.png", width:1200, height:630 }],
-      locale:"en_IN", type:"website" },
-    twitter: { card:"summary_large_image", title, description, images:["https://www.upforge.in/og/registry.png"] },
-    robots: { index:true, follow:true, googleBot:{ index:true, follow:true, "max-snippet":-1, "max-image-preview":"large" } },
+    alternates:{canonical:url},
+    openGraph:{title,description,url,siteName:"UpForge",
+      images:[{url:"https://www.upforge.in/og/registry.png",width:1200,height:630}],
+      locale:"en_IN",type:"website"},
+    twitter:{card:"summary_large_image",title,description,images:["https://www.upforge.in/og/registry.png"]},
+    robots:{index:true,follow:true,googleBot:{index:true,follow:true,"max-snippet":-1,"max-image-preview":"large"}},
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STRUCTURED DATA
-// ─────────────────────────────────────────────────────────────────────────────
-function buildSchemas(slug:string, displayName:string, desc:string, startups:StartupRow[], total:number) {
+function buildSchemas(slug:string,displayName:string,desc:string,startups:StartupRow[],total:number) {
   const url = `https://www.upforge.in/startups/${slug}`
   return [
-    { "@context":"https://schema.org", "@type":"BreadcrumbList",
-      itemListElement:[
-        { "@type":"ListItem", position:1, name:"Home",            item:"https://www.upforge.in" },
-        { "@type":"ListItem", position:2, name:"Startup Registry", item:"https://www.upforge.in/startup" },
-        { "@type":"ListItem", position:3, name:"Categories",       item:"https://www.upforge.in/startups" },
-        { "@type":"ListItem", position:4, name:`${displayName} Startups`, item:url },
-      ],
-    },
-    { "@context":"https://schema.org", "@type":"CollectionPage",
-      "@id":`${url}#collectionpage`, name:`${displayName} Startups in India 2026`,
-      description:desc, url, inLanguage:"en-IN", numberOfItems:total,
-      publisher:{ "@id":"https://www.upforge.in/#organization" },
-    },
-    { "@context":"https://schema.org", "@type":"ItemList",
-      name:`${displayName} Startups in India`, numberOfItems:startups.length,
-      itemListElement:startups.map((s,i) => ({
-        "@type":"ListItem", position:i+1, name:s.name,
+    {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[
+      {"@type":"ListItem",position:1,name:"Home",item:"https://www.upforge.in"},
+      {"@type":"ListItem",position:2,name:"Registry",item:"https://www.upforge.in/startup"},
+      {"@type":"ListItem",position:3,name:"Sectors",item:"https://www.upforge.in/startups"},
+      {"@type":"ListItem",position:4,name:`${displayName} Startups`,item:url},
+    ]},
+    {"@context":"https://schema.org","@type":"CollectionPage","@id":`${url}#cp`,
+      name:`${displayName} Startups in India 2026`,description:desc,url,inLanguage:"en-IN",numberOfItems:total},
+    {"@context":"https://schema.org","@type":"ItemList",
+      name:`${displayName} Startups in India`,numberOfItems:startups.length,
+      itemListElement:startups.map((s,i)=>({
+        "@type":"ListItem",position:i+1,name:s.name,
         url:`https://www.upforge.in/startup/${s.slug}`,
-      })),
-    },
+      }))},
   ]
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LOGO
-// ─────────────────────────────────────────────────────────────────────────────
-function StartupLogo({ name, logo_url, size=48 }: { name:string; logo_url?:string|null; size?:number }) {
-  if (logo_url) return <Image src={logo_url} alt={`${name} logo`} width={size} height={size} className="object-contain" loading="lazy" />
-  return <span style={{ fontSize:20, fontWeight:700, color:"#8C7D65", fontFamily:"Georgia,serif" }} aria-hidden="true">{name.charAt(0).toUpperCase()}</span>
+function Logo({name,logo_url,size=44}:{name:string;logo_url?:string|null;size?:number}) {
+  if(logo_url) return <Image src={logo_url} alt={`${name} logo`} width={size} height={size} className="object-contain" loading="lazy" />
+  return <span style={{fontSize:18,fontWeight:700,color:"#9C8B72",fontFamily:"'Playfair Display',serif"}} aria-hidden="true">{name.charAt(0).toUpperCase()}</span>
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STARTUP CARD — newspaper aesthetic
-// ─────────────────────────────────────────────────────────────────────────────
-function StartupCard({ startup, index }: { startup:StartupRow; index:number }) {
-  return (
-    <Link
-      href={`/startup/${startup.slug}`}
-      style={{ display:"flex", flexDirection:"column", height:"100%", border:"1px solid #D8D2C4", background:"#FDFCF9", textDecoration:"none",
-        transition:"transform .15s ease, box-shadow .15s ease, border-color .15s ease",
-        animationDelay:`${Math.min(index,11)*0.04}s` }}
-      className="cat-startup-card group"
-    >
-      {/* Header */}
-      <div style={{ padding:"18px 18px 10px", display:"flex", alignItems:"flex-start", gap:12 }}>
-        <div style={{ width:44, height:44, border:"1px solid #EDE8DF", background:"#F3EFE5", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, overflow:"hidden", borderRadius:4 }}>
-          <StartupLogo name={startup.name} logo_url={startup.logo_url} size={44} />
-        </div>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:4 }}>
-            <h3 style={{ fontSize:"clamp(12px,1.2vw,13.5px)", fontWeight:700, color:"#1A1208", lineHeight:1.3, margin:0, fontFamily:"Georgia,serif" }}
-              className="group-hover:underline">
-              {startup.name}
-            </h3>
-            <ArrowUpRight style={{ width:12, height:12, color:"#C8C2B4", flexShrink:0, marginTop:2 }} className="group-hover:!text-[#1A1208] transition-colors" aria-hidden="true" />
-          </div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:"4px 12px", marginTop:4 }}>
-            {startup.city && (
-              <span style={{ display:"flex", alignItems:"center", gap:3, fontSize:9.5, color:"#AAA", fontFamily:"system-ui,sans-serif" }}>
-                <MapPin style={{ width:9, height:9 }} aria-hidden="true" />{startup.city}
-              </span>
-            )}
-            {startup.founded_year && (
-              <span style={{ display:"flex", alignItems:"center", gap:3, fontSize:9.5, color:"#AAA", fontFamily:"system-ui,sans-serif" }}>
-                <Calendar style={{ width:9, height:9 }} aria-hidden="true" />Est. {startup.founded_year}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <div style={{ padding:"0 18px 16px", flex:1 }}>
-        <p style={{ fontSize:11.5, color:"#5A4A30", lineHeight:1.7, margin:0, fontStyle:"italic",
-          display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
-          {startup.description || "Building for India's next decade."}
-        </p>
-      </div>
-
-      {/* Footer */}
-      <div style={{ padding:"10px 18px", borderTop:"1px solid #EDE8DF", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-        <span style={{ display:"flex", alignItems:"center", gap:4, fontSize:8.5, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.14em", color:"#15803D", fontFamily:"system-ui,sans-serif" }}>
-          <BadgeCheck style={{ width:9, height:9 }} aria-hidden="true" />Verified
-        </span>
-        {startup.is_featured && (
-          <span style={{ fontSize:8, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.14em", color:"#8C7D65", fontFamily:"system-ui,sans-serif" }}>Featured</span>
-        )}
-      </div>
-    </Link>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGINATION
-// ─────────────────────────────────────────────────────────────────────────────
-function PaginationNav({ slug, currentPage, totalPages }: { slug:string; currentPage:number; totalPages:number }) {
-  if (totalPages <= 1) return null
-  const makeHref = (p:number) => p === 1 ? `/startups/${slug}` : `/startups/${slug}?page=${p}`
-  const windowSize = Math.min(5, totalPages)
-  const start = currentPage <= 3 || totalPages <= 5 ? 1
-    : currentPage >= totalPages - 2 ? totalPages - 4
-    : currentPage - 2
-  const pages = Array.from({ length:windowSize }, (_,i) => start+i)
-
-  return (
-    <nav style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginTop:40 }} aria-label="Pagination">
-      <Link href={makeHref(currentPage-1)} aria-disabled={currentPage===1} tabIndex={currentPage===1?-1:0}
-        style={{ padding:"8px 16px", fontSize:11, fontWeight:700, border:"1px solid #C8C2B4", color:currentPage===1?"#DDD":"#5A4A30",
-          pointerEvents:currentPage===1?"none":"auto", fontFamily:"system-ui,sans-serif", textDecoration:"none",
-          background:"#FDFCF9", transition:"border-color .15s" }}>← Prev</Link>
-      {pages.map(p => (
-        <Link key={p} href={makeHref(p)} aria-current={p===currentPage?"page":undefined}
-          style={{ width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center",
-            fontSize:11, fontWeight:700, border:"1px solid", fontFamily:"system-ui,sans-serif", textDecoration:"none",
-            borderColor:p===currentPage?"#1A1208":"#C8C2B4",
-            background:p===currentPage?"#1A1208":"#FDFCF9",
-            color:p===currentPage?"white":"#5A4A30" }}>
-          {p}
-        </Link>
-      ))}
-      <Link href={makeHref(currentPage+1)} aria-disabled={currentPage===totalPages} tabIndex={currentPage===totalPages?-1:0}
-        style={{ padding:"8px 16px", fontSize:11, fontWeight:700, border:"1px solid #C8C2B4", color:currentPage===totalPages?"#DDD":"#5A4A30",
-          pointerEvents:currentPage===totalPages?"none":"auto", fontFamily:"system-ui,sans-serif", textDecoration:"none",
-          background:"#FDFCF9", transition:"border-color .15s" }}>Next →</Link>
-    </nav>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-export default async function CategoryPage({ params, searchParams }: PageProps) {
-  const { category: slug } = await params
+export default async function CategoryPage({params,searchParams}:PageProps) {
+  const {category:slug} = await params
   const sp = await searchParams
-  const currentPage = Math.max(1, Number(sp?.page ?? 1))
+  const page = Math.max(1, Number(sp?.page??1))
 
-  const allDbCats = await getAllDbCategories()
-  const dbCategory = slugToDbCategory(slug, allDbCats)
-  if (!dbCategory) notFound()
+  const all = await getAllDbCategories()
+  const dbCat = slugToDbCategory(slug, all)
+  if(!dbCat) notFound()
 
-  const [{ startups, total }, relatedDbCats] = await Promise.all([
-    getCategoryStartups(dbCategory, currentPage),
-    Promise.resolve(allDbCats.filter(c => categoryToSlug(c) !== slug).sort((a,b) => a.localeCompare(b)).slice(0,10)),
+  const [{startups,total}, related] = await Promise.all([
+    getCategoryStartups(dbCat, page),
+    Promise.resolve(all.filter(c=>categoryToSlug(c)!==slug).sort((a,b)=>a.localeCompare(b)).slice(0,12)),
   ])
+  if(total===0) notFound()
 
-  if (total === 0) notFound()
-
-  const totalPages  = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  const displayName = getDisplayName(dbCategory)
-  const description = generateCategoryDescription(dbCategory, total)
-  const longDesc    = generateCategoryLongDescription(dbCategory, total)
+  const totalPages  = Math.max(1, Math.ceil(total/PAGE_SIZE))
+  const displayName = getDisplayName(dbCat)
+  const description = generateCategoryDescription(dbCat, total)
+  const longDesc    = generateCategoryLongDescription(dbCat, total)
   const schemas     = buildSchemas(slug, displayName, description, startups, total)
+
+  const makeHref = (p:number) => p===1 ? `/startups/${slug}` : `/startups/${slug}?page=${p}`
+
+  // Pagination window
+  const winSize = Math.min(5, totalPages)
+  const winStart = page<=3||totalPages<=5 ? 1 : page>=totalPages-2 ? totalPages-4 : page-2
+  const pageNums = Array.from({length:winSize},(_,i)=>winStart+i)
 
   return (
     <>
-      {schemas.map((s,i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html:JSON.stringify(s) }} />
+      {schemas.map((s,i)=>(
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(s)}} />
       ))}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-        .pf  { font-family:'Playfair Display',Georgia,serif !important; }
-        .sys { font-family:system-ui,-apple-system,sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
-        @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        .au0{animation:fadeUp .38s .00s ease both}
-        .au1{animation:fadeUp .38s .07s ease both}
-        .au2{animation:fadeUp .38s .14s ease both}
-
-        .cat-startup-card:hover {
-          transform: translate(-2px,-2px);
-          box-shadow: 4px 4px 0 #1A1208;
-          border-color: #1A1208 !important;
-          position: relative; z-index:1;
+        :root {
+          --cream:#F2EFE6; --cream2:#EDE9DC; --cream3:#FAF8F3;
+          --ink:#1A1208; --ink2:#3D2E18; --ink3:#6B5C40; --ink4:#9C8B72;
+          --rule:#D5CEBC; --rule2:#EAE4D4;
+          --saffron:#E8933A; --gold:#C9A84C; --white:#FDFCF8;
         }
+        *,*::before,*::after{box-sizing:border-box}
+        body{background:var(--cream)}
 
-        .startup-grid {
-          display:grid;
-          grid-template-columns:repeat(3,1fr);
-          gap:1px;
-          background:#D8D2C4;
-          border:1px solid #D8D2C4;
-        }
-        @media(max-width:900px){ .startup-grid{grid-template-columns:repeat(2,1fr) !important} }
-        @media(max-width:540px){ .startup-grid{grid-template-columns:1fr !important} }
+        .cp-wrap{min-height:100vh;background:var(--cream);font-family:'EB Garamond',Georgia,serif;color:var(--ink)}
 
-        .sh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-        .sh-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3em;color:#AAA;font-family:system-ui,sans-serif;white-space:nowrap}
-        .sh-r{flex:1;height:1px;background:#D8D2C4}
+        /* BREADCRUMB */
+        .cp-bc{border-bottom:1px solid var(--rule);background:var(--white)}
+        .cp-bc-inner{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px);display:flex;align-items:center;gap:6px;height:34px;font-family:system-ui,sans-serif;font-size:10px;color:var(--ink4);list-style:none}
+        .cp-bc-inner a{color:var(--ink4);text-decoration:none;transition:color .15s}
+        .cp-bc-inner a:hover{color:var(--ink)}
+        .cp-bc-sep{color:var(--rule)}
+
+        /* MASTHEAD */
+        .cp-mast{border-bottom:3px solid var(--ink);background:var(--cream)}
+        .cp-mast-inner{max-width:1280px;margin:0 auto;padding:clamp(28px,5vw,52px) clamp(16px,4vw,48px) clamp(20px,4vw,40px)}
+        .cp-back{display:inline-flex;align-items:center;gap:6px;font-family:system-ui,sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);text-decoration:none;margin-bottom:20px;transition:color .15s}
+        .cp-back:hover{color:var(--ink)}
+        .cp-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+        .cp-eyebrow-tag{background:var(--ink);color:#fff;font-family:system-ui,sans-serif;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.28em;padding:3px 10px}
+        .cp-eyebrow-meta{font-family:system-ui,sans-serif;font-size:8.5px;color:var(--ink4);letter-spacing:.12em}
+        .cp-h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4.5vw,3.8rem);font-weight:900;letter-spacing:-.02em;color:var(--ink);line-height:1.08;margin-bottom:14px}
+        .cp-h1 em{font-style:italic;color:var(--ink2)}
+        .cp-desc{font-size:clamp(13px,1.4vw,14.5px);color:var(--ink3);font-style:italic;line-height:1.8;max-width:640px;margin-bottom:0}
+        .cp-mast-bottom{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;margin-top:24px;padding-top:20px;border-top:1px solid var(--rule)}
+        .cp-long-desc{font-size:13px;color:var(--ink3);font-style:italic;line-height:1.8;max-width:680px;flex:1}
+        .cp-count-pill{flex-shrink:0;display:flex;align-items:center;gap:16px;border:1px solid var(--rule);background:var(--white);padding:14px 22px}
+        .cp-count-v{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,2.5vw,2rem);font-weight:900;color:var(--ink);line-height:1;margin-bottom:2px}
+        .cp-count-l{font-family:system-ui,sans-serif;font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:var(--ink4)}
+        .cp-count-div{width:1px;height:32px;background:var(--rule)}
+        .cp-live{display:flex;flex-direction:column;align-items:center;gap:3px}
+        .cp-live-dot{width:8px;height:8px;border-radius:50%;background:#15803D}
+        .cp-live-label{font-family:system-ui,sans-serif;font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.16em;color:#15803D}
+
+        /* LAYOUT */
+        .cp-layout{max-width:1280px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,4vw,48px) 72px;display:grid;grid-template-columns:1fr 260px;gap:40px;align-items:start}
+        @media(max-width:900px){.cp-layout{grid-template-columns:1fr !important}}
+
+        /* RESULTS BAR */
+        .cp-results{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+        .cp-results-text{font-family:system-ui,sans-serif;font-size:11px;color:var(--ink3)}
+        .cp-results-text strong{color:var(--ink)}
+        .cp-results-link{font-family:system-ui,sans-serif;font-size:10px;color:var(--ink4);text-decoration:none;transition:color .15s}
+        .cp-results-link:hover{color:var(--ink)}
+
+        /* STARTUP GRID */
+        .cp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:var(--rule2);border:1px solid var(--rule)}
+        @media(max-width:860px){.cp-grid{grid-template-columns:repeat(2,1fr) !important}}
+        @media(max-width:480px){.cp-grid{grid-template-columns:1fr !important}}
+
+        /* STARTUP CARD */
+        .su-card{background:var(--white);padding:0;display:flex;flex-direction:column;text-decoration:none;border-right:1px solid var(--rule2);border-bottom:1px solid var(--rule2);transition:background .15s,box-shadow .15s,transform .15s;position:relative}
+        .su-card:hover{background:var(--cream);transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--ink);z-index:1;border-color:var(--ink) !important}
+        .su-card-img{width:100%;aspect-ratio:16/9;background:var(--cream2);overflow:hidden;position:relative;flex-shrink:0}
+        .su-card-img img{width:100%;height:100%;object-fit:cover;object-position:center;filter:sepia(12%) contrast(105%)}
+        .su-card-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--cream2) 0%,var(--rule2) 100%)}
+        .su-card-img-letter{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:var(--rule);line-height:1}
+        .su-card-body{padding:16px 16px 0;flex:1;display:flex;flex-direction:column;gap:6px}
+        .su-card-logo-row{display:flex;align-items:center;gap:10px}
+        .su-card-logo{width:36px;height:36px;border:1px solid var(--rule2);background:var(--white);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+        .su-card-name{font-family:'Playfair Display',serif;font-size:clamp(.88rem,1.1vw,1rem);font-weight:700;color:var(--ink);line-height:1.25}
+        .su-card:hover .su-card-name{text-decoration:underline}
+        .su-card-meta{display:flex;flex-wrap:wrap;gap:3px 10px}
+        .su-card-chip{display:flex;align-items:center;gap:3px;font-family:system-ui,sans-serif;font-size:9px;color:var(--ink4)}
+        .su-card-desc{font-size:11.5px;color:var(--ink3);font-style:italic;line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+        .su-card-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--rule2);margin-top:auto}
+        .su-card-verified{display:flex;align-items:center;gap:4px;font-family:system-ui,sans-serif;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:#15803D}
+        .su-card-featured{font-family:system-ui,sans-serif;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:var(--saffron)}
+        .su-card-arrow{font-size:13px;color:var(--rule);transition:color .15s,transform .15s}
+        .su-card:hover .su-card-arrow{color:var(--ink);transform:translate(2px,-2px)}
+
+        /* PAGINATION */
+        .cp-pag{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:36px;padding-top:24px;border-top:1px solid var(--rule)}
+        .cp-pag-btn{padding:7px 16px;font-family:system-ui,sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--rule);background:var(--white);color:var(--ink3);text-decoration:none;transition:all .15s}
+        .cp-pag-btn:hover{border-color:var(--ink);color:var(--ink)}
+        .cp-pag-btn.disabled{color:var(--rule);pointer-events:none}
+        .cp-pag-num{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;border:1px solid var(--rule);text-decoration:none;color:var(--ink3);transition:all .15s}
+        .cp-pag-num:hover{border-color:var(--ink);color:var(--ink)}
+        .cp-pag-num.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+        /* SIDEBAR */
+        .cp-side{position:sticky;top:88px;display:flex;flex-direction:column;gap:16px}
+        .cp-side-card{border:1px solid var(--rule);background:var(--white);padding:18px 16px}
+        .cp-side-card.dark{background:var(--ink);border-color:var(--ink)}
+        .cp-side-eyebrow{font-family:system-ui,sans-serif;font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.28em;color:var(--ink4);margin-bottom:10px}
+        .cp-side-card.dark .cp-side-eyebrow{color:var(--saffron)}
+        .cp-side-h{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.3}
+        .cp-side-card.dark .cp-side-h{color:#fff}
+        .cp-side-p{font-size:11.5px;color:var(--ink3);font-style:italic;line-height:1.65;margin-bottom:14px}
+        .cp-side-card.dark .cp-side-p{color:rgba(255,255,255,.45)}
+        .cp-side-btn{display:block;text-align:center;font-family:system-ui,sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;background:#fff;color:var(--ink);padding:9px;text-decoration:none;transition:background .15s}
+        .cp-side-btn:hover{background:var(--saffron)}
+        .cp-side-list{list-style:none;padding:0;margin:0}
+        .cp-side-list li{border-bottom:1px solid var(--rule2)}
+        .cp-side-list li:last-child{border-bottom:none}
+        .cp-side-list a{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:12.5px;color:var(--ink3);text-decoration:none;font-style:italic;transition:color .15s;gap:8px}
+        .cp-side-list a:hover{color:var(--ink);text-decoration:underline}
+        .cp-side-list-arrow{font-size:11px;color:var(--rule);flex-shrink:0}
+        .cp-side-rank-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+        .cp-side-rank-list li a{display:flex;align-items:center;gap:10px;text-decoration:none}
+        .cp-side-rank-num{font-family:'Playfair Display',serif;font-size:11px;font-weight:900;color:var(--rule);width:20px;flex-shrink:0}
+        .cp-side-rank-name{font-size:12.5px;color:var(--ink3);font-style:italic;transition:color .15s;line-height:1.3}
+        .cp-side-rank-list li a:hover .cp-side-rank-name{color:var(--ink);text-decoration:underline}
+
+        /* BOTTOM NAV */
+        .cp-bot-nav{border-top:1px solid var(--rule);background:var(--white)}
+        .cp-bot-nav-inner{max-width:1280px;margin:0 auto;padding:clamp(20px,3vw,32px) clamp(16px,4vw,48px)}
+        .cp-bot-label{font-family:system-ui,sans-serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3em;color:var(--ink4);margin-bottom:12px}
+        .cp-bot-links{display:flex;flex-wrap:wrap;gap:6px 24px;list-style:none;padding:0;margin:0}
+        .cp-bot-links a{font-size:13px;color:var(--ink3);text-decoration:none;font-style:italic;transition:color .15s}
+        .cp-bot-links a:hover{color:var(--ink);text-decoration:underline}
 
         ::-webkit-scrollbar{width:3px}
-        ::-webkit-scrollbar-thumb{background:#C8C2B4}
+        ::-webkit-scrollbar-thumb{background:var(--rule)}
       `}</style>
 
-      <div style={{ minHeight:"100vh", background:"#F3EFE5", fontFamily:"Georgia,'Times New Roman',serif" }}>
+      <div className="cp-wrap">
         <Navbar />
 
-        {/* ── BREADCRUMB ── */}
-        <div style={{ borderBottom:"1px solid #D8D2C4", background:"#FDFCF9" }}>
-          <div style={{ maxWidth:1300, margin:"0 auto", padding:"0 clamp(16px,4vw,48px)" }}>
-            <ol className="sys" style={{ display:"flex", alignItems:"center", gap:6, height:36, fontSize:10, color:"#AAA", listStyle:"none", margin:0, padding:0 }}>
-              <li><Link href="/" style={{ color:"#AAA", textDecoration:"none" }} className="hover:text-[#1A1208] transition-colors">Home</Link></li>
-              <li style={{ color:"#D8D2C4" }}>/</li>
-              <li><Link href="/startup" style={{ color:"#AAA", textDecoration:"none" }} className="hover:text-[#1A1208] transition-colors">Registry</Link></li>
-              <li style={{ color:"#D8D2C4" }}>/</li>
-              <li><Link href="/startups" style={{ color:"#AAA", textDecoration:"none" }} className="hover:text-[#1A1208] transition-colors">Categories</Link></li>
-              <li style={{ color:"#D8D2C4" }}>/</li>
-              <li style={{ color:"#1A1208", fontWeight:600 }}>{displayName}</li>
-            </ol>
-          </div>
+        {/* BREADCRUMB */}
+        <div className="cp-bc">
+          <ol className="cp-bc-inner">
+            <li><a href="/">Home</a></li>
+            <li className="cp-bc-sep">/</li>
+            <li><a href="/startup">Registry</a></li>
+            <li className="cp-bc-sep">/</li>
+            <li><a href="/startups">Sectors</a></li>
+            <li className="cp-bc-sep">/</li>
+            <li style={{color:"var(--ink)",fontWeight:600}}>{displayName}</li>
+          </ol>
         </div>
 
-        <main>
-          {/* ── MASTHEAD ── */}
-          <header className="au0" style={{ background:"#F3EFE5", borderBottom:"3px solid #1A1208" }}>
-            <div style={{ maxWidth:1300, margin:"0 auto", padding:"clamp(28px,5vw,52px) clamp(16px,4vw,48px) clamp(20px,4vw,40px)" }}>
-              <Link href="/startup" style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:10, color:"#AAA", textDecoration:"none", marginBottom:20, fontFamily:"system-ui,sans-serif" }}
-                className="hover:text-[#1A1208] transition-colors">
-                <ArrowLeft style={{ width:11, height:11 }} aria-hidden="true" />All Startups
-              </Link>
-
-              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                <Tag style={{ width:12, height:12, color:"#8C7D65" }} aria-hidden="true" />
-                <p className="sys" style={{ fontSize:8, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.36em", color:"#AAA" }}>
-                  Category · UpForge Registry India 2026
-                </p>
-              </div>
-
-              <div style={{ display:"flex", flexWrap:"wrap", alignItems:"flex-end", justifyContent:"space-between", gap:20 }}>
-                <div style={{ maxWidth:640 }}>
-                  <h1 className="pf" style={{ fontSize:"clamp(1.8rem,4vw,3.6rem)", fontWeight:900, color:"#1A1208", lineHeight:1.1, letterSpacing:"-0.02em", marginBottom:12 }}>
-                    {displayName}<br />
-                    <span style={{ fontStyle:"italic", color:"#8C7D65", fontSize:"0.75em" }}>Startups in India</span>
-                  </h1>
-                  <p style={{ fontSize:13, color:"#5A4A30", lineHeight:1.8, fontStyle:"italic" }}>
-                    {description}
-                  </p>
-                </div>
-
-                {/* Count pill */}
-                <div style={{ flexShrink:0, border:"1px solid #C8C2B4", background:"#FDFCF9", padding:"16px 24px", display:"flex", alignItems:"center", gap:20 }}>
-                  <div style={{ textAlign:"center" }}>
-                    <p className="pf" style={{ fontSize:"clamp(1.6rem,3vw,2.2rem)", fontWeight:900, color:"#1A1208", lineHeight:1, marginBottom:4 }}>
-                      {total.toLocaleString()}
-                    </p>
-                    <p className="sys" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em", color:"#AAA" }}>Verified Startups</p>
-                  </div>
-                  <div style={{ width:1, height:36, background:"#D8D2C4" }} aria-hidden="true" />
-                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
-                    <span style={{ width:8, height:8, borderRadius:"50%", background:"#15803D", display:"block" }} className="animate-pulse" aria-hidden="true" />
-                    <p className="sys" style={{ fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.14em", color:"#15803D" }}>All Verified</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Long description */}
-              <p style={{ fontSize:12.5, color:"#6B5C40", lineHeight:1.82, fontStyle:"italic", maxWidth:720, marginTop:20, paddingTop:16, borderTop:"1px solid #D8D2C4" }}>
-                {longDesc}
-              </p>
+        {/* MASTHEAD */}
+        <header className="cp-mast">
+          <div className="cp-mast-inner">
+            <a href="/startup" className="cp-back">← All Startups</a>
+            <div className="cp-eyebrow">
+              <span className="cp-eyebrow-tag">{displayName}</span>
+              <span className="cp-eyebrow-meta">UpForge Registry · India 2026</span>
             </div>
-          </header>
-
-          {/* ── CONTENT ── */}
-          <div style={{ maxWidth:1300, margin:"0 auto", padding:"clamp(24px,4vw,48px) clamp(16px,4vw,48px) 60px", display:"grid", gridTemplateColumns:"1fr 280px", gap:40, alignItems:"start" }}
-            className="au1 [grid-template-columns:1fr] lg:[grid-template-columns:1fr_280px]">
-
-            {/* ── STARTUP GRID ── */}
-            <section aria-label={`${displayName} startups`}>
-              {/* Results bar */}
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
-                <p className="sys" style={{ fontSize:11, color:"#6B5C40" }} aria-live="polite">
-                  Showing <strong style={{ color:"#1A1208" }}>{(currentPage-1)*PAGE_SIZE+1}–{Math.min(currentPage*PAGE_SIZE,total)}</strong>{" "}
-                  of <strong style={{ color:"#1A1208" }}>{total.toLocaleString()}</strong> {displayName} startups
-                  {totalPages > 1 && <span style={{ color:"#AAA" }}> · Page {currentPage}/{totalPages}</span>}
-                </p>
-                <Link href="/startups" className="sys hover:text-[#1A1208] transition-colors hidden sm:inline" style={{ fontSize:10, color:"#AAA", textDecoration:"none" }}>
-                  All categories →
-                </Link>
-              </div>
-
-              <div className="startup-grid">
-                {startups.map((s,i) => <StartupCard key={s.id} startup={s} index={i} />)}
-              </div>
-
-              <PaginationNav slug={slug} currentPage={currentPage} totalPages={totalPages} />
-            </section>
-
-            {/* ── SIDEBAR ── */}
-            <aside className="au2" style={{ position:"sticky", top:88, display:"flex", flexDirection:"column", gap:16 }}>
-
-              {/* Submit CTA */}
-              <div style={{ background:"#1A1208", padding:"20px 18px" }}>
-                <p className="sys" style={{ fontSize:8, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.22em", color:"#E8C547", marginBottom:8 }}>
-                  List Free
-                </p>
-                <p className="pf" style={{ fontSize:"1rem", fontWeight:700, color:"white", lineHeight:1.3, marginBottom:8 }}>
-                  Building a {displayName} startup?
-                </p>
-                <p style={{ fontSize:11.5, color:"rgba(255,255,255,.5)", fontStyle:"italic", lineHeight:1.65, marginBottom:14 }}>
-                  Get verified and indexed in India's most trusted startup registry. Free forever.
-                </p>
-                <Link href="/submit" style={{ display:"block", textAlign:"center", fontSize:9.5, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.16em", background:"white", color:"#1A1208", padding:"10px", textDecoration:"none", fontFamily:"system-ui,sans-serif", transition:"background .15s" }}
-                  className="hover:bg-[#E8C547] transition-colors">
-                  Submit Your Startup →
-                </Link>
-              </div>
-
-              {/* Top in category */}
-              {startups.slice(0,6).length > 0 && (
-                <div style={{ border:"1px solid #D8D2C4", background:"#FDFCF9", padding:"18px 16px" }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp style={{ width:11, height:11, color:"#8C7D65" }} aria-hidden="true" />
-                    <p className="sys" style={{ fontSize:8, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.22em", color:"#AAA" }}>
-                      Top in {displayName}
-                    </p>
-                  </div>
-                  <ul style={{ listStyle:"none", margin:0, padding:0, display:"flex", flexDirection:"column", gap:8 }}>
-                    {startups.slice(0,6).map((s,i) => (
-                      <li key={s.id}>
-                        <Link href={`/startup/${s.slug}`} style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none" }}
-                          className="group">
-                          <span className="pf" style={{ fontSize:11, fontWeight:900, color:"#D8D2C4", width:20, flexShrink:0 }}>
-                            {String(i+1).padStart(2,"0")}
-                          </span>
-                          <span style={{ fontSize:12, color:"#5A4A30", lineHeight:1.3 }} className="group-hover:text-[#1A1208] group-hover:underline transition-colors">
-                            {s.name}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+            <h1 className="cp-h1">
+              {displayName}<br />
+              <em>Startups in India</em>
+            </h1>
+            <p className="cp-desc">{description}</p>
+            <div className="cp-mast-bottom">
+              <p className="cp-long-desc">{longDesc}</p>
+              <div className="cp-count-pill">
+                <div>
+                  <div className="cp-count-v">{total.toLocaleString()}</div>
+                  <div className="cp-count-l">Verified Startups</div>
                 </div>
-              )}
-
-              {/* Related categories */}
-              {relatedDbCats.length > 0 && (
-                <div style={{ border:"1px solid #EDE8DF", background:"#F3EFE5", padding:"18px 16px" }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <LayoutGrid style={{ width:11, height:11, color:"#8C7D65" }} aria-hidden="true" />
-                    <p className="sys" style={{ fontSize:8, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.22em", color:"#AAA" }}>
-                      Other Sectors
-                    </p>
-                  </div>
-                  <ul style={{ listStyle:"none", margin:0, padding:0 }}>
-                    {relatedDbCats.map(cat => (
-                      <li key={cat} style={{ borderBottom:"1px solid #EDE8DF" }}>
-                        <Link href={`/startups/${categoryToSlug(cat)}`} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"7px 0", fontSize:12, color:"#5A4A30", textDecoration:"none", fontStyle:"italic" }}
-                          className="group hover:text-[#1A1208] transition-colors">
-                          <span className="group-hover:underline">{getDisplayName(cat)}</span>
-                          <ChevronRight style={{ width:11, height:11, color:"#C8C2B4", flexShrink:0 }} aria-hidden="true" />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href="/startups" className="sys hover:text-[#1A1208] transition-colors" style={{ display:"block", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em", color:"#AAA", textDecoration:"none", paddingTop:10, marginTop:6, borderTop:"1px solid #D8D2C4" }}>
-                    View all categories →
-                  </Link>
+                <div className="cp-count-div" />
+                <div className="cp-live">
+                  <span className="cp-live-dot" />
+                  <span className="cp-live-label">Verified</span>
                 </div>
-              )}
-
-            </aside>
+              </div>
+            </div>
           </div>
+        </header>
 
-          {/* ── INTERNAL LINKING FOOTER ── */}
-          <section style={{ borderTop:"1px solid #D8D2C4", background:"#FDFCF9" }}>
-            <div style={{ maxWidth:1300, margin:"0 auto", padding:"clamp(20px,3vw,36px) clamp(16px,4vw,48px)" }}>
-              <p className="sys" style={{ fontSize:8, fontWeight:900, textTransform:"uppercase", letterSpacing:"0.3em", color:"#AAA", marginBottom:14 }}>
-                Explore UpForge Registry
+        {/* CONTENT LAYOUT */}
+        <div className="cp-layout">
+
+          {/* STARTUP GRID */}
+          <section aria-label={`${displayName} startups`}>
+            <div className="cp-results">
+              <p className="cp-results-text">
+                Showing <strong>{(page-1)*PAGE_SIZE+1}–{Math.min(page*PAGE_SIZE,total)}</strong> of{" "}
+                <strong>{total.toLocaleString()}</strong> {displayName} startups
+                {totalPages>1 && <span style={{color:"var(--ink4)"}}> · Page {page}/{totalPages}</span>}
               </p>
-              <nav aria-label="Explore more startup categories">
-                <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 24px", listStyle:"none", margin:0, padding:0 }}>
-                  {[
-                    { l:"All Indian Startups", h:"/startup" },
-                    { l:"Browse by Category",  h:"/startups" },
-                    { l:"Submit Your Startup", h:"/submit" },
-                    ...relatedDbCats.slice(0,5).map(c => ({ l:`${getDisplayName(c)} Startups`, h:`/startups/${categoryToSlug(c)}` })),
-                  ].map(lnk => (
-                    <li key={lnk.h+lnk.l}>
-                      <Link href={lnk.h} style={{ fontSize:12, color:"#6B5C40", textDecoration:"none", fontStyle:"italic" }}
-                        className="hover:text-[#1A1208] hover:underline transition-colors">
-                        {lnk.l}
-                      </Link>
+              <a href="/startups" className="cp-results-link">All sectors →</a>
+            </div>
+
+            <div className="cp-grid">
+              {startups.map((s) => (
+                <a key={s.id} href={`/startup/${s.slug}`} className="su-card">
+                  {/* Image area */}
+                  <div className="su-card-img">
+                    {s.logo_url ? (
+                      <img src={s.logo_url} alt={`${s.name}`} style={{width:"100%",height:"100%",objectFit:"cover",filter:"sepia(10%) contrast(105%)"}} loading="lazy" />
+                    ) : (
+                      <div className="su-card-img-ph">
+                        <span className="su-card-img-letter">{s.name.charAt(0).toUpperCase()}</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Body */}
+                  <div className="su-card-body">
+                    <div className="su-card-logo-row">
+                      <div className="su-card-logo">
+                        {s.logo_url
+                          ? <Image src={s.logo_url} alt={s.name} width={36} height={36} className="object-contain" loading="lazy" />
+                          : <span style={{fontSize:14,fontWeight:700,color:"var(--ink4)",fontFamily:"'Playfair Display',serif"}}>{s.name.charAt(0)}</span>
+                        }
+                      </div>
+                      <span className="su-card-name">{s.name}</span>
+                    </div>
+                    <div className="su-card-meta">
+                      {s.city && <span className="su-card-chip">📍 {s.city}</span>}
+                      {s.founded_year && <span className="su-card-chip">Est. {s.founded_year}</span>}
+                    </div>
+                    <p className="su-card-desc">{s.description || "Building for India's next decade."}</p>
+                  </div>
+                  <div className="su-card-foot">
+                    <span className="su-card-verified">
+                      <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#15803D" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                      Verified
+                    </span>
+                    {s.is_featured && <span className="su-card-featured">Featured</span>}
+                    <span className="su-card-arrow">↗</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            {/* PAGINATION */}
+            {totalPages > 1 && (
+              <nav className="cp-pag" aria-label="Pagination">
+                <a href={makeHref(page-1)} className={`cp-pag-btn${page===1?" disabled":""}`} aria-disabled={page===1}>← Prev</a>
+                {pageNums.map(p => (
+                  <a key={p} href={makeHref(p)} className={`cp-pag-num${p===page?" active":""}`} aria-current={p===page?"page":undefined}>{p}</a>
+                ))}
+                <a href={makeHref(page+1)} className={`cp-pag-btn${page===totalPages?" disabled":""}`} aria-disabled={page===totalPages}>Next →</a>
+              </nav>
+            )}
+          </section>
+
+          {/* SIDEBAR */}
+          <aside className="cp-side">
+            {/* Submit CTA */}
+            <div className="cp-side-card dark">
+              <div className="cp-side-eyebrow">List Free</div>
+              <div className="cp-side-h">Building a {displayName} startup?</div>
+              <div className="cp-side-p">Get verified and indexed in India's most trusted startup registry. Free forever.</div>
+              <a href="/submit" className="cp-side-btn">Submit Your Startup →</a>
+            </div>
+
+            {/* Top in sector */}
+            {startups.slice(0,6).length > 0 && (
+              <div className="cp-side-card">
+                <div className="cp-side-eyebrow">Top in {displayName}</div>
+                <ul className="cp-side-rank-list">
+                  {startups.slice(0,6).map((s,i) => (
+                    <li key={s.id}>
+                      <a href={`/startup/${s.slug}`}>
+                        <span className="cp-side-rank-num">{String(i+1).padStart(2,"0")}</span>
+                        <span className="cp-side-rank-name">{s.name}</span>
+                      </a>
                     </li>
                   ))}
                 </ul>
-              </nav>
-            </div>
-          </section>
-        </main>
+              </div>
+            )}
+
+            {/* Related sectors */}
+            {related.length > 0 && (
+              <div className="cp-side-card">
+                <div className="cp-side-eyebrow">Other Sectors</div>
+                <ul className="cp-side-list">
+                  {related.map(cat => (
+                    <li key={cat}>
+                      <a href={`/startups/${categoryToSlug(cat)}`}>
+                        <span>{getDisplayName(cat)}</span>
+                        <span className="cp-side-list-arrow">›</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a href="/startups" style={{display:"block",marginTop:12,fontFamily:"system-ui,sans-serif",fontSize:"8.5px",fontWeight:700,textTransform:"uppercase",letterSpacing:".16em",color:"var(--ink4)",textDecoration:"none",paddingTop:10,borderTop:"1px solid var(--rule2)",transition:"color .15s"}}
+                  className="hover:!text-[var(--ink)]">
+                  View all sectors →
+                </a>
+              </div>
+            )}
+          </aside>
+        </div>
+
+        {/* BOTTOM NAV */}
+        <div className="cp-bot-nav">
+          <div className="cp-bot-nav-inner">
+            <div className="cp-bot-label">Explore UpForge Registry</div>
+            <ul className="cp-bot-links">
+              <li><a href="/startup">All Indian Startups</a></li>
+              <li><a href="/startups">Browse by Sector</a></li>
+              <li><a href="/submit">Submit Your Startup</a></li>
+              {related.slice(0,5).map(c=>(
+                <li key={c}><a href={`/startups/${categoryToSlug(c)}`}>{getDisplayName(c)} Startups</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <Footer />
       </div>
