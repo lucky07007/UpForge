@@ -1,33 +1,39 @@
-// app/startup/page.tsx — FINAL
-// Key fixes:
-//   1. CSS scoped to .reg-* classes only — no global * reset that breaks Navbar
-//   2. Single footer — <Footer /> only, no bottom nav duplication
-//   3. Reduced masthead padding
-//   4. Warm color accents — saffron stripe, tinted stats bar
-//   5. Search works via HTML form GET (server-rendered, SEO-rich)
-//   6. Mobile: single-column LinkedIn-style list view
-//   7. Full SEO — long-tail keywords, structured data, canonical
+// app/startup/page.tsx — FINAL PRODUCTION v5
+// ─────────────────────────────────────────────────────────────────────────────
+// Design: exact blog/about page pattern
+//   • NO global CSS reset — all styles scoped to .reg-* classes
+//   • Playfair Display 900 headings, Georgia body — same as blog page
+//   • #F3EFE5 parchment bg, #1A1208 ink, #E8C547 gold, #C8C2B4 rules
+//   • Section headers: .sh pattern (8px ALL CAPS + rule line)
+//   • Card hover: translate(-2px,-2px) + 4px 4px 0 #1A1208 shadow
+//   • <Navbar /> import — no page-level nav (Navbar handles itself)
+//   • Page-level footer (NO <Footer /> import — avoids double footer)
+//   • Mobile: LinkedIn-style single-column list at <640px
+//   • Search: HTML form GET — SEO crawlable, no JS required
+//   • Stats bar: NO "Coverage" stat — shows real dynamic data only
+//   • SEO: WebSite SearchAction schema, long-tail keywords, ISR 5min
+// ─────────────────────────────────────────────────────────────────────────────
 
 import { createClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { ArrowRight, ArrowUpRight } from "lucide-react"
 
 const PAGE_SIZE = 18
 
 interface StartupRow {
-  id: string; name: string; slug: string
-  description?: string|null; logo_url?: string|null
-  founders?: string|null; founded_year?: number|null
-  category?: string|null; city?: string|null; is_featured?: boolean
+  id:string; name:string; slug:string
+  description?:string|null; logo_url?:string|null
+  founders?:string|null; founded_year?:number|null
+  category?:string|null; city?:string|null; is_featured?:boolean
 }
 interface PageProps {
   searchParams?: Promise<{ page?:string; q?:string; year?:string; sort?:string; category?:string }>
 }
 
-async function getRegistryData(q:string,year:string,sort:string,cat:string,page:number) {
+async function getData(q:string,year:string,sort:string,cat:string,page:number) {
   const sb = await createClient()
   const from = (page-1)*PAGE_SIZE
   let query = sb.from("startups")
@@ -55,15 +61,15 @@ async function getFilters() {
 
 export async function generateMetadata({searchParams}:PageProps):Promise<Metadata> {
   const sp = await searchParams
-  const {total} = await getRegistryData("","","name","",1)
+  const {total} = await getData("","","name","",1)
   const n = total>0?total.toLocaleString():"1,000+"
   const isFiltered = !!(sp?.q||sp?.year||sp?.sort||sp?.category)
   const page = Number(sp?.page??1)
   return {
     title:`Indian Startup Registry 2026 — ${n}+ Verified Indian Startups | UpForge`,
-    description:`Discover ${n}+ verified Indian startups across AI/ML, FinTech, SaaS, EdTech, HealthTech, Climate Tech, AgriTech, D2C, Web3 and 30+ sectors. Search by founder name, city, founding year. India's most trusted free startup database — updated daily with verified profiles.`,
+    description:`Discover ${n}+ verified Indian startups across AI, FinTech, SaaS, EdTech, HealthTech, Climate Tech, AgriTech, Web3 and 30+ sectors. Search by founder, city, year. India's most trusted free startup database — updated daily.`,
+    keywords:"Indian startups 2026, startup registry India, verified startups India, AI startups India, fintech startups India, SaaS startups India, edtech startups India, healthtech India, startup founders India, Bengaluru startups, Mumbai startups, Delhi NCR startups, Indian unicorns 2026",
     alternates:{canonical:"https://www.upforge.in/startup"},
-    keywords:"Indian startups 2026, startup registry India, verified startups, AI startups India, fintech startups India, SaaS startups India, startup founders India, Bengaluru startups, Mumbai startups, Delhi startups",
     openGraph:{
       title:`Indian Startup Registry 2026 — ${n}+ Verified | UpForge`,
       description:`Browse ${n}+ verified Indian startups. Free, structured, updated daily.`,
@@ -85,30 +91,22 @@ export default async function StartupPage({searchParams}:PageProps) {
   const page = Math.max(1,Number(sp?.page??1))
 
   const [{startups,total},{years,cats}] = await Promise.all([
-    getRegistryData(q,year,sort,cat,page),
+    getData(q,year,sort,cat,page),
     getFilters(),
   ])
   const totalPages = Math.max(1,Math.ceil(total/PAGE_SIZE))
   const isFiltered = !!(q||year||cat||(sort&&sort!=="name"))
 
   const qs = (ov:Record<string,string|undefined>)=>{
-    const base:{[k:string]:string|undefined} = {
-      q:q||undefined,year:year||undefined,
-      sort:sort!=="name"?sort:undefined,
-      category:cat||undefined,
-      page:page>1?String(page):undefined,
-    }
-    const m = {...base,...ov}
-    const p = new URLSearchParams()
+    const base:{[k:string]:string|undefined}={q:q||undefined,year:year||undefined,sort:sort!=="name"?sort:undefined,category:cat||undefined,page:page>1?String(page):undefined}
+    const m={...base,...ov}; const p=new URLSearchParams()
     Object.entries(m).forEach(([k,v])=>{ if(v) p.set(k,v) })
-    const s = p.toString()
-    return `/startup${s?`?${s}`:""}`
+    const s=p.toString(); return `/startup${s?`?${s}`:""}`
   }
-  const pgHref = (p:number)=>qs({page:p===1?undefined:String(p)})
-
-  const winSize = Math.min(5,totalPages)
-  const winStart = page<=3||totalPages<=5?1:page>=totalPages-2?totalPages-4:page-2
-  const pgNums = Array.from({length:winSize},(_,i)=>winStart+i)
+  const pgHref=(p:number)=>qs({page:p===1?undefined:String(p)})
+  const winSize=Math.min(5,totalPages)
+  const winStart=page<=3||totalPages<=5?1:page>=totalPages-2?totalPages-4:page-2
+  const pgNums=Array.from({length:winSize},(_,i)=>winStart+i)
 
   const featured = page===1&&!isFiltered ? startups.filter(s=>s.is_featured).slice(0,3) : []
   const featIds  = new Set(featured.map(s=>s.id))
@@ -122,10 +120,12 @@ export default async function StartupPage({searchParams}:PageProps) {
       "description":`India's independent registry of ${total.toLocaleString()}+ verified startups across 30+ sectors.`,
       "numberOfItems":total,"inLanguage":"en-IN"},
     {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
-      {"@type":"ListItem","position":1,"name":"Home","item":"https://www.upforge.in"},
+      {"@type":"ListItem","position":1,"name":"UpForge","item":"https://www.upforge.in"},
       {"@type":"ListItem","position":2,"name":"Startup Registry","item":"https://www.upforge.in/startup"},
     ]},
   ]
+
+  const catSlug = (c:string) => c.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")
 
   return (
     <>
@@ -134,302 +134,327 @@ export default async function StartupPage({searchParams}:PageProps) {
       ))}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
 
-        /* ALL SCOPED — no global reset that would break Navbar */
-        .rg { font-family:'EB Garamond',Georgia,serif; color:#1A1208; background:#F2EFE6; min-height:100vh; }
+        /* ALL SCOPED — zero global reset */
+        .pf{font-family:'Playfair Display',Georgia,serif !important}
 
-        /* ── SAFFRON ACCENT STRIPE ── */
-        .rg-stripe { height:3px; background:linear-gradient(90deg,#E8933A 0%,#C9A84C 50%,#E8933A 100%); }
+        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .a0{animation:fadeUp .38s .00s ease both}
+        .a1{animation:fadeUp .38s .07s ease both}
+        .a2{animation:fadeUp .38s .14s ease both}
+        .a3{animation:fadeUp .38s .20s ease both}
+        .a4{animation:fadeUp .38s .27s ease both}
 
-        /* ── BREADCRUMB ── */
-        .rg-bc { background:#FDFCF8; border-bottom:1px solid #D5CEBC; }
-        .rg-bc-inner { max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,48px); display:flex; align-items:center; gap:6px; height:32px; font-family:system-ui,sans-serif; font-size:10px; color:#9C8B72; list-style:none; }
-        .rg-bc-inner a { color:#9C8B72; text-decoration:none; }
-        .rg-bc-inner a:hover { color:#1A1208; }
-        .rg-bc-sep { color:#D5CEBC; }
+        /* Section header — exact blog/about pattern */
+        .reg-sh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+        .reg-sh-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3em;color:#AAA;font-family:system-ui,sans-serif;white-space:nowrap}
+        .reg-sh-r{flex:1;height:1px;background:#D8D2C4}
 
-        /* ── MASTHEAD ── */
-        .rg-mast { background:#F2EFE6; border-bottom:3px solid #1A1208; padding:clamp(20px,3.5vw,44px) clamp(16px,4vw,48px) clamp(16px,3vw,36px); text-align:center; }
-        .rg-edition { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:14px; }
-        .rg-edition-line { height:1px; width:48px; background:#C9A84C; }
-        .rg-edition-text { font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.4em; text-transform:uppercase; color:#9C8B72; }
-        .rg-h1 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,6vw,5rem); font-weight:900; letter-spacing:-.025em; color:#1A1208; line-height:1.05; margin-bottom:10px; }
-        .rg-sub { font-size:clamp(13px,1.5vw,15px); color:#6B5C40; font-style:italic; line-height:1.75; max-width:560px; margin:0 auto 16px; }
-        .rg-live { display:inline-flex; align-items:center; gap:6px; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:#15803D; border:1px solid #86EFAC; background:#F0FDF4; padding:4px 14px; border-radius:999px; margin-bottom:18px; }
-        .rg-live-dot { width:6px; height:6px; border-radius:50%; background:#15803D; animation:rg-pulse 2s infinite; }
-        @keyframes rg-pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+        /* Card hover — exact blog/about .hc pattern */
+        .reg-hc{transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+        .reg-hc:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 #1A1208;border-color:#1A1208 !important;z-index:1;position:relative}
 
-        /* ── STATS BAR ── */
-        .rg-stats { display:flex; max-width:600px; margin:0 auto; border:1px solid #1A1208; background:#1A1208; }
-        .rg-stat { flex:1; padding:12px 8px; text-align:center; border-right:1px solid rgba(255,255,255,.1); }
-        .rg-stat:last-child { border-right:none; }
-        .rg-stat-v { font-family:'Playfair Display',serif; font-size:clamp(1.2rem,2.5vw,1.8rem); font-weight:900; color:#fff; line-height:1; margin-bottom:3px; }
-        .rg-stat-l { font-family:system-ui,sans-serif; font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:.18em; color:rgba(255,255,255,.35); }
+        /* Image hover zoom */
+        .reg-imgf{position:relative;overflow:hidden}
+        .reg-imgf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .5s ease}
+        .reg-imgf:hover img{transform:scale(1.04)}
+
+        /* Masthead */
+        .reg-mast{background:#F3EFE5;border-bottom:3px solid #1A1208}
+        .reg-mast-inner{text-align:center;padding:clamp(24px,4vw,52px) 16px clamp(16px,3vw,36px);max-width:1300px;margin:0 auto;border-bottom:1px solid #C8C2B4}
+
+        /* Stats bar — blog/about pattern */
+        .reg-stats{display:flex;background:#1A1208;max-width:600px;margin:0 auto}
+        .reg-stat{flex:1;padding:14px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.08)}
+        .reg-stat:last-child{border-right:none}
+        .reg-stat-v{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,2.5vw,1.9rem);font-weight:900;color:#fff;line-height:1;margin-bottom:3px}
+        .reg-stat-l{font-family:system-ui,sans-serif;font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.32)}
         @media(max-width:440px){
-          .rg-stats{flex-direction:column}
-          .rg-stat{border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}
-          .rg-stat:last-child{border-bottom:none}
+          .reg-stats{flex-direction:column}
+          .reg-stat{border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+          .reg-stat:last-child{border-bottom:none}
         }
 
-        /* ── TOOLBAR ── */
-        .rg-toolbar { background:#FDFCF8; border-bottom:1px solid #D5CEBC; position:sticky; top:0; z-index:30; }
-        .rg-toolbar-inner { max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,48px); }
-        .rg-search-row { display:flex; align-items:stretch; border-bottom:1px solid #EAE4D4; }
-        .rg-search-icon { display:flex; align-items:center; padding:0 14px; color:#9C8B72; font-size:15px; flex-shrink:0; }
-        .rg-search-inp { flex:1; height:46px; border:none; background:transparent; font-family:'EB Garamond',serif; font-size:15px; color:#1A1208; outline:none; font-style:italic; padding:0; min-width:0; }
-        .rg-search-inp::placeholder { color:#9C8B72; }
-        .rg-search-btn { height:46px; padding:0 22px; background:#1A1208; color:#fff; border:none; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; flex-shrink:0; white-space:nowrap; }
-        .rg-filter-row { display:flex; align-items:center; height:38px; overflow-x:auto; gap:0; }
-        .rg-filter-row::-webkit-scrollbar { display:none; }
-        .rg-filter-lbl { font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:#9C8B72; padding:0 14px; border-right:1px solid #EAE4D4; height:100%; display:flex; align-items:center; flex-shrink:0; white-space:nowrap; }
-        .rg-filter-sel { height:100%; border:none; border-right:1px solid #EAE4D4; background:transparent; font-family:system-ui,sans-serif; font-size:11px; color:#1A1208; padding:0 8px; outline:none; cursor:pointer; flex-shrink:0; max-width:130px; }
-        .rg-filter-link { height:100%; padding:0 14px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:10px; font-weight:700; letter-spacing:.06em; color:#6B5C40; text-decoration:none; border-right:1px solid #EAE4D4; white-space:nowrap; transition:all .15s; flex-shrink:0; }
-        .rg-filter-link:hover { background:#F2EFE6; color:#1A1208; }
-        .rg-filter-link.on { background:#1A1208; color:#fff; }
-        .rg-filter-clear { height:100%; padding:0 14px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#DC2626; text-decoration:none; flex-shrink:0; }
-        .rg-filter-clear:hover { text-decoration:underline; }
+        /* Tab strip — exact blog/about pattern */
+        .reg-tabs{display:flex;overflow-x:auto;border-bottom:1px solid #C8C2B4;scrollbar-width:none}
+        .reg-tabs::-webkit-scrollbar{display:none}
+        .reg-tab{flex-shrink:0;padding:11px 16px;font-family:system-ui,sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#888;text-decoration:none;border-bottom:2.5px solid transparent;transition:all .15s;white-space:nowrap}
+        .reg-tab:hover{color:#1A1208}
+        .reg-tab.on{color:#B45309;border-bottom-color:#B45309}
 
-        /* ── RESULTS BAR ── */
-        .rg-results { max-width:1280px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:10px; border-bottom:1px solid #EAE4D4; }
-        .rg-results-q { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:#1A1208; }
-        .rg-results-n { font-size:13px; color:#6B5C40; font-style:italic; }
-        .rg-results-flex { flex:1; }
-        .rg-results-pg { font-family:system-ui,sans-serif; font-size:9px; color:#9C8B72; }
+        /* Toolbar */
+        .reg-toolbar{background:#FDFCF9;border-bottom:1px solid #C8C2B4;position:sticky;top:0;z-index:30}
+        .reg-toolbar-inner{max-width:1300px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+        .reg-search-row{display:flex;align-items:stretch;border-bottom:1px solid #EDE9DF}
+        .reg-search-icon{display:flex;align-items:center;padding:0 14px;color:#C8C2B4;font-size:16px;flex-shrink:0}
+        .reg-search-inp{flex:1;height:46px;border:none;background:transparent;font-family:Georgia,serif;font-size:15px;color:#1A1208;outline:none;font-style:italic;padding:0;min-width:0}
+        .reg-search-inp::placeholder{color:#C8C2B4}
+        .reg-search-btn{height:46px;padding:0 22px;background:#1A1208;color:#fff;border:none;font-family:system-ui,sans-serif;font-size:8.5px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;flex-shrink:0;white-space:nowrap}
+        .reg-filter-row{display:flex;align-items:center;height:38px;overflow-x:auto}
+        .reg-filter-row::-webkit-scrollbar{display:none}
+        .reg-filter-lbl{font-family:system-ui,sans-serif;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.28em;color:#C8C2B4;padding:0 14px;border-right:1px solid #EDE9DF;height:100%;display:flex;align-items:center;flex-shrink:0;white-space:nowrap}
+        .reg-filter-sel{height:100%;border:none;border-right:1px solid #EDE9DF;background:transparent;font-family:system-ui,sans-serif;font-size:11px;color:#1A1208;padding:0 8px;outline:none;cursor:pointer;flex-shrink:0;max-width:130px}
+        .reg-filter-link{height:100%;padding:0 14px;display:flex;align-items:center;font-family:system-ui,sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B5C40;text-decoration:none;border-right:1px solid #EDE9DF;white-space:nowrap;transition:all .15s;flex-shrink:0}
+        .reg-filter-link:hover{background:#F3EFE5;color:#1A1208}
+        .reg-filter-link.on{background:#1A1208;color:#fff}
+        .reg-filter-clear{height:100%;padding:0 14px;display:flex;align-items:center;font-family:system-ui,sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#DC2626;text-decoration:none;flex-shrink:0}
 
-        /* ── LAYOUT ── */
-        .rg-layout { max-width:1280px; margin:0 auto; padding:clamp(16px,3vw,32px) clamp(16px,4vw,48px) 48px; display:grid; grid-template-columns:1fr 240px; gap:28px; align-items:start; }
-        @media(max-width:900px) { .rg-layout { grid-template-columns:1fr !important; } }
+        /* Results bar */
+        .reg-results-bar{max-width:1300px;margin:0 auto;padding:10px clamp(16px,4vw,48px);display:flex;align-items:center;gap:10px;border-bottom:1px solid #D8D2C4}
+        .reg-results-q{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#1A1208}
+        .reg-results-n{font-size:13px;color:#6B5C40;font-style:italic}
+        .reg-results-rule{flex:1;height:1px;background:#D8D2C4}
+        .reg-results-pg{font-family:system-ui,sans-serif;font-size:9px;color:#AAA}
 
-        /* ── SECTION HEADER ── */
-        .rg-sh { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-        .rg-sh-l { font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.32em; color:#9C8B72; white-space:nowrap; }
-        .rg-sh-r { flex:1; height:1px; background:#D5CEBC; }
+        /* Main layout */
+        .reg-main{max-width:1300px;margin:0 auto;padding:clamp(16px,3vw,32px) clamp(16px,4vw,48px) 0}
+        .reg-layout{display:grid;grid-template-columns:1fr 300px;gap:clamp(16px,2.5vw,28px);align-items:start}
+        @media(max-width:1000px){.reg-layout{grid-template-columns:1fr !important}}
 
-        /* ── FEATURED GRID ── */
-        .rg-feat-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #D5CEBC; margin-bottom:28px; }
-        @media(max-width:640px) { .rg-feat-grid { grid-template-columns:1fr !important; } }
-        .rg-feat-card { display:flex; flex-direction:column; text-decoration:none; background:#FDFCF8; border-right:1px solid #D5CEBC; overflow:hidden; transition:background .15s; }
-        .rg-feat-card:last-child { border-right:none; }
-        .rg-feat-card:hover { background:#F2EFE6; }
-        .rg-feat-img { width:100%; aspect-ratio:16/9; position:relative; background:#EDE9DC; overflow:hidden; }
-        .rg-feat-img img { width:100%; height:100%; object-fit:cover; filter:sepia(15%) contrast(105%); transition:transform .4s; }
-        .rg-feat-card:hover .rg-feat-img img { transform:scale(1.04); }
-        .rg-feat-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#EDE9DC,#D5CEBC); }
-        .rg-feat-ph-letter { font-family:'Playfair Display',serif; font-size:3.5rem; font-weight:900; color:#C8C2B4; }
-        .rg-feat-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(26,18,8,.82) 0%,transparent 55%); }
-        .rg-feat-num { position:absolute; top:10px; left:10px; background:#1A1208; color:#fff; font-family:system-ui,sans-serif; font-size:8px; font-weight:900; padding:2px 8px; letter-spacing:.14em; }
-        .rg-feat-caption { position:absolute; bottom:0; left:0; right:0; padding:12px; }
-        .rg-feat-sector { display:block; font-family:system-ui,sans-serif; font-size:7.5px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:rgba(255,255,255,.6); margin-bottom:2px; }
-        .rg-feat-name { display:block; font-family:'Playfair Display',serif; font-size:clamp(.9rem,1.2vw,1.05rem); font-weight:700; color:#fff; line-height:1.2; }
-        .rg-feat-body { padding:12px; display:flex; flex-direction:column; gap:6px; }
-        .rg-feat-desc { font-size:11.5px; color:#6B5C40; font-style:italic; line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .rg-feat-foot { display:flex; align-items:center; justify-content:space-between; }
-        .rg-feat-meta { font-family:system-ui,sans-serif; font-size:8.5px; color:#9C8B72; }
-        .rg-feat-arrow { font-size:13px; color:#D5CEBC; }
-        .rg-feat-card:hover .rg-feat-arrow { color:#1A1208; }
+        /* Featured hero grid */
+        .reg-feat-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid #1A1208;background:#1A1208;gap:1.5px;margin-bottom:clamp(18px,3vw,28px)}
+        @media(max-width:700px){.reg-feat-grid{grid-template-columns:1fr !important}}
+        .reg-feat-card{background:#FDFCF9;display:flex;flex-direction:column;text-decoration:none;transition:background .15s}
+        .reg-feat-card:hover{background:#F3EFE5}
+        .reg-feat-img{width:100%;aspect-ratio:16/9;position:relative;background:#EDE9DF;overflow:hidden;flex-shrink:0}
+        .reg-feat-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:sepia(12%) contrast(105%);transition:transform .5s}
+        .reg-feat-card:hover .reg-feat-img img{transform:scale(1.04)}
+        .reg-feat-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#EDE9DF,#C8C2B4)}
+        .reg-feat-ph-l{font-family:'Playfair Display',serif;font-size:3.5rem;font-weight:900;color:#AAA}
+        .reg-feat-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,18,8,.82) 0%,transparent 55%)}
+        .reg-feat-num{position:absolute;top:10px;left:10px;background:#1A1208;color:#fff;font-family:system-ui,sans-serif;font-size:7.5px;font-weight:900;padding:2px 8px;letter-spacing:.14em}
+        .reg-feat-caption{position:absolute;bottom:0;left:0;right:0;padding:12px}
+        .reg-feat-sector{display:block;font-family:system-ui,sans-serif;font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.55);margin-bottom:2px}
+        .reg-feat-name{display:block;font-family:'Playfair Display',serif;font-size:clamp(.88rem,1.2vw,1.05rem);font-weight:700;color:#fff;line-height:1.2}
+        .reg-feat-body{padding:12px;flex:1;display:flex;flex-direction:column;gap:6px}
+        .reg-feat-desc{font-size:11.5px;color:#5A4A30;font-style:italic;line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+        .reg-feat-foot{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid #D8D2C4;margin-top:auto}
+        .reg-feat-meta{font-family:system-ui,sans-serif;font-size:8.5px;color:#AAA}
 
-        /* ── STARTUP GRID (desktop) ── */
-        .rg-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #D5CEBC; background:#EAE4D4; }
-        @media(max-width:700px) { .rg-grid { display:none !important; } }
-        .rg-card { background:#FDFCF8; padding:14px; display:flex; flex-direction:column; gap:7px; text-decoration:none; border-right:1px solid #EAE4D4; border-bottom:1px solid #EAE4D4; transition:all .15s; position:relative; }
-        .rg-card:hover { background:#F2EFE6; transform:translate(-2px,-2px); box-shadow:3px 3px 0 #1A1208; z-index:1; border-color:#1A1208 !important; }
-        .rg-card-head { display:flex; align-items:flex-start; gap:10px; }
-        .rg-card-logo { width:36px; height:36px; border:1px solid #EAE4D4; background:#F2EFE6; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
-        .rg-card-titles { flex:1; min-width:0; }
-        .rg-card-name { font-family:'Playfair Display',serif; font-size:clamp(.85rem,.95vw,.95rem); font-weight:700; color:#1A1208; line-height:1.25; margin-bottom:1px; }
-        .rg-card:hover .rg-card-name { text-decoration:underline; }
-        .rg-card-cat { font-family:system-ui,sans-serif; font-size:8px; color:#9C8B72; text-transform:uppercase; letter-spacing:.1em; }
-        .rg-card-check { color:#15803D; flex-shrink:0; margin-top:2px; }
-        .rg-card-desc { font-size:11.5px; color:#6B5C40; font-style:italic; line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .rg-card-founders { font-size:10.5px; color:#9C8B72; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
-        .rg-card-foot { display:flex; align-items:center; justify-content:space-between; }
-        .rg-card-chips { display:flex; gap:6px; }
-        .rg-card-chip { font-family:system-ui,sans-serif; font-size:8.5px; color:#9C8B72; }
-        .rg-card-arrow { font-size:13px; color:#D5CEBC; transition:color .15s; }
-        .rg-card:hover .rg-card-arrow { color:#1A1208; }
+        /* All startups grid */
+        .reg-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid #1A1208;background:#1A1208;gap:1.5px}
+        @media(max-width:800px){.reg-grid{grid-template-columns:repeat(2,1fr) !important}}
+        @media(max-width:500px){.reg-grid{display:none !important}}
+        .reg-card{background:#FDFCF9;padding:14px;display:flex;flex-direction:column;gap:7px;text-decoration:none;transition:all .15s;position:relative}
+        .reg-card:hover{background:#F3EFE5;transform:translate(-2px,-2px);box-shadow:4px 4px 0 #1A1208;z-index:1;border-color:#1A1208 !important}
+        .reg-card-head{display:flex;align-items:flex-start;gap:10px}
+        .reg-card-logo{width:36px;height:36px;border:1px solid #D8D2C4;background:#F3EFE5;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+        .reg-card-titles{flex:1;min-width:0}
+        .reg-card-name{font-family:'Playfair Display',serif;font-size:clamp(.86rem,1vw,.95rem);font-weight:700;color:#1A1208;line-height:1.25;margin-bottom:1px}
+        .reg-card:hover .reg-card-name{text-decoration:underline}
+        .reg-card-cat{font-family:system-ui,sans-serif;font-size:8px;color:#AAA;text-transform:uppercase;letter-spacing:.1em}
+        .reg-card-desc{font-size:11.5px;color:#5A4A30;font-style:italic;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .reg-card-founders{font-size:10.5px;color:#AAA;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+        .reg-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+        .reg-card-chips{display:flex;gap:6px;font-family:system-ui,sans-serif;font-size:8.5px;color:#AAA}
+        .reg-verified{display:flex;align-items:center;gap:3px;font-family:system-ui,sans-serif;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#15803D}
 
-        /* ── MOBILE LIST (LinkedIn style) ── */
-        .rg-mob { display:none; border:1px solid #D5CEBC; background:#FDFCF8; }
-        @media(max-width:700px) { .rg-mob { display:flex !important; flex-direction:column; } }
-        .rg-mob-row { display:flex; align-items:center; gap:12px; padding:12px 14px; text-decoration:none; border-bottom:1px solid #EAE4D4; transition:background .15s; }
-        .rg-mob-row:last-child { border-bottom:none; }
-        .rg-mob-row:hover { background:#F2EFE6; }
-        .rg-mob-logo { width:40px; height:40px; border:1px solid #EAE4D4; background:#F2EFE6; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
-        .rg-mob-info { flex:1; min-width:0; }
-        .rg-mob-name { font-family:'Playfair Display',serif; font-size:.9rem; font-weight:700; color:#1A1208; line-height:1.2; }
-        .rg-mob-meta { font-family:system-ui,sans-serif; font-size:9.5px; color:#9C8B72; margin-top:1px; }
-        .rg-mob-desc { font-size:11px; color:#6B5C40; font-style:italic; margin-top:2px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
-        .rg-mob-arrow { font-size:14px; color:#D5CEBC; flex-shrink:0; }
+        /* Mobile list — LinkedIn style */
+        .reg-mob{display:none;border:1.5px solid #1A1208;background:#FDFCF9;flex-direction:column}
+        @media(max-width:500px){.reg-mob{display:flex !important}}
+        .reg-mob-row{display:flex;align-items:center;gap:12px;padding:13px 14px;text-decoration:none;border-bottom:1px solid #D8D2C4;transition:background .15s}
+        .reg-mob-row:last-child{border-bottom:none}
+        .reg-mob-row:hover{background:#F3EFE5}
+        .reg-mob-logo{width:40px;height:40px;border:1px solid #D8D2C4;background:#F3EFE5;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+        .reg-mob-info{flex:1;min-width:0}
+        .reg-mob-name{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#1A1208;line-height:1.2}
+        .reg-mob-meta{font-family:system-ui,sans-serif;font-size:9.5px;color:#AAA;margin-top:1px}
+        .reg-mob-desc{font-size:11px;color:#5A4A30;font-style:italic;margin-top:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 
-        /* ── EMPTY ── */
-        .rg-empty { text-align:center; padding:48px 20px; border:1px dashed #D5CEBC; background:#FDFCF8; }
-        .rg-empty-icon { font-family:'Playfair Display',serif; font-size:2.5rem; color:#D5CEBC; display:block; margin-bottom:12px; }
-        .rg-empty-h { font-family:'Playfair Display',serif; font-size:1.2rem; color:#1A1208; margin-bottom:6px; }
-        .rg-empty-p { font-size:13px; color:#6B5C40; font-style:italic; margin-bottom:16px; }
-        .rg-empty-btn { display:inline-block; background:#1A1208; color:#fff; padding:8px 20px; font-family:system-ui,sans-serif; font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.18em; text-decoration:none; }
+        /* Empty state */
+        .reg-empty{text-align:center;padding:52px 20px;border:1.5px dashed #C8C2B4;background:#FDFCF9}
+        .reg-empty-icon{font-family:'Playfair Display',serif;font-size:2.8rem;color:#C8C2B4;display:block;margin-bottom:12px}
+        .reg-empty-h{font-family:'Playfair Display',serif;font-size:1.2rem;color:#1A1208;margin-bottom:6px;font-weight:700}
+        .reg-empty-p{font-size:13px;color:#5A4A30;font-style:italic;margin-bottom:16px}
 
-        /* ── PAGINATION ── */
-        .rg-pag { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:28px; padding-top:20px; border-top:1px solid #D5CEBC; }
-        .rg-pag-btn { padding:6px 14px; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; border:1px solid #D5CEBC; background:#FDFCF8; color:#6B5C40; text-decoration:none; transition:all .15s; }
-        .rg-pag-btn:hover { border-color:#1A1208; color:#1A1208; }
-        .rg-pag-btn.dis { color:#D5CEBC; pointer-events:none; }
-        .rg-pag-num { width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-family:system-ui,sans-serif; font-size:11px; font-weight:700; border:1px solid #D5CEBC; text-decoration:none; color:#6B5C40; transition:all .15s; }
-        .rg-pag-num:hover { border-color:#1A1208; color:#1A1208; }
-        .rg-pag-num.on { background:#1A1208; color:#fff; border-color:#1A1208; }
+        /* Pagination */
+        .reg-pag{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:clamp(20px,3vw,32px);padding-top:clamp(16px,2.5vw,24px);border-top:1px solid #D8D2C4}
+        .reg-pag-btn{padding:6px 16px;font-family:system-ui,sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:1px solid #C8C2B4;background:#FDFCF9;color:#6B5C40;text-decoration:none;transition:all .15s}
+        .reg-pag-btn:hover{border-color:#1A1208;color:#1A1208}
+        .reg-pag-btn.dis{color:#C8C2B4;pointer-events:none}
+        .reg-pag-num{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;border:1px solid #C8C2B4;text-decoration:none;color:#6B5C40;transition:all .15s}
+        .reg-pag-num:hover{border-color:#1A1208;color:#1A1208}
+        .reg-pag-num.on{background:#1A1208;color:#fff;border-color:#1A1208}
 
-        /* ── SIDEBAR ── */
-        .rg-side { position:sticky; top:88px; display:flex; flex-direction:column; gap:14px; }
-        .rg-side-box { border:1px solid #D5CEBC; background:#FDFCF8; padding:16px; }
-        .rg-side-box.dark { background:#1A1208; border-color:#1A1208; }
-        .rg-side-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.28em; color:#9C8B72; margin-bottom:8px; }
-        .rg-side-box.dark .rg-side-ey { color:#E8933A; }
-        .rg-side-h { font-family:'Playfair Display',serif; font-size:.9rem; font-weight:700; color:#1A1208; margin-bottom:5px; line-height:1.3; }
-        .rg-side-box.dark .rg-side-h { color:#fff; }
-        .rg-side-p { font-size:11.5px; color:#6B5C40; font-style:italic; line-height:1.6; margin-bottom:12px; }
-        .rg-side-box.dark .rg-side-p { color:rgba(255,255,255,.42); }
-        .rg-side-btn { display:block; text-align:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.2em; background:#fff; color:#1A1208; padding:8px; text-decoration:none; transition:background .15s; }
-        .rg-side-btn:hover { background:#E8933A; }
-        .rg-side-list { list-style:none; padding:0; margin:0; }
-        .rg-side-list li a { display:flex; align-items:center; justify-content:space-between; padding:6px 0; font-size:12px; color:#6B5C40; text-decoration:none; font-style:italic; border-bottom:1px solid #EAE4D4; transition:color .15s; }
-        .rg-side-list li:last-child a { border-bottom:none; }
-        .rg-side-list li a:hover { color:#1A1208; text-decoration:underline; }
+        /* Sidebar */
+        .reg-side{display:flex;flex-direction:column;gap:14px}
+        .reg-side-box{border:1.5px solid #1A1208;background:#FDFCF9;padding:18px}
+        .reg-side-box.dk{background:#1A1208}
+        .reg-side-ey{font-family:system-ui,sans-serif;font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.28em;color:#AAA;margin-bottom:8px}
+        .reg-side-box.dk .reg-side-ey{color:#E8C547}
+        .reg-side-h{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#1A1208;margin-bottom:5px;line-height:1.3}
+        .reg-side-box.dk .reg-side-h{color:#fff}
+        .reg-side-p{font-size:11.5px;color:#5A4A30;font-style:italic;line-height:1.65;margin-bottom:12px}
+        .reg-side-box.dk .reg-side-p{color:rgba(255,255,255,.38)}
+        .reg-side-btn{display:block;text-align:center;font-family:system-ui,sans-serif;font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;background:#fff;color:#1A1208;padding:9px;text-decoration:none;transition:background .15s}
+        .reg-side-btn:hover{background:#E8C547}
+        .reg-side-list{list-style:none;padding:0;margin:0}
+        .reg-side-list li{border-bottom:1px solid #D8D2C4}
+        .reg-side-list li:last-child{border-bottom:none}
+        .reg-side-list a{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:12.5px;color:#5A4A30;text-decoration:none;font-style:italic;transition:color .15s}
+        .reg-side-list a:hover{color:#1A1208;text-decoration:underline}
 
-        /* ── CTA ── */
-        .rg-cta { background:#1A1208; padding:clamp(20px,3.5vw,36px) clamp(16px,3vw,36px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-top:32px; }
-        .rg-cta-text {}
-        .rg-cta-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.3em; color:#E8933A; margin-bottom:5px; }
-        .rg-cta-h { font-family:'Playfair Display',serif; font-size:clamp(1rem,1.8vw,1.35rem); font-weight:700; color:#fff; margin-bottom:4px; line-height:1.3; }
-        .rg-cta-p { font-size:12px; color:rgba(255,255,255,.42); font-style:italic; }
-        .rg-cta-btn { flex-shrink:0; display:inline-flex; align-items:center; gap:6px; background:#fff; color:#1A1208; padding:10px 22px; font-family:system-ui,sans-serif; font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.18em; text-decoration:none; transition:background .15s; }
-        .rg-cta-btn:hover { background:#E8933A; }
+        /* CTA block — blog/about pattern */
+        .reg-cta{background:#1A1208;padding:clamp(20px,3.5vw,36px) clamp(16px,3vw,36px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin-top:clamp(20px,3.5vw,32px);position:relative;overflow:hidden}
+        .reg-cta::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#92400E,#D97706,#E8C547,#D97706,#92400E)}
+        .reg-cta-ey{font-family:system-ui,sans-serif;font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.3em;color:rgba(232,197,71,.65);margin-bottom:6px}
+        .reg-cta-h{font-family:'Playfair Display',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:700;color:#fff;margin-bottom:4px;line-height:1.25}
+        .reg-cta-p{font-size:12px;color:rgba(255,255,255,.38);font-style:italic}
+        .reg-cta-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#D97706;color:#1A1208;padding:12px 24px;font-family:system-ui,sans-serif;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;text-decoration:none;transition:opacity .15s;box-shadow:3px 3px 0 #92400E}
+        .reg-cta-btn:hover{opacity:.88}
+
+        /* Internal links grid — exact blog/about pattern */
+        .reg-links-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+        @media(max-width:800px){.reg-links-grid{grid-template-columns:repeat(2,1fr) !important}}
+        .reg-link-card{display:flex;flex-direction:column;gap:4px;padding:11px 12px;border:1px solid #D8D2C4;background:#FDFCF9;text-decoration:none;transition:border-color .15s}
+        .reg-link-card:hover{border-color:#1A1208}
+        .reg-link-title{font-family:system-ui,sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#1A1208}
+        .reg-link-desc{font-family:system-ui,sans-serif;font-size:8.5px;color:#AAA}
+
+        /* Footer — exact blog/about pattern */
+        .reg-footer{border-top:1px solid #D8D2C4;padding-top:1rem;margin-top:clamp(20px,3vw,32px);padding-bottom:8px}
+        .reg-footer-note{font-family:system-ui,sans-serif;font-size:8.5px;color:#BBB0A0;line-height:1.75}
+        .reg-footer-nav{display:flex;flex-wrap:wrap;gap:6px 14px;list-style:none;margin:12px 0 0;padding:0}
+        .reg-footer-nav a{font-family:system-ui,sans-serif;font-size:8.5px;color:#AAA;text-transform:uppercase;letter-spacing:.1em;text-decoration:none;transition:color .15s}
+        .reg-footer-nav a:hover{color:#1A1208}
       `}</style>
 
-      <div className="rg">
-        <Navbar />
-        <div className="rg-stripe" />
-
-        {/* BREADCRUMB */}
-        <div className="rg-bc">
-          <ol className="rg-bc-inner">
-            <li><Link href="/">Home</Link></li>
-            <li className="rg-bc-sep">/</li>
-            <li style={{color:"#1A1208",fontWeight:600}}>Startup Registry</li>
-          </ol>
-        </div>
-
-        {/* MASTHEAD */}
-        <header className="rg-mast">
-          <div className="rg-edition">
-            <span className="rg-edition-line" />
-            <span className="rg-edition-text">India Edition · 2026</span>
-            <span className="rg-edition-line" />
+      {/* ── MASTHEAD — exact blog/about pattern ── */}
+      <Navbar />
+      <header className="reg-mast a0" role="banner">
+        <div className="reg-mast-inner">
+          {/* Eyebrow + edition */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:16}}>
+            <div style={{height:1,width:48,background:"#C8C2B4"}} />
+            <p style={{fontFamily:"system-ui,sans-serif",fontSize:8.5,fontWeight:700,letterSpacing:".4em",textTransform:"uppercase",color:"#AAA"}}>India Edition · 2026</p>
+            <div style={{height:1,width:48,background:"#C8C2B4"}} />
           </div>
-          <h1 className="rg-h1">Startup Registry</h1>
-          <p className="rg-sub">India's independent registry of verified builders — free, structured, permanent.</p>
-          <div className="rg-live">
-            <span className="rg-live-dot" />
+
+          <h1 className="pf" style={{fontSize:"clamp(2.2rem,6vw,5rem)",fontWeight:900,letterSpacing:"-.025em",color:"#1A1208",lineHeight:1.05,marginBottom:10}}>
+            Startup Registry
+          </h1>
+          <p style={{fontSize:"clamp(13px,1.6vw,15px)",color:"#6B5C40",fontStyle:"italic",lineHeight:1.75,maxWidth:560,margin:"0 auto 16px"}}>
+            India's independent registry of verified builders — free, structured, permanent.
+          </p>
+
+          {/* Live badge */}
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,fontFamily:"system-ui,sans-serif",fontSize:8.5,fontWeight:700,textTransform:"uppercase",letterSpacing:".2em",color:"#15803D",border:"1px solid #86EFAC",background:"#F0FDF4",padding:"4px 14px",borderRadius:999,marginBottom:20}}>
+            <span style={{width:6,height:6,borderRadius:"50%",background:"#15803D",animation:"fadeUp .5s infinite alternate"}} />
             Live · {total.toLocaleString()} Profiles · All Verified
           </div>
-          <div className="rg-stats">
+
+          {/* Stats */}
+          <div className="reg-stats">
             {[
               {v:`${total.toLocaleString()}+`,l:"Verified Profiles"},
               {v:`${cats.length||"30"}+`,l:"Sectors"},
-              {v:`${years[0]||"2010"}–${new Date().getFullYear()}`,l:"Coverage"},
+              {v:`${years.length>0?years[years.length-1]:"2010"}+`,l:"Founding Since"},
               {v:"Daily",l:"Updated"},
             ].map((s,i)=>(
-              <div key={i} className="rg-stat">
-                <div className="rg-stat-v">{s.v}</div>
-                <div className="rg-stat-l">{s.l}</div>
+              <div key={i} className="reg-stat">
+                <p className="reg-stat-v">{s.v}</p>
+                <p className="reg-stat-l">{s.l}</p>
               </div>
             ))}
           </div>
-        </header>
+        </div>
 
-        {/* TOOLBAR — HTML form for SEO-safe search */}
-        <div className="rg-toolbar">
-          <div className="rg-toolbar-inner">
-            <form action="/startup" method="GET" className="rg-search-row">
-              {year && <input type="hidden" name="year" value={year} />}
-              {cat  && <input type="hidden" name="category" value={cat} />}
-              {sort && sort!=="name" && <input type="hidden" name="sort" value={sort} />}
-              <span className="rg-search-icon" aria-hidden="true">⌕</span>
-              <input type="search" name="q" defaultValue={q} className="rg-search-inp"
-                placeholder="Search startups, founders, sectors, cities…" aria-label="Search" autoComplete="off" />
-              <button type="submit" className="rg-search-btn">Search →</button>
+        {/* Tab strip — category quick-jump */}
+        <nav className="reg-tabs a1" aria-label="Browse by sector" style={{padding:"0 clamp(16px,4vw,48px)"}}>
+          <span style={{fontFamily:"system-ui,sans-serif",fontSize:7.5,color:"#BBB",textTransform:"uppercase",letterSpacing:".2em",padding:"11px 6px 11px 0",flexShrink:0,display:"inline-flex",alignItems:"center"}}>Browse:</span>
+          <Link href="/startup" className={`reg-tab${!cat&&!q?" on":""}`}>All</Link>
+          {cats.slice(0,8).map(c=>(
+            <Link key={c} href={qs({category:c,page:undefined})} className={`reg-tab${cat===c?" on":""}`}>{c}</Link>
+          ))}
+          {cats.length>8 && <Link href="/startups" className="reg-tab">More Sectors →</Link>}
+        </nav>
+      </header>
+
+      {/* ── SEARCH TOOLBAR ── */}
+      <div className="reg-toolbar a1">
+        <div className="reg-toolbar-inner">
+          <form action="/startup" method="GET" className="reg-search-row">
+            {year && <input type="hidden" name="year" value={year} />}
+            {cat  && <input type="hidden" name="category" value={cat} />}
+            {sort && sort!=="name" && <input type="hidden" name="sort" value={sort} />}
+            <span className="reg-search-icon" aria-hidden="true">⌕</span>
+            <input type="search" name="q" defaultValue={q} className="reg-search-inp"
+              placeholder="Search startups, founders, sectors, cities…" aria-label="Search startup registry" autoComplete="off" />
+            <button type="submit" className="reg-search-btn">Search →</button>
+          </form>
+          <div className="reg-filter-row">
+            <span className="reg-filter-lbl">Filter</span>
+            <form action="/startup" method="GET" style={{display:"contents"}}>
+              {q   && <input type="hidden" name="q" value={q} />}
+              {cat && <input type="hidden" name="category" value={cat} />}
+              {sort&&sort!=="name" && <input type="hidden" name="sort" value={sort} />}
+              <select name="year" defaultValue={year} className="reg-filter-sel" aria-label="Year">
+                <option value="">Any Year</option>
+                {years.map(yr=><option key={yr} value={String(yr)}>{yr}</option>)}
+              </select>
+              <button type="submit" style={{display:"none"}} />
             </form>
-            <div className="rg-filter-row">
-              <span className="rg-filter-lbl">Filter</span>
-              {/* Year — form submit */}
-              <form action="/startup" method="GET" style={{display:"contents"}}>
-                {q    && <input type="hidden" name="q" value={q} />}
-                {cat  && <input type="hidden" name="category" value={cat} />}
-                {sort && sort!=="name" && <input type="hidden" name="sort" value={sort} />}
-                <select name="year" defaultValue={year} className="rg-filter-sel" aria-label="Year">
-                  <option value="">Any Year</option>
-                  {years.map(yr=><option key={yr} value={String(yr)}>{yr}</option>)}
-                </select>
-                <button type="submit" style={{display:"none"}} />
-              </form>
-              {/* Category */}
-              <form action="/startup" method="GET" style={{display:"contents"}}>
-                {q    && <input type="hidden" name="q" value={q} />}
-                {year && <input type="hidden" name="year" value={year} />}
-                {sort && sort!=="name" && <input type="hidden" name="sort" value={sort} />}
-                <select name="category" defaultValue={cat} className="rg-filter-sel" aria-label="Sector">
-                  <option value="">All Sectors</option>
-                  {cats.map(c=><option key={c} value={c}>{c}</option>)}
-                </select>
-                <button type="submit" style={{display:"none"}} />
-              </form>
-              {/* Sort */}
-              <Link href={qs({sort:"name",page:undefined})} className={`rg-filter-link${sort==="name"?" on":""}`}>A–Z</Link>
-              <Link href={qs({sort:"newest",page:undefined})} className={`rg-filter-link${sort==="newest"?" on":""}`}>Newest</Link>
-              <Link href={qs({sort:"year",page:undefined})} className={`rg-filter-link${sort==="year"?" on":""}`}>Founded</Link>
-              {isFiltered && <Link href="/startup" className="rg-filter-clear">✕ Clear all</Link>}
-            </div>
+            <form action="/startup" method="GET" style={{display:"contents"}}>
+              {q    && <input type="hidden" name="q" value={q} />}
+              {year && <input type="hidden" name="year" value={year} />}
+              {sort&&sort!=="name" && <input type="hidden" name="sort" value={sort} />}
+              <select name="category" defaultValue={cat} className="reg-filter-sel" aria-label="Sector">
+                <option value="">All Sectors</option>
+                {cats.map(c=><option key={c} value={c}>{c}</option>)}
+              </select>
+              <button type="submit" style={{display:"none"}} />
+            </form>
+            <Link href={qs({sort:"name",page:undefined})} className={`reg-filter-link${sort==="name"?" on":""}`}>A–Z</Link>
+            <Link href={qs({sort:"newest",page:undefined})} className={`reg-filter-link${sort==="newest"?" on":""}`}>Newest</Link>
+            <Link href={qs({sort:"year",page:undefined})} className={`reg-filter-link${sort==="year"?" on":""}`}>Founded Year</Link>
+            {isFiltered && <Link href="/startup" className="reg-filter-clear">✕ Clear</Link>}
           </div>
         </div>
+      </div>
 
-        {/* RESULTS BAR */}
-        <div className="rg-results" aria-live="polite">
-          <span className="rg-results-q">{q?`"${q}"`:cat?cat:year?`Est. ${year}`:"All Startups"}</span>
-          <span className="rg-results-n">— {total.toLocaleString()} profiles</span>
-          <span className="rg-results-flex" />
-          <span className="rg-results-pg">Pg. {page} / {totalPages}</span>
-        </div>
+      {/* ── RESULTS BAR ── */}
+      <div className="reg-results-bar a2" aria-live="polite">
+        <span className="reg-results-q">{q?`"${q}"`:cat?cat:year?`Est. ${year}`:"All Startups"}</span>
+        <span className="reg-results-n">— {total.toLocaleString()} profiles</span>
+        <span className="reg-results-rule" />
+        <span className="reg-results-pg">Pg. {page} / {totalPages||1}</span>
+      </div>
 
-        {/* MAIN LAYOUT */}
-        <div className="rg-layout">
+      {/* ── MAIN ── */}
+      <div className="reg-main a2">
+        <div className="reg-layout">
+
+          {/* ── CONTENT COLUMN ── */}
           <div>
             {/* FEATURED */}
-            {featured.length > 0 && (
-              <section style={{marginBottom:24}} aria-label="Featured startups">
-                <div className="rg-sh">
-                  <span style={{color:"#E8933A",fontSize:10,marginRight:2}}>✦</span>
-                  <span className="rg-sh-l">Featured This Edition</span>
-                  <span className="rg-sh-r" />
+            {featured.length>0 && (
+              <section aria-label="Featured startups" style={{marginBottom:"clamp(18px,3vw,28px)"}}>
+                <div className="reg-sh">
+                  <span style={{color:"#B45309",fontSize:10,marginRight:2}}>✦</span>
+                  <span className="reg-sh-l">Featured This Edition</span>
+                  <div className="reg-sh-r" />
                 </div>
-                <div className="rg-feat-grid">
+                <div className="reg-feat-grid">
                   {featured.map((s,fi)=>(
-                    <Link key={s.id} href={`/startup/${s.slug}`} className="rg-feat-card">
-                      <div className="rg-feat-img">
+                    <Link key={s.id} href={`/startup/${s.slug}`} className="reg-feat-card">
+                      <div className="reg-feat-img">
                         {s.logo_url
                           ? <img src={s.logo_url} alt={s.name} loading={fi===0?"eager":"lazy"} />
-                          : <div className="rg-feat-ph"><span className="rg-feat-ph-letter">{s.name.charAt(0)}</span></div>
+                          : <div className="reg-feat-ph"><span className="reg-feat-ph-l">{s.name.charAt(0)}</span></div>
                         }
-                        <div className="rg-feat-overlay" />
-                        <span className="rg-feat-num">No.{String(fi+1).padStart(2,"0")}</span>
-                        <div className="rg-feat-caption">
-                          <span className="rg-feat-sector">{s.category||"Startup"}</span>
-                          <span className="rg-feat-name">{s.name}</span>
+                        <div className="reg-feat-ov" />
+                        <span className="reg-feat-num">No.{String(fi+1).padStart(2,"0")}</span>
+                        <div className="reg-feat-caption">
+                          <span className="reg-feat-sector">{s.category||"Startup"}</span>
+                          <span className="reg-feat-name">{s.name}</span>
                         </div>
                       </div>
-                      <div className="rg-feat-body">
-                        <p className="rg-feat-desc">{s.description||"Building for India's next decade."}</p>
-                        <div className="rg-feat-foot">
-                          <span className="rg-feat-meta">{s.founded_year&&`Est. ${s.founded_year}`}{s.city&&` · ${s.city}`}</span>
-                          <span className="rg-feat-arrow">↗</span>
+                      <div className="reg-feat-body">
+                        <p className="reg-feat-desc">{s.description||"Building for India's next decade."}</p>
+                        <div className="reg-feat-foot">
+                          <span className="reg-feat-meta">{s.founded_year&&`Est. ${s.founded_year}`}{s.city&&` · ${s.city}`}</span>
+                          <ArrowUpRight style={{width:12,height:12,color:"#C8C2B4"}} aria-hidden="true" />
                         </div>
                       </div>
                     </Link>
@@ -438,123 +463,199 @@ export default async function StartupPage({searchParams}:PageProps) {
               </section>
             )}
 
-            {/* GRID */}
-            {grid.length > 0 ? (
+            {/* ALL STARTUPS */}
+            {grid.length>0 ? (
               <section aria-label="All startups">
                 {featured.length>0 && (
-                  <div className="rg-sh"><span className="rg-sh-l">All Startups</span><span className="rg-sh-r" /></div>
+                  <div className="reg-sh">
+                    <span className="reg-sh-l">All Startups</span>
+                    <div className="reg-sh-r" />
+                  </div>
                 )}
-                {/* Desktop */}
-                <div className="rg-grid">
+                {/* Desktop 3-col grid */}
+                <div className="reg-grid">
                   {grid.map(s=>(
-                    <Link key={s.id} href={`/startup/${s.slug}`} className="rg-card">
-                      <div className="rg-card-head">
-                        <div className="rg-card-logo">
+                    <Link key={s.id} href={`/startup/${s.slug}`} className="reg-card">
+                      <div className="reg-card-head">
+                        <div className="reg-card-logo">
                           {s.logo_url
                             ? <Image src={s.logo_url} alt={s.name} width={36} height={36} className="object-contain" loading="lazy" />
-                            : <span style={{fontSize:14,fontWeight:700,color:"#9C8B72",fontFamily:"'Playfair Display',serif"}}>{s.name.charAt(0)}</span>
+                            : <span style={{fontSize:14,fontWeight:700,color:"#AAA",fontFamily:"'Playfair Display',serif"}}>{s.name.charAt(0)}</span>
                           }
                         </div>
-                        <div className="rg-card-titles">
-                          <div className="rg-card-name">{s.name}</div>
-                          <div className="rg-card-cat">{(s.category||"").slice(0,20)}</div>
+                        <div className="reg-card-titles">
+                          <p className="reg-card-name">{s.name}</p>
+                          <p className="reg-card-cat">{(s.category||"").slice(0,20)}</p>
                         </div>
-                        <svg width="9" height="9" viewBox="0 0 9 9" fill="none" className="rg-card-check" aria-label="Verified"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#15803D" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                        <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-label="Verified" style={{flexShrink:0,marginTop:3}}><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#15803D" strokeWidth="1.4" strokeLinecap="round"/></svg>
                       </div>
-                      <p className="rg-card-desc">{s.description||"Building for India's next decade."}</p>
-                      {s.founders && <p className="rg-card-founders">↳ {s.founders}</p>}
-                      <div className="rg-card-foot">
-                        <div className="rg-card-chips">
-                          {s.founded_year && <span className="rg-card-chip">Est. {s.founded_year}</span>}
-                          {s.city && <span className="rg-card-chip">· {s.city}</span>}
+                      <p className="reg-card-desc">{s.description||"Building for India's next decade."}</p>
+                      {s.founders && <p className="reg-card-founders">↳ {s.founders}</p>}
+                      <div className="reg-card-foot">
+                        <div className="reg-card-chips">
+                          {s.founded_year && <span>Est. {s.founded_year}</span>}
+                          {s.city && <span>· {s.city}</span>}
                         </div>
-                        <span className="rg-card-arrow">↗</span>
+                        <ArrowUpRight style={{width:11,height:11,color:"#C8C2B4"}} aria-hidden="true" />
                       </div>
                     </Link>
                   ))}
                 </div>
-                {/* Mobile LinkedIn-style */}
-                <div className="rg-mob">
+                {/* Mobile LinkedIn list */}
+                <div className="reg-mob">
                   {grid.map(s=>(
-                    <Link key={s.id} href={`/startup/${s.slug}`} className="rg-mob-row">
-                      <div className="rg-mob-logo">
+                    <Link key={s.id} href={`/startup/${s.slug}`} className="reg-mob-row">
+                      <div className="reg-mob-logo">
                         {s.logo_url
                           ? <Image src={s.logo_url} alt={s.name} width={40} height={40} className="object-contain" loading="lazy" />
-                          : <span style={{fontSize:14,fontWeight:700,color:"#9C8B72",fontFamily:"'Playfair Display',serif"}}>{s.name.charAt(0)}</span>
+                          : <span style={{fontSize:14,fontWeight:700,color:"#AAA",fontFamily:"'Playfair Display',serif"}}>{s.name.charAt(0)}</span>
                         }
                       </div>
-                      <div className="rg-mob-info">
-                        <div className="rg-mob-name">{s.name}</div>
-                        <div className="rg-mob-meta">{s.category||"Startup"}{s.founded_year&&` · ${s.founded_year}`}{s.city&&` · ${s.city}`}</div>
-                        {s.description && <div className="rg-mob-desc">{s.description}</div>}
+                      <div className="reg-mob-info">
+                        <p className="reg-mob-name">{s.name}</p>
+                        <p className="reg-mob-meta">{s.category||"Startup"}{s.founded_year&&` · ${s.founded_year}`}{s.city&&` · ${s.city}`}</p>
+                        {s.description && <p className="reg-mob-desc">{s.description}</p>}
                       </div>
-                      <span className="rg-mob-arrow">›</span>
+                      <span style={{fontSize:16,color:"#C8C2B4",flexShrink:0}}>›</span>
                     </Link>
                   ))}
                 </div>
               </section>
             ) : (
-              <div className="rg-empty">
-                <span className="rg-empty-icon">∅</span>
-                <h3 className="rg-empty-h">No startups found</h3>
-                <p className="rg-empty-p">{q?`Nothing matched "${q}". Try a different term.`:"Try adjusting your filters."}</p>
-                <Link href="/startup" className="rg-empty-btn">Clear filters</Link>
+              <div className="reg-empty">
+                <span className="reg-empty-icon">∅</span>
+                <h3 className="reg-empty-h">No startups found</h3>
+                <p className="reg-empty-p">{q?`Nothing matched "${q}". Try a different term.`:"Try adjusting your filters."}</p>
+                <Link href="/startup" style={{display:"inline-block",background:"#1A1208",color:"#fff",padding:"8px 20px",fontFamily:"system-ui,sans-serif",fontSize:9,fontWeight:900,textTransform:"uppercase",letterSpacing:".18em",textDecoration:"none"}}>Clear filters</Link>
               </div>
             )}
 
             {/* PAGINATION */}
-            {totalPages > 1 && (
-              <nav className="rg-pag" aria-label="Pagination">
-                <Link href={pgHref(page-1)} className={`rg-pag-btn${page===1?" dis":""}`} aria-disabled={page===1}>← Prev</Link>
+            {totalPages>1 && (
+              <nav className="reg-pag" aria-label="Registry pagination">
+                <Link href={pgHref(page-1)} className={`reg-pag-btn${page===1?" dis":""}`} aria-disabled={page===1}>← Prev</Link>
                 {pgNums.map(p=>(
-                  <Link key={p} href={pgHref(p)} className={`rg-pag-num${p===page?" on":""}`} aria-current={p===page?"page":undefined}>{p}</Link>
+                  <Link key={p} href={pgHref(p)} className={`reg-pag-num${p===page?" on":""}`} aria-current={p===page?"page":undefined}>{p}</Link>
                 ))}
-                <Link href={pgHref(page+1)} className={`rg-pag-btn${page===totalPages?" dis":""}`} aria-disabled={page===totalPages}>Next →</Link>
+                <Link href={pgHref(page+1)} className={`reg-pag-btn${page===totalPages?" dis":""}`} aria-disabled={page===totalPages}>Next →</Link>
               </nav>
             )}
-
-            {/* CTA */}
-            <div className="rg-cta">
-              <div className="rg-cta-text">
-                <div className="rg-cta-ey">UpForge Registry</div>
-                <div className="rg-cta-h">Your founder story starts with a verified profile.</div>
-                <div className="rg-cta-p">Free forever. Trusted by investors and press across India.</div>
-              </div>
-              <Link href="/submit" className="rg-cta-btn">List Free →</Link>
-            </div>
           </div>
 
-          {/* SIDEBAR */}
-          <aside className="rg-side">
-            <div className="rg-side-box dark">
-              <div className="rg-side-ey">List Free</div>
-              <div className="rg-side-h">Got a startup to list?</div>
-              <div className="rg-side-p">Get independently verified. Free forever.</div>
-              <Link href="/submit" className="rg-side-btn">Submit Startup →</Link>
+          {/* ── SIDEBAR — blog/about "By the Numbers" pattern ── */}
+          <aside className="reg-side" style={{position:"sticky",top:88}}>
+            {/* Submit CTA */}
+            <div className="reg-side-box dk">
+              <p className="reg-side-ey">List Free · UpForge</p>
+              <p className="reg-side-h">Got a startup to list?</p>
+              <p className="reg-side-p">Get independently verified. Free forever.</p>
+              <Link href="/submit" className="reg-side-btn">Submit Startup →</Link>
             </div>
-            {cats.length > 0 && (
-              <div className="rg-side-box">
-                <div className="rg-side-ey">Browse by Sector</div>
-                <ul className="rg-side-list">
+
+            {/* Sector directory */}
+            {cats.length>0 && (
+              <div className="reg-side-box">
+                <p className="reg-side-ey">Browse by Sector</p>
+                <ul className="reg-side-list">
                   {cats.slice(0,10).map(c=>(
                     <li key={c}>
-                      <Link href={`/startups/${c.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}`}>
-                        <span>{c}</span><span style={{color:"#D5CEBC"}}>›</span>
+                      <Link href={`/startups/${catSlug(c)}`}>
+                        <span>{c}</span>
+                        <span style={{color:"#C8C2B4",fontSize:12}}>›</span>
                       </Link>
                     </li>
                   ))}
                 </ul>
-                {cats.length > 10 && (
-                  <Link href="/startups" style={{display:"block",marginTop:8,paddingTop:8,borderTop:"1px solid #EAE4D4",fontFamily:"system-ui,sans-serif",fontSize:"8px",fontWeight:700,textTransform:"uppercase",letterSpacing:".18em",color:"#9C8B72",textDecoration:"none"}}>
+                {cats.length>10 && (
+                  <Link href="/startups" style={{display:"block",marginTop:8,paddingTop:8,borderTop:"1px solid #D8D2C4",fontFamily:"system-ui,sans-serif",fontSize:"8px",fontWeight:700,textTransform:"uppercase",letterSpacing:".18em",color:"#AAA",textDecoration:"none"}}>
                     All {cats.length} sectors →
                   </Link>
                 )}
               </div>
             )}
+
+            {/* Stats box — "By the Numbers" blog/about pattern */}
+            <div className="reg-side-box dk" style={{position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#92400E,#D97706,#E8C547)"}} />
+              <p className="reg-side-ey">By The Numbers</p>
+              <p className="pf" style={{fontSize:"1rem",fontWeight:700,color:"#fff",fontStyle:"italic",marginBottom:14,lineHeight:1.3}}>India's Startup<br /><span style={{color:"#E8C547"}}>Ecosystem 2026</span></p>
+              {[
+                {v:`${total.toLocaleString()}+`,l:"Verified on UpForge"},
+                {v:"125+",l:"Indian Unicorns"},
+                {v:"$3.4B",l:"Q1 2026 Funding"},
+                {v:"3rd",l:"Largest Ecosystem"},
+              ].map((s,i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",padding:"7px 0",borderBottom:i<3?"1px solid rgba(255,255,255,.08)":"none"}}>
+                  <span style={{fontFamily:"system-ui,sans-serif",fontSize:8,color:"rgba(255,255,255,.4)",textTransform:"uppercase",letterSpacing:".12em"}}>{s.l}</span>
+                  <span className="pf" style={{fontSize:"1.1rem",fontWeight:900,color:"#E8C547"}}>{s.v}</span>
+                </div>
+              ))}
+            </div>
           </aside>
         </div>
 
-        <Footer />
+        {/* ── CTA — blog/about pattern ── */}
+        <div className="reg-cta a3">
+          <div>
+            <p className="reg-cta-ey">UpForge Intelligence</p>
+            <p className="reg-cta-h">Your founder story starts with a verified profile.</p>
+            <p className="reg-cta-p">Free forever. Trusted by investors and press across India.</p>
+          </div>
+          <Link href="/submit" className="reg-cta-btn">
+            List Free <ArrowRight style={{width:13,height:13}} aria-hidden="true" />
+          </Link>
+        </div>
+
+        {/* ── INTERNAL LINKS — exact blog/about pattern ── */}
+        <section className="a4" style={{paddingTop:"clamp(18px,3vw,30px)",borderTop:"1px solid #C8C2B4",marginTop:"clamp(18px,3vw,28px)"}}>
+          <p style={{fontFamily:"system-ui,sans-serif",fontSize:8.5,letterSpacing:".3em",textTransform:"uppercase",color:"#AAA",marginBottom:14}}>Explore on UpForge</p>
+          <div className="reg-links-grid">
+            {[
+              {l:"Startup Registry India",  h:"/startup",      desc:"Full verified database"},
+              {l:"Browse by Sector",        h:"/startups",     desc:"30+ categories"},
+              {l:"Indian Unicorns 2026",    h:"/blog/top-indian-unicorns-2026", desc:"All 125+ profiled"},
+              {l:"Funding Guide 2026",      h:"/blog/how-to-get-startup-funding-india-2026", desc:"DPIIT, SISFS & VCs"},
+              {l:"AI Startups India",       h:"/startups/ai-ml",   desc:"India's AI builders"},
+              {l:"FinTech Startups India",  h:"/startups/fintech", desc:"Zerodha, CRED & more"},
+              {l:"The Forge — Blog",        h:"/blog",         desc:"Startup intelligence"},
+              {l:"Submit Your Startup",     h:"/submit",       desc:"Get listed free"},
+            ].map(lnk=>(
+              <Link key={lnk.h+lnk.l} href={lnk.h} className="reg-link-card">
+                <span className="reg-link-title">
+                  {lnk.l}
+                  <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" style={{display:"inline",marginLeft:4,verticalAlign:"middle",flexShrink:0}}>
+                    <path d="M2 7L7 2M7 2H3M7 2V6" stroke="#1A1208" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <span className="reg-link-desc">{lnk.desc}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ── FOOTER — exact blog/about pattern ── */}
+        <footer className="reg-footer a4">
+          <p className="reg-footer-note">
+            * Registry data sourced from DPIIT, Tracxn, Inc42, Forbes India, Hurun India 2025, and company announcements as of March 2026.
+            UpForge is an independent registry — no paid placements, no sponsored rankings.
+          </p>
+          <nav aria-label="Footer navigation">
+            <ul className="reg-footer-nav">
+              {[
+                {l:"The Founder Chronicle", h:"/"},
+                {l:"Startup Registry India",h:"/startup"},
+                {l:"Browse by Sector",      h:"/startups"},
+                {l:"Indian Unicorns 2026",  h:"/blog/top-indian-unicorns-2026"},
+                {l:"The Forge — Blog",      h:"/blog"},
+                {l:"Free Valuation Tool",   h:"/report"},
+                {l:"Submit Startup",        h:"/submit"},
+              ].map(lnk=>(
+                <li key={lnk.h+lnk.l}><Link href={lnk.h}>{lnk.l}</Link></li>
+              ))}
+            </ul>
+          </nav>
+        </footer>
+
       </div>
     </>
   )
