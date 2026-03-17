@@ -382,16 +382,22 @@ export default function BlogEcosystem() {
                 <span className="sh-l">In This Article</span>
                 <div className="sh-r" />
               </div>
-              {SECTIONS.map((s, i) => (
-                
-                  key={i}
-                  href={`#section-${s.num}`}
-                  style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 9, textDecoration: "none" }}
-                >
-                  <span className="sf" style={{ fontSize: 8, fontWeight: 700, color: "var(--gold2)", flexShrink: 0, minWidth: 18 }}>{s.num}</span>
-                  <span className="rp" style={{ fontSize: 11.5, color: "var(--ink4)", lineHeight: 1.4 }}>{s.title}</span>
-                </a>
-              ))}
+              {SECTIONS.map((s, i) => {
+                return (
+                  
+                    key={i}
+                    href={"#section-" + s.num}
+                    style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 9, textDecoration: "none" }}
+                  >
+                    <span className="sf" style={{ fontSize: 8, fontWeight: 700, color: "var(--gold2)", flexShrink: 0, minWidth: 18 }}>
+                      {s.num}
+                    </span>
+                    <span className="rp" style={{ fontSize: 11.5, color: "var(--ink4)", lineHeight: 1.4 }}>
+                      {s.title}
+                    </span>
+                  </a>
+                )
+              })}
             </nav>
           </div>
 
