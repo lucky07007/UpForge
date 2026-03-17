@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   // Google Search Console verification
   // Replace the content value with your actual GSC verification token
   verification: {
-    google: "REPLACE_WITH_YOUR_GSC_VERIFICATION_TOKEN",
+    google: "g7JT-FIdylY2-2Pq4axQcEP8q_4tuG1fogKPWdWuF1Y",
   },
 
   icons: {
