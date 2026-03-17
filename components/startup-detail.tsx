@@ -1,5 +1,6 @@
-// components/startup-detail.tsx
 "use client"
+
+// components/startup-detail.tsx
 
 import React, { useRef, useState, useCallback } from "react"
 import Image from "next/image"
