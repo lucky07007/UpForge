@@ -384,8 +384,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                   of <strong style={{ color:"#1A1208" }}>{total.toLocaleString()}</strong> {displayName} startups
                   {totalPages > 1 && <span style={{ color:"#AAA" }}> · Page {currentPage}/{totalPages}</span>}
                 </p>
-                <Link href="/startups" className="sys" style={{ fontSize:10, color:"#AAA", textDecoration:"none" }}
-                  className="hover:text-[#1A1208] transition-colors hidden sm:inline">
+                <Link href="/startups" className="sys hover:text-[#1A1208] transition-colors hidden sm:inline" style={{ fontSize:10, color:"#AAA", textDecoration:"none" }}>
                   All categories →
                 </Link>
               </div>
@@ -464,8 +463,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                       </li>
                     ))}
                   </ul>
-                  <Link href="/startups" className="sys" style={{ display:"block", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em", color:"#AAA", textDecoration:"none", paddingTop:10, marginTop:6, borderTop:"1px solid #D8D2C4" }}
-                    className="hover:text-[#1A1208] transition-colors">
+                  <Link href="/startups" className="sys hover:text-[#1A1208] transition-colors" style={{ display:"block", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.16em", color:"#AAA", textDecoration:"none", paddingTop:10, marginTop:6, borderTop:"1px solid #D8D2C4" }}>
                     View all categories →
                   </Link>
                 </div>
