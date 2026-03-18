@@ -204,33 +204,33 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .cat-tab.on { color:#B45309; border-bottom-color:#B45309 }
 
         /* ── TOOLBAR — sticky ── */
-        .toolbar { position:sticky; top:0; z-index:40; background:#FDFCF9; border-bottom:1px solid #C8C2B4 }
+        .toolbar { position:sticky; top:0; z-index:40; background:#F3EFE5; border-bottom:1px solid #C8C2B4 }
         .toolbar-inner { max-width:1300px; margin:0 auto; padding:0 clamp(16px,4vw,48px) }
-        .search-row { display:flex; align-items:stretch; border-bottom:1px solid #EDE9DF }
+        .search-row { display:flex; align-items:stretch; border-bottom:1px solid #D8D2C4 }
         .search-icon { display:flex; align-items:center; padding:0 16px; color:#C8C2B4; font-size:18px; flex-shrink:0 }
-        .search-inp { flex:1; height:50px; border:none; background:transparent; font-family:Georgia,'Times New Roman',serif; font-size:16px; font-style:italic; color:#1A1208; outline:none; padding:0; min-width:0 }
+        .search-inp { flex:1; height:50px; border:none; background:#F3EFE5; font-family:Georgia,'Times New Roman',serif; font-size:16px; font-style:italic; color:#1A1208; outline:none; padding:0; min-width:0 }
         .search-inp::placeholder { color:#C8C2B4 }
         .search-btn { height:50px; padding:0 26px; background:#1A1208; color:#fff; border:none; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; letter-spacing:.22em; text-transform:uppercase; cursor:pointer; flex-shrink:0; transition:opacity .15s }
         .search-btn:hover { opacity:.85 }
 
-        .filter-row { display:flex; align-items:center; height:40px; overflow-x:auto; scrollbar-width:none }
+        .filter-row { display:flex; align-items:center; height:40px; overflow-x:auto; scrollbar-width:none; background:#F3EFE5 }
         .filter-row::-webkit-scrollbar { display:none }
-        .filter-lbl { font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:#C8C2B4; padding:0 16px; border-right:1px solid #EDE9DF; height:100%; display:flex; align-items:center; flex-shrink:0; white-space:nowrap }
-        .filter-sel { height:100%; border:none; border-right:1px solid #EDE9DF; background:transparent; font-family:system-ui,sans-serif; font-size:11px; color:#1A1208; padding:0 10px; outline:none; cursor:pointer; flex-shrink:0; max-width:145px }
-        .filter-link { height:100%; padding:0 16px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6B5C40; text-decoration:none; border-right:1px solid #EDE9DF; white-space:nowrap; transition:all .15s; flex-shrink:0 }
+        .filter-lbl { font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:#C8C2B4; padding:0 16px; border-right:1px solid #D8D2C4; height:100%; display:flex; align-items:center; flex-shrink:0; white-space:nowrap }
+        .filter-sel { height:100%; border:none; border-right:1px solid #D8D2C4; background:#F3EFE5; font-family:system-ui,sans-serif; font-size:11px; color:#1A1208; padding:0 10px; outline:none; cursor:pointer; flex-shrink:0; max-width:145px }
+        .filter-link { height:100%; padding:0 16px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6B5C40; text-decoration:none; border-right:1px solid #D8D2C4; white-space:nowrap; transition:all .15s; flex-shrink:0 }
         .filter-link:hover { background:#F3EFE5; color:#1A1208 }
         .filter-link.on { background:#1A1208; color:#fff }
         .filter-clear { height:100%; padding:0 16px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#DC2626; flex-shrink:0 }
 
         /* ── Results bar ── */
-        .results-bar { max-width:1300px; margin:0 auto; padding:12px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid #D8D2C4 }
+        .results-bar { max-width:1300px; margin:0 auto; padding:12px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid #D8D2C4; background:#F3EFE5 }
         .results-q { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:#1A1208; font-style:italic }
         .results-n { font-size:13px; color:#6B5C40; font-style:italic }
         .results-rule { flex:1; height:1px; background:#D8D2C4 }
         .results-pg { font-family:system-ui,sans-serif; font-size:9px; color:#AAA }
 
         /* ── Main layout ── */
-        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) 0 }
+        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) 0; background:#F3EFE5 }
         .main-grid { display:grid; grid-template-columns:1fr 300px; gap:clamp(20px,3vw,32px); align-items:start }
         @media(max-width:1060px) { .main-grid { grid-template-columns:1fr } .rg-aside { display:none } }
 
@@ -238,9 +238,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .feat-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid #1A1208; background:#1A1208; gap:1.5px; margin-bottom:clamp(20px,3.5vw,36px) }
         @media(max-width:720px) { .feat-grid { grid-template-columns:1fr } }
 
-        .feat-card { background:#FDFCF9; display:flex; flex-direction:column; text-decoration:none; transition:all .18s; position:relative; overflow:hidden }
+        .feat-card { background:#F3EFE5; display:flex; flex-direction:column; text-decoration:none; transition:all .18s; position:relative; overflow:hidden }
         .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#92400E,#D97706,#E8C547); opacity:0; transition:opacity .2s }
-        .feat-card:hover { background:#F3EFE5; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1 }
+        .feat-card:hover { background:#EDE9DF; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1 }
         .feat-card:hover::before { opacity:1 }
 
         .feat-img-wrap { width:100%; aspect-ratio:16/9; position:relative; background:#EDE9DF; overflow:hidden; flex-shrink:0 }
@@ -262,10 +262,10 @@ export default async function StartupPage({ searchParams }: PageProps) {
         /* ── STARTUP LIST — large editorial cards ── */
         .startup-list { display:flex; flex-direction:column; gap:0 }
 
-        .s-row { display:grid; grid-template-columns:52px 1fr auto; align-items:stretch; border:1.5px solid #D8D2C4; border-bottom:none; text-decoration:none; background:#FDFCF9; transition:all .15s; position:relative }
+        .s-row { display:grid; grid-template-columns:52px 1fr auto; align-items:stretch; border:1.5px solid #D8D2C4; border-bottom:none; text-decoration:none; background:#F3EFE5; transition:all .15s; position:relative }
         .s-row:first-child { border-top-color:#1A1208 }
         .s-row:last-child { border-bottom:1.5px solid #D8D2C4 }
-        .s-row:hover { background:#F3EFE5; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1; border-color:#1A1208 }
+        .s-row:hover { background:#EDE9DF; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1; border-color:#1A1208 }
         @media(max-width:560px) { .s-row { grid-template-columns:1fr auto } .s-num-col { display:none } }
 
         /* Number column */
@@ -275,7 +275,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
         /* Main body */
         .s-body { padding:18px 20px; display:flex; flex-direction:column; gap:7px }
         .s-head { display:flex; align-items:flex-start; gap:12px }
-        .s-logo-wrap { width:38px; height:38px; border:1px solid #D8D2C4; background:#F3EFE5; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
+        .s-logo-wrap { width:38px; height:38px; border:1px solid #D8D2C4; background:#EDE9DF; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
         .s-meta { flex:1; min-width:0 }
         .s-name { font-family:'Playfair Display',serif; font-size:clamp(.9rem,1.1vw,1.05rem); font-weight:700; color:#1A1208; line-height:1.25; margin-bottom:1px }
         .s-row:hover .s-name { text-decoration:underline }
@@ -284,7 +284,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .s-desc { font-size:12px; color:#5A4A30; font-style:italic; line-height:1.68; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
         .s-founders { font-size:10.5px; color:#AAA; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
         .s-chips { display:flex; gap:8px; flex-wrap:wrap }
-        .s-chip { font-family:system-ui,sans-serif; font-size:8.5px; color:#6B5C40; border:1px solid #D8D2C4; padding:2px 9px; background:#F3EFE5 }
+        .s-chip { font-family:system-ui,sans-serif; font-size:8.5px; color:#6B5C40; border:1px solid #C8C2B4; padding:2px 9px; background:#EDE9DF }
 
         /* Arrow column */
         .s-arrow-col { display:flex; align-items:center; justify-content:center; padding:0 16px; border-left:1px solid #EDE9DF }
@@ -293,11 +293,11 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .s-row:hover .s-arrow svg { color:#fff }
 
         /* ── Empty state ── */
-        .empty-state { text-align:center; padding:60px 24px; border:1.5px dashed #C8C2B4; background:#FDFCF9 }
+        .empty-state { text-align:center; padding:60px 24px; border:1.5px dashed #C8C2B4; background:#F3EFE5 }
 
         /* ── Pagination — exact homepage pattern ── */
         .pag { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:clamp(24px,3.5vw,36px); padding-top:clamp(18px,3vw,28px); border-top:1px solid #D8D2C4 }
-        .pag-btn { padding:7px 18px; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid #C8C2B4; background:#FDFCF9; color:#6B5C40; text-decoration:none; transition:all .15s }
+        .pag-btn { padding:7px 18px; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid #C8C2B4; background:#F3EFE5; color:#6B5C40; text-decoration:none; transition:all .15s }
         .pag-btn:hover { border-color:#1A1208; color:#1A1208 }
         .pag-btn.dis { color:#C8C2B4; pointer-events:none }
         .pag-num { width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-family:system-ui,sans-serif; font-size:11px; font-weight:700; border:1px solid #C8C2B4; text-decoration:none; color:#6B5C40; transition:all .15s }
@@ -306,7 +306,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
         /* ── ASIDE — exact homepage sidebar pattern ── */
         .rg-aside { display:flex; flex-direction:column; gap:14px }
-        .aside-box { border:1.5px solid #1A1208; background:#FDFCF9; padding:18px }
+        .aside-box { border:1.5px solid #1A1208; background:#F3EFE5; padding:18px }
         .aside-box.dk { background:#1A1208 }
         .aside-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.28em; color:#AAA; margin-bottom:9px }
         .aside-box.dk .aside-ey { color:#E8C547 }
@@ -339,13 +339,13 @@ export default async function StartupPage({ searchParams }: PageProps) {
         /* ── Internal links — exact homepage grid ── */
         .links-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px }
         @media(max-width:800px) { .links-grid { grid-template-columns:repeat(2,1fr) } }
-        .link-card { display:flex; flex-direction:column; gap:4px; padding:12px 13px; border:1px solid #D8D2C4; background:#FDFCF9; text-decoration:none; transition:border-color .15s }
+        .link-card { display:flex; flex-direction:column; gap:4px; padding:12px 13px; border:1px solid #D8D2C4; background:#F3EFE5; text-decoration:none; transition:border-color .15s }
         .link-card:hover { border-color:#1A1208 }
         .link-title { font-family:system-ui,sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:#1A1208; display:flex; align-items:center; gap:3px }
         .link-desc { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
 
         /* ── Footer — exact homepage ── */
-        .pg-footer { border-top:1px solid #D8D2C4; padding-top:1rem; margin-top:clamp(22px,3.5vw,36px); padding-bottom:10px }
+        .pg-footer { border-top:1px solid #D8D2C4; padding-top:1rem; margin-top:clamp(22px,3.5vw,36px); padding-bottom:10px; background:#F3EFE5 }
         .footer-note { font-family:system-ui,sans-serif; font-size:8.5px; color:#BBB0A0; line-height:1.75 }
         .footer-nav { display:flex; flex-wrap:wrap; gap:6px 16px; list-style:none; margin:12px 0 0; padding:0 }
         .footer-nav a { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA; text-transform:uppercase; letter-spacing:.1em; text-decoration:none; transition:color .15s }
@@ -390,6 +390,20 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </span>
           </div>
 
+          {/* Stats bar */}
+          <div className="stats-bar ri-2">
+            {[
+              { v:`${total.toLocaleString()}+`, l:"Verified Profiles" },
+              { v:`${cats.length || "30"}+`,    l:"Sectors"           },
+              { v:`${years.length > 0 ? years[years.length-1] : "2010"}+`, l:"Since" },
+              { v:"Daily",                       l:"Updated"           },
+            ].map((s, i) => (
+              <div key={i} className="stat-cell">
+                <div className="stat-v pf">{s.v}</div>
+                <div className="stat-l">{s.l}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Category tab strip — identical to homepage edition tabs */}
@@ -435,6 +449,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </select>
             <Link href={qs({ sort:"name",   page:undefined })} className={`filter-link${sort==="name"   ? " on":""}`}>A–Z</Link>
             <Link href={qs({ sort:"newest", page:undefined })} className={`filter-link${sort==="newest" ? " on":""}`}>Newest</Link>
+            <Link href={qs({ sort:"year",   page:undefined })} className={`filter-link${sort==="year"   ? " on":""}`}>Founded</Link>
             {isFiltered && <Link href="/startup" className="filter-clear">✕ Clear</Link>}
           </div>
         </div>
