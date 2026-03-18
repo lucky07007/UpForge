@@ -1,12 +1,13 @@
-// app/startup/page.tsx — PRODUCTION v6
+// app/startup/page.tsx — REDESIGN v7
 // ─────────────────────────────────────────────────────────────────────────────
-// FIXES vs v5:
-//   1. Filter selects now auto-submit on change via inline JS (no hydration needed)
-//   2. Sort links preserve existing q + year + category params correctly
-//   3. Category tab strip now submits full filter state (not just category)
-//   4. Design fully matches home page: #F3EFE5 parchment, Playfair, same
-//      card hover (translate -2,-2 + 4px shadow), same CTA, same footer
-//   5. Stats bar: all 4 stats are real dynamic data
+// Design: "Indian Luxury Editorial"
+//   • Cormorant Garamond display + DM Sans data/UI
+//   • Near-black #0A0A0A bg + warm cream #F5F0E8 surface + #C8A96E gold
+//   • Museum-label startup cards — each startup is an exhibit, not a tile
+//   • 12-col editorial grid, lavish whitespace, zero clutter
+//   • PAGE_SIZE reduced to 12 for breathing room
+//   • All search / filter / sort / pagination logic identical to v6
+//   • 100% LV-level brand authority + full SEO intact
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createClient } from "@/lib/supabase/server"
@@ -14,9 +15,9 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
-import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 
-const PAGE_SIZE = 18
+const PAGE_SIZE = 12   // fewer per page — more room per card
 
 interface StartupRow {
   id: string; name: string; slug: string
@@ -28,6 +29,8 @@ interface PageProps {
   searchParams?: Promise<{ page?: string; q?: string; year?: string; sort?: string; category?: string }>
 }
 
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
 async function getData(q: string, year: string, sort: string, cat: string, page: number) {
   const sb = await createClient()
   const from = (page - 1) * PAGE_SIZE
@@ -38,10 +41,13 @@ async function getData(q: string, year: string, sort: string, cat: string, page:
   if (year) query = query.eq("founded_year", Number(year))
   if (cat)  query = query.eq("category", cat)
   const col = sort === "year" ? "founded_year" : sort === "newest" ? "created_at" : "name"
-  const { data, count, error } = await query.order(col, { ascending: sort !== "newest" }).range(from, from + PAGE_SIZE - 1)
+  const { data, count, error } = await query
+    .order(col, { ascending: sort !== "newest" })
+    .range(from, from + PAGE_SIZE - 1)
   if (error) console.error("[registry]", error.message)
   return { startups: (data ?? []) as StartupRow[], total: count ?? 0 }
 }
+
 async function getFilters() {
   const sb = await createClient()
   const [{ data: yd }, { data: cd }] = await Promise.all([
@@ -53,6 +59,8 @@ async function getFilters() {
     cats:  [...new Set((cd ?? []).map(r => r.category as string))].filter(Boolean).sort(),
   }
 }
+
+// ─── METADATA ────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const sp = await searchParams
@@ -72,10 +80,16 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
       images: [{ url: "https://www.upforge.in/og/registry.png", width: 1200, height: 630 }],
       locale: "en_IN", type: "website",
     },
-    robots: { index: !isFiltered && page <= 1, follow: true, googleBot: { index: !isFiltered && page <= 1, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
+    robots: {
+      index: !isFiltered && page <= 1,
+      follow: true,
+      googleBot: { index: !isFiltered && page <= 1, follow: true, "max-snippet": -1, "max-image-preview": "large" },
+    },
   }
 }
 export const revalidate = 300
+
+// ─── PAGE ────────────────────────────────────────────────────────────────────
 
 export default async function StartupPage({ searchParams }: PageProps) {
   const sp   = await searchParams
@@ -92,7 +106,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const isFiltered = !!(q || year || cat || (sort && sort !== "name"))
 
-  // Build URL preserving all current params except the overridden one
+  // URL builder — preserves all params, overrides given keys
   const qs = (ov: Record<string, string | undefined>) => {
     const base: Record<string, string | undefined> = {
       q:        q    || undefined,
@@ -113,9 +127,12 @@ export default async function StartupPage({ searchParams }: PageProps) {
   const winStart = page <= 3 || totalPages <= 5 ? 1 : page >= totalPages - 2 ? totalPages - 4 : page - 2
   const pgNums   = Array.from({ length: winSize }, (_, i) => winStart + i)
 
-  const featured = page === 1 && !isFiltered ? startups.filter(s => s.is_featured).slice(0, 3) : []
+  const featured = page === 1 && !isFiltered ? startups.filter(s => s.is_featured).slice(0, 2) : []
   const featIds  = new Set(featured.map(s => s.id))
   const grid     = page === 1 && !isFiltered ? startups.filter(s => !featIds.has(s.id)) : startups
+
+  // Global offset for sequential numbering across pages
+  const baseIndex = (page - 1) * PAGE_SIZE
 
   const schemas = [
     { "@context":"https://schema.org","@type":"WebSite","name":"UpForge","url":"https://www.upforge.in",
@@ -137,529 +154,1059 @@ export default async function StartupPage({ searchParams }: PageProps) {
       ))}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        .pf { font-family:'Playfair Display',Georgia,serif !important }
-
-        @keyframes regFadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        .rg-a0 { animation:regFadeUp .38s .00s ease both }
-        .rg-a1 { animation:regFadeUp .38s .07s ease both }
-        .rg-a2 { animation:regFadeUp .38s .14s ease both }
-        .rg-a3 { animation:regFadeUp .38s .20s ease both }
-        .rg-a4 { animation:regFadeUp .38s .27s ease both }
-
-        /* Section header — exact home page pattern */
-        .rg-sh { display:flex; align-items:center; gap:10px; margin-bottom:14px }
-        .rg-sh-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#AAA; font-family:system-ui,sans-serif; white-space:nowrap }
-        .rg-sh-r { flex:1; height:1px; background:#D8D2C4 }
-
-        /* Masthead — exact home page pattern */
-        .rg-mast { background:#F3EFE5; border-bottom:3px solid #1A1208 }
-        .rg-mast-inner { text-align:center; padding:clamp(24px,4vw,52px) 16px clamp(16px,3vw,36px); max-width:1300px; margin:0 auto; border-bottom:1px solid #C8C2B4 }
-
-        /* Stats bar — exact home page pattern */
-        .rg-stats { display:flex; background:#1A1208; max-width:600px; margin:0 auto }
-        .rg-stat { flex:1; padding:14px 8px; text-align:center; border-right:1px solid rgba(255,255,255,.08) }
-        .rg-stat:last-child { border-right:none }
-        .rg-stat-v { font-family:'Playfair Display',serif; font-size:clamp(1.2rem,2.5vw,1.9rem); font-weight:900; color:#fff; line-height:1; margin-bottom:3px }
-        .rg-stat-l { font-family:system-ui,sans-serif; font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:rgba(255,255,255,.32) }
-        @media(max-width:440px) {
-          .rg-stats { flex-direction:column }
-          .rg-stat { border-right:none; border-bottom:1px solid rgba(255,255,255,.08) }
-          .rg-stat:last-child { border-bottom:none }
+        /* ── Design tokens ───────────────────────────────────────────────── */
+        :root {
+          --void:    #0A0A0A;
+          --void2:   #111111;
+          --void3:   #1A1A1A;
+          --cream:   #F5F0E8;
+          --cream2:  #EDE8DF;
+          --cream3:  #FAF7F3;
+          --gold:    #C8A96E;
+          --gold2:   #A8893E;
+          --gold3:   #E8C980;
+          --muted:   #6B6560;
+          --muted2:  #9A958F;
+          --rule:    rgba(200,169,110,.2);
+          --rule2:   rgba(200,169,110,.08);
+          --cg:      'Cormorant Garamond', Georgia, serif;
+          --dm:      'DM Sans', system-ui, sans-serif;
         }
 
-        /* Tab strip */
-        .rg-tabs { display:flex; overflow-x:auto; border-bottom:1px solid #C8C2B4; scrollbar-width:none }
-        .rg-tabs::-webkit-scrollbar { display:none }
-        .rg-tab { flex-shrink:0; padding:11px 16px; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#888; text-decoration:none; border-bottom:2.5px solid transparent; transition:all .15s; white-space:nowrap }
-        .rg-tab:hover { color:#1A1208 }
-        .rg-tab.on { color:#B45309; border-bottom-color:#B45309 }
+        /* ── Reset for this page only ────────────────────────────────────── */
+        .pg * { box-sizing: border-box; }
+        .pg a { text-decoration: none; }
+        .pg ul { list-style: none; margin: 0; padding: 0; }
 
-        /* Toolbar — sticky */
-        .rg-toolbar { background:#FDFCF9; border-bottom:1px solid #C8C2B4; position:sticky; top:0; z-index:30 }
-        .rg-toolbar-inner { max-width:1300px; margin:0 auto; padding:0 clamp(16px,4vw,48px) }
-        .rg-search-row { display:flex; align-items:stretch; border-bottom:1px solid #EDE9DF }
-        .rg-search-icon { display:flex; align-items:center; padding:0 14px; color:#C8C2B4; font-size:16px; flex-shrink:0 }
-        .rg-search-inp { flex:1; height:46px; border:none; background:transparent; font-family:Georgia,serif; font-size:15px; color:#1A1208; outline:none; font-style:italic; padding:0; min-width:0 }
-        .rg-search-inp::placeholder { color:#C8C2B4 }
-        .rg-search-btn { height:46px; padding:0 22px; background:#1A1208; color:#fff; border:none; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; flex-shrink:0 }
-        .rg-filter-row { display:flex; align-items:center; height:38px; overflow-x:auto }
-        .rg-filter-row::-webkit-scrollbar { display:none }
-        .rg-filter-lbl { font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:#C8C2B4; padding:0 14px; border-right:1px solid #EDE9DF; height:100%; display:flex; align-items:center; flex-shrink:0; white-space:nowrap }
-        /* FIXED: selects auto-submit via JS onChange */
-        .rg-filter-sel { height:100%; border:none; border-right:1px solid #EDE9DF; background:transparent; font-family:system-ui,sans-serif; font-size:11px; color:#1A1208; padding:0 8px; outline:none; cursor:pointer; flex-shrink:0; max-width:140px }
-        .rg-filter-link { height:100%; padding:0 14px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6B5C40; text-decoration:none; border-right:1px solid #EDE9DF; white-space:nowrap; transition:all .15s; flex-shrink:0 }
-        .rg-filter-link:hover { background:#F3EFE5; color:#1A1208 }
-        .rg-filter-link.on { background:#1A1208; color:#fff }
-        .rg-filter-clear { height:100%; padding:0 14px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#DC2626; text-decoration:none; flex-shrink:0 }
+        /* ── Animations ──────────────────────────────────────────────────── */
+        @keyframes pgRise  { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:none } }
+        @keyframes pgFade  { from { opacity:0 } to { opacity:1 } }
+        @keyframes pgSlide { from { opacity:0; transform:translateX(-12px) } to { opacity:1; transform:none } }
+        .pg-rise  { animation: pgRise  .7s cubic-bezier(.16,1,.3,1) both }
+        .pg-fade  { animation: pgFade  .5s ease both }
+        .pg-slide { animation: pgSlide .6s cubic-bezier(.16,1,.3,1) both }
+        .d1  { animation-delay:.00s } .d2 { animation-delay:.08s }
+        .d3  { animation-delay:.16s } .d4 { animation-delay:.24s }
+        .d5  { animation-delay:.32s } .d6 { animation-delay:.40s }
 
-        /* Results bar */
-        .rg-results-bar { max-width:1300px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:10px; border-bottom:1px solid #D8D2C4 }
-        .rg-results-q { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:#1A1208 }
-        .rg-results-n { font-size:13px; color:#6B5C40; font-style:italic }
-        .rg-results-rule { flex:1; height:1px; background:#D8D2C4 }
-        .rg-results-pg { font-family:system-ui,sans-serif; font-size:9px; color:#AAA }
+        /* ── Page shell ──────────────────────────────────────────────────── */
+        .pg {
+          min-height: 100vh;
+          background: var(--void);
+          font-family: var(--dm);
+          color: var(--cream);
+        }
 
-        /* Main layout */
-        .rg-main { max-width:1300px; margin:0 auto; padding:clamp(16px,3vw,32px) clamp(16px,4vw,48px) 0 }
-        .rg-layout { display:grid; grid-template-columns:1fr 300px; gap:clamp(16px,2.5vw,28px); align-items:start }
-        @media(max-width:1000px) { .rg-layout { grid-template-columns:1fr !important } }
+        /* ── Masthead ─────────────────────────────────────────────────────── */
+        .mast {
+          background: var(--void);
+          border-bottom: 1px solid var(--rule);
+          padding: clamp(48px,8vw,96px) clamp(20px,5vw,80px) 0;
+          position: relative;
+          overflow: hidden;
+        }
+        /* Subtle grid texture */
+        .mast::before {
+          content: '';
+          position: absolute; inset: 0;
+          background-image:
+            linear-gradient(var(--rule2) 1px, transparent 1px),
+            linear-gradient(90deg, var(--rule2) 1px, transparent 1px);
+          background-size: 80px 80px;
+          pointer-events: none;
+        }
+        .mast-inner {
+          position: relative;
+          max-width: 1280px;
+          margin: 0 auto;
+        }
+        .mast-eyebrow {
+          display: flex; align-items: center; gap: 16px;
+          margin-bottom: 28px;
+        }
+        .mast-eyebrow-line { height: 1px; width: 48px; background: var(--gold); opacity: .6; }
+        .mast-eyebrow-text {
+          font-family: var(--dm); font-size: 9px; font-weight: 500;
+          letter-spacing: .35em; text-transform: uppercase;
+          color: var(--gold); opacity: .8;
+        }
+        .mast-title {
+          font-family: var(--cg);
+          font-size: clamp(3.2rem, 9vw, 8rem);
+          font-weight: 300;
+          letter-spacing: -.02em;
+          line-height: .92;
+          color: var(--cream);
+          margin-bottom: 24px;
+        }
+        .mast-title em { font-style: italic; color: var(--gold); }
+        .mast-sub {
+          font-family: var(--dm); font-size: clamp(12px,1.4vw,14px);
+          color: var(--muted2); font-weight: 300; line-height: 1.8;
+          max-width: 520px; margin-bottom: 40px;
+          letter-spacing: .01em;
+        }
 
-        /* Featured grid — exact home page pattern */
-        .rg-feat-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid #1A1208; background:#1A1208; gap:1.5px; margin-bottom:clamp(18px,3vw,28px) }
-        @media(max-width:700px) { .rg-feat-grid { grid-template-columns:1fr !important } }
-        .rg-feat-card { background:#FDFCF9; display:flex; flex-direction:column; text-decoration:none; transition:background .15s }
-        .rg-feat-card:hover { background:#F3EFE5 }
-        .rg-feat-img { width:100%; aspect-ratio:16/9; position:relative; background:#EDE9DF; overflow:hidden; flex-shrink:0 }
-        .rg-feat-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:sepia(12%) contrast(105%); transition:transform .5s }
-        .rg-feat-card:hover .rg-feat-img img { transform:scale(1.04) }
-        .rg-feat-ph { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#EDE9DF,#C8C2B4) }
-        .rg-feat-ph-l { font-family:'Playfair Display',serif; font-size:3.5rem; font-weight:900; color:#AAA }
-        .rg-feat-ov { position:absolute; inset:0; background:linear-gradient(to top,rgba(26,18,8,.82) 0%,transparent 55%) }
-        .rg-feat-num { position:absolute; top:10px; left:10px; background:#1A1208; color:#fff; font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; padding:2px 8px; letter-spacing:.14em }
-        .rg-feat-caption { position:absolute; bottom:0; left:0; right:0; padding:12px }
-        .rg-feat-sector { display:block; font-family:system-ui,sans-serif; font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:rgba(255,255,255,.55); margin-bottom:2px }
-        .rg-feat-name { display:block; font-family:'Playfair Display',serif; font-size:clamp(.88rem,1.2vw,1.05rem); font-weight:700; color:#fff; line-height:1.2 }
-        .rg-feat-body { padding:12px; flex:1; display:flex; flex-direction:column; gap:6px }
-        .rg-feat-desc { font-size:11.5px; color:#5A4A30; font-style:italic; line-height:1.65; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1 }
-        .rg-feat-foot { display:flex; align-items:center; justify-content:space-between; padding-top:8px; border-top:1px solid #D8D2C4; margin-top:auto }
-        .rg-feat-meta { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
+        /* Stats row */
+        .mast-stats {
+          display: grid;
+          grid-template-columns: repeat(4,auto);
+          gap: 0;
+          width: fit-content;
+          border: 1px solid var(--rule);
+          margin-bottom: 0;
+        }
+        @media(max-width:600px) { .mast-stats { grid-template-columns: repeat(2,1fr); width:100% } }
+        .mast-stat {
+          padding: 20px 32px;
+          border-right: 1px solid var(--rule);
+          min-width: 120px;
+        }
+        .mast-stat:last-child { border-right: none; }
+        .mast-stat-v {
+          font-family: var(--cg); font-size: clamp(1.8rem,3vw,2.6rem);
+          font-weight: 300; color: var(--gold3); line-height: 1; margin-bottom: 4px;
+        }
+        .mast-stat-l {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .22em; color: var(--muted);
+        }
 
-        /* All startups grid — exact home page pattern */
-        .rg-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid #1A1208; background:#1A1208; gap:1.5px }
-        @media(max-width:800px) { .rg-grid { grid-template-columns:repeat(2,1fr) !important } }
-        @media(max-width:500px) { .rg-grid { display:none !important } }
-        .rg-card { background:#FDFCF9; padding:14px; display:flex; flex-direction:column; gap:7px; text-decoration:none; transition:all .15s; position:relative }
-        .rg-card:hover { background:#F3EFE5; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1 }
-        .rg-card-head { display:flex; align-items:flex-start; gap:10px }
-        .rg-card-logo { width:36px; height:36px; border:1px solid #D8D2C4; background:#F3EFE5; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
-        .rg-card-titles { flex:1; min-width:0 }
-        .rg-card-name { font-family:'Playfair Display',serif; font-size:clamp(.86rem,1vw,.95rem); font-weight:700; color:#1A1208; line-height:1.25; margin-bottom:1px }
-        .rg-card:hover .rg-card-name { text-decoration:underline }
-        .rg-card-cat { font-family:system-ui,sans-serif; font-size:8px; color:#AAA; text-transform:uppercase; letter-spacing:.1em }
-        .rg-card-desc { font-size:11.5px; color:#5A4A30; font-style:italic; line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
-        .rg-card-founders { font-size:10.5px; color:#AAA; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
-        .rg-card-foot { display:flex; align-items:center; justify-content:space-between; margin-top:auto }
-        .rg-card-chips { display:flex; gap:6px; font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
-        .rg-verified { display:flex; align-items:center; gap:3px; font-family:system-ui,sans-serif; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.12em; color:#15803D }
+        /* Live badge */
+        .live-badge {
+          display: inline-flex; align-items: center; gap: 7px;
+          border: 1px solid rgba(200,169,110,.3);
+          padding: 6px 16px; margin-bottom: 28px;
+          font-family: var(--dm); font-size: 9px; font-weight: 500;
+          letter-spacing: .2em; text-transform: uppercase; color: var(--gold);
+        }
+        .live-dot {
+          width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
+          animation: pgFade .8s ease infinite alternate;
+        }
 
-        /* Mobile list */
-        .rg-mob { display:none; border:1.5px solid #1A1208; background:#FDFCF9; flex-direction:column }
-        @media(max-width:500px) { .rg-mob { display:flex !important } }
-        .rg-mob-row { display:flex; align-items:center; gap:12px; padding:13px 14px; text-decoration:none; border-bottom:1px solid #D8D2C4; transition:background .15s }
-        .rg-mob-row:last-child { border-bottom:none }
-        .rg-mob-row:hover { background:#F3EFE5 }
-        .rg-mob-logo { width:40px; height:40px; border:1px solid #D8D2C4; background:#F3EFE5; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
-        .rg-mob-info { flex:1; min-width:0 }
-        .rg-mob-name { font-family:'Playfair Display',serif; font-size:.9rem; font-weight:700; color:#1A1208; line-height:1.2 }
-        .rg-mob-meta { font-family:system-ui,sans-serif; font-size:9.5px; color:#AAA; margin-top:1px }
-        .rg-mob-desc { font-size:11px; color:#5A4A30; font-style:italic; margin-top:2px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
+        /* ── Category strip ──────────────────────────────────────────────── */
+        .cat-strip {
+          border-top: 1px solid var(--rule);
+          display: flex; overflow-x: auto; gap: 0;
+          scrollbar-width: none;
+        }
+        .cat-strip::-webkit-scrollbar { display: none; }
+        .cat-tab {
+          flex-shrink: 0; padding: 14px 22px;
+          font-family: var(--dm); font-size: 9px; font-weight: 500;
+          letter-spacing: .18em; text-transform: uppercase;
+          color: var(--muted); border-right: 1px solid var(--rule);
+          border-bottom: 2px solid transparent;
+          transition: color .2s, border-color .2s;
+          white-space: nowrap;
+        }
+        .cat-tab:hover { color: var(--cream); border-bottom-color: var(--rule); }
+        .cat-tab.on { color: var(--gold); border-bottom-color: var(--gold); }
 
-        /* Empty state */
-        .rg-empty { text-align:center; padding:52px 20px; border:1.5px dashed #C8C2B4; background:#FDFCF9 }
+        /* ── Search / filter toolbar ─────────────────────────────────────── */
+        .toolbar {
+          position: sticky; top: 0; z-index: 40;
+          background: rgba(10,10,10,.96);
+          backdrop-filter: blur(20px) saturate(1.2);
+          border-bottom: 1px solid var(--rule);
+        }
+        .toolbar-inner {
+          max-width: 1280px; margin: 0 auto;
+          padding: 0 clamp(20px,5vw,80px);
+        }
+        .search-row {
+          display: flex; align-items: center;
+          border-bottom: 1px solid var(--rule2);
+          gap: 0;
+        }
+        .search-icon { padding: 0 18px; color: var(--muted); font-size: 18px; flex-shrink: 0; }
+        .search-inp {
+          flex: 1; height: 52px; border: none; background: transparent;
+          font-family: var(--cg); font-size: 17px; font-style: italic;
+          color: var(--cream); outline: none; padding: 0;
+          letter-spacing: .01em;
+        }
+        .search-inp::placeholder { color: var(--muted); }
+        .search-btn {
+          height: 52px; padding: 0 28px; background: var(--gold);
+          color: var(--void); border: none; cursor: pointer;
+          font-family: var(--dm); font-size: 8.5px; font-weight: 600;
+          letter-spacing: .22em; text-transform: uppercase; flex-shrink: 0;
+          transition: opacity .15s;
+        }
+        .search-btn:hover { opacity: .88; }
+        .filter-row {
+          display: flex; align-items: center; height: 40px; overflow-x: auto;
+          scrollbar-width: none; gap: 0;
+        }
+        .filter-row::-webkit-scrollbar { display: none; }
+        .filter-lbl {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .28em; color: var(--muted);
+          padding: 0 18px; border-right: 1px solid var(--rule2);
+          height: 100%; display: flex; align-items: center; flex-shrink: 0;
+        }
+        .filter-sel {
+          height: 100%; border: none; border-right: 1px solid var(--rule2);
+          background: transparent; font-family: var(--dm); font-size: 11px;
+          font-weight: 300; color: var(--cream2); padding: 0 14px;
+          outline: none; cursor: pointer; flex-shrink: 0; max-width: 150px;
+        }
+        .filter-sel option { background: var(--void); }
+        .filter-link {
+          height: 100%; padding: 0 16px; display: flex; align-items: center;
+          font-family: var(--dm); font-size: 8.5px; font-weight: 500;
+          letter-spacing: .12em; text-transform: uppercase;
+          color: var(--muted); border-right: 1px solid var(--rule2);
+          white-space: nowrap; transition: color .15s;
+          flex-shrink: 0;
+        }
+        .filter-link:hover { color: var(--cream); }
+        .filter-link.on { color: var(--gold); }
+        .filter-clear {
+          height: 100%; padding: 0 16px; display: flex; align-items: center;
+          font-family: var(--dm); font-size: 8.5px; font-weight: 500;
+          letter-spacing: .12em; text-transform: uppercase;
+          color: #C06060; flex-shrink: 0;
+        }
 
-        /* Pagination */
-        .rg-pag { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:clamp(20px,3vw,32px); padding-top:clamp(16px,2.5vw,24px); border-top:1px solid #D8D2C4 }
-        .rg-pag-btn { padding:6px 16px; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid #C8C2B4; background:#FDFCF9; color:#6B5C40; text-decoration:none; transition:all .15s }
-        .rg-pag-btn:hover { border-color:#1A1208; color:#1A1208 }
-        .rg-pag-btn.dis { color:#C8C2B4; pointer-events:none }
-        .rg-pag-num { width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-family:system-ui,sans-serif; font-size:11px; font-weight:700; border:1px solid #C8C2B4; text-decoration:none; color:#6B5C40; transition:all .15s }
-        .rg-pag-num:hover { border-color:#1A1208; color:#1A1208 }
-        .rg-pag-num.on { background:#1A1208; color:#fff; border-color:#1A1208 }
+        /* ── Results meta bar ────────────────────────────────────────────── */
+        .results-bar {
+          max-width: 1280px; margin: 0 auto;
+          padding: 16px clamp(20px,5vw,80px);
+          display: flex; align-items: center; gap: 14px;
+          border-bottom: 1px solid var(--rule2);
+        }
+        .results-q {
+          font-family: var(--cg); font-size: 1.1rem; font-weight: 400;
+          font-style: italic; color: var(--cream);
+        }
+        .results-n { font-family: var(--dm); font-size: 11px; color: var(--muted2); font-weight: 300; }
+        .results-rule { flex: 1; height: 1px; background: var(--rule2); }
+        .results-pg { font-family: var(--dm); font-size: 9px; color: var(--muted); letter-spacing: .08em; }
 
-        /* Sidebar */
-        .rg-side { display:flex; flex-direction:column; gap:14px }
-        .rg-side-box { border:1.5px solid #1A1208; background:#FDFCF9; padding:18px }
-        .rg-side-box.dk { background:#1A1208 }
-        .rg-side-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.28em; color:#AAA; margin-bottom:8px }
-        .rg-side-box.dk .rg-side-ey { color:#E8C547 }
-        .rg-side-h { font-family:'Playfair Display',serif; font-size:.95rem; font-weight:700; color:#1A1208; margin-bottom:5px; line-height:1.3 }
-        .rg-side-box.dk .rg-side-h { color:#fff }
-        .rg-side-p { font-size:11.5px; color:#5A4A30; font-style:italic; line-height:1.65; margin-bottom:12px }
-        .rg-side-box.dk .rg-side-p { color:rgba(255,255,255,.38) }
-        .rg-side-btn { display:block; text-align:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.2em; background:#fff; color:#1A1208; padding:9px; text-decoration:none; transition:background .15s }
-        .rg-side-btn:hover { background:#E8C547 }
-        .rg-side-list { list-style:none; padding:0; margin:0 }
-        .rg-side-list li { border-bottom:1px solid #D8D2C4 }
-        .rg-side-list li:last-child { border-bottom:none }
-        .rg-side-list a { display:flex; align-items:center; justify-content:space-between; padding:7px 0; font-size:12.5px; color:#5A4A30; text-decoration:none; font-style:italic; transition:color .15s }
-        .rg-side-list a:hover { color:#1A1208; text-decoration:underline }
+        /* ── Main layout ─────────────────────────────────────────────────── */
+        .main-wrap {
+          max-width: 1280px; margin: 0 auto;
+          padding: clamp(32px,5vw,64px) clamp(20px,5vw,80px) 0;
+        }
+        .main-grid {
+          display: grid;
+          grid-template-columns: 1fr 300px;
+          gap: clamp(32px,4vw,72px);
+          align-items: start;
+        }
+        @media(max-width:1080px) { .main-grid { grid-template-columns: 1fr; } .aside { display:none; } }
 
-        /* CTA — exact home page pattern */
-        .rg-cta { background:#1A1208; padding:clamp(20px,3.5vw,36px) clamp(16px,3vw,36px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:18px; margin-top:clamp(20px,3.5vw,32px); position:relative; overflow:hidden }
-        .rg-cta::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#92400E,#D97706,#E8C547,#D97706,#92400E) }
-        .rg-cta-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.3em; color:rgba(232,197,71,.65); margin-bottom:6px }
-        .rg-cta-h { font-family:'Playfair Display',serif; font-size:clamp(1rem,2vw,1.4rem); font-weight:700; color:#fff; margin-bottom:4px; line-height:1.25 }
-        .rg-cta-p { font-size:12px; color:rgba(255,255,255,.38); font-style:italic }
-        .rg-cta-btn { flex-shrink:0; display:inline-flex; align-items:center; gap:6px; background:#D97706; color:#1A1208; padding:12px 24px; font-family:system-ui,sans-serif; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.14em; text-decoration:none; transition:opacity .15s; box-shadow:3px 3px 0 #92400E }
-        .rg-cta-btn:hover { opacity:.88 }
+        /* ── Section header ──────────────────────────────────────────────── */
+        .sec-head {
+          display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+        }
+        .sec-head-line { flex: 1; height: 1px; background: var(--rule); }
+        .sec-head-label {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .32em; color: var(--muted);
+          white-space: nowrap;
+        }
+        .sec-head-num {
+          font-family: var(--cg); font-size: 11px; color: var(--gold); opacity: .6;
+        }
 
-        /* Internal links — exact home page pattern */
-        .rg-links-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px }
-        @media(max-width:800px) { .rg-links-grid { grid-template-columns:repeat(2,1fr) !important } }
-        .rg-link-card { display:flex; flex-direction:column; gap:4px; padding:11px 12px; border:1px solid #D8D2C4; background:#FDFCF9; text-decoration:none; transition:border-color .15s }
-        .rg-link-card:hover { border-color:#1A1208 }
-        .rg-link-title { font-family:system-ui,sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:#1A1208 }
-        .rg-link-desc { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
+        /* ── FEATURED CARDS — hero format ────────────────────────────────── */
+        .feat-grid {
+          display: grid; grid-template-columns: 1fr 1fr;
+          gap: 1px; background: var(--rule); margin-bottom: 48px;
+          border: 1px solid var(--rule);
+        }
+        @media(max-width:700px) { .feat-grid { grid-template-columns: 1fr; } }
 
-        /* Footer — exact home page pattern */
-        .rg-footer { border-top:1px solid #D8D2C4; padding-top:1rem; margin-top:clamp(20px,3vw,32px); padding-bottom:8px }
-        .rg-footer-note { font-family:system-ui,sans-serif; font-size:8.5px; color:#BBB0A0; line-height:1.75 }
-        .rg-footer-nav { display:flex; flex-wrap:wrap; gap:6px 14px; list-style:none; margin:12px 0 0; padding:0 }
-        .rg-footer-nav a { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA; text-transform:uppercase; letter-spacing:.1em; text-decoration:none; transition:color .15s }
-        .rg-footer-nav a:hover { color:#1A1208 }
+        .feat-card {
+          background: var(--void2);
+          padding: 36px 32px;
+          display: flex; flex-direction: column; gap: 0;
+          position: relative; overflow: hidden;
+          transition: background .25s;
+        }
+        .feat-card:hover { background: var(--void3); }
+        .feat-card::before {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 2px;
+          background: linear-gradient(90deg, var(--gold2), var(--gold3), var(--gold2));
+          opacity: 0; transition: opacity .25s;
+        }
+        .feat-card:hover::before { opacity: 1; }
+        .feat-num {
+          font-family: var(--cg); font-size: 4.5rem; font-weight: 300;
+          line-height: 1; color: var(--rule); letter-spacing: -.03em;
+          margin-bottom: -8px; position: relative; z-index: 0;
+        }
+        .feat-logo-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+        .feat-logo {
+          width: 44px; height: 44px; border: 1px solid var(--rule);
+          background: var(--void3); display: flex; align-items: center;
+          justify-content: center; overflow: hidden; flex-shrink: 0;
+        }
+        .feat-badge {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .2em;
+          color: var(--gold); border: 1px solid rgba(200,169,110,.3);
+          padding: 3px 10px;
+        }
+        .feat-name {
+          font-family: var(--cg); font-size: clamp(1.5rem,2.5vw,2rem);
+          font-weight: 400; color: var(--cream); line-height: 1.1;
+          margin-bottom: 12px; letter-spacing: -.01em;
+        }
+        .feat-desc {
+          font-family: var(--dm); font-size: 12.5px; color: var(--muted2);
+          font-weight: 300; line-height: 1.75; margin-bottom: 24px; flex: 1;
+          display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .feat-meta {
+          display: flex; align-items: center; justify-content: space-between;
+          padding-top: 16px; border-top: 1px solid var(--rule2);
+        }
+        .feat-chips {
+          display: flex; gap: 12px;
+          font-family: var(--dm); font-size: 10px; font-weight: 300;
+          color: var(--muted); letter-spacing: .06em;
+        }
+        .feat-chips span::before { content: ''; }
+        .feat-arrow {
+          width: 32px; height: 32px; border: 1px solid var(--rule);
+          display: flex; align-items: center; justify-content: center;
+          transition: background .2s, border-color .2s;
+        }
+        .feat-card:hover .feat-arrow { background: var(--gold); border-color: var(--gold); }
+        .feat-card:hover .feat-arrow svg { color: var(--void); }
+
+        /* ── STARTUP LIST — museum-label cards ───────────────────────────── */
+        .startup-list { display: flex; flex-direction: column; gap: 1px; background: var(--rule2); }
+
+        .s-card {
+          background: var(--void);
+          display: grid;
+          grid-template-columns: 72px 1fr auto;
+          gap: 0;
+          align-items: stretch;
+          transition: background .2s;
+          border-bottom: 1px solid var(--rule2);
+          position: relative;
+        }
+        .s-card:last-child { border-bottom: none; }
+        .s-card:hover { background: var(--void2); }
+        .s-card::after {
+          content: '';
+          position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+          background: var(--gold); opacity: .6;
+          transition: width .2s cubic-bezier(.16,1,.3,1);
+        }
+        .s-card:hover::after { width: 2px; }
+
+        /* Number column */
+        .s-num {
+          display: flex; align-items: flex-start; justify-content: center;
+          padding: 24px 0 24px 0;
+          border-right: 1px solid var(--rule2);
+        }
+        .s-num-text {
+          font-family: var(--cg); font-size: .85rem; font-weight: 300;
+          color: var(--muted); letter-spacing: .05em;
+        }
+
+        /* Main content column */
+        .s-body {
+          padding: 22px 24px 22px 24px;
+          display: flex; flex-direction: column; gap: 8px;
+        }
+        .s-header { display: flex; align-items: flex-start; gap: 14px; }
+        .s-logo {
+          width: 40px; height: 40px; border: 1px solid var(--rule);
+          background: var(--void2); display: flex; align-items: center;
+          justify-content: center; overflow: hidden; flex-shrink: 0;
+        }
+        .s-title-col { flex: 1; min-width: 0; }
+        .s-name {
+          font-family: var(--cg); font-size: 1.15rem; font-weight: 500;
+          color: var(--cream); line-height: 1.2; letter-spacing: -.01em;
+          transition: color .15s;
+        }
+        .s-card:hover .s-name { color: var(--gold3); }
+        .s-cat {
+          font-family: var(--dm); font-size: 8.5px; font-weight: 400;
+          text-transform: uppercase; letter-spacing: .16em;
+          color: var(--muted); margin-top: 2px;
+        }
+        .s-verified {
+          display: inline-flex; align-items: center; gap: 4px;
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .14em;
+          color: #52A36A; margin-top: 2px;
+        }
+        .s-desc {
+          font-family: var(--dm); font-size: 12px; color: var(--muted2);
+          font-weight: 300; line-height: 1.7;
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .s-founders { font-family: var(--dm); font-size: 11px; color: var(--muted); font-weight: 300; }
+        .s-chips {
+          display: flex; gap: 8px; flex-wrap: wrap;
+          font-family: var(--dm); font-size: 10px; color: var(--muted); font-weight: 300;
+        }
+        .s-chip {
+          border: 1px solid var(--rule2); padding: 2px 10px;
+          color: var(--muted2); font-size: 9px; letter-spacing: .06em;
+        }
+
+        /* Action column */
+        .s-action {
+          display: flex; align-items: center; justify-content: center;
+          padding: 0 24px; border-left: 1px solid var(--rule2);
+          min-width: 64px;
+        }
+        .s-act-btn {
+          width: 36px; height: 36px; border: 1px solid var(--rule);
+          display: flex; align-items: center; justify-content: center;
+          transition: background .2s, border-color .2s;
+          flex-shrink: 0;
+        }
+        .s-card:hover .s-act-btn {
+          background: var(--gold); border-color: var(--gold);
+        }
+        .s-card:hover .s-act-btn svg { color: var(--void) !important; }
+
+        /* Mobile card — stacked */
+        @media(max-width:600px) {
+          .s-card { grid-template-columns: 1fr; }
+          .s-num { display:none; }
+          .s-action { border-left:none; border-top:1px solid var(--rule2); padding:12px 24px; justify-content:flex-end; }
+          .startup-list { gap: 0; background: none; }
+          .s-card { border: 1px solid var(--rule2); margin-bottom: 8px; }
+        }
+
+        /* ── Empty state ─────────────────────────────────────────────────── */
+        .empty {
+          padding: 80px 40px; text-align: center;
+          border: 1px solid var(--rule2);
+        }
+        .empty-icon {
+          font-family: var(--cg); font-size: 3rem; color: var(--muted);
+          display: block; margin-bottom: 16px;
+        }
+        .empty-h { font-family: var(--cg); font-size: 1.6rem; color: var(--cream); margin-bottom: 8px; font-weight: 300; }
+        .empty-p { font-family: var(--dm); font-size: 13px; color: var(--muted2); margin-bottom: 24px; font-weight: 300; }
+        .empty-btn {
+          display: inline-block; border: 1px solid var(--gold);
+          padding: 10px 28px; font-family: var(--dm); font-size: 9px;
+          font-weight: 500; letter-spacing: .22em; text-transform: uppercase;
+          color: var(--gold); transition: background .2s, color .2s;
+        }
+        .empty-btn:hover { background: var(--gold); color: var(--void); }
+
+        /* ── Pagination ──────────────────────────────────────────────────── */
+        .pag {
+          display: flex; align-items: center; justify-content: center; gap: 6px;
+          padding: 40px 0 0; margin-top: 0;
+          border-top: 1px solid var(--rule2);
+        }
+        .pag-btn {
+          padding: 8px 20px; border: 1px solid var(--rule);
+          font-family: var(--dm); font-size: 8.5px; font-weight: 500;
+          letter-spacing: .14em; text-transform: uppercase;
+          color: var(--muted2); transition: all .15s;
+        }
+        .pag-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .pag-btn.dis { color: var(--muted); pointer-events: none; opacity: .4; }
+        .pag-num {
+          width: 36px; height: 36px; display: flex; align-items: center;
+          justify-content: center; border: 1px solid var(--rule);
+          font-family: var(--dm); font-size: 11px; font-weight: 400;
+          color: var(--muted2); transition: all .15s;
+        }
+        .pag-num:hover { border-color: var(--gold); color: var(--gold); }
+        .pag-num.on { background: var(--gold); color: var(--void); border-color: var(--gold); font-weight: 600; }
+
+        /* ── ASIDE ───────────────────────────────────────────────────────── */
+        .aside { display: flex; flex-direction: column; gap: 24px; }
+
+        .aside-box {
+          border: 1px solid var(--rule);
+          padding: 0; overflow: hidden;
+          background: var(--void2);
+        }
+        .aside-head {
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--rule2);
+          display: flex; align-items: center; justify-content: space-between;
+        }
+        .aside-head-label {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .28em; color: var(--gold);
+        }
+        .aside-body { padding: 20px; }
+
+        /* Submit CTA box */
+        .aside-cta {
+          background: var(--void2);
+          border: 1px solid var(--rule);
+          position: relative; overflow: hidden;
+          padding: 28px 24px;
+        }
+        .aside-cta::before {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 2px;
+          background: linear-gradient(90deg, var(--gold2), var(--gold3), var(--gold2));
+        }
+        .aside-cta-eyebrow {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .28em;
+          color: var(--gold); margin-bottom: 10px; display: block;
+        }
+        .aside-cta-title {
+          font-family: var(--cg); font-size: 1.3rem; font-weight: 300;
+          color: var(--cream); line-height: 1.25; margin-bottom: 8px;
+        }
+        .aside-cta-title em { color: var(--gold3); font-style: italic; }
+        .aside-cta-p {
+          font-family: var(--dm); font-size: 11.5px; color: var(--muted2);
+          font-weight: 300; line-height: 1.65; margin-bottom: 20px;
+        }
+        .aside-cta-btn {
+          display: block; text-align: center; border: 1px solid var(--gold);
+          padding: 11px; font-family: var(--dm); font-size: 9px;
+          font-weight: 500; letter-spacing: .22em; text-transform: uppercase;
+          color: var(--gold); transition: background .2s, color .2s;
+        }
+        .aside-cta-btn:hover { background: var(--gold); color: var(--void); }
+
+        /* Sector list */
+        .aside-list li { border-bottom: 1px solid var(--rule2); }
+        .aside-list li:last-child { border-bottom: none; }
+        .aside-list a {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 10px 20px; font-family: var(--dm); font-size: 12px;
+          font-weight: 300; color: var(--muted2); transition: color .15s;
+        }
+        .aside-list a:hover { color: var(--cream); }
+        .aside-list-chevron { font-size: 12px; color: var(--muted); }
+
+        /* Numbers box */
+        .aside-nums-row {
+          display: flex; justify-content: space-between; align-items: baseline;
+          padding: 10px 20px; border-bottom: 1px solid var(--rule2);
+        }
+        .aside-nums-row:last-child { border-bottom: none; }
+        .aside-nums-l {
+          font-family: var(--dm); font-size: 9px; font-weight: 400;
+          text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
+        }
+        .aside-nums-v {
+          font-family: var(--cg); font-size: 1.1rem; font-weight: 400; color: var(--gold3);
+        }
+
+        /* ── CTA banner ──────────────────────────────────────────────────── */
+        .cta-banner {
+          background: var(--void2); border: 1px solid var(--rule);
+          padding: clamp(32px,5vw,52px) clamp(24px,4vw,52px);
+          display: flex; flex-wrap: wrap; align-items: center;
+          justify-content: space-between; gap: 24px;
+          margin-top: clamp(32px,5vw,56px); position: relative; overflow: hidden;
+        }
+        .cta-banner::before {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        /* Large decorative text */
+        .cta-banner::after {
+          content: 'UPFORGE';
+          position: absolute; right: -20px; bottom: -24px;
+          font-family: var(--cg); font-size: 6rem; font-weight: 300;
+          color: var(--rule2); letter-spacing: -.02em; pointer-events: none;
+          line-height: 1; white-space: nowrap;
+        }
+        .cta-banner-ey {
+          font-family: var(--dm); font-size: 8px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .3em;
+          color: var(--gold); opacity: .7; margin-bottom: 10px; display: block;
+        }
+        .cta-banner-title {
+          font-family: var(--cg); font-size: clamp(1.5rem,3vw,2.4rem);
+          font-weight: 300; color: var(--cream); line-height: 1.15; margin-bottom: 8px;
+        }
+        .cta-banner-title em { font-style: italic; color: var(--gold3); }
+        .cta-banner-p {
+          font-family: var(--dm); font-size: 12px; color: var(--muted2);
+          font-weight: 300; max-width: 420px; line-height: 1.7;
+        }
+        .cta-banner-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          border: 1px solid var(--gold); padding: 14px 32px;
+          font-family: var(--dm); font-size: 9px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase; color: var(--gold);
+          transition: background .2s, color .2s; flex-shrink: 0; position: relative;
+          white-space: nowrap;
+        }
+        .cta-banner-btn:hover { background: var(--gold); color: var(--void); }
+
+        /* ── Internal links ──────────────────────────────────────────────── */
+        .links-grid {
+          display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+          background: var(--rule2); border: 1px solid var(--rule2);
+          margin-top: clamp(24px,4vw,40px);
+        }
+        @media(max-width:800px) { .links-grid { grid-template-columns: repeat(2,1fr); } }
+        .link-card {
+          background: var(--void); padding: 18px 20px;
+          display: flex; flex-direction: column; gap: 5px;
+          transition: background .2s;
+        }
+        .link-card:hover { background: var(--void2); }
+        .link-title {
+          font-family: var(--dm); font-size: 9.5px; font-weight: 500;
+          text-transform: uppercase; letter-spacing: .12em; color: var(--cream2);
+          transition: color .15s;
+        }
+        .link-card:hover .link-title { color: var(--gold3); }
+        .link-desc {
+          font-family: var(--dm); font-size: 10px; color: var(--muted);
+          font-weight: 300;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────────────── */
+        .pg-footer {
+          border-top: 1px solid var(--rule);
+          padding: clamp(20px,3vw,32px) clamp(20px,5vw,80px);
+          max-width: 1280px; margin: clamp(32px,5vw,56px) auto 0;
+        }
+        .footer-note {
+          font-family: var(--dm); font-size: 10px; color: var(--muted);
+          font-weight: 300; line-height: 1.7; margin-bottom: 16px;
+        }
+        .footer-nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+        .footer-nav a {
+          font-family: var(--dm); font-size: 9px; font-weight: 400;
+          text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
+          transition: color .15s;
+        }
+        .footer-nav a:hover { color: var(--gold); }
       `}</style>
 
-      {/* ── MASTHEAD ── */}
-      <Navbar />
-      <header className="rg-mast rg-a0" role="banner">
-        <div className="rg-mast-inner">
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:12, marginBottom:16 }}>
-            <div style={{ height:1, width:48, background:"#C8C2B4" }} />
-            <p style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, letterSpacing:".4em", textTransform:"uppercase", color:"#AAA" }}>India Edition · 2026</p>
-            <div style={{ height:1, width:48, background:"#C8C2B4" }} />
-          </div>
-          <h1 className="pf" style={{ fontSize:"clamp(2.2rem,6vw,5rem)", fontWeight:900, letterSpacing:"-.025em", color:"#1A1208", lineHeight:1.05, marginBottom:10 }}>
-            Startup Registry
-          </h1>
-          <p style={{ fontSize:"clamp(13px,1.6vw,15px)", color:"#6B5C40", fontStyle:"italic", lineHeight:1.75, maxWidth:560, margin:"0 auto 16px" }}>
-            India's independent registry of verified builders — free, structured, permanent.
-          </p>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:6, fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:".2em", color:"#15803D", border:"1px solid #86EFAC", background:"#F0FDF4", padding:"4px 14px", borderRadius:999, marginBottom:20 }}>
-            <span style={{ width:6, height:6, borderRadius:"50%", background:"#15803D" }} />
-            Live · {total.toLocaleString()} Profiles · All Verified
-          </div>
-          <div className="rg-stats">
-            {[
-              { v:`${total.toLocaleString()}+`, l:"Verified Profiles" },
-              { v:`${cats.length || "30"}+`,    l:"Sectors"           },
-              { v:`${years.length > 0 ? years[years.length-1] : "2010"}+`, l:"Founding Since" },
-              { v:"Daily",                       l:"Updated"           },
-            ].map((s, i) => (
-              <div key={i} className="rg-stat">
-                <p className="rg-stat-v pf">{s.v}</p>
-                <p className="rg-stat-l">{s.l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="pg">
+        <Navbar />
 
-        {/* Category tab strip */}
-        <nav className="rg-tabs rg-a1" aria-label="Browse by sector" style={{ padding:"0 clamp(16px,4vw,48px)" }}>
-          <span style={{ fontFamily:"system-ui,sans-serif", fontSize:7.5, color:"#BBB", textTransform:"uppercase", letterSpacing:".2em", padding:"11px 6px 11px 0", flexShrink:0, display:"inline-flex", alignItems:"center" }}>Browse:</span>
-          <Link href="/startup" className={`rg-tab${!cat && !q ? " on" : ""}`}>All</Link>
-          {cats.slice(0, 8).map(c => (
-            <Link key={c} href={`/startup?category=${encodeURIComponent(c)}${q?`&q=${encodeURIComponent(q)}`:""}`} className={`rg-tab${cat === c ? " on" : ""}`}>{c}</Link>
-          ))}
-          {cats.length > 8 && <Link href="/startups" className="rg-tab">More Sectors →</Link>}
-        </nav>
-      </header>
+        {/* ══════════════════════════════
+            MASTHEAD
+        ══════════════════════════════ */}
+        <header className="mast">
+          <div className="mast-inner">
 
-      {/* ── SEARCH TOOLBAR — sticky ── */}
-      <div className="rg-toolbar rg-a1" id="rg-toolbar">
-        <div className="rg-toolbar-inner">
-          {/* Search row */}
-          <form action="/startup" method="GET" className="rg-search-row" id="rg-search-form">
-            {/* Preserve filter state across search */}
-            {year && <input type="hidden" name="year" value={year} />}
-            {cat  && <input type="hidden" name="category" value={cat} />}
-            {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
-            <span className="rg-search-icon" aria-hidden="true">⌕</span>
-            <input
-              type="search" name="q" defaultValue={q}
-              className="rg-search-inp"
-              placeholder="Search startups, founders, sectors, cities…"
-              aria-label="Search startup registry"
-              autoComplete="off"
-            />
-            <button type="submit" className="rg-search-btn">Search →</button>
-          </form>
-
-          {/* Filter row — FIXED: selects auto-submit on change via JS */}
-          <div className="rg-filter-row" id="rg-filter-row">
-            <span className="rg-filter-lbl">Filter</span>
-
-            {/* Year filter */}
-            <select
-              className="rg-filter-sel"
-              aria-label="Filter by founding year"
-              defaultValue={year}
-              id="rg-year-sel"
-              name="year"
-            >
-              <option value="">Any Year</option>
-              {years.map(yr => <option key={yr} value={String(yr)}>{yr}</option>)}
-            </select>
-
-            {/* Category filter */}
-            <select
-              className="rg-filter-sel"
-              aria-label="Filter by sector"
-              defaultValue={cat}
-              id="rg-cat-sel"
-              name="category"
-            >
-              <option value="">All Sectors</option>
-              {cats.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-
-            {/* Sort links */}
-            <Link href={qs({ sort: "name", page: undefined })}    className={`rg-filter-link${sort === "name"   ? " on" : ""}`}>A–Z</Link>
-            <Link href={qs({ sort: "newest", page: undefined })}  className={`rg-filter-link${sort === "newest" ? " on" : ""}`}>Newest</Link>
-            <Link href={qs({ sort: "year", page: undefined })}    className={`rg-filter-link${sort === "year"   ? " on" : ""}`}>Founded Year</Link>
-            {isFiltered && <Link href="/startup" className="rg-filter-clear">✕ Clear</Link>}
-          </div>
-        </div>
-      </div>
-
-      {/* ── RESULTS BAR ── */}
-      <div className="rg-results-bar rg-a2" aria-live="polite">
-        <span className="rg-results-q pf">{q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}</span>
-        <span className="rg-results-n">— {total.toLocaleString()} profiles</span>
-        <span className="rg-results-rule" />
-        <span className="rg-results-pg">Pg. {page} / {totalPages || 1}</span>
-      </div>
-
-      {/* ── MAIN ── */}
-      <div className="rg-main rg-a2">
-        <div className="rg-layout">
-
-          {/* ── CONTENT COLUMN ── */}
-          <div>
-            {/* Featured */}
-            {featured.length > 0 && (
-              <section aria-label="Featured startups" style={{ marginBottom:"clamp(18px,3vw,28px)" }}>
-                <div className="rg-sh">
-                  <span style={{ color:"#B45309", fontSize:10, marginRight:2 }}>✦</span>
-                  <span className="rg-sh-l">Featured This Edition</span>
-                  <div className="rg-sh-r" />
-                </div>
-                <div className="rg-feat-grid">
-                  {featured.map((s, fi) => (
-                    <Link key={s.id} href={`/startup/${s.slug}`} className="rg-feat-card">
-                      <div className="rg-feat-img">
-                        {s.logo_url
-                          ? <img src={s.logo_url} alt={s.name} loading={fi === 0 ? "eager" : "lazy"} />
-                          : <div className="rg-feat-ph"><span className="rg-feat-ph-l pf">{s.name.charAt(0)}</span></div>
-                        }
-                        <div className="rg-feat-ov" />
-                        <span className="rg-feat-num">No.{String(fi + 1).padStart(2, "0")}</span>
-                        <div className="rg-feat-caption">
-                          <span className="rg-feat-sector">{s.category ?? "Startup"}</span>
-                          <span className="rg-feat-name pf">{s.name}</span>
-                        </div>
-                      </div>
-                      <div className="rg-feat-body">
-                        <p className="rg-feat-desc">{s.description ?? "Building for India's next decade."}</p>
-                        <div className="rg-feat-foot">
-                          <span className="rg-feat-meta">{s.founded_year && `Est. ${s.founded_year}`}{s.city && ` · ${s.city}`}</span>
-                          <ArrowUpRight style={{ width:12, height:12, color:"#C8C2B4" }} aria-hidden="true" />
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* All startups */}
-            {grid.length > 0 ? (
-              <section aria-label="All startups">
-                {featured.length > 0 && (
-                  <div className="rg-sh">
-                    <span className="rg-sh-l">All Startups</span>
-                    <div className="rg-sh-r" />
-                  </div>
-                )}
-                {/* Desktop grid */}
-                <div className="rg-grid">
-                  {grid.map(s => (
-                    <Link key={s.id} href={`/startup/${s.slug}`} className="rg-card">
-                      <div className="rg-card-head">
-                        <div className="rg-card-logo">
-                          {s.logo_url
-                            ? <Image src={s.logo_url} alt={s.name} width={36} height={36} className="object-contain" loading="lazy" />
-                            : <span style={{ fontSize:14, fontWeight:700, color:"#AAA", fontFamily:"'Playfair Display',serif" }}>{s.name.charAt(0)}</span>
-                          }
-                        </div>
-                        <div className="rg-card-titles">
-                          <p className="rg-card-name pf">{s.name}</p>
-                          <p className="rg-card-cat">{(s.category ?? "").slice(0, 20)}</p>
-                        </div>
-                        <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-label="Verified" style={{ flexShrink:0, marginTop:3 }}>
-                          <path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#15803D" strokeWidth="1.4" strokeLinecap="round"/>
-                        </svg>
-                      </div>
-                      <p className="rg-card-desc">{s.description ?? "Building for India's next decade."}</p>
-                      {s.founders && <p className="rg-card-founders">↳ {s.founders}</p>}
-                      <div className="rg-card-foot">
-                        <div className="rg-card-chips">
-                          {s.founded_year && <span>Est. {s.founded_year}</span>}
-                          {s.city && <span>· {s.city}</span>}
-                        </div>
-                        <ArrowUpRight style={{ width:11, height:11, color:"#C8C2B4" }} aria-hidden="true" />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-                {/* Mobile list */}
-                <div className="rg-mob">
-                  {grid.map(s => (
-                    <Link key={s.id} href={`/startup/${s.slug}`} className="rg-mob-row">
-                      <div className="rg-mob-logo">
-                        {s.logo_url
-                          ? <Image src={s.logo_url} alt={s.name} width={40} height={40} className="object-contain" loading="lazy" />
-                          : <span style={{ fontSize:14, fontWeight:700, color:"#AAA", fontFamily:"'Playfair Display',serif" }}>{s.name.charAt(0)}</span>
-                        }
-                      </div>
-                      <div className="rg-mob-info">
-                        <p className="rg-mob-name pf">{s.name}</p>
-                        <p className="rg-mob-meta">{s.category ?? "Startup"}{s.founded_year && ` · ${s.founded_year}`}{s.city && ` · ${s.city}`}</p>
-                        {s.description && <p className="rg-mob-desc">{s.description}</p>}
-                      </div>
-                      <span style={{ fontSize:16, color:"#C8C2B4", flexShrink:0 }}>›</span>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            ) : (
-              <div className="rg-empty">
-                <span className="pf" style={{ fontSize:"2.8rem", color:"#C8C2B4", display:"block", marginBottom:12 }}>∅</span>
-                <p className="pf" style={{ fontSize:"1.2rem", color:"#1A1208", marginBottom:6, fontWeight:700 }}>No startups found</p>
-                <p style={{ fontSize:13, color:"#5A4A30", fontStyle:"italic", marginBottom:16 }}>{q ? `Nothing matched "${q}". Try a different term.` : "Try adjusting your filters."}</p>
-                <Link href="/startup" style={{ display:"inline-block", background:"#1A1208", color:"#fff", padding:"8px 20px", fontFamily:"system-ui,sans-serif", fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:".18em", textDecoration:"none" }}>Clear filters</Link>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <nav className="rg-pag" aria-label="Registry pagination">
-                <Link href={pgHref(page - 1)} className={`rg-pag-btn${page === 1 ? " dis" : ""}`} aria-disabled={page === 1}>← Prev</Link>
-                {pgNums.map(p => (
-                  <Link key={p} href={pgHref(p)} className={`rg-pag-num${p === page ? " on" : ""}`} aria-current={p === page ? "page" : undefined}>{p}</Link>
-                ))}
-                <Link href={pgHref(page + 1)} className={`rg-pag-btn${page === totalPages ? " dis" : ""}`} aria-disabled={page === totalPages}>Next →</Link>
-              </nav>
-            )}
-          </div>
-
-          {/* ── SIDEBAR ── */}
-          <aside className="rg-side" style={{ position:"sticky", top:88 }}>
-            <div className="rg-side-box dk">
-              <p className="rg-side-ey">List Free · UpForge</p>
-              <p className="rg-side-h pf">Got a startup to list?</p>
-              <p className="rg-side-p">Get independently verified. Free forever.</p>
-              <Link href="/submit" className="rg-side-btn">Submit Startup →</Link>
+            {/* Eyebrow */}
+            <div className="mast-eyebrow pg-rise d1">
+              <div className="mast-eyebrow-line" />
+              <span className="mast-eyebrow-text">India Edition · 2026</span>
+              <div className="mast-eyebrow-line" />
             </div>
-            {cats.length > 0 && (
-              <div className="rg-side-box">
-                <p className="rg-side-ey">Browse by Sector</p>
-                <ul className="rg-side-list">
-                  {cats.slice(0, 10).map(c => (
-                    <li key={c}>
-                      <Link href={`/startups/${c.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}`}>
-                        <span>{c}</span>
-                        <span style={{ color:"#C8C2B4", fontSize:12 }}>›</span>
+
+            {/* Title */}
+            <h1 className="mast-title pg-rise d2">
+              Startup<br />
+              <em>Registry</em>
+            </h1>
+
+            {/* Sub */}
+            <p className="mast-sub pg-rise d3">
+              India's independent registry of verified builders —
+              free, structured, permanent. Every profile curated
+              by the UpForge editorial team.
+            </p>
+
+            {/* Live badge */}
+            <div className="live-badge pg-rise d3">
+              <span className="live-dot" />
+              Live · {total.toLocaleString()} Profiles · All Verified
+            </div>
+
+            {/* Stats */}
+            <div className="mast-stats pg-rise d4">
+              {[
+                { v:`${total.toLocaleString()}+`, l:"Verified Profiles" },
+                { v:`${cats.length || "30"}+`,    l:"Sectors"           },
+                { v:`${years.length > 0 ? years[years.length-1] : "2010"}+`, l:"Since" },
+                { v:"Daily",                       l:"Updated"           },
+              ].map((s, i) => (
+                <div key={i} className="mast-stat">
+                  <div className="mast-stat-v">{s.v}</div>
+                  <div className="mast-stat-l">{s.l}</div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
+          {/* Category strip */}
+          <nav className="cat-strip pg-rise d5" aria-label="Browse by sector"
+            style={{ maxWidth:"none", paddingLeft:"clamp(20px,5vw,80px)" }}>
+            <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
+            {cats.slice(0, 9).map(c => (
+              <Link key={c}
+                href={`/startup?category=${encodeURIComponent(c)}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                className={`cat-tab${cat === c ? " on" : ""}`}
+              >{c}</Link>
+            ))}
+            {cats.length > 9 && (
+              <Link href="/startups" className="cat-tab">All Sectors →</Link>
+            )}
+          </nav>
+        </header>
+
+        {/* ══════════════════════════════
+            SEARCH TOOLBAR — sticky
+        ══════════════════════════════ */}
+        <div className="toolbar" id="rg-toolbar">
+          <div className="toolbar-inner">
+            <form action="/startup" method="GET" className="search-row" id="rg-search-form">
+              {year && <input type="hidden" name="year" value={year} />}
+              {cat  && <input type="hidden" name="category" value={cat} />}
+              {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
+              <span className="search-icon" aria-hidden="true">⌕</span>
+              <input
+                type="search" name="q" defaultValue={q}
+                className="search-inp"
+                placeholder="Search startups, founders, sectors, cities…"
+                aria-label="Search startup registry"
+                autoComplete="off"
+              />
+              <button type="submit" className="search-btn">Search →</button>
+            </form>
+            <div className="filter-row" id="rg-filter-row">
+              <span className="filter-lbl">Filter</span>
+              <select className="filter-sel" aria-label="Filter by year" defaultValue={year} id="rg-year-sel" name="year">
+                <option value="">Any Year</option>
+                {years.map(yr => <option key={yr} value={String(yr)}>{yr}</option>)}
+              </select>
+              <select className="filter-sel" aria-label="Filter by sector" defaultValue={cat} id="rg-cat-sel" name="category">
+                <option value="">All Sectors</option>
+                {cats.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <Link href={qs({ sort:"name",   page:undefined })} className={`filter-link${sort==="name"   ? " on":""}`}>A–Z</Link>
+              <Link href={qs({ sort:"newest", page:undefined })} className={`filter-link${sort==="newest" ? " on":""}`}>Newest</Link>
+              <Link href={qs({ sort:"year",   page:undefined })} className={`filter-link${sort==="year"   ? " on":""}`}>Founded</Link>
+              {isFiltered && <Link href="/startup" className="filter-clear">✕ Clear</Link>}
+            </div>
+          </div>
+        </div>
+
+        {/* ══════════════════════════════
+            RESULTS META BAR
+        ══════════════════════════════ */}
+        <div className="results-bar pg-fade d2" aria-live="polite">
+          <span className="results-q">
+            {q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}
+          </span>
+          <span className="results-n">— {total.toLocaleString()} profiles found</span>
+          <span className="results-rule" />
+          <span className="results-pg">Page {page} of {totalPages || 1}</span>
+        </div>
+
+        {/* ══════════════════════════════
+            MAIN CONTENT
+        ══════════════════════════════ */}
+        <div className="main-wrap">
+          <div className="main-grid">
+
+            {/* ── LEFT COLUMN ── */}
+            <div>
+
+              {/* FEATURED (hero format, 2 cards) */}
+              {featured.length > 0 && (
+                <section aria-label="Featured startups" style={{ marginBottom: 48 }}>
+                  <div className="sec-head pg-rise d2">
+                    <span className="sec-head-label">✦ Featured · This Edition</span>
+                    <div className="sec-head-line" />
+                    <span className="sec-head-num">{featured.length} profiles</span>
+                  </div>
+                  <div className="feat-grid">
+                    {featured.map((s, fi) => (
+                      <Link key={s.id} href={`/startup/${s.slug}`} className="feat-card pg-rise" style={{ animationDelay: `${fi * 0.08}s` }}>
+                        <div className="feat-num">{String(fi + 1).padStart(2,"0")}</div>
+                        <div className="feat-logo-row">
+                          <div className="feat-logo">
+                            {s.logo_url
+                              ? <Image src={s.logo_url} alt={s.name} width={44} height={44} className="object-contain" />
+                              : <span style={{ fontFamily:"var(--cg)", fontSize:18, color:"var(--muted)" }}>{s.name.charAt(0)}</span>
+                            }
+                          </div>
+                          <span className="feat-badge">{s.category ?? "Startup"}</span>
+                        </div>
+                        <h2 className="feat-name">{s.name}</h2>
+                        <p className="feat-desc">{s.description ?? "Building for India's next decade."}</p>
+                        <div className="feat-meta">
+                          <div className="feat-chips">
+                            {s.founded_year && <span>Est. {s.founded_year}</span>}
+                            {s.city && <span>{s.city}</span>}
+                          </div>
+                          <div className="feat-arrow">
+                            <ArrowUpRight style={{ width:14, height:14, color:"var(--gold)" }} aria-hidden="true" />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* ALL STARTUPS — museum-label list */}
+              {grid.length > 0 ? (
+                <section aria-label="All startups">
+                  {featured.length > 0 && (
+                    <div className="sec-head pg-rise d3">
+                      <span className="sec-head-label">All Startups</span>
+                      <div className="sec-head-line" />
+                      <span className="sec-head-num">{total.toLocaleString()} total</span>
+                    </div>
+                  )}
+                  <div className="startup-list">
+                    {grid.map((s, idx) => (
+                      <Link key={s.id} href={`/startup/${s.slug}`} className="s-card pg-rise"
+                        style={{ animationDelay: `${Math.min(idx * 0.04, 0.3)}s` }}>
+
+                        {/* Number */}
+                        <div className="s-num">
+                          <span className="s-num-text">
+                            {String(baseIndex + (featured.length > 0 ? 0 : 0) + idx + 1).padStart(2,"0")}
+                          </span>
+                        </div>
+
+                        {/* Content */}
+                        <div className="s-body">
+                          <div className="s-header">
+                            <div className="s-logo">
+                              {s.logo_url
+                                ? <Image src={s.logo_url} alt={s.name} width={40} height={40} className="object-contain" loading="lazy" />
+                                : <span style={{ fontFamily:"var(--cg)", fontSize:14, color:"var(--muted)", fontWeight:300 }}>{s.name.charAt(0)}</span>
+                              }
+                            </div>
+                            <div className="s-title-col">
+                              <div className="s-name">{s.name}</div>
+                              <div className="s-cat">{s.category ?? ""}</div>
+                              <div className="s-verified">
+                                <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
+                                  <path d="M1 3.5L3 5.5L7 1.5" stroke="#52A36A" strokeWidth="1.4" strokeLinecap="round"/>
+                                </svg>
+                                Verified
+                              </div>
+                            </div>
+                          </div>
+
+                          {s.description && (
+                            <p className="s-desc">{s.description}</p>
+                          )}
+
+                          {s.founders && (
+                            <p className="s-founders">↳ {s.founders}</p>
+                          )}
+
+                          <div className="s-chips">
+                            {s.founded_year && <span className="s-chip">Est. {s.founded_year}</span>}
+                            {s.city && <span className="s-chip">{s.city}</span>}
+                          </div>
+                        </div>
+
+                        {/* Arrow */}
+                        <div className="s-action">
+                          <div className="s-act-btn">
+                            <ArrowUpRight style={{ width:13, height:13, color:"var(--muted)" }} aria-hidden="true" />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ) : (
+                <div className="empty">
+                  <span className="empty-icon">∅</span>
+                  <h3 className="empty-h">Nothing found</h3>
+                  <p className="empty-p">
+                    {q
+                      ? `No results for "${q}". Try a different search term.`
+                      : "Adjust your filters to see results."
+                    }
+                  </p>
+                  <Link href="/startup" className="empty-btn">Clear all filters</Link>
+                </div>
+              )}
+
+              {/* PAGINATION */}
+              {totalPages > 1 && (
+                <nav className="pag" aria-label="Registry pagination">
+                  <Link href={pgHref(page - 1)} className={`pag-btn${page === 1 ? " dis" : ""}`} aria-disabled={page === 1}>← Prev</Link>
+                  {pgNums.map(p => (
+                    <Link key={p} href={pgHref(p)} className={`pag-num${p === page ? " on" : ""}`} aria-current={p === page ? "page" : undefined}>{p}</Link>
+                  ))}
+                  <Link href={pgHref(page + 1)} className={`pag-btn${page === totalPages ? " dis" : ""}`} aria-disabled={page === totalPages}>Next →</Link>
+                </nav>
+              )}
+            </div>
+
+            {/* ── ASIDE ── */}
+            <aside className="aside pg-rise d4">
+
+              {/* Submit CTA */}
+              <div className="aside-cta">
+                <span className="aside-cta-eyebrow">List Free · UpForge</span>
+                <div className="aside-cta-title">Got a startup<br /><em>to list?</em></div>
+                <p className="aside-cta-p">
+                  Get independently verified and permanently indexed on India's most trusted startup registry. Free forever.
+                </p>
+                <Link href="/submit" className="aside-cta-btn">Submit Startup →</Link>
+              </div>
+
+              {/* Sector directory */}
+              {cats.length > 0 && (
+                <div className="aside-box">
+                  <div className="aside-head">
+                    <span className="aside-head-label">Browse by Sector</span>
+                  </div>
+                  <ul className="aside-list">
+                    {cats.slice(0, 10).map(c => (
+                      <li key={c}>
+                        <Link href={`/startups/${c.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}`}>
+                          <span>{c}</span>
+                          <span className="aside-list-chevron">›</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  {cats.length > 10 && (
+                    <div style={{ padding:"12px 20px", borderTop:"1px solid var(--rule2)" }}>
+                      <Link href="/startups" style={{ fontFamily:"var(--dm)", fontSize:9, fontWeight:500, textTransform:"uppercase", letterSpacing:".18em", color:"var(--gold)", opacity:.7 }}>
+                        All {cats.length} sectors →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* By the numbers */}
+              <div className="aside-box">
+                <div className="aside-head">
+                  <span className="aside-head-label">By the Numbers</span>
+                </div>
+                <div>
+                  {[
+                    { v:`${total.toLocaleString()}+`, l:"Verified on UpForge" },
+                    { v:"125+",    l:"Indian Unicorns"   },
+                    { v:"$3.4B",   l:"Q1 2026 Funding"   },
+                    { v:"3rd",     l:"Largest Ecosystem"  },
+                  ].map((s, i) => (
+                    <div key={i} className="aside-nums-row">
+                      <span className="aside-nums-l">{s.l}</span>
+                      <span className="aside-nums-v">{s.v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Blog links */}
+              <div className="aside-box">
+                <div className="aside-head">
+                  <span className="aside-head-label">From The Forge</span>
+                </div>
+                <ul className="aside-list">
+                  {[
+                    { l:"Top AI Startups India 2026",     h:"/blog/top-ai-startups-india-2026"          },
+                    { l:"How to Get Startup Funding",     h:"/blog/how-to-get-startup-funding-india-2026" },
+                    { l:"Top Indian Unicorns 2026",       h:"/blog/top-indian-unicorns-2026"             },
+                    { l:"How to Start a Startup India",   h:"/blog/how-to-start-startup-india-2026"      },
+                    { l:"The Forge — Blog",               h:"/blog"                                      },
+                  ].map(lnk => (
+                    <li key={lnk.h}>
+                      <Link href={lnk.h}>
+                        <span>{lnk.l}</span>
+                        <span className="aside-list-chevron">›</span>
                       </Link>
                     </li>
                   ))}
                 </ul>
-                {cats.length > 10 && (
-                  <Link href="/startups" style={{ display:"block", marginTop:8, paddingTop:8, borderTop:"1px solid #D8D2C4", fontFamily:"system-ui,sans-serif", fontSize:"8px", fontWeight:700, textTransform:"uppercase", letterSpacing:".18em", color:"#AAA", textDecoration:"none" }}>
-                    All {cats.length} sectors →
-                  </Link>
-                )}
               </div>
-            )}
-            <div className="rg-side-box dk" style={{ position:"relative", overflow:"hidden" }}>
-              <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#92400E,#D97706,#E8C547)" }} />
-              <p className="rg-side-ey">By The Numbers</p>
-              <p className="pf" style={{ fontSize:"1rem", fontWeight:700, color:"#fff", fontStyle:"italic", marginBottom:14, lineHeight:1.3 }}>India's Startup<br /><span style={{ color:"#E8C547" }}>Ecosystem 2026</span></p>
+            </aside>
+          </div>
+
+          {/* ── CTA BANNER ── */}
+          <div className="cta-banner pg-rise d5">
+            <div>
+              <span className="cta-banner-ey">UpForge Intelligence</span>
+              <div className="cta-banner-title">
+                Your founder story starts<br />
+                <em>with a verified profile.</em>
+              </div>
+              <p className="cta-banner-p">
+                Free forever. Trusted by investors, journalists, and
+                builders across India's startup ecosystem.
+              </p>
+            </div>
+            <Link href="/submit" className="cta-banner-btn">
+              List Free
+              <ArrowUpRight style={{ width:13, height:13 }} aria-hidden="true" />
+            </Link>
+          </div>
+
+          {/* ── INTERNAL LINKS ── */}
+          <section style={{ marginTop:"clamp(24px,4vw,40px)" }} aria-label="Explore on UpForge">
+            <div className="sec-head pg-rise d5">
+              <span className="sec-head-label">Explore on UpForge</span>
+              <div className="sec-head-line" />
+            </div>
+            <div className="links-grid">
               {[
-                { v:`${total.toLocaleString()}+`, l:"Verified on UpForge" },
-                { v:"125+",    l:"Indian Unicorns"  },
-                { v:"$3.4B",   l:"Q1 2026 Funding"  },
-                { v:"3rd",     l:"Largest Ecosystem" },
-              ].map((s, i) => (
-                <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", padding:"7px 0", borderBottom:i<3?"1px solid rgba(255,255,255,.08)":"none" }}>
-                  <span style={{ fontFamily:"system-ui,sans-serif", fontSize:8, color:"rgba(255,255,255,.4)", textTransform:"uppercase", letterSpacing:".12em" }}>{s.l}</span>
-                  <span className="pf" style={{ fontSize:"1.1rem", fontWeight:900, color:"#E8C547" }}>{s.v}</span>
-                </div>
+                { l:"Startup Registry India",       h:"/startup",                                               desc:"Full verified database"     },
+                { l:"Browse All Sectors",           h:"/startups",                                              desc:"30+ sector directories"     },
+                { l:"Top AI Startups 2026",         h:"/blog/top-ai-startups-india-2026",                       desc:"Sarvam, Krutrim & more"     },
+                { l:"Funding Guide 2026",           h:"/blog/how-to-get-startup-funding-india-2026",            desc:"DPIIT, SISFS & VCs"         },
+                { l:"Indian Unicorns 2026",         h:"/blog/top-indian-unicorns-2026",                         desc:"All 125+ profiled"          },
+                { l:"AI Startups India",            h:"/startups/ai-ml",                                        desc:"India's AI builders"        },
+                { l:"FinTech Startups",             h:"/startups/fintech",                                      desc:"Zerodha, CRED & more"       },
+                { l:"Submit Your Startup",          h:"/submit",                                                desc:"Get listed free"            },
+              ].map(lnk => (
+                <Link key={lnk.h + lnk.l} href={lnk.h} className="link-card">
+                  <span className="link-title">{lnk.l}</span>
+                  <span className="link-desc">{lnk.desc}</span>
+                </Link>
               ))}
             </div>
-          </aside>
-        </div>
+          </section>
 
-        {/* CTA */}
-        <div className="rg-cta rg-a3">
-          <div>
-            <p className="rg-cta-ey">UpForge Intelligence</p>
-            <p className="rg-cta-h pf">Your founder story starts with a verified profile.</p>
-            <p className="rg-cta-p">Free forever. Trusted by investors and press across India.</p>
-          </div>
-          <Link href="/submit" className="rg-cta-btn">
-            List Free <ArrowRight style={{ width:13, height:13 }} aria-hidden="true" />
-          </Link>
-        </div>
-
-        {/* Internal links */}
-        <section className="rg-a4" style={{ paddingTop:"clamp(18px,3vw,30px)", borderTop:"1px solid #C8C2B4", marginTop:"clamp(18px,3vw,28px)" }}>
-          <p style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, letterSpacing:".3em", textTransform:"uppercase", color:"#AAA", marginBottom:14 }}>Explore on UpForge</p>
-          <div className="rg-links-grid">
-            {[
-              { l:"Startup Registry India",    h:"/startup",             desc:"Full verified database"     },
-              { l:"Browse by Sector",          h:"/startups",            desc:"30+ categories"             },
-              { l:"Indian Unicorns 2026",      h:"/blog/top-indian-unicorns-2026", desc:"All 125+ profiled"},
-              { l:"Funding Guide 2026",        h:"/blog/how-to-get-startup-funding-india-2026", desc:"DPIIT, SISFS & VCs" },
-              { l:"AI Startups India",         h:"/startups/ai-ml",      desc:"India's AI builders"        },
-              { l:"FinTech Startups India",    h:"/startups/fintech",    desc:"Zerodha, CRED & more"       },
-              { l:"The Forge — Blog",          h:"/blog",                desc:"Startup intelligence"       },
-              { l:"Submit Your Startup",       h:"/submit",              desc:"Get listed free"            },
-            ].map(lnk => (
-              <Link key={lnk.h + lnk.l} href={lnk.h} className="rg-link-card">
-                <span className="rg-link-title">
-                  {lnk.l}
-                  <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" style={{ display:"inline", marginLeft:4, verticalAlign:"middle" }}>
-                    <path d="M2 7L7 2M7 2H3M7 2V6" stroke="#1A1208" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
-                <span className="rg-link-desc">{lnk.desc}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="rg-footer rg-a4">
-          <p className="rg-footer-note">
-            * Registry data sourced from DPIIT, Tracxn, Inc42, Forbes India, Hurun India 2025, and company announcements as of March 2026.
-            UpForge is an independent registry — no paid placements, no sponsored rankings.
-          </p>
-          <nav aria-label="Footer navigation">
-            <ul className="rg-footer-nav">
+          {/* ── FOOTER ── */}
+          <footer className="pg-footer pg-rise d6">
+            <p className="footer-note">
+              * Registry data sourced from DPIIT, Tracxn, Inc42, Forbes India, Hurun India 2025, and company
+              announcements as of March 2026. UpForge is an independent registry — no paid placements, no sponsored rankings.
+            </p>
+            <nav className="footer-nav" aria-label="Footer navigation">
               {[
-                { l:"The Founder Chronicle", h:"/"        },
-                { l:"Startup Registry India",h:"/startup" },
-                { l:"Browse by Sector",      h:"/startups"},
+                { l:"The Founder Chronicle", h:"/"         },
+                { l:"Startup Registry",      h:"/startup"  },
+                { l:"Browse by Sector",      h:"/startups" },
                 { l:"Indian Unicorns 2026",  h:"/blog/top-indian-unicorns-2026" },
-                { l:"The Forge — Blog",      h:"/blog"    },
-                { l:"Free Valuation Tool",   h:"/report"  },
-                { l:"Submit Startup",        h:"/submit"  },
+                { l:"The Forge — Blog",      h:"/blog"     },
+                { l:"Free Valuation Tool",   h:"/report"   },
+                { l:"Submit Startup",        h:"/submit"   },
               ].map(lnk => (
-                <li key={lnk.h + lnk.l}><Link href={lnk.h}>{lnk.l}</Link></li>
+                <Link key={lnk.h + lnk.l} href={lnk.h}>{lnk.l}</Link>
               ))}
-            </ul>
-          </nav>
-        </footer>
+            </nav>
+          </footer>
+        </div>
       </div>
 
       {/*
-        ── FILTER AUTO-SUBMIT JS ────────────────────────────────────────────
-        Pure vanilla JS — no React, no router.
-        When year OR category select changes, builds the correct URL
-        preserving all existing params and navigates immediately.
-        This is the FIX for the broken filters.
+        ── FILTER AUTO-SUBMIT JS ─────────────────────────────────────────────
+        Identical logic to v6. Year + category selects auto-navigate on change.
+        Preserves all existing URL params.
       */}
       <script dangerouslySetInnerHTML={{ __html: `
         (function(){
@@ -672,31 +1219,21 @@ export default async function StartupPage({ searchParams }: PageProps) {
               cat:  p.get('category') || '',
             };
           }
-          function buildUrl(overrides){
+          function buildUrl(ov){
             var cur = getParams();
-            var merged = Object.assign({}, cur, overrides);
+            var m = Object.assign({}, cur, ov);
             var p = new URLSearchParams();
-            if(merged.q)                     p.set('q',merged.q);
-            if(merged.year)                  p.set('year',merged.year);
-            if(merged.cat)                   p.set('category',merged.cat);
-            if(merged.sort && merged.sort !== 'name') p.set('sort',merged.sort);
+            if(m.q)                     p.set('q', m.q);
+            if(m.year)                  p.set('year', m.year);
+            if(m.cat)                   p.set('category', m.cat);
+            if(m.sort && m.sort !== 'name') p.set('sort', m.sort);
             var s = p.toString();
             return '/startup' + (s ? '?' + s : '');
           }
-          // Year select
           var yearSel = document.getElementById('rg-year-sel');
-          if(yearSel){
-            yearSel.addEventListener('change', function(){
-              window.location.href = buildUrl({year: this.value, page: undefined});
-            });
-          }
-          // Category select
+          if(yearSel) yearSel.addEventListener('change', function(){ window.location.href = buildUrl({year: this.value}); });
           var catSel = document.getElementById('rg-cat-sel');
-          if(catSel){
-            catSel.addEventListener('change', function(){
-              window.location.href = buildUrl({cat: this.value, page: undefined});
-            });
-          }
+          if(catSel)  catSel.addEventListener('change', function(){ window.location.href = buildUrl({cat:  this.value}); });
         })();
       `}} />
     </>
