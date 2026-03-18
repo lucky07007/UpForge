@@ -315,14 +315,23 @@ export default function RootLayout({
           src="https://www.googletagmanager.com/gtag/js?id=AW-18011511989"
           strategy="afterInteractive"
         />
-        <Script id="google-ads-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-18011511989', { send_page_view: false });
-          `}
-        </Script>
+        <Script
+  src="https://www.googletagmanager.com/gtag/js?id=G-18282"
+  strategy="afterInteractive"
+/>
+<Script id="gtag-init" strategy="afterInteractive">
+  {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    // Google Analytics
+    gtag('config', 'G-3J7Y3695TK');
+
+    // Google Ads
+    gtag('config', 'AW-18011511989');
+  `}
+</Script>
 
         <ClientLayout>{children}</ClientLayout>
       </body>
