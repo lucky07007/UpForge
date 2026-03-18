@@ -19,7 +19,7 @@ import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 10
 
 interface StartupRow {
   id: string; name: string; slug: string
@@ -173,6 +173,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
         ::-webkit-scrollbar { width:3px }
         ::-webkit-scrollbar-thumb { background:#C8C2B4 }
 
+        /* ── Full-bleed parchment page wrapper ── */
+        body { background:#F3EFE5 }
+
         /* ── MASTHEAD ── */
         .mast { background:#F3EFE5; border-bottom:3px solid #1A1208 }
         .mast-nameplate { text-align:center; padding:clamp(28px,5vw,64px) 16px clamp(20px,4vw,48px); border-bottom:1px solid #C8C2B4 }
@@ -197,41 +200,100 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .live-dot { width:6px; height:6px; border-radius:50%; background:#15803D }
 
         /* ── Category tabs — exact homepage pattern ── */
-        .cat-tabs { display:flex; overflow-x:auto; border-bottom:1px solid #C8C2B4; scrollbar-width:none }
+        .cat-tabs { display:flex; overflow-x:auto; border-bottom:1px solid #C8C2B4; scrollbar-width:none; background:#F3EFE5 }
         .cat-tabs::-webkit-scrollbar { display:none }
         .cat-tab { flex-shrink:0; padding:12px 18px; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#888; text-decoration:none; border-bottom:2.5px solid transparent; transition:all .15s; white-space:nowrap }
         .cat-tab:hover { color:#1A1208 }
         .cat-tab.on { color:#B45309; border-bottom-color:#B45309 }
 
-        /* ── TOOLBAR — sticky ── */
+        /* ── TOOLBAR — 2 clean stacked rows, sticky ── */
         .toolbar { position:sticky; top:0; z-index:40; background:#F3EFE5; border-bottom:1px solid #C8C2B4 }
         .toolbar-inner { max-width:1300px; margin:0 auto; padding:0 clamp(16px,4vw,48px) }
-        .search-row { display:flex; align-items:stretch; border-bottom:1px solid #D8D2C4 }
-        .search-icon { display:flex; align-items:center; padding:0 16px; color:#C8C2B4; font-size:18px; flex-shrink:0 }
-        .search-inp { flex:1; height:50px; border:none; background:#F3EFE5; font-family:Georgia,'Times New Roman',serif; font-size:16px; font-style:italic; color:#1A1208; outline:none; padding:0; min-width:0 }
-        .search-inp::placeholder { color:#C8C2B4 }
-        .search-btn { height:50px; padding:0 26px; background:#1A1208; color:#fff; border:none; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; letter-spacing:.22em; text-transform:uppercase; cursor:pointer; flex-shrink:0; transition:opacity .15s }
-        .search-btn:hover { opacity:.85 }
 
-        .filter-row { display:flex; align-items:center; height:40px; overflow-x:auto; scrollbar-width:none; background:#F3EFE5 }
-        .filter-row::-webkit-scrollbar { display:none }
-        .filter-lbl { font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.28em; color:#C8C2B4; padding:0 16px; border-right:1px solid #D8D2C4; height:100%; display:flex; align-items:center; flex-shrink:0; white-space:nowrap }
-        .filter-sel { height:100%; border:none; border-right:1px solid #D8D2C4; background:#F3EFE5; font-family:system-ui,sans-serif; font-size:11px; color:#1A1208; padding:0 10px; outline:none; cursor:pointer; flex-shrink:0; max-width:145px }
-        .filter-link { height:100%; padding:0 16px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#6B5C40; text-decoration:none; border-right:1px solid #D8D2C4; white-space:nowrap; transition:all .15s; flex-shrink:0 }
-        .filter-link:hover { background:#F3EFE5; color:#1A1208 }
-        .filter-link.on { background:#1A1208; color:#fff }
-        .filter-clear { height:100%; padding:0 16px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#DC2626; flex-shrink:0 }
+        /* ROW 1 — Search bar (full width, clean) */
+        .t-search-row {
+          display:flex; align-items:center; height:48px;
+          border-bottom:1px solid #D8D2C4;
+        }
+        .t-icon { display:flex; align-items:center; padding:0 14px; color:#AAA; font-size:16px; flex-shrink:0 }
+        .t-inp {
+          flex:1; height:100%; border:none; background:transparent;
+          font-family:Georgia,'Times New Roman',serif; font-size:15px; font-style:italic;
+          color:#1A1208; outline:none; padding:0; min-width:0;
+        }
+        .t-inp::placeholder { color:#C8C2B4 }
+        .t-btn {
+          height:100%; padding:0 22px; background:#1A1208; color:#fff; border:none;
+          font-family:system-ui,sans-serif; font-size:8px; font-weight:900;
+          letter-spacing:.2em; text-transform:uppercase; cursor:pointer; flex-shrink:0;
+          transition:opacity .15s; white-space:nowrap;
+        }
+        .t-btn:hover { opacity:.85 }
+
+        /* ROW 2 — Filter strip (slim, all on one line always) */
+        .t-filter-row {
+          display:flex; align-items:center; height:36px;
+          overflow-x:auto; scrollbar-width:none; gap:0;
+        }
+        .t-filter-row::-webkit-scrollbar { display:none }
+
+        /* "Filter" label */
+        .t-filter-lbl {
+          display:flex; align-items:center; gap:5px;
+          padding:0 12px 0 0; font-family:system-ui,sans-serif; font-size:8px;
+          font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:#C8C2B4;
+          flex-shrink:0; white-space:nowrap;
+        }
+
+        /* Select dropdowns */
+        .t-sel {
+          height:100%; border:none; background:transparent;
+          font-family:system-ui,sans-serif; font-size:11px; color:#6B5C40;
+          padding:0 6px; outline:none; cursor:pointer; flex-shrink:0;
+          border-right:1px solid #EDE9DF; max-width:130px;
+        }
+
+        /* Vertical divider */
+        .t-div { width:1px; height:18px; background:#D8D2C4; flex-shrink:0; margin:0 2px }
+
+        /* Sort text buttons */
+        .t-sort {
+          height:100%; padding:0 11px; display:flex; align-items:center;
+          font-family:system-ui,sans-serif; font-size:8px; font-weight:600;
+          letter-spacing:.1em; text-transform:uppercase; color:#AAA;
+          text-decoration:none; transition:color .15s; flex-shrink:0; white-space:nowrap;
+          border-right:1px solid #EDE9DF;
+        }
+        .t-sort:hover { color:#1A1208 }
+        .t-sort.on { color:#1A1208; font-weight:900 }
+
+        /* Clear button */
+        .t-clear {
+          height:100%; padding:0 10px; display:flex; align-items:center;
+          font-family:system-ui,sans-serif; font-size:8px; font-weight:700;
+          text-transform:uppercase; color:#DC2626; flex-shrink:0; white-space:nowrap;
+        }
+
+        /* Mobile — keep filter row scrollable but never wrap */
+        @media(max-width:600px) {
+          .t-inp::placeholder { font-size:13px }
+          .t-btn { padding:0 14px; font-size:7.5px; letter-spacing:.12em }
+          .t-filter-lbl { display:none }
+        }
 
         /* ── Results bar ── */
-        .results-bar { max-width:1300px; margin:0 auto; padding:12px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid #D8D2C4; background:#F3EFE5 }
-        .results-q { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:#1A1208; font-style:italic }
-        .results-n { font-size:13px; color:#6B5C40; font-style:italic }
+        .results-bar { max-width:1300px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid #D8D2C4; background:#F3EFE5 }
+        .results-q { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:#1A1208; font-style:italic }
+        .results-n { font-size:12px; color:#6B5C40; font-style:italic }
         .results-rule { flex:1; height:1px; background:#D8D2C4 }
         .results-pg { font-family:system-ui,sans-serif; font-size:9px; color:#AAA }
 
+        /* ── Full-bleed parchment below toolbar ── */
+        .page-body { background:#F3EFE5; min-height:60vh }
+
         /* ── Main layout ── */
-        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) 0; background:#F3EFE5 }
-        .main-grid { display:grid; grid-template-columns:1fr 300px; gap:clamp(20px,3vw,32px); align-items:start }
+        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) 0 }
+        .main-grid { display:grid; grid-template-columns:1fr 286px; gap:clamp(20px,3vw,32px); align-items:start }
         @media(max-width:1060px) { .main-grid { grid-template-columns:1fr } .rg-aside { display:none } }
 
         /* ── FEATURED CARDS — editorial hero ── */
@@ -240,7 +302,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
         .feat-card { background:#F3EFE5; display:flex; flex-direction:column; text-decoration:none; transition:all .18s; position:relative; overflow:hidden }
         .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#92400E,#D97706,#E8C547); opacity:0; transition:opacity .2s }
-        .feat-card:hover { background:#EDE9DF; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1 }
+        /* Active/hover → white + gold top strip */
+        .feat-card:hover { background:#fff; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1 }
         .feat-card:hover::before { opacity:1 }
 
         .feat-img-wrap { width:100%; aspect-ratio:16/9; position:relative; background:#EDE9DF; overflow:hidden; flex-shrink:0 }
@@ -253,7 +316,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .feat-caption { position:absolute; bottom:0; left:0; right:0; padding:14px }
         .feat-sector { display:block; font-family:system-ui,sans-serif; font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:rgba(255,255,255,.55); margin-bottom:3px }
         .feat-company { display:block; font-family:'Playfair Display',serif; font-size:clamp(.9rem,1.4vw,1.1rem); font-weight:700; color:#fff; line-height:1.2 }
-
         .feat-body { padding:14px; flex:1; display:flex; flex-direction:column; gap:7px }
         .feat-desc { font-size:11.5px; color:#5A4A30; font-style:italic; line-height:1.7; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1 }
         .feat-foot { display:flex; align-items:center; justify-content:space-between; padding-top:9px; border-top:1px solid #D8D2C4; margin-top:auto }
@@ -265,15 +327,18 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .s-row { display:grid; grid-template-columns:52px 1fr auto; align-items:stretch; border:1.5px solid #D8D2C4; border-bottom:none; text-decoration:none; background:#F3EFE5; transition:all .15s; position:relative }
         .s-row:first-child { border-top-color:#1A1208 }
         .s-row:last-child { border-bottom:1.5px solid #D8D2C4 }
-        .s-row:hover { background:#EDE9DF; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1; border-color:#1A1208 }
+        /* Active/hover → white background, gold left accent */
+        .s-row:hover { background:#fff; transform:translate(-2px,-2px); box-shadow:4px 4px 0 #1A1208; z-index:1; border-color:#1A1208 }
         @media(max-width:560px) { .s-row { grid-template-columns:1fr auto } .s-num-col { display:none } }
 
         /* Number column */
-        .s-num-col { display:flex; align-items:flex-start; justify-content:center; padding:18px 0; border-right:1px solid #EDE9DF }
+        .s-num-col { display:flex; align-items:flex-start; justify-content:center; padding:20px 0; border-right:1px solid #EDE9DF }
         .s-num { font-family:'Playfair Display',serif; font-size:.8rem; font-weight:700; color:#C8C2B4 }
+        /* Active number highlight */
+        .s-row:hover .s-num { color:#D97706 }
 
         /* Main body */
-        .s-body { padding:18px 20px; display:flex; flex-direction:column; gap:7px }
+        .s-body { padding:18px 22px; display:flex; flex-direction:column; gap:7px }
         .s-head { display:flex; align-items:flex-start; gap:12px }
         .s-logo-wrap { width:38px; height:38px; border:1px solid #D8D2C4; background:#EDE9DF; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
         .s-meta { flex:1; min-width:0 }
@@ -298,10 +363,10 @@ export default async function StartupPage({ searchParams }: PageProps) {
         /* ── Pagination — exact homepage pattern ── */
         .pag { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:clamp(24px,3.5vw,36px); padding-top:clamp(18px,3vw,28px); border-top:1px solid #D8D2C4 }
         .pag-btn { padding:7px 18px; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid #C8C2B4; background:#F3EFE5; color:#6B5C40; text-decoration:none; transition:all .15s }
-        .pag-btn:hover { border-color:#1A1208; color:#1A1208 }
+        .pag-btn:hover { border-color:#1A1208; color:#1A1208; background:#fff }
         .pag-btn.dis { color:#C8C2B4; pointer-events:none }
         .pag-num { width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-family:system-ui,sans-serif; font-size:11px; font-weight:700; border:1px solid #C8C2B4; text-decoration:none; color:#6B5C40; transition:all .15s }
-        .pag-num:hover { border-color:#1A1208; color:#1A1208 }
+        .pag-num:hover { border-color:#1A1208; color:#1A1208; background:#fff }
         .pag-num.on { background:#1A1208; color:#fff; border-color:#1A1208 }
 
         /* ── ASIDE — exact homepage sidebar pattern ── */
@@ -336,15 +401,15 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .cta-btn { flex-shrink:0; display:inline-flex; align-items:center; gap:7px; background:#D97706; color:#1A1208; padding:13px 26px; font-family:system-ui,sans-serif; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.14em; text-decoration:none; transition:opacity .15s; box-shadow:3px 3px 0 #92400E; white-space:nowrap }
         .cta-btn:hover { opacity:.88 }
 
-        /* ── Internal links — exact homepage grid ── */
+        /* ── Internal links ── */
         .links-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px }
         @media(max-width:800px) { .links-grid { grid-template-columns:repeat(2,1fr) } }
-        .link-card { display:flex; flex-direction:column; gap:4px; padding:12px 13px; border:1px solid #D8D2C4; background:#F3EFE5; text-decoration:none; transition:border-color .15s }
-        .link-card:hover { border-color:#1A1208 }
+        .link-card { display:flex; flex-direction:column; gap:4px; padding:12px 13px; border:1px solid #D8D2C4; background:#F3EFE5; text-decoration:none; transition:all .15s }
+        .link-card:hover { border-color:#1A1208; background:#fff }
         .link-title { font-family:system-ui,sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:#1A1208; display:flex; align-items:center; gap:3px }
         .link-desc { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
 
-        /* ── Footer — exact homepage ── */
+        /* ── Footer ── */
         .pg-footer { border-top:1px solid #D8D2C4; padding-top:1rem; margin-top:clamp(22px,3.5vw,36px); padding-bottom:10px; background:#F3EFE5 }
         .footer-note { font-family:system-ui,sans-serif; font-size:8.5px; color:#BBB0A0; line-height:1.75 }
         .footer-nav { display:flex; flex-wrap:wrap; gap:6px 16px; list-style:none; margin:12px 0 0; padding:0 }
@@ -418,42 +483,63 @@ export default async function StartupPage({ searchParams }: PageProps) {
       </header>
 
       {/* ══════════════════════════════
-          SEARCH TOOLBAR — sticky
+          SEARCH TOOLBAR — 2 clean rows, sticky
+          Row 1: search input + button
+          Row 2: slim filter strip (scrollable on mobile)
       ══════════════════════════════ */}
       <div className="toolbar" id="rg-toolbar">
         <div className="toolbar-inner">
-          <form action="/startup" method="GET" className="search-row">
+
+          {/* ROW 1 — Search */}
+          <form action="/startup" method="GET" className="t-search-row">
             {year && <input type="hidden" name="year" value={year} />}
             {cat  && <input type="hidden" name="category" value={cat} />}
             {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
-            <span className="search-icon" aria-hidden="true">⌕</span>
+            <span className="t-icon" aria-hidden="true">⌕</span>
             <input
               type="search" name="q" defaultValue={q}
-              className="search-inp"
+              className="t-inp"
               placeholder="Search startups, founders, sectors, cities…"
               aria-label="Search startup registry"
               autoComplete="off"
             />
-            <button type="submit" className="search-btn">Search →</button>
+            <button type="submit" className="t-btn">Search →</button>
           </form>
 
-          <div className="filter-row">
-            <span className="filter-lbl">Filter</span>
-            <select className="filter-sel" aria-label="Filter by year" defaultValue={year} id="rg-year-sel" name="year">
+          {/* ROW 2 — Filters (scrollable on mobile, never wraps) */}
+          <div className="t-filter-row" aria-label="Filter and sort controls">
+            <span className="t-filter-lbl">
+              <svg width="10" height="9" viewBox="0 0 10 9" fill="none" aria-hidden="true">
+                <path d="M0.5 1h9M2 4.5h6M3.5 8h3" stroke="#C8C2B4" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+              Filter
+            </span>
+
+            <select className="t-sel" aria-label="Filter by year" defaultValue={year} id="rg-year-sel" name="year">
               <option value="">Any Year</option>
               {years.map(yr => <option key={yr} value={String(yr)}>{yr}</option>)}
             </select>
-            <select className="filter-sel" aria-label="Filter by sector" defaultValue={cat} id="rg-cat-sel" name="category">
+
+            <select className="t-sel" aria-label="Filter by sector" defaultValue={cat} id="rg-cat-sel" name="category">
               <option value="">All Sectors</option>
               {cats.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
-            <Link href={qs({ sort:"name",   page:undefined })} className={`filter-link${sort==="name"   ? " on":""}`}>A–Z</Link>
-            <Link href={qs({ sort:"newest", page:undefined })} className={`filter-link${sort==="newest" ? " on":""}`}>Newest</Link>
-            <Link href={qs({ sort:"year",   page:undefined })} className={`filter-link${sort==="year"   ? " on":""}`}>Founded</Link>
-            {isFiltered && <Link href="/startup" className="filter-clear">✕ Clear</Link>}
+
+            <span className="t-div" />
+
+            <Link href={qs({ sort:"name",   page:undefined })} className={`t-sort${sort==="name"   ? " on":""}`}>A–Z</Link>
+            <Link href={qs({ sort:"newest", page:undefined })} className={`t-sort${sort==="newest" ? " on":""}`}>Newest</Link>
+            <Link href={qs({ sort:"year",   page:undefined })} className={`t-sort${sort==="year"   ? " on":""}`}>Founded</Link>
+
+            {isFiltered && <Link href="/startup" className="t-clear">✕ Clear</Link>}
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════
+          PAGE BODY — full-bleed parchment, no white side gaps
+      ══════════════════════════════ */}
+      <div className="page-body">
 
       {/* ══════════════════════════════
           RESULTS BAR
@@ -741,7 +827,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
         </footer>
       </div>
 
-      {/* ── FILTER AUTO-SUBMIT JS — identical to v6 ── */}
+      </div>{/* end page-body */}
+
+      {/* ── FILTER AUTO-SUBMIT JS ── */}
       <script dangerouslySetInnerHTML={{ __html: `
         (function(){
           function getP(){ var p=new URLSearchParams(window.location.search); return {q:p.get('q')||'',sort:p.get('sort')||'name',year:p.get('year')||'',cat:p.get('category')||''}; }
