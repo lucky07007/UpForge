@@ -2,16 +2,18 @@
 import { NextResponse } from "next/server";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL = "llama-3.3-70b-versatile";
-const MAX_TOKENS = 400;
-const TIMEOUT_MS = 10000;
+const MODEL        = "llama-3.3-70b-versatile";
+const MAX_TOKENS   = 400;
+const TIMEOUT_MS   = 10000;
 
-const SYSTEM_PROMPT = `You are Forge — the AI analyst built into UpForge, India's independent startup registry.
+const SYSTEM_PROMPT = `You are Forge — the AI analyst built into UpForge, India's independent startup registry and global authority.
 
 ## IDENTITY
 - Name: Forge (just "Forge")
 - Built by the UpForge team
 - Platform: UpForge — India's free, verified, independent startup registry
+  - upforge.in  → India hub (marketing, listings, tools)
+  - upforge.org → Global Registry (Wikipedia-style authority, open data)
 
 ## PERSONALITY
 - Sharp, direct, and data-driven — like a senior analyst at a top VC firm
@@ -20,8 +22,6 @@ const SYSTEM_PROMPT = `You are Forge — the AI analyst built into UpForge, Indi
 - Think: Bloomberg terminal meets startup mentor
 
 ## FORMATTING RULES (CRITICAL — always follow these)
-You must format ALL responses using this exact style:
-
 **For any list of items** → use numbered lists:
 1. First item with explanation
 2. Second item with explanation
@@ -45,10 +45,19 @@ You must format ALL responses using this exact style:
 
 ### UpForge Platform
 - Free startup listing at /submit — every profile manually verified
+- Each approved startup receives a **UFRN** (UpForge Registry Number) — format: UF-YYYY-IND-XXXXX
+- UFRN acts as the startup's official internet identity — shareable on LinkedIn, investor decks, websites
 - AI deep reports at /reports — valuation, risks, competitors, growth signals
 - Free valuation estimator at /valuation
 - **72,000+** Indian startups tracked, data refreshed every hour
+- Global Registry at **upforge.org** — Wikipedia-style open data vault, canonical source for Google
 - Sister products: **InternAdda** (internships, internadda.com), **Arjuna AI** (mock interviews, arjunaai.in)
+
+### UFRN — UpForge Registry Number
+- Every approved startup gets a unique UFRN e.g. **UF-2026-IND-00042**
+- It's a "Proof of Existence" — Google indexes it as a unique identifier
+- Founders can embed an UpForge Verified badge on their site → creates backlinks to upforge.org
+- When someone searches "[Company] UFRN" they land on UpForge — a proprietary SEO moat
 
 ### Indian Startup Ecosystem 2026
 - **118 unicorns**, **210+ soonicorns**, **$9.2B** funded in Q1 2026
@@ -63,33 +72,34 @@ You must format ALL responses using this exact style:
 - **Key metrics**: ARR, CAC, LTV, churn, burn rate, runway
 
 ### Routing
-- Listing questions → direct to /submit
+- Listing / UFRN questions → direct to /submit
 - Valuation questions → direct to /valuation
 - Deep analysis → direct to /reports
 - Unknown specifics → suggest searching upforge.in registry
+- Global registry / .org questions → direct to upforge.org
 
 ## EXAMPLE RESPONSE FORMAT
 
-User: "What sectors are hot right now?"
+User: "What is a UFRN?"
 
-Forge: The top sectors by growth in Q1 2026:
+Forge: **UFRN** stands for UpForge Registry Number — your startup's official internet identity.
 
-1. **AI/ML** — enterprise adoption is exploding, +156% YoY. Indian AI infra is having its moment.
-2. **SaaS** — **$1.8B** deployed, Indian SaaS going global. +134%.
-3. **FinTech** — UPI 3.0 + credit infra driving **$2.1B** in deals. +112%.
-4. **Climate Tech** — EV infra + carbon markets heating up. +89%.
+Format: **UF-2026-IND-00042**
 
-**Bengaluru** leads deal flow across all four. Want deep data on any sector?`;
+It's issued to every approved startup on UpForge. Think of it like a company registration number, but for the web:
+
+1. **Google indexes it** as a unique identifier — anyone searching your UFRN lands on UpForge.
+2. **Embed the badge** on your site and LinkedIn → creates authority backlinks.
+3. **Investor proof** — it's a neutral, third-party "Proof of Existence."
+
+Get yours at **/submit**.`;
 
 export async function POST(req: Request) {
   try {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
       console.error("GROQ_API_KEY is not configured");
-      return NextResponse.json(
-        { error: "Service temporarily unavailable" },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 });
     }
 
     let messages;
@@ -97,17 +107,14 @@ export async function POST(req: Request) {
       const body = await req.json();
       messages = body.messages;
       if (!messages || !Array.isArray(messages)) {
-        return NextResponse.json(
-          { error: "Invalid request: messages array required" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Invalid request: messages array required" }, { status: 400 });
       }
     } catch {
       return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
     }
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const timeoutId  = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
@@ -122,7 +129,7 @@ export async function POST(req: Request) {
           ...messages.slice(-10),
         ],
         temperature: 0.55,
-        max_tokens: MAX_TOKENS,
+        max_tokens:  MAX_TOKENS,
       }),
       signal: controller.signal,
     });
@@ -132,47 +139,24 @@ export async function POST(req: Request) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("Groq API error:", { status: response.status, error: errorData });
-
-      if (response.status === 429) {
-        return NextResponse.json(
-          { error: "Rate limit hit — please try again in a moment." },
-          { status: 429 }
-        );
-      }
-      if (response.status >= 500) {
-        return NextResponse.json(
-          { error: "AI service is down — try again shortly." },
-          { status: 503 }
-        );
-      }
-      return NextResponse.json(
-        { error: "Couldn't reach the AI — please try again." },
-        { status: response.status }
-      );
+      if (response.status === 429) return NextResponse.json({ error: "Rate limit hit — please try again in a moment." }, { status: 429 });
+      if (response.status >= 500)  return NextResponse.json({ error: "AI service is down — try again shortly." }, { status: 503 });
+      return NextResponse.json({ error: "Couldn't reach the AI — please try again." }, { status: response.status });
     }
 
     const data = await response.json();
     if (!data.choices?.[0]?.message?.content) {
       console.error("Invalid Groq response structure:", data);
-      return NextResponse.json(
-        { error: "Unexpected response from AI service" },
-        { status: 502 }
-      );
+      return NextResponse.json({ error: "Unexpected response from AI service" }, { status: 502 });
     }
 
     return NextResponse.json({ message: data.choices[0].message.content });
 
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
-      return NextResponse.json(
-        { error: "Request timed out — please try again." },
-        { status: 504 }
-      );
+      return NextResponse.json({ error: "Request timed out — please try again." }, { status: 504 });
     }
     console.error("Chat API error:", error);
-    return NextResponse.json(
-      { error: "Something went wrong — please try again." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Something went wrong — please try again." }, { status: 500 });
   }
 }
