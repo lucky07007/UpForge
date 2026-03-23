@@ -1,14 +1,14 @@
-// app/startup/page.tsx — REDESIGN v10
-// Indian Startup Registry — parchment palette, saffron-gold accents
-// MASTHEAD: India map via simplemaps SVG, tricolour feel, compact spacing
-// toolbar z-index:20 (below navbar z-50), no inline footer
+// app/startup/page.tsx — REDESIGN v11
+// Indian Startup Registry — Premium, Trust-Centric Design
+// Centered Layout, Enhanced Stats, Superior Card UX
+// Optimized for SEO, Authority, and User Engagement
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
-import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
+import { ArrowRight, ArrowUpRight, ChevronRight, Award, Building2, MapPin, Calendar, Users, Verified } from "lucide-react"
 
 const PAGE_SIZE = 10
 
@@ -59,13 +59,13 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const isFiltered = !!(sp?.q || sp?.year || sp?.sort || sp?.category)
   const page = Number(sp?.page ?? 1)
   return {
-    title: `Indian Startup Registry 2026 — ${n}+ Verified Indian Startups | UpForge`,
-    description: `Discover ${n}+ verified Indian startups across AI, FinTech, SaaS, EdTech, HealthTech, Climate Tech, AgriTech, Web3 and 30+ sectors. Search by founder, city, year. India's most trusted free startup database — updated daily.`,
-    keywords: "Indian startups 2026, startup registry India, verified startups India, AI startups India, fintech startups India, SaaS startups India, edtech startups India, healthtech India, startup founders India, Bengaluru startups, Mumbai startups, Delhi NCR startups, Indian unicorns 2026",
+    title: `Indian Startup Registry 2026 — ${n}+ Verified Startups | UpForge`,
+    description: `India's most trusted startup registry. ${n}+ verified companies across AI, FinTech, SaaS, and more. Search by name, founder, city, or sector. Updated daily.`,
+    keywords: "Indian startups 2026, startup registry India, verified startups, AI startups India, fintech startups India, SaaS startups India, edtech startups, healthtech India, startup founders India, Bengaluru startups, Mumbai startups, Delhi NCR startups, Indian unicorns 2026",
     alternates: { canonical: "https://www.upforge.in/startup" },
     openGraph: {
       title: `Indian Startup Registry 2026 — ${n}+ Verified | UpForge`,
-      description: `Browse ${n}+ verified Indian startups. Free, structured, updated daily.`,
+      description: `India's definitive startup database. ${n}+ verified companies. Free, structured, updated daily.`,
       url: "https://www.upforge.in/startup", siteName: "UpForge",
       images: [{ url: "https://www.upforge.in/og/registry.png", width: 1200, height: 630 }],
       locale: "en_IN", type: "website",
@@ -144,741 +144,1076 @@ export default async function StartupPage({ searchParams }: PageProps) {
       ))}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+        
         :root {
-          --acc:   #D97706;
-          --acc-d: #92400E;
-          --acc-l: #E8C547;
-          --ink:   #1A1208;
-          --parch: #F3EFE5;
-          --rule:  #C8C2B4;
-          --rule2: #D8D2C4;
-          --muted: #6B5C40;
-          --faint: #EDE9DF;
+          --primary: #1E3A5F;
+          --primary-dark: #0A2540;
+          --accent: #E67E22;
+          --accent-dark: #B45309;
+          --accent-light: #F39C12;
+          --gold: #F3B33D;
+          --text-dark: #1F2937;
+          --text-muted: #6B7280;
+          --bg-parchment: #FEF9F0;
+          --bg-white: #FFFFFF;
+          --border-light: #F3F4F6;
+          --border-medium: #E5E7EB;
+          --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+          --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
 
-        @keyframes riseIn { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:none } }
-        .ri-0 { animation: riseIn .42s .00s ease both }
-        .ri-1 { animation: riseIn .42s .08s ease both }
-        .ri-2 { animation: riseIn .42s .16s ease both }
-        .ri-3 { animation: riseIn .42s .22s ease both }
-        .ri-4 { animation: riseIn .42s .30s ease both }
-
-        @keyframes mapFadeIn { from { opacity:0; transform:translateX(20px) scale(.97) } to { opacity:1; transform:none } }
-        .map-anim { animation: mapFadeIn .8s .15s ease both }
-
-        .sh { display:flex; align-items:center; gap:10px; margin-bottom:14px }
-        .sh-l { font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#AAA; font-family:system-ui,sans-serif; white-space:nowrap }
-        .sh-r { flex:1; height:1px; background:var(--rule2) }
-
-        ::-webkit-scrollbar { width:3px }
-        ::-webkit-scrollbar-thumb { background:var(--rule) }
-
-        body { background:var(--parch) }
-
-        /* ── TRICOLOUR strip ── */
-        .tricolour { height:4px; display:flex }
-        .tricolour span:nth-child(1) { flex:1; background:#FF9933 }
-        .tricolour span:nth-child(2) { flex:1; background:#fff; border-top:1px solid rgba(0,0,0,.06); border-bottom:1px solid rgba(0,0,0,.06) }
-        .tricolour span:nth-child(3) { flex:1; background:#138808 }
-
-        .gold-strip { height:2px; background:linear-gradient(90deg,var(--acc-d),var(--acc),var(--acc-l),var(--acc),var(--acc-d)) }
-
-        /* ── MASTHEAD ── */
-        .mast { background:var(--parch); border-bottom:3px solid var(--ink); position:relative; overflow:hidden }
-
-        /* India map container — right side, fills full masthead height */
-        .mast-map-panel {
-          position:absolute;
-          right:0; top:0; bottom:0;
-          width:min(46%, 520px);
-          pointer-events:none;
-          overflow:hidden;
-        }
-        /* Tricolour wash over map */
-        .mast-map-panel::before {
-          content:'';
-          position:absolute;
-          inset:0;
-          background:linear-gradient(
-            to bottom,
-            rgba(255,153,51,.13) 0%,
-            rgba(255,255,255,.05) 33%,
-            rgba(19,136,8,.10) 100%
-          );
-          z-index:2;
-          pointer-events:none;
-        }
-        /* Left fade — blends map into parchment */
-        .mast-map-panel::after {
-          content:'';
-          position:absolute;
-          top:0; left:0; bottom:0;
-          width:55%;
-          background:linear-gradient(to right, var(--parch) 0%, rgba(243,239,229,0) 100%);
-          z-index:3;
-          pointer-events:none;
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
 
-        .mast-map-img {
-          position:absolute;
-          right:-2%;
-          top:50%;
-          transform:translateY(-50%);
-          width:88%;
-          max-width:400px;
-          height:auto;
-          opacity:.18;
-          filter:sepia(40%) saturate(1.4) contrast(1.1);
-          z-index:1;
+        body {
+          background: var(--bg-parchment);
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          color: var(--text-dark);
+          line-height: 1.5;
         }
 
-        /* Subtle Ashoka Chakra watermark — decorative only */
-        .chakra-mark {
-          position:absolute;
-          right:clamp(40px,10%,120px);
-          top:50%;
-          transform:translateY(-50%);
-          width:clamp(60px,8vw,100px);
-          height:clamp(60px,8vw,100px);
-          opacity:.04;
-          z-index:4;
+        .pf {
+          font-family: 'Playfair Display', Georgia, serif;
         }
 
-        .mast-content {
-          position:relative;
-          z-index:10;
-          text-align:center;
-          padding: clamp(18px,3.5vw,44px) 16px clamp(14px,3vw,36px);
-          border-bottom:1px solid var(--rule);
+        .container {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 0 24px;
         }
 
-        .edition-pill {
-          display:inline-flex; align-items:center; gap:7px;
-          border:1px solid #FF9933;
-          background:linear-gradient(135deg, #FFF8F0 0%, #FFF4E8 100%);
-          padding:4px 14px 4px 10px;
-          margin-bottom:12px;
-          border-radius:2px;
+        @media (min-width: 640px) {
+          .container {
+            padding: 0 32px;
+          }
         }
-        .edition-pill-flag { font-size:15px; line-height:1 }
-
-        .mast-heading-wrap {
-          position:relative;
-          display:inline-block;
-          margin-bottom:8px;
-        }
-        /* Decorative serif quote mark behind heading */
-        .mast-heading-wrap::before {
-          content:'"';
-          font-family:'Playfair Display',serif;
-          font-size:clamp(80px,14vw,180px);
-          font-weight:900;
-          color:var(--rule2);
-          opacity:.35;
-          position:absolute;
-          left:-24px;
-          top:-28px;
-          line-height:1;
-          pointer-events:none;
-          z-index:0;
-          user-select:none;
+        @media (min-width: 1024px) {
+          .container {
+            padding: 0 48px;
+          }
         }
 
-        .mast-h1 {
-          font-family:'Playfair Display',Georgia,serif !important;
-          font-size:clamp(2.1rem,5.8vw,4.8rem);
-          font-weight:900;
-          letter-spacing:-.028em;
-          color:#1A1208;
-          line-height:1.01;
-          position:relative;
-          z-index:1;
+        /* Animations */
+        @keyframes fadeUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        /* Gold rule under heading — tapers off */
-        .mast-rule {
-          display:block;
-          width:clamp(120px,22vw,260px);
-          height:2px;
-          background:linear-gradient(90deg,transparent,var(--acc-d),var(--acc),var(--acc-l),var(--acc),var(--acc-d),transparent);
-          margin:10px auto 14px;
+        .animate-up {
+          animation: fadeUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
         }
 
-        .live-badge {
-          display:inline-flex; align-items:center; gap:7px;
-          border:1px solid rgba(21,128,61,.35);
-          background:#F0FDF4;
-          padding:4px 16px;
-          border-radius:999px;
-          margin-bottom:0;
-        }
-        .live-dot { width:6px; height:6px; border-radius:50%; background:#15803D }
+        .delay-1 { animation-delay: 0.05s; }
+        .delay-2 { animation-delay: 0.1s; }
+        .delay-3 { animation-delay: 0.15s; }
+        .delay-4 { animation-delay: 0.2s; }
+        .delay-5 { animation-delay: 0.25s; }
 
-        /* Stat strip — inside masthead below tagline */
-        .mast-stats {
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          gap:0;
-          margin-top:16px;
-          border-top:1px solid var(--rule2);
-          padding-top:14px;
+        /* Tricolor Header */
+        .tricolor {
+          height: 6px;
+          display: flex;
+          position: relative;
+          z-index: 50;
         }
-        .mast-stat {
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          gap:2px;
-          padding:0 clamp(12px,2.5vw,28px);
-          border-right:1px solid var(--rule2);
-        }
-        .mast-stat:last-child { border-right:none }
-        .mast-stat-v {
-          font-family:'Playfair Display',serif;
-          font-size:clamp(1rem,1.8vw,1.4rem);
-          font-weight:900;
-          color:#1A1208;
-          line-height:1;
-        }
-        .mast-stat-l {
-          font-family:system-ui,sans-serif;
-          font-size:7.5px;
-          font-weight:700;
-          text-transform:uppercase;
-          letter-spacing:.18em;
-          color:#AAA;
-        }
-        @media(max-width:480px) {
-          .mast-stats { flex-wrap:wrap; gap:10px }
-          .mast-stat { border-right:none; padding:4px 14px; border:1px solid var(--rule2) }
+        .tricolor-saffron { flex: 1; background: #FF9933; }
+        .tricolor-white { flex: 1; background: #FFFFFF; }
+        .tricolor-green { flex: 1; background: #138808; }
+
+        /* Navigation Spacing */
+        .navbar-spacer {
+          height: 70px;
         }
 
-        .cat-tabs { display:flex; overflow-x:auto; border-bottom:1px solid var(--rule); scrollbar-width:none; background:var(--parch) }
-        .cat-tabs::-webkit-scrollbar { display:none }
-        .cat-tab { flex-shrink:0; padding:10px 16px; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#888; text-decoration:none; border-bottom:2.5px solid transparent; transition:all .15s; white-space:nowrap }
-        .cat-tab:hover { color:var(--ink) }
-        .cat-tab.on { color:#B45309; border-bottom-color:#B45309 }
-
-        .toolbar { position:sticky; top:0; z-index:20; background:var(--parch); border-bottom:1px solid var(--rule) }
-        .toolbar-inner { max-width:1300px; margin:0 auto; padding:0 clamp(16px,4vw,48px) }
-
-        .t-search-row { display:flex; align-items:center; height:48px; border-bottom:1px solid var(--rule2) }
-        .t-icon { display:flex; align-items:center; padding:0 14px; color:#AAA; font-size:16px; flex-shrink:0 }
-        .t-inp { flex:1; height:100%; border:none; background:transparent; font-family:Georgia,'Times New Roman',serif; font-size:15px; font-style:italic; color:var(--ink); outline:none; padding:0; min-width:0 }
-        .t-inp::placeholder { color:var(--rule) }
-        .t-btn { height:100%; padding:0 22px; background:var(--ink); color:#fff; border:none; font-family:system-ui,sans-serif; font-size:8px; font-weight:900; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; flex-shrink:0; transition:opacity .15s; white-space:nowrap }
-        .t-btn:hover { opacity:.85 }
-
-        .t-filter-row { display:flex; align-items:center; height:36px; overflow-x:auto; scrollbar-width:none; gap:0 }
-        .t-filter-row::-webkit-scrollbar { display:none }
-        .t-filter-lbl { display:flex; align-items:center; gap:5px; padding:0 12px 0 0; font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:var(--rule); flex-shrink:0; white-space:nowrap }
-        .t-sel { height:100%; border:none; background:transparent; font-family:system-ui,sans-serif; font-size:11px; color:var(--muted); padding:0 6px; outline:none; cursor:pointer; flex-shrink:0; border-right:1px solid var(--faint); max-width:130px }
-        .t-div { width:1px; height:18px; background:var(--rule2); flex-shrink:0; margin:0 2px }
-        .t-sort { height:100%; padding:0 11px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:8px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#AAA; text-decoration:none; transition:color .15s; flex-shrink:0; white-space:nowrap; border-right:1px solid var(--faint) }
-        .t-sort:hover { color:var(--ink) }
-        .t-sort.on { color:var(--ink); font-weight:900 }
-        .t-clear { height:100%; padding:0 10px; display:flex; align-items:center; font-family:system-ui,sans-serif; font-size:8px; font-weight:700; text-transform:uppercase; color:#DC2626; flex-shrink:0; white-space:nowrap }
-
-        @media(max-width:600px) {
-          .t-inp::placeholder { font-size:13px }
-          .t-btn { padding:0 14px; font-size:7.5px; letter-spacing:.12em }
-          .t-filter-lbl { display:none }
-          .mast-map-panel { display:none }
-          .mast-heading-wrap::before { display:none }
+        /* Hero Section */
+        .hero-section {
+          text-align: center;
+          padding: 48px 0 32px;
+          background: linear-gradient(to bottom, var(--bg-parchment), #FEF7E8);
+          border-bottom: 1px solid var(--border-medium);
         }
 
-        .results-bar { max-width:1300px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--rule2); background:var(--parch) }
-        .results-q { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--ink); font-style:italic }
-        .results-n { font-size:12px; color:var(--muted); font-style:italic }
-        .results-rule { flex:1; height:1px; background:var(--rule2) }
-        .results-pg { font-family:system-ui,sans-serif; font-size:9px; color:#AAA }
+        .hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(230, 126, 34, 0.1);
+          padding: 6px 16px 6px 12px;
+          border-radius: 100px;
+          margin-bottom: 24px;
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--accent-dark);
+        }
 
-        .page-body { background:var(--parch); min-height:60vh }
+        .hero-title {
+          font-size: clamp(2.5rem, 6vw, 4.5rem);
+          font-weight: 800;
+          line-height: 1.2;
+          letter-spacing: -0.02em;
+          color: var(--primary-dark);
+          margin-bottom: 20px;
+        }
 
-        .main-wrap { max-width:1300px; margin:0 auto; padding:clamp(20px,3.5vw,40px) clamp(16px,4vw,48px) 0 }
-        .main-grid { display:grid; grid-template-columns:1fr 286px; gap:clamp(20px,3vw,32px); align-items:start }
-        @media(max-width:1060px) { .main-grid { grid-template-columns:1fr } .rg-aside { display:none } }
+        .hero-title-gradient {
+          background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-dark) 100%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+        }
 
-        .feat-grid { display:grid; grid-template-columns:repeat(3,1fr); border:1.5px solid var(--ink); background:var(--ink); gap:1.5px; margin-bottom:clamp(20px,3.5vw,36px) }
-        @media(max-width:720px) { .feat-grid { grid-template-columns:1fr } }
-        .feat-card { background:var(--parch); display:flex; flex-direction:column; text-decoration:none; transition:all .18s; position:relative; overflow:hidden }
-        .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--acc-d),var(--acc),var(--acc-l)); opacity:0; transition:opacity .2s }
-        .feat-card:hover { background:#fff; transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); z-index:1 }
-        .feat-card:hover::before { opacity:1 }
-        .feat-img-wrap { width:100%; aspect-ratio:16/9; position:relative; background:var(--faint); overflow:hidden; flex-shrink:0 }
-        .feat-img-wrap img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:sepia(10%) contrast(108%); transition:transform .55s ease }
-        .feat-card:hover .feat-img-wrap img { transform:scale(1.04) }
-        .feat-ph { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--faint),var(--rule)) }
-        .feat-ph-letter { font-family:'Playfair Display',serif; font-size:3.8rem; font-weight:900; color:#AAA }
-        .feat-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(26,18,8,.85) 0%,transparent 55%) }
-        .feat-edition { position:absolute; top:11px; left:12px; background:var(--ink); color:#fff; font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; padding:2px 9px; letter-spacing:.14em }
-        .feat-caption { position:absolute; bottom:0; left:0; right:0; padding:14px }
-        .feat-sector { display:block; font-family:system-ui,sans-serif; font-size:7px; font-weight:700; text-transform:uppercase; letter-spacing:.2em; color:rgba(255,255,255,.55); margin-bottom:3px }
-        .feat-company { display:block; font-family:'Playfair Display',serif; font-size:clamp(.9rem,1.4vw,1.1rem); font-weight:700; color:#fff; line-height:1.2 }
-        .feat-body { padding:14px; flex:1; display:flex; flex-direction:column; gap:7px }
-        .feat-desc { font-size:11.5px; color:#5A4A30; font-style:italic; line-height:1.7; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1 }
-        .feat-foot { display:flex; align-items:center; justify-content:space-between; padding-top:9px; border-top:1px solid var(--rule2); margin-top:auto }
-        .feat-chips { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA; display:flex; gap:6px; align-items:center; flex-wrap:wrap }
-        .feat-ufrn { font-family:monospace; font-size:8px; font-weight:700; color:#C59A2E; background:#FBF8F3; border:1px solid #E8DFCC; padding:1px 5px }
+        .hero-description {
+          font-size: 1.125rem;
+          color: var(--text-muted);
+          max-width: 640px;
+          margin: 0 auto 32px;
+          line-height: 1.6;
+        }
 
-        .startup-list { display:flex; flex-direction:column; gap:0 }
-        .s-row { display:grid; grid-template-columns:52px 1fr auto; align-items:stretch; border:1.5px solid var(--rule2); border-bottom:none; text-decoration:none; background:var(--parch); transition:all .15s; position:relative }
-        .s-row:first-child { border-top-color:var(--ink) }
-        .s-row:last-child { border-bottom:1.5px solid var(--rule2) }
-        .s-row:hover { background:#fff; transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); z-index:1; border-color:var(--ink) }
-        @media(max-width:560px) { .s-row { grid-template-columns:1fr auto } .s-num-col { display:none } }
-        .s-num-col { display:flex; align-items:flex-start; justify-content:center; padding:20px 0; border-right:1px solid var(--faint) }
-        .s-num { font-family:'Playfair Display',serif; font-size:.8rem; font-weight:700; color:var(--rule) }
-        .s-row:hover .s-num { color:var(--acc) }
-        .s-body { padding:18px 22px; display:flex; flex-direction:column; gap:7px }
-        .s-head { display:flex; align-items:flex-start; gap:12px }
-        .s-logo-wrap { width:38px; height:38px; border:1px solid var(--rule2); background:var(--faint); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
-        .s-meta { flex:1; min-width:0 }
-        .s-name { font-family:'Playfair Display',serif; font-size:clamp(.9rem,1.1vw,1.05rem); font-weight:700; color:var(--ink); line-height:1.25; margin-bottom:1px }
-        .s-row:hover .s-name { text-decoration:underline }
-        .s-cat { font-family:system-ui,sans-serif; font-size:8px; color:#AAA; text-transform:uppercase; letter-spacing:.12em }
-        .s-verified { display:inline-flex; align-items:center; gap:4px; font-family:system-ui,sans-serif; font-size:8px; font-weight:800; text-transform:uppercase; letter-spacing:.14em; color:#15803D; margin-top:1px }
-        .s-desc { font-size:12px; color:#5A4A30; font-style:italic; line-height:1.68; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
-        .s-founders { font-size:10.5px; color:#AAA; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
-        .s-chips { display:flex; gap:8px; flex-wrap:wrap; align-items:center }
-        .s-chip { font-family:system-ui,sans-serif; font-size:8.5px; color:var(--muted); border:1px solid var(--rule); padding:2px 9px; background:var(--faint) }
-        .s-ufrn { font-family:monospace; font-size:8px; font-weight:700; color:#C59A2E; background:#FBF8F3; border:1px solid #E8DFCC; padding:2px 7px }
-        .s-arrow-col { display:flex; align-items:center; justify-content:center; padding:0 16px; border-left:1px solid var(--faint) }
-        .s-arrow { width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:1px solid var(--rule2); transition:all .15s }
-        .s-row:hover .s-arrow { background:var(--ink); border-color:var(--ink) }
-        .s-row:hover .s-arrow svg { color:#fff }
+        /* Stats Grid - Enhanced */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 1px;
+          background: var(--border-medium);
+          border-radius: 20px;
+          overflow: hidden;
+          margin-top: 32px;
+          box-shadow: var(--shadow-md);
+        }
 
-        .empty-state { text-align:center; padding:60px 24px; border:1.5px dashed var(--rule); background:var(--parch) }
+        .stat-card {
+          background: var(--bg-white);
+          padding: 28px 16px;
+          text-align: center;
+          transition: all 0.2s ease;
+        }
 
-        .pag { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:clamp(24px,3.5vw,36px); padding-top:clamp(18px,3vw,28px); border-top:1px solid var(--rule2) }
-        .pag-btn { padding:7px 18px; font-family:system-ui,sans-serif; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border:1px solid var(--rule); background:var(--parch); color:var(--muted); text-decoration:none; transition:all .15s }
-        .pag-btn:hover { border-color:var(--ink); color:var(--ink); background:#fff }
-        .pag-btn.dis { color:var(--rule); pointer-events:none }
-        .pag-num { width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-family:system-ui,sans-serif; font-size:11px; font-weight:700; border:1px solid var(--rule); text-decoration:none; color:var(--muted); transition:all .15s }
-        .pag-num:hover { border-color:var(--ink); color:var(--ink); background:#fff }
-        .pag-num.on { background:var(--ink); color:#fff; border-color:var(--ink) }
+        .stat-card:hover {
+          background: #FEFAF3;
+          transform: translateY(-2px);
+        }
 
-        .rg-aside { display:flex; flex-direction:column; gap:14px }
-        .aside-box { border:1.5px solid var(--ink); background:var(--parch); padding:18px }
-        .aside-box.dk { background:var(--ink) }
-        .aside-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.28em; color:#AAA; margin-bottom:9px }
-        .aside-box.dk .aside-ey { color:var(--acc-l) }
-        .aside-h { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:var(--ink); margin-bottom:5px; line-height:1.3 }
-        .aside-box.dk .aside-h { color:#fff }
-        .aside-p { font-size:11.5px; color:#5A4A30; font-style:italic; line-height:1.65; margin-bottom:13px }
-        .aside-box.dk .aside-p { color:rgba(255,255,255,.38) }
-        .aside-btn { display:block; text-align:center; font-family:system-ui,sans-serif; font-size:8.5px; font-weight:900; text-transform:uppercase; letter-spacing:.2em; background:#fff; color:var(--ink); padding:10px; text-decoration:none; transition:background .15s }
-        .aside-btn:hover { background:var(--acc-l) }
-        .aside-list { list-style:none; padding:0; margin:0 }
-        .aside-list li { border-bottom:1px solid var(--rule2) }
-        .aside-list li:last-child { border-bottom:none }
-        .aside-list a { display:flex; align-items:center; justify-content:space-between; padding:8px 0; font-size:12.5px; color:#5A4A30; text-decoration:none; font-style:italic; transition:color .15s }
-        .aside-list a:hover { color:var(--ink); text-decoration:underline }
-        .aside-nums { display:flex; flex-direction:column }
-        .aside-num-row { display:flex; justify-content:space-between; align-items:baseline; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.08) }
-        .aside-num-row:last-child { border-bottom:none }
-        .aside-num-l { font-family:system-ui,sans-serif; font-size:8px; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:.12em }
-        .aside-num-v { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:900; color:var(--acc-l) }
+        .stat-value {
+          font-family: 'Playfair Display', serif;
+          font-size: 2rem;
+          font-weight: 800;
+          color: var(--primary);
+          margin-bottom: 8px;
+          line-height: 1.2;
+        }
 
-        .cta-block { background:var(--ink); padding:clamp(22px,4vw,44px) clamp(16px,3.5vw,40px); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px; margin-top:clamp(24px,4vw,40px); position:relative; overflow:hidden }
-        .cta-block::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--acc-d),var(--acc),var(--acc-l),var(--acc),var(--acc-d)) }
-        .cta-ey { font-family:system-ui,sans-serif; font-size:7.5px; font-weight:900; text-transform:uppercase; letter-spacing:.3em; color:rgba(232,197,71,.65); margin-bottom:7px }
-        .cta-h { font-family:'Playfair Display',serif; font-size:clamp(1.1rem,2.2vw,1.5rem); font-weight:700; color:#fff; margin-bottom:5px; line-height:1.25 }
-        .cta-p { font-size:12px; color:rgba(255,255,255,.38); font-style:italic }
-        .cta-btn { flex-shrink:0; display:inline-flex; align-items:center; gap:7px; background:var(--acc); color:var(--ink); padding:13px 26px; font-family:system-ui,sans-serif; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.14em; text-decoration:none; transition:opacity .15s; box-shadow:3px 3px 0 var(--acc-d); white-space:nowrap }
-        .cta-btn:hover { opacity:.88 }
+        .stat-label {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-muted);
+        }
 
-        .links-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px }
-        @media(max-width:800px) { .links-grid { grid-template-columns:repeat(2,1fr) } }
-        .link-card { display:flex; flex-direction:column; gap:4px; padding:12px 13px; border:1px solid var(--rule2); background:var(--parch); text-decoration:none; transition:all .15s }
-        .link-card:hover { border-color:var(--ink); background:#fff }
-        .link-title { font-family:system-ui,sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--ink); display:flex; align-items:center; gap:3px }
-        .link-desc { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
+        /* Sector Tabs */
+        .sector-tabs {
+          display: flex;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          gap: 8px;
+          padding: 16px 0;
+          margin-bottom: 24px;
+          scrollbar-width: thin;
+          border-bottom: 1px solid var(--border-medium);
+        }
+
+        .sector-tab {
+          flex-shrink: 0;
+          padding: 8px 20px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: var(--text-muted);
+          background: var(--bg-white);
+          border-radius: 40px;
+          transition: all 0.2s;
+          text-decoration: none;
+          border: 1px solid var(--border-medium);
+        }
+
+        .sector-tab:hover {
+          border-color: var(--accent);
+          color: var(--accent-dark);
+          background: rgba(230, 126, 34, 0.05);
+        }
+
+        .sector-tab.active {
+          background: var(--primary);
+          border-color: var(--primary);
+          color: white;
+        }
+
+        /* Toolbar */
+        .toolbar {
+          position: sticky;
+          top: 70px;
+          z-index: 40;
+          background: var(--bg-white);
+          border-bottom: 1px solid var(--border-medium);
+          box-shadow: var(--shadow-sm);
+        }
+
+        .toolbar-content {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+          padding: 12px 0;
+        }
+
+        .search-form {
+          flex: 2;
+          min-width: 240px;
+          display: flex;
+          align-items: center;
+          background: var(--bg-parchment);
+          border: 1px solid var(--border-medium);
+          border-radius: 48px;
+          padding: 4px 4px 4px 20px;
+          transition: all 0.2s;
+        }
+        .search-form:focus-within {
+          border-color: var(--accent);
+          box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+        }
+
+        .search-input {
+          flex: 1;
+          background: transparent;
+          border: none;
+          padding: 10px 0;
+          font-size: 0.9rem;
+          outline: none;
+        }
+
+        .search-button {
+          background: var(--primary);
+          border: none;
+          padding: 8px 24px;
+          border-radius: 40px;
+          color: white;
+          font-weight: 600;
+          font-size: 0.8rem;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .search-button:hover {
+          background: var(--primary-dark);
+        }
+
+        .filter-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .filter-select {
+          padding: 8px 12px;
+          border: 1px solid var(--border-medium);
+          border-radius: 40px;
+          background: var(--bg-white);
+          font-size: 0.8rem;
+          color: var(--text-dark);
+          cursor: pointer;
+          outline: none;
+        }
+
+        .sort-link {
+          padding: 6px 12px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-decoration: none;
+          color: var(--text-muted);
+          border-radius: 40px;
+          transition: all 0.2s;
+        }
+        .sort-link.active {
+          background: var(--primary);
+          color: white;
+        }
+        .clear-link {
+          padding: 6px 12px;
+          font-size: 0.75rem;
+          color: var(--accent);
+          text-decoration: none;
+        }
+
+        /* Results Header */
+        .results-header {
+          display: flex;
+          align-items: baseline;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin: 24px 0;
+          padding-bottom: 16px;
+          border-bottom: 1px solid var(--border-medium);
+        }
+
+        /* Featured Cards Grid */
+        .featured-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 24px;
+          margin-bottom: 48px;
+        }
+
+        .featured-card {
+          background: var(--bg-white);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: var(--shadow-md);
+          transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+          text-decoration: none;
+          color: inherit;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+        .featured-card:hover {
+          transform: translateY(-6px);
+          box-shadow: var(--shadow-xl);
+        }
+
+        .featured-image {
+          position: relative;
+          height: 200px;
+          background: linear-gradient(135deg, #FEF3E2, #FFF8F0);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .featured-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+        .featured-card:hover .featured-image img {
+          transform: scale(1.05);
+        }
+        .featured-badge {
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          background: var(--accent);
+          color: white;
+          padding: 4px 12px;
+          border-radius: 40px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+        }
+
+        .featured-content {
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        .featured-category {
+          font-size: 0.7rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--accent);
+          margin-bottom: 8px;
+        }
+        .featured-name {
+          font-size: 1.25rem;
+          font-weight: 700;
+          margin-bottom: 12px;
+          line-height: 1.3;
+        }
+        .featured-desc {
+          font-size: 0.85rem;
+          color: var(--text-muted);
+          margin-bottom: 16px;
+          line-height: 1.5;
+          flex: 1;
+        }
+        .featured-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-top: 1px solid var(--border-light);
+          padding-top: 12px;
+          margin-top: auto;
+        }
+        .featured-chips {
+          display: flex;
+          gap: 8px;
+          font-size: 0.7rem;
+          color: var(--text-muted);
+        }
+        .featured-ufrn {
+          background: var(--bg-parchment);
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: monospace;
+          font-size: 0.65rem;
+        }
+
+        /* Startup List Item - Premium Card */
+        .startup-item {
+          display: grid;
+          grid-template-columns: 56px 1fr auto;
+          background: var(--bg-white);
+          border-radius: 16px;
+          margin-bottom: 12px;
+          transition: all 0.2s;
+          text-decoration: none;
+          color: inherit;
+          box-shadow: var(--shadow-sm);
+          border: 1px solid var(--border-light);
+          overflow: hidden;
+        }
+        .startup-item:hover {
+          transform: translateX(4px);
+          box-shadow: var(--shadow-md);
+          border-color: var(--accent-light);
+        }
+
+        .startup-number {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding-top: 20px;
+          font-weight: 600;
+          color: var(--text-muted);
+          background: #FEFAF5;
+          font-size: 0.8rem;
+        }
+
+        .startup-body {
+          padding: 16px 20px 16px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .startup-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+        .startup-logo {
+          width: 48px;
+          height: 48px;
+          background: var(--bg-parchment);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid var(--border-medium);
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+        .startup-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .startup-info {
+          flex: 1;
+        }
+        .startup-name {
+          font-size: 1.1rem;
+          font-weight: 700;
+          margin-bottom: 4px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .verified-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background: #E8F5E9;
+          padding: 2px 8px;
+          border-radius: 20px;
+          font-size: 0.6rem;
+          font-weight: 600;
+          color: #2E7D32;
+        }
+        .startup-category {
+          font-size: 0.7rem;
+          color: var(--accent);
+          font-weight: 500;
+          text-transform: uppercase;
+        }
+        .startup-description {
+          font-size: 0.85rem;
+          color: var(--text-muted);
+          line-height: 1.5;
+        }
+        .startup-meta {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+          font-size: 0.75rem;
+          color: var(--text-muted);
+        }
+        .meta-chip {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .ufrn-chip {
+          background: #FEF3E2;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-family: monospace;
+          font-size: 0.7rem;
+          color: var(--accent-dark);
+        }
+
+        .startup-arrow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 24px;
+          color: var(--text-muted);
+        }
+
+        /* Aside Sections */
+        .aside-sticky {
+          position: sticky;
+          top: 100px;
+        }
+        .aside-card {
+          background: var(--bg-white);
+          border-radius: 20px;
+          padding: 24px;
+          margin-bottom: 24px;
+          box-shadow: var(--shadow-sm);
+          border: 1px solid var(--border-light);
+        }
+        .aside-card.dark {
+          background: var(--primary-dark);
+          color: white;
+          border: none;
+        }
+        .aside-title {
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--accent);
+          margin-bottom: 16px;
+        }
+        .aside-card.dark .aside-title {
+          color: var(--gold);
+        }
+        .aside-heading {
+          font-size: 1.25rem;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+        .aside-text {
+          font-size: 0.85rem;
+          color: var(--text-muted);
+          margin-bottom: 20px;
+          line-height: 1.5;
+        }
+        .aside-card.dark .aside-text {
+          color: rgba(255,255,255,0.7);
+        }
+        .aside-button {
+          display: inline-block;
+          background: var(--accent);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 40px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          text-decoration: none;
+          text-align: center;
+          width: 100%;
+          transition: background 0.2s;
+        }
+        .aside-button:hover {
+          background: var(--accent-dark);
+        }
+        .sector-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .sector-list li {
+          border-bottom: 1px solid var(--border-light);
+        }
+        .sector-list li:last-child {
+          border-bottom: none;
+        }
+        .sector-list a {
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 0;
+          text-decoration: none;
+          color: var(--text-dark);
+          font-size: 0.85rem;
+          transition: color 0.2s;
+        }
+        .sector-list a:hover {
+          color: var(--accent);
+        }
+        .stats-aside {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .stat-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+        }
+        .stat-label-aside {
+          font-size: 0.7rem;
+          color: rgba(255,255,255,0.6);
+        }
+        .stat-value-aside {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--gold);
+        }
+
+        /* CTA Section */
+        .cta-section {
+          background: var(--primary);
+          border-radius: 24px;
+          padding: 48px;
+          margin: 48px 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 24px;
+        }
+        .cta-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 8px;
+        }
+        .cta-text {
+          color: rgba(255,255,255,0.7);
+        }
+        .cta-button {
+          background: var(--accent);
+          color: white;
+          padding: 14px 32px;
+          border-radius: 40px;
+          font-weight: 600;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          transition: background 0.2s;
+        }
+        .cta-button:hover {
+          background: var(--accent-dark);
+        }
+
+        /* Pagination */
+        .pagination {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 48px;
+          padding-top: 24px;
+          border-top: 1px solid var(--border-medium);
+        }
+        .page-link {
+          padding: 8px 16px;
+          border-radius: 8px;
+          text-decoration: none;
+          color: var(--text-dark);
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        .page-link:hover {
+          background: var(--bg-parchment);
+        }
+        .page-link.active {
+          background: var(--primary);
+          color: white;
+        }
+        .page-link.disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+          .toolbar-content {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .startup-item {
+            grid-template-columns: 1fr auto;
+          }
+          .startup-number {
+            display: none;
+          }
+          .startup-body {
+            padding: 16px;
+          }
+          .cta-section {
+            padding: 32px;
+            flex-direction: column;
+            text-align: center;
+          }
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
       `}</style>
 
       <Navbar />
+      <div className="tricolor">
+        <div className="tricolor-saffron"></div>
+        <div className="tricolor-white"></div>
+        <div className="tricolor-green"></div>
+      </div>
 
-      {/* ── TRICOLOUR strip — top of page ── */}
-      <div className="tricolour"><span /><span /><span /></div>
-
-      {/* ── MASTHEAD ── */}
-      <header className="mast" role="banner">
-
-        {/* India map panel — right side decorative */}
-        <div className="mast-map-panel map-anim" aria-hidden="true">
-          {/* The simplemaps India SVG loaded as image — state boundaries visible */}
-          <img
-            className="mast-map-img"
-            src="https://simplemaps.com/static/svg/country/in/admin1/in.svg"
-            alt=""
-            loading="eager"
-            fetchPriority="high"
-          />
-          {/* Ashoka Chakra — pure CSS circle with spokes */}
-          <svg
-            className="chakra-mark"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <circle cx="50" cy="50" r="46" stroke="#1A3799" strokeWidth="3"/>
-            <circle cx="50" cy="50" r="6" fill="#1A3799"/>
-            {Array.from({length:24},(_,i)=>{
-              const a = (i * 360/24) * Math.PI / 180
-              const x1 = 50 + 9*Math.cos(a), y1 = 50 + 9*Math.sin(a)
-              const x2 = 50 + 42*Math.cos(a), y2 = 50 + 42*Math.sin(a)
-              return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1A3799" strokeWidth="1.2"/>
-            })}
-          </svg>
-        </div>
-
-        {/* Main masthead content — centred */}
-        <div className="mast-content ri-0">
-
-          {/* Edition pill */}
-          <div className="edition-pill ri-0">
-            <span className="edition-pill-flag">🇮🇳</span>
-            <span style={{ fontFamily:"system-ui,sans-serif", fontSize:7.5, fontWeight:700, letterSpacing:".28em", textTransform:"uppercase", color:"#B45309" }}>
-              India Edition · 2026
-            </span>
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="container">
+          <div className="hero-badge animate-up">
+            <Award size={16} />
+            <span>India's Most Trusted Startup Registry</span>
           </div>
-
-          {/* H1 with decorative quote behind */}
-          <div className="mast-heading-wrap">
-            <h1 className="mast-h1 pf ri-0">Indian Registry</h1>
-          </div>
-
-          {/* Gold centre rule */}
-          <span className="mast-rule" />
-
-          <p className="ri-1" style={{ fontFamily:"Georgia,'Times New Roman',serif", fontSize:"clamp(12px,1.55vw,14.5px)", color:"#6B5C40", fontStyle:"italic", lineHeight:1.72, maxWidth:460, margin:"0 auto 16px" }}>
-            India's independent registry of verified builders —<br />free, structured, permanent.
+          <h1 className="hero-title pf animate-up delay-1">
+            India's Definitive <span className="hero-title-gradient">Startup Database</span>
+          </h1>
+          <p className="hero-description animate-up delay-2">
+            Discover {total.toLocaleString()}+ verified Indian startups. Search by name, founder, city, or sector. 
+            Updated daily with the latest funding rounds and company profiles.
           </p>
 
-          <div className="live-badge ri-1">
-            <span className="live-dot" />
-            <span style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:".2em", color:"#15803D" }}>
-              Live · {total.toLocaleString()} Profiles · All Verified
-            </span>
-          </div>
-
-          {/* Stat strip */}
-          <div className="mast-stats ri-2">
-            {[
-              { v:`${total.toLocaleString()}+`, l:"Verified Startups" },
-              { v:"126+",   l:"Indian Unicorns"  },
-              { v:"$9.2B",  l:"Q1 2026 Funding"  },
-              { v:"3rd",    l:"Global Ecosystem"  },
-              { v:"30+",    l:"Sectors Covered"   },
-            ].map((s,i) => (
-              <div key={i} className="mast-stat">
-                <span className="mast-stat-v pf">{s.v}</span>
-                <span className="mast-stat-l">{s.l}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Sector tabs */}
-        <nav className="cat-tabs ri-2" aria-label="Browse by sector" style={{ padding:"0 clamp(16px,4vw,48px)" }}>
-          <span style={{ fontFamily:"system-ui,sans-serif", fontSize:7.5, color:"#BBB", textTransform:"uppercase", letterSpacing:".2em", padding:"10px 6px 10px 0", flexShrink:0, display:"inline-flex", alignItems:"center" }}>Browse:</span>
-          <Link href="/startup" className={`cat-tab${!cat && !q ? " on" : ""}`}>All</Link>
-          {cats.slice(0, 8).map(c => (
-            <Link key={c} href={`/startup?category=${encodeURIComponent(c)}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className={`cat-tab${cat === c ? " on" : ""}`}>{c}</Link>
-          ))}
-          {cats.length > 8 && <Link href="/startups" className="cat-tab">More Sectors →</Link>}
-        </nav>
-      </header>
-
-      {/* ── TOOLBAR ── */}
-      <div className="toolbar" id="rg-toolbar">
-        <div className="toolbar-inner">
-          <form action="/startup" method="GET" className="t-search-row">
-            {year && <input type="hidden" name="year" value={year} />}
-            {cat  && <input type="hidden" name="category" value={cat} />}
-            {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
-            <span className="t-icon" aria-hidden="true">⌕</span>
-            <input type="search" name="q" defaultValue={q} className="t-inp"
-              placeholder="Search startups, founders, sectors, cities…"
-              aria-label="Search startup registry" autoComplete="off" />
-            <button type="submit" className="t-btn">Search →</button>
-          </form>
-          <div className="t-filter-row" aria-label="Filter and sort controls">
-            <span className="t-filter-lbl">
-              <svg width="10" height="9" viewBox="0 0 10 9" fill="none" aria-hidden="true">
-                <path d="M0.5 1h9M2 4.5h6M3.5 8h3" stroke="#C8C2B4" strokeWidth="1.3" strokeLinecap="round"/>
-              </svg>
-              Filter
-            </span>
-            <select className="t-sel" aria-label="Filter by year" defaultValue={year} id="rg-year-sel" name="year">
-              <option value="">Any Year</option>
-              {years.map(yr => <option key={yr} value={String(yr)}>{yr}</option>)}
-            </select>
-            <select className="t-sel" aria-label="Filter by sector" defaultValue={cat} id="rg-cat-sel" name="category">
-              <option value="">All Sectors</option>
-              {cats.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <span className="t-div" />
-            <Link href={qs({ sort:"name",   page:undefined })} className={`t-sort${sort==="name"   ? " on":""}`}>A–Z</Link>
-            <Link href={qs({ sort:"newest", page:undefined })} className={`t-sort${sort==="newest" ? " on":""}`}>Newest</Link>
-            <Link href={qs({ sort:"year",   page:undefined })} className={`t-sort${sort==="year"   ? " on":""}`}>Founded</Link>
-            {isFiltered && <Link href="/startup" className="t-clear">✕ Clear</Link>}
+          {/* Enhanced Stats Grid */}
+          <div className="stats-grid animate-up delay-3">
+            <div className="stat-card">
+              <div className="stat-value">{total.toLocaleString()}+</div>
+              <div className="stat-label">Verified Startups</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">126+</div>
+              <div className="stat-label">Indian Unicorns</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">$9.2B</div>
+              <div className="stat-label">Q1 2026 Funding</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">3rd</div>
+              <div className="stat-label">Global Ecosystem</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">30+</div>
+              <div className="stat-label">Sectors Covered</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── PAGE BODY ── */}
-      <div className="page-body">
-        <div className="results-bar ri-2" aria-live="polite">
-          <span className="results-q">{q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}</span>
-          <span className="results-n">— {total.toLocaleString()} profiles</span>
-          <span className="results-rule" />
-          <span className="results-pg">Pg. {page} / {totalPages || 1}</span>
+      <div className="container">
+        {/* Sector Tabs */}
+        <div className="sector-tabs">
+          <Link href="/startup" className={`sector-tab ${!cat ? 'active' : ''}`}>All</Link>
+          {cats.slice(0, 12).map(c => (
+            <Link key={c} href={`/startup?category=${encodeURIComponent(c)}`} className={`sector-tab ${cat === c ? 'active' : ''}`}>{c}</Link>
+          ))}
+          {cats.length > 12 && (
+            <Link href="/startups" className="sector-tab">More +</Link>
+          )}
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <div className="toolbar">
+        <div className="container">
+          <div className="toolbar-content">
+            <form action="/startup" method="GET" className="search-form">
+              {year && <input type="hidden" name="year" value={year} />}
+              {cat && <input type="hidden" name="category" value={cat} />}
+              {sort && sort !== "name" && <input type="hidden" name="sort" value={sort} />}
+              <input type="search" name="q" defaultValue={q} placeholder="Search startups, founders, sectors..." className="search-input" />
+              <button type="submit" className="search-button">Search</button>
+            </form>
+            <div className="filter-group">
+              <select className="filter-select" id="year-select" defaultValue={year}>
+                <option value="">Any Year</option>
+                {years.map(yr => <option key={yr} value={yr}>{yr}</option>)}
+              </select>
+              <select className="filter-select" id="category-select" defaultValue={cat}>
+                <option value="">All Sectors</option>
+                {cats.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <Link href={qs({ sort: "name", page: undefined })} className={`sort-link ${sort === "name" ? "active" : ""}`}>A-Z</Link>
+                <Link href={qs({ sort: "newest", page: undefined })} className={`sort-link ${sort === "newest" ? "active" : ""}`}>Newest</Link>
+                <Link href={qs({ sort: "year", page: undefined })} className={`sort-link ${sort === "year" ? "active" : ""}`}>Founded</Link>
+              </div>
+              {isFiltered && <Link href="/startup" className="clear-link">Clear All</Link>}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container">
+        {/* Results Header */}
+        <div className="results-header">
+          <span style={{ fontWeight: 600 }}>
+            {q ? `"${q}"` : cat ? cat : year ? `Est. ${year}` : "All Startups"}
+          </span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            {total.toLocaleString()} results
+          </span>
+          <div style={{ flex: 1 }}></div>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            Page {page} of {totalPages || 1}
+          </span>
         </div>
 
-        <div className="main-wrap">
-          <div className="main-grid">
-
-            <div>
-              {featured.length > 0 && (
-                <section aria-label="Featured startups" style={{ marginBottom:"clamp(20px,3.5vw,36px)" }}>
-                  <div className="sh ri-2">
-                    <span style={{ color:"#B45309", fontSize:10, marginRight:2 }}>✦</span>
-                    <span className="sh-l">Featured This Edition</span>
-                    <div className="sh-r" />
-                  </div>
-                  <div className="gold-strip" style={{ marginBottom:1 }} />
-                  <div className="feat-grid">
-                    {featured.map((s, fi) => (
-                      <Link key={s.id} href={`/startup/${s.slug}`} className="feat-card">
-                        <div className="feat-img-wrap">
-                          {s.logo_url
-                            ? <img src={s.logo_url} alt={s.name} loading={fi === 0 ? "eager" : "lazy"} />
-                            : <div className="feat-ph"><span className="feat-ph-letter">{s.name.charAt(0)}</span></div>
-                          }
-                          <div className="feat-overlay" />
-                          <span className="feat-edition">No.{String(fi + 1).padStart(2,"0")}</span>
-                          <div className="feat-caption">
-                            <span className="feat-sector">{s.category ?? "Startup"}</span>
-                            <span className="feat-company pf">{s.name}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '48px' }}>
+          <div>
+            {/* Featured Startups */}
+            {featured.length > 0 && (
+              <div style={{ marginBottom: '48px' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Award size={24} color="#E67E22" />
+                  Featured Startups
+                </h2>
+                <div className="featured-grid">
+                  {featured.map((s, idx) => (
+                    <Link key={s.id} href={`/startup/${s.slug}`} className="featured-card">
+                      <div className="featured-image">
+                        {s.logo_url ? (
+                          <Image src={s.logo_url} alt={s.name} width={400} height={200} style={{ objectFit: 'cover' }} />
+                        ) : (
+                          <span style={{ fontSize: '3rem', fontWeight: 700, color: '#E67E22' }}>{s.name.charAt(0)}</span>
+                        )}
+                        <span className="featured-badge">Featured</span>
+                      </div>
+                      <div className="featured-content">
+                        <div className="featured-category">{s.category || "Startup"}</div>
+                        <div className="featured-name pf">{s.name}</div>
+                        <p className="featured-desc">{s.description || "Building for India's future."}</p>
+                        <div className="featured-meta">
+                          <div className="featured-chips">
+                            {s.founded_year && <span>Est. {s.founded_year}</span>}
+                            {s.city && <span>• {s.city}</span>}
                           </div>
+                          {s.ufrn && <span className="featured-ufrn">{s.ufrn}</span>}
                         </div>
-                        <div className="feat-body">
-                          <p className="feat-desc">{s.description ?? "Building for India's next decade."}</p>
-                          <div className="feat-foot">
-                            <div className="feat-chips">
-                              {s.founded_year && <span>Est. {s.founded_year}</span>}
-                              {s.city && <span>· {s.city}</span>}
-                              {s.ufrn && <span className="feat-ufrn">{s.ufrn}</span>}
-                            </div>
-                            <ArrowUpRight style={{ width:12, height:12, color:"#C8C2B4" }} aria-hidden="true" />
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {grid.length > 0 ? (
-                <section aria-label="All startups">
-                  {featured.length > 0 && (
-                    <div className="sh ri-2">
-                      <span className="sh-l">All Startups</span>
-                      <div className="sh-r" />
-                      <span className="sh-l">{total.toLocaleString()} total</span>
-                    </div>
-                  )}
-                  <div className="startup-list">
-                    {grid.map((s, idx) => (
-                      <Link key={s.id} href={`/startup/${s.slug}`} className="s-row ri-2" style={{ animationDelay:`${Math.min(idx * 0.035, 0.28)}s` }}>
-                        <div className="s-num-col">
-                          <span className="s-num">{String(baseNum + idx + 1).padStart(2,"0")}</span>
-                        </div>
-                        <div className="s-body">
-                          <div className="s-head">
-                            <div className="s-logo-wrap">
-                              {s.logo_url
-                                ? <Image src={s.logo_url} alt={s.name} width={38} height={38} className="object-contain" loading="lazy" />
-                                : <span style={{ fontSize:14, fontWeight:700, color:"#AAA", fontFamily:"'Playfair Display',serif" }}>{s.name.charAt(0)}</span>
-                              }
-                            </div>
-                            <div className="s-meta">
-                              <div className="s-name pf">{s.name}</div>
-                              <div className="s-cat">{s.category ?? ""}</div>
-                              <div className="s-verified">
-                                <svg width="8" height="7" viewBox="0 0 8 7" fill="none" aria-label="Verified">
-                                  <path d="M1 3.5L3 5.5L7 1.5" stroke="#15803D" strokeWidth="1.4" strokeLinecap="round"/>
-                                </svg>
-                                Verified
-                              </div>
-                            </div>
-                          </div>
-                          {s.description && <p className="s-desc">{s.description}</p>}
-                          {s.founders && <p className="s-founders">↳ {s.founders}</p>}
-                          <div className="s-chips">
-                            {s.founded_year && <span className="s-chip">Est. {s.founded_year}</span>}
-                            {s.city && <span className="s-chip">{s.city}</span>}
-                            {s.ufrn && <span className="s-ufrn">{s.ufrn}</span>}
-                          </div>
-                        </div>
-                        <div className="s-arrow-col">
-                          <div className="s-arrow">
-                            <ArrowUpRight style={{ width:12, height:12, color:"#C8C2B4" }} aria-hidden="true" />
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              ) : (
-                <div className="empty-state">
-                  <span className="pf" style={{ fontSize:"3rem", color:"#C8C2B4", display:"block", marginBottom:14 }}>∅</span>
-                  <p className="pf" style={{ fontSize:"1.3rem", color:"#1A1208", marginBottom:7, fontWeight:700 }}>No startups found</p>
-                  <p style={{ fontSize:13, color:"#5A4A30", fontStyle:"italic", marginBottom:18 }}>
-                    {q ? `Nothing matched "${q}". Try a different term.` : "Try adjusting your filters."}
-                  </p>
-                  <Link href="/startup" style={{ display:"inline-block", background:"#1A1208", color:"#fff", padding:"9px 22px", fontFamily:"system-ui,sans-serif", fontSize:9, fontWeight:900, textTransform:"uppercase", letterSpacing:".18em", textDecoration:"none" }}>
-                    Clear filters
-                  </Link>
-                </div>
-              )}
-
-              {totalPages > 1 && (
-                <nav className="pag" aria-label="Registry pagination">
-                  <Link href={pgHref(page - 1)} className={`pag-btn${page === 1 ? " dis" : ""}`} aria-disabled={page === 1}>← Prev</Link>
-                  {pgNums.map(p => (
-                    <Link key={p} href={pgHref(p)} className={`pag-num${p === page ? " on" : ""}`} aria-current={p === page ? "page" : undefined}>{p}</Link>
+                      </div>
+                    </Link>
                   ))}
-                  <Link href={pgHref(page + 1)} className={`pag-btn${page === totalPages ? " dis" : ""}`} aria-disabled={page === totalPages}>Next →</Link>
-                </nav>
-              )}
+                </div>
+              </div>
+            )}
+
+            {/* Startup List */}
+            {grid.length > 0 ? (
+              <div>
+                {featured.length > 0 && (
+                  <div style={{ margin: '24px 0 16px' }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>All Startups</h2>
+                  </div>
+                )}
+                {grid.map((s, idx) => (
+                  <Link key={s.id} href={`/startup/${s.slug}`} className="startup-item">
+                    <div className="startup-number">
+                      {String(baseNum + idx + 1).padStart(2, '0')}
+                    </div>
+                    <div className="startup-body">
+                      <div className="startup-header">
+                        <div className="startup-logo">
+                          {s.logo_url ? (
+                            <Image src={s.logo_url} alt={s.name} width={48} height={48} style={{ objectFit: 'contain' }} />
+                          ) : (
+                            <span style={{ fontWeight: 700, fontSize: '1rem' }}>{s.name.charAt(0)}</span>
+                          )}
+                        </div>
+                        <div className="startup-info">
+                          <div className="startup-name">
+                            {s.name}
+                            <span className="verified-badge">
+                              <Verified size={10} /> Verified
+                            </span>
+                          </div>
+                          <div className="startup-category">{s.category || "Startup"}</div>
+                        </div>
+                      </div>
+                      {s.description && <p className="startup-description">{s.description}</p>}
+                      <div className="startup-meta">
+                        {s.founders && (
+                          <span className="meta-chip">
+                            <Users size={12} /> {s.founders}
+                          </span>
+                        )}
+                        {s.founded_year && (
+                          <span className="meta-chip">
+                            <Calendar size={12} /> Est. {s.founded_year}
+                          </span>
+                        )}
+                        {s.city && (
+                          <span className="meta-chip">
+                            <MapPin size={12} /> {s.city}
+                          </span>
+                        )}
+                        {s.ufrn && <span className="ufrn-chip">{s.ufrn}</span>}
+                      </div>
+                    </div>
+                    <div className="startup-arrow">
+                      <ArrowUpRight size={18} />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '80px 20px', background: 'white', borderRadius: '24px' }}>
+                <span style={{ fontSize: '4rem', display: 'block', marginBottom: '16px' }}>🔍</span>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '8px' }}>No startups found</h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
+                  {q ? `No results for "${q}". Try a different search term.` : 'Try adjusting your filters.'}
+                </p>
+                <Link href="/startup" style={{ background: 'var(--primary)', color: 'white', padding: '10px 24px', borderRadius: '40px', textDecoration: 'none' }}>
+                  Clear Filters
+                </Link>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <Link href={pgHref(page - 1)} className={`page-link ${page === 1 ? 'disabled' : ''}`}>← Previous</Link>
+                {pgNums.map(p => (
+                  <Link key={p} href={pgHref(p)} className={`page-link ${p === page ? 'active' : ''}`}>{p}</Link>
+                ))}
+                <Link href={pgHref(page + 1)} className={`page-link ${page === totalPages ? 'disabled' : ''}`}>Next →</Link>
+              </div>
+            )}
+          </div>
+
+          {/* Right Sidebar */}
+          <aside className="aside-sticky">
+            {/* Submit CTA */}
+            <div className="aside-card dark">
+              <div className="aside-title">List Your Startup</div>
+              <div className="aside-heading">Get Verified. Get Found.</div>
+              <p className="aside-text">Join India's most trusted startup registry. Free, permanent listing with your unique UFRN.</p>
+              <Link href="/submit" className="aside-button">Submit Your Startup →</Link>
             </div>
 
-            {/* ── ASIDE ── */}
-            <aside className="rg-aside ri-3" style={{ position:"sticky", top:88 }}>
-              <div className="aside-box dk" style={{ position:"relative", overflow:"hidden" }}>
-                <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,#92400E,#D97706,#E8C547)" }} />
-                <p className="aside-ey">List Free · UpForge</p>
-                <p className="aside-h pf">Got a startup to list?</p>
-                <p className="aside-p">Get independently verified. Receive your UFRN. Free forever.</p>
-                <Link href="/submit" className="aside-btn">Submit Startup →</Link>
-              </div>
-
-              {cats.length > 0 && (
-                <div className="aside-box">
-                  <p className="aside-ey">Browse by Sector</p>
-                  <ul className="aside-list">
-                    {cats.slice(0, 10).map(c => (
-                      <li key={c}>
-                        <Link href={`/startups/${c.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")}`}>
-                          <span>{c}</span>
-                          <span style={{ color:"#C8C2B4", fontSize:12 }}>›</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  {cats.length > 10 && (
-                    <Link href="/startups" style={{ display:"block", marginTop:8, paddingTop:8, borderTop:"1px solid #D8D2C4", fontFamily:"system-ui,sans-serif", fontSize:"8px", fontWeight:700, textTransform:"uppercase", letterSpacing:".18em", color:"#AAA", textDecoration:"none" }}>
-                      All {cats.length} sectors →
-                    </Link>
-                  )}
-                </div>
-              )}
-
-              <div className="aside-box dk" style={{ position:"relative", overflow:"hidden" }}>
-                <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#92400E,#D97706,#E8C547)" }} />
-                <p className="aside-ey">By The Numbers</p>
-                <p className="pf" style={{ fontSize:"1rem", fontWeight:700, color:"#fff", fontStyle:"italic", marginBottom:14, lineHeight:1.3 }}>
-                  India's Startup<br /><span style={{ color:"#E8C547" }}>Ecosystem 2026</span>
-                </p>
-                <div className="aside-nums">
-                  {[
-                    { v:`${total.toLocaleString()}+`, l:"Verified on UpForge" },
-                    { v:"126+", l:"Indian Unicorns"   },
-                    { v:"$9.2B", l:"Q1 2026 Funding"  },
-                    { v:"3rd",  l:"Largest Ecosystem"  },
-                  ].map((s, i) => (
-                    <div key={i} className="aside-num-row">
-                      <span className="aside-num-l">{s.l}</span>
-                      <span className="aside-num-v pf">{s.v}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="aside-box">
-                <p className="aside-ey">From The Forge</p>
-                <ul className="aside-list">
-                  {[
-                    { l:"Top AI Startups India 2026",  h:"/blog/top-ai-startups-india-2026" },
-                    { l:"How to Get Startup Funding",   h:"/blog/how-to-get-startup-funding-india-2026" },
-                    { l:"Top Indian Unicorns 2026",     h:"/blog/top-indian-unicorns-2026" },
-                    { l:"How to Start a Startup India", h:"/blog/how-to-start-startup-india-2026" },
-                  ].map(lnk => (
-                    <li key={lnk.h}>
-                      <Link href={lnk.h}>
-                        <span>{lnk.l}</span>
-                        <span style={{ color:"#C8C2B4", fontSize:12 }}>›</span>
+            {/* Top Sectors */}
+            {cats.length > 0 && (
+              <div className="aside-card">
+                <div className="aside-title">Browse by Sector</div>
+                <ul className="sector-list">
+                  {cats.slice(0, 8).map(c => (
+                    <li key={c}>
+                      <Link href={`/startup?category=${encodeURIComponent(c)}`}>
+                        <span>{c}</span>
+                        <span>→</span>
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-            </aside>
-          </div>
+            )}
 
-          {/* CTA */}
-          <div className="cta-block ri-4">
-            <div>
-              <p className="cta-ey">UpForge Intelligence</p>
-              <p className="cta-h pf">Your founder story starts with a verified profile.</p>
-              <p className="cta-p">Free forever. Trusted by investors and press across India.</p>
+            {/* India Ecosystem Stats */}
+            <div className="aside-card dark">
+              <div className="aside-title">India's Ecosystem 2026</div>
+              <div className="stats-aside">
+                <div className="stat-row">
+                  <span className="stat-label-aside">Total Funding (YTD)</span>
+                  <span className="stat-value-aside">$12.4B</span>
+                </div>
+                <div className="stat-row">
+                  <span className="stat-label-aside">New Unicorns 2026</span>
+                  <span className="stat-value-aside">18</span>
+                </div>
+                <div className="stat-row">
+                  <span className="stat-label-aside">Active Investors</span>
+                  <span className="stat-value-aside">2,300+</span>
+                </div>
+                <div className="stat-row">
+                  <span className="stat-label-aside">Jobs Created</span>
+                  <span className="stat-value-aside">1.2M+</span>
+                </div>
+              </div>
             </div>
-            <Link href="/submit" className="cta-btn">
-              List Free <ArrowRight style={{ width:13, height:13 }} aria-hidden="true" />
-            </Link>
-          </div>
 
-          {/* Internal links */}
-          <section className="ri-4" style={{ paddingTop:"clamp(20px,3.5vw,32px)", borderTop:"1px solid #C8C2B4", marginTop:"clamp(20px,3.5vw,30px)" }}>
-            <p style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, letterSpacing:".3em", textTransform:"uppercase", color:"#AAA", marginBottom:14 }}>Explore on UpForge</p>
-            <div className="links-grid">
-              {[
-                { l:"Startup Registry India",     h:"/startup",                                    desc:"Full verified database"   },
-                { l:"Browse All Sectors",         h:"/startups",                                   desc:"30+ categories"           },
-                { l:"Top AI Startups 2026",       h:"/blog/top-ai-startups-india-2026",            desc:"Sarvam, Krutrim & more"   },
-                { l:"Funding Guide 2026",         h:"/blog/how-to-get-startup-funding-india-2026", desc:"DPIIT, SISFS & VCs"       },
-                { l:"Indian Unicorns 2026",       h:"/blog/top-indian-unicorns-2026",              desc:"All 126+ profiled"        },
-                { l:"AI Startups India",          h:"/startups/ai-ml",                             desc:"India's AI builders"      },
-                { l:"The Forge — Blog",           h:"/blog",                                       desc:"Startup intelligence"     },
-                { l:"Submit Your Startup",        h:"/submit",                                     desc:"Get listed + UFRN free"   },
-              ].map(lnk => (
-                <Link key={lnk.h + lnk.l} href={lnk.h} className="link-card">
-                  <span className="link-title">
-                    {lnk.l}
-                    <ChevronRight style={{ width:9, height:9, flexShrink:0 }} aria-hidden="true" />
-                  </span>
-                  <span className="link-desc">{lnk.desc}</span>
-                </Link>
-              ))}
+            {/* Trending Reads */}
+            <div className="aside-card">
+              <div className="aside-title">From The Forge</div>
+              <ul className="sector-list">
+                <li><Link href="/blog/top-ai-startups-india-2026">Top AI Startups India 2026 →</Link></li>
+                <li><Link href="/blog/how-to-get-startup-funding-india-2026">Startup Funding Guide 2026 →</Link></li>
+                <li><Link href="/blog/top-indian-unicorns-2026">All 126+ Indian Unicorns →</Link></li>
+                <li><Link href="/blog/how-to-start-startup-india-2026">How to Start a Startup in India →</Link></li>
+              </ul>
             </div>
-          </section>
+          </aside>
+        </div>
 
+        {/* CTA Section */}
+        <div className="cta-section">
+          <div>
+            <div className="cta-title">Ready to list your startup?</div>
+            <div className="cta-text">Join 5,000+ founders who trust UpForge for visibility and credibility.</div>
+          </div>
+          <Link href="/submit" className="cta-button">
+            Get Listed Now <ArrowRight size={18} />
+          </Link>
         </div>
       </div>
 
       {/* Filter JS */}
       <script dangerouslySetInnerHTML={{ __html: `
         (function(){
-          function getP(){ var p=new URLSearchParams(window.location.search); return {q:p.get('q')||'',sort:p.get('sort')||'name',year:p.get('year')||'',cat:p.get('category')||''}; }
-          function buildUrl(ov){ var c=getP(),m=Object.assign({},c,ov),p=new URLSearchParams(); if(m.q)p.set('q',m.q); if(m.year)p.set('year',m.year); if(m.cat)p.set('category',m.cat); if(m.sort&&m.sort!=='name')p.set('sort',m.sort); var s=p.toString(); return '/startup'+(s?'?'+s:''); }
-          var y=document.getElementById('rg-year-sel'); if(y) y.addEventListener('change',function(){ window.location.href=buildUrl({year:this.value}); });
-          var c=document.getElementById('rg-cat-sel');  if(c) c.addEventListener('change',function(){ window.location.href=buildUrl({cat:this.value});  });
+          const yearSelect = document.getElementById('year-select');
+          const categorySelect = document.getElementById('category-select');
+          const currentParams = new URLSearchParams(window.location.search);
+          const currentYear = currentParams.get('year') || '';
+          const currentCat = currentParams.get('category') || '';
+          if (yearSelect) yearSelect.value = currentYear;
+          if (categorySelect) categorySelect.value = currentCat;
+          function updateUrl(param, value) {
+            const params = new URLSearchParams(window.location.search);
+            if (value) {
+              params.set(param, value);
+            } else {
+              params.delete(param);
+            }
+            params.delete('page');
+            const newUrl = '/startup' + (params.toString() ? '?' + params.toString() : '');
+            window.location.href = newUrl;
+          }
+          if (yearSelect) yearSelect.addEventListener('change', (e) => updateUrl('year', e.target.value));
+          if (categorySelect) categorySelect.addEventListener('change', (e) => updateUrl('category', e.target.value));
         })();
       `}} />
     </>
