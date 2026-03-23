@@ -468,10 +468,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                   <span className="live-dot" />
                   <span className="live-text">Live · {total.toLocaleString()} Profiles · UFRN on Approval</span>
                 </div>
-                <div className="ufrn-sample">
-                  <span className="ufrn-label">Sample UFRN:</span>
-                  <span className="ufrn-code">UF-2026-IND-00001</span>
-                </div>
               </div>
             </div>
           </div>
