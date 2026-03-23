@@ -515,7 +515,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
             src="https://simplemaps.com/static/svg/country/in/admin1/in.svg"
             alt=""
             loading="eager"
-            fetchpriority="high"
+            fetchPriority="high"
           />
           {/* Ashoka Chakra — pure CSS circle with spokes */}
           <svg
