@@ -1,4 +1,5 @@
 // types/startup.ts
+
 export interface Startup {
   id: string
   name: string
@@ -18,6 +19,15 @@ export interface Startup {
   instagram_url?: string | null
   created_at?: string
   updated_at?: string | null
+
+  // ── UFRN (UpForge Registry Number) ──────────────────────────────────────
+  // Format: UF-YYYY-IND-XXXXX  e.g. UF-2026-IND-00001
+  // Generated server-side on approval; unique across the entire registry.
+  ufrn?: string | null
+
+  // ── Global registry fields ───────────────────────────────────────────────
+  country_code?: string | null   // ISO 3166-1 alpha-3  e.g. "IND"
+  country_name?: string | null   // Human label         e.g. "India"
 }
 
 export interface StartupDirectoryItem {
@@ -28,4 +38,5 @@ export interface StartupDirectoryItem {
   description: string | null
   founded_year?: number | null
   category?: string | null
+  ufrn?: string | null           // shown on listing cards as a trust signal
 }
