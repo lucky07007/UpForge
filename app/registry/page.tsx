@@ -369,12 +369,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         .link-card:hover { border-color:#1A1208; background:#fff }
         .link-title { font-family:system-ui,sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:#1A1208; display:flex; align-items:center; gap:3px }
         .link-desc { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
-
-        .pg-footer { border-top:1px solid #D8D2C4; padding-top:1rem; margin-top:clamp(22px,3.5vw,36px); padding-bottom:10px; background:#F3EFE5 }
-        .footer-note { font-family:system-ui,sans-serif; font-size:8.5px; color:#BBB0A0; line-height:1.75 }
-        .footer-nav { display:flex; flex-wrap:wrap; gap:6px 16px; list-style:none; margin:12px 0 0; padding:0 }
-        .footer-nav a { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA; text-transform:uppercase; letter-spacing:.1em; text-decoration:none; transition:color .15s }
-        .footer-nav a:hover { color:#1A1208 }
+  
       `}</style>
 
       <Navbar />
