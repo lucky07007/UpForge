@@ -1,3 +1,4 @@
+// components/startup-detail.tsx
 "use client"
 
 import React, { useRef, useState, useCallback } from "react"
@@ -14,6 +15,7 @@ import {
   Calendar,
   Building2,
   Tag,
+  ShieldCheck,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -51,6 +53,7 @@ function getCitySlug(city?: string | null): string | null {
   return city.toLowerCase().replace(/\s+/g, "-")
 }
 
+/** Legacy verification code — kept for poster / backwards compat */
 function getVerificationCode(name: string, id: string): string {
   const prefix = name.replace(/[^a-zA-Z]/g, "").slice(0, 3).toUpperCase()
   const suffix = id.replace(/-/g, "").slice(-5).toUpperCase()
@@ -93,44 +96,54 @@ function RelatedStartupCard({ startup }: { startup: RelatedStartup }) {
       className="group flex items-start gap-4 p-4 border border-slate-100 rounded-lg hover:border-slate-300 hover:bg-slate-50 transition-all duration-150"
     >
       <div className="h-10 w-10 rounded-lg border border-slate-100 bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
-        <StartupLogo
-          name={startup.name}
-          logo_url={startup.logo_url}
-          size={40}
-          className="p-1"
-        />
+        <StartupLogo name={startup.name} logo_url={startup.logo_url} size={40} className="p-1" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-slate-900 group-hover:underline truncate">
-          {startup.name}
-        </p>
-        {startup.category && (
-          <p className="text-xs text-slate-500 mt-0.5">{startup.category}</p>
-        )}
+        <p className="text-sm font-semibold text-slate-900 group-hover:underline truncate">{startup.name}</p>
+        {startup.category && <p className="text-xs text-slate-500 mt-0.5">{startup.category}</p>}
         {startup.description && (
-          <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-            {startup.description}
-          </p>
+          <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{startup.description}</p>
         )}
       </div>
     </Link>
   )
 }
 
-export function StartupDetail({
-  startup,
-  relatedStartups,
-  profileUrl,
-}: StartupDetailProps) {
+// ── UFRN REGISTRY STAMP ───────────────────────────────────────────────────────
+// Minimalist government-seal style. Positioned top-right of verification card.
+function UFRNStamp({ ufrn }: { ufrn: string }) {
+  return (
+    <div
+      className="flex flex-col items-center justify-center border-2 border-[#A89060] rounded-full w-20 h-20 bg-[#FAFAF8] flex-shrink-0"
+      title={"UpForge Registry Number: " + ufrn}
+      style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+    >
+      <ShieldCheck className="w-4 h-4 text-[#A89060] mb-0.5" aria-hidden="true" />
+      <span className="text-[7px] uppercase tracking-[0.12em] text-[#888] font-bold leading-tight text-center px-1">
+        UpForge
+      </span>
+      <span className="text-[7px] uppercase tracking-[0.08em] text-[#888] leading-tight text-center">
+        Registry
+      </span>
+      <span className="text-[8px] font-bold text-[#A89060] mt-0.5 font-mono tracking-tight text-center px-1 break-all leading-tight">
+        {ufrn}
+      </span>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupDetailProps) {
   const posterRef = useRef<HTMLDivElement>(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
   const websiteUrl       = getCleanUrl(startup.website)
   const categorySlug     = getCategorySlug(startup.category)
   const citySlug         = getCitySlug(startup.city)
-  const verificationCode = getVerificationCode(startup.name, startup.id)
+  const verificationCode = startup.ufrn ?? getVerificationCode(startup.name, startup.id)
 
-  const handleDownload = useCallback(async function() {
+  const handleDownload = useCallback(async function () {
     if (!posterRef.current || isGenerating) return
     setIsGenerating(true)
     try {
@@ -144,7 +157,7 @@ export function StartupDetail({
         pixelRatio: 3,
       })
       if (!blob) throw new Error("toBlob returned null")
-      saveAs(blob, startup.name + "-UpForge-Recognition.png")
+      saveAs(blob, startup.name + "-UpForge-Registry.png")
     } catch (err) {
       console.error("[StartupDetail] Poster generation failed:", err)
     } finally {
@@ -155,7 +168,7 @@ export function StartupDetail({
   return (
     <div className="min-h-screen bg-white text-slate-900">
 
-      {/* HIDDEN POSTER */}
+      {/* ── HIDDEN POSTER (for download) ── */}
       <div
         aria-hidden="true"
         style={{ position: "absolute", left: "-9999px", top: 0, pointerEvents: "none" }}
@@ -163,8 +176,7 @@ export function StartupDetail({
         <div
           ref={posterRef}
           style={{
-            width: 1080,
-            height: 1080,
+            width: 1080, height: 1080,
             backgroundColor: "#ffffff",
             padding: 80,
             display: "flex",
@@ -176,34 +188,33 @@ export function StartupDetail({
         >
           <div style={{ borderBottom: "1px solid #e2e8f0", paddingBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.04em" }}>
-              UP<span style={{ color: "#94a3b8" }}>FORGE</span>
+              UP<span style={{ color: "#A89060" }}>FORGE</span>
             </span>
-            <span style={{ fontSize: 13, color: "#64748b" }}>www.upforge.in</span>
+            <span style={{ fontSize: 13, color: "#64748b" }}>www.upforge.org · Global Registry</span>
           </div>
           <div style={{ textAlign: "center" }}>
             <p style={{ fontSize: 13, color: "#94a3b8", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 32 }}>
-              Verified Indian Startup
+              Verified Startup · Global Registry
             </p>
-            <h1 style={{ fontSize: 48, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 24 }}>
-              {startup.name}
-            </h1>
-            {startup.category && (
-              <p style={{ fontSize: 18, color: "#64748b", marginBottom: 24 }}>
-                {startup.category}
+            <h1 style={{ fontSize: 48, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 24 }}>{startup.name}</h1>
+            {startup.category && <p style={{ fontSize: 18, color: "#64748b", marginBottom: 24 }}>{startup.category}</p>}
+            {startup.ufrn && (
+              <p style={{ fontSize: 14, color: "#A89060", marginBottom: 24, letterSpacing: "0.1em", fontWeight: 700 }}>
+                Registry ID: {startup.ufrn}
               </p>
             )}
             <p style={{ fontSize: 15, color: "#94a3b8", maxWidth: 600, margin: "0 auto", lineHeight: 1.7 }}>
-              {startup.description || "Recognized as a Promising Startup within the UpForge Institutional Network."}
+              {startup.description || "Recognized as a Verified Startup within the UpForge Global Registry."}
             </p>
           </div>
           <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: 24, display: "flex", justifyContent: "space-between", fontSize: 13, color: "#94a3b8" }}>
-            <span>{"upforge.in/startup/" + startup.slug}</span>
-            <span>{"Verification: " + verificationCode}</span>
+            <span>{"upforge.org/startup/" + startup.slug}</span>
+            <span>{verificationCode}</span>
           </div>
         </div>
       </div>
 
-      {/* BACK NAV */}
+      {/* ── BACK NAV ── */}
       <div className="border-b bg-white sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 h-12 flex items-center justify-between">
           <Link
@@ -226,85 +237,59 @@ export function StartupDetail({
         </div>
       </div>
 
-      {/* BREADCRUMB */}
+      {/* ── BREADCRUMB ── */}
       <div className="border-b bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 h-10 flex items-center">
           <nav aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 text-xs text-slate-500">
-              <li>
-                <Link href="/" className="hover:text-slate-900 transition-colors">
-                  Home
-                </Link>
-              </li>
+              <li><Link href="/" className="hover:text-slate-900 transition-colors">Home</Link></li>
               <li aria-hidden="true" className="text-slate-300">/</li>
-              <li>
-                <Link href="/startup" className="hover:text-slate-900 transition-colors">
-                  Startup Registry
-                </Link>
-              </li>
+              <li><Link href="/startup" className="hover:text-slate-900 transition-colors">Startup Registry</Link></li>
               {startup.category && categorySlug && (
                 <React.Fragment>
                   <li aria-hidden="true" className="text-slate-300">/</li>
                   <li>
-                    <Link
-                      href={"/startups/" + categorySlug}
-                      className="hover:text-slate-900 transition-colors"
-                    >
+                    <Link href={"/startups/" + categorySlug} className="hover:text-slate-900 transition-colors">
                       {startup.category}
                     </Link>
                   </li>
                 </React.Fragment>
               )}
               <li aria-hidden="true" className="text-slate-300">/</li>
-              <li className="text-slate-900 font-medium truncate max-w-[200px]">
-                {startup.name}
-              </li>
+              <li className="text-slate-900 font-medium truncate max-w-[200px]">{startup.name}</li>
             </ol>
           </nav>
         </div>
       </div>
 
-      {/* MAIN */}
+      {/* ── MAIN ── */}
       <main className="max-w-6xl mx-auto px-6 py-12" id="main-content">
         <div className="grid lg:grid-cols-12 gap-12">
 
           {/* LEFT COLUMN */}
           <div className="lg:col-span-8 space-y-8">
 
-            {/* Logo + Name + Location */}
+            {/* Logo + Name */}
             <div className="flex items-start gap-6">
               <div className="h-20 w-20 rounded-xl border border-slate-200 bg-white flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
-                <StartupLogo
-                  name={startup.name}
-                  logo_url={startup.logo_url}
-                  size={80}
-                  className="p-3"
-                />
+                <StartupLogo name={startup.name} logo_url={startup.logo_url} size={80} className="p-3" />
               </div>
               <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
-                  {startup.name}
-                </h1>
+                <h1 className="text-3xl font-semibold tracking-tight text-slate-900">{startup.name}</h1>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
                   {startup.city && citySlug ? (
-                    <Link
-                      href={"/startups/" + citySlug}
-                      className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors"
-                    >
+                    <Link href={"/startups/" + citySlug} className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors">
                       <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>{startup.city + ", India"}</span>
+                      <span>{startup.city + ", " + (startup.country_name ?? "India")}</span>
                     </Link>
                   ) : (
                     <span className="flex items-center gap-1.5 text-sm text-slate-500">
                       <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-                      India
+                      {startup.country_name ?? "India"}
                     </span>
                   )}
                   {startup.category && categorySlug && (
-                    <Link
-                      href={"/startups/" + categorySlug}
-                      className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors"
-                    >
+                    <Link href={"/startups/" + categorySlug} className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-900 transition-colors">
                       <Tag className="h-3.5 w-3.5" aria-hidden="true" />
                       <span>{startup.category}</span>
                     </Link>
@@ -319,14 +304,10 @@ export function StartupDetail({
               </div>
             </div>
 
-            {/* Description */}
             {startup.description && (
-              <p className="text-base text-slate-600 leading-relaxed max-w-2xl">
-                {startup.description}
-              </p>
+              <p className="text-base text-slate-600 leading-relaxed max-w-2xl">{startup.description}</p>
             )}
 
-            {/* External website link */}
             {websiteUrl && (
               <a
                 href={websiteUrl}
@@ -340,19 +321,13 @@ export function StartupDetail({
               </a>
             )}
 
-            {/* Founders */}
             {startup.founders && (
               <div className="border-t border-slate-100 pt-8">
-                <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-4">
-                  Founders
-                </h2>
-                <p className="text-base text-slate-700 leading-relaxed">
-                  {startup.founders}
-                </p>
+                <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-widest mb-4">Founders</h2>
+                <p className="text-base text-slate-700 leading-relaxed">{startup.founders}</p>
               </div>
             )}
 
-            {/* Related Startups */}
             {relatedStartups.length > 0 && (
               <div className="border-t border-slate-100 pt-8">
                 <div className="flex items-center justify-between mb-5">
@@ -365,21 +340,16 @@ export function StartupDetail({
                     )}
                   </h2>
                   {categorySlug && (
-                    <Link
-                      href={"/startups/" + categorySlug}
-                      className="text-xs text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1"
-                    >
+                    <Link href={"/startups/" + categorySlug} className="text-xs text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1">
                       View all
                       <ExternalLink className="h-3 w-3" aria-hidden="true" />
                     </Link>
                   )}
                 </div>
                 <div className="grid sm:grid-cols-2 gap-3">
-                  {relatedStartups.map(function(related) {
-                    return (
-                      <RelatedStartupCard key={related.slug} startup={related} />
-                    )
-                  })}
+                  {relatedStartups.map((related) => (
+                    <RelatedStartupCard key={related.slug} startup={related} />
+                  ))}
                 </div>
               </div>
             )}
@@ -390,29 +360,31 @@ export function StartupDetail({
           <div className="lg:col-span-4">
             <div className="sticky top-24 space-y-4">
 
-              {/* Verification Card */}
+              {/* ── VERIFICATION CARD ── */}
               <div className="border border-slate-200 rounded-xl p-6 space-y-5 bg-white shadow-sm">
 
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" aria-hidden="true" />
+                {/* Header row: verified badge + UFRN stamp */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-5 w-5 text-green-600" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Verified Profile</p>
+                      <p className="text-xs text-slate-500">UpForge Registry</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Verified Profile</p>
-                    <p className="text-xs text-slate-500">UpForge Registry</p>
-                  </div>
+
+                  {/* UFRN Stamp — the "Seal of Existence" */}
+                  {startup.ufrn && <UFRNStamp ufrn={startup.ufrn} />}
                 </div>
 
                 <div className="border-t border-slate-100 pt-4 space-y-3">
-
                   {startup.category && (
                     <div className="flex items-center gap-3 text-sm">
                       <Building2 className="h-4 w-4 text-slate-400 flex-shrink-0" aria-hidden="true" />
                       {categorySlug ? (
-                        <Link
-                          href={"/startups/" + categorySlug}
-                          className="text-slate-700 hover:text-slate-900 hover:underline transition-colors"
-                        >
+                        <Link href={"/startups/" + categorySlug} className="text-slate-700 hover:text-slate-900 hover:underline transition-colors">
                           {startup.category}
                         </Link>
                       ) : (
@@ -420,32 +392,37 @@ export function StartupDetail({
                       )}
                     </div>
                   )}
-
                   {startup.founded_year && (
                     <div className="flex items-center gap-3 text-sm">
                       <Calendar className="h-4 w-4 text-slate-400 flex-shrink-0" aria-hidden="true" />
                       <span className="text-slate-700">{"Est. " + startup.founded_year}</span>
                     </div>
                   )}
-
                   <div className="flex items-center gap-3 text-sm">
                     <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0" aria-hidden="true" />
                     {startup.city && citySlug ? (
-                      <Link
-                        href={"/startups/" + citySlug}
-                        className="text-slate-700 hover:text-slate-900 hover:underline transition-colors"
-                      >
-                        {startup.city + ", India"}
+                      <Link href={"/startups/" + citySlug} className="text-slate-700 hover:text-slate-900 hover:underline transition-colors">
+                        {startup.city + ", " + (startup.country_name ?? "India")}
                       </Link>
                     ) : (
-                      <span className="text-slate-700">India</span>
+                      <span className="text-slate-700">{startup.country_name ?? "India"}</span>
                     )}
                   </div>
-
                 </div>
 
-                <div className="border-t border-slate-100 pt-4">
+                {/* UFRN display row */}
+                <div className="border-t border-slate-100 pt-4 space-y-1">
                   <p className="text-xs text-slate-400 font-mono">{verificationCode}</p>
+                  {startup.ufrn && (
+                    <a
+                      href={`https://www.upforge.org/startup/${startup.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] text-[#A89060] hover:underline block"
+                    >
+                      View Global Registry Record →
+                    </a>
+                  )}
                 </div>
 
                 <Link
@@ -454,19 +431,13 @@ export function StartupDetail({
                 >
                   Report incorrect information
                 </Link>
-
               </div>
 
               {/* Category CTA */}
               {startup.category && categorySlug && (
                 <div className="border border-slate-100 rounded-xl p-5 bg-slate-50">
-                  <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-3">
-                    Explore Category
-                  </p>
-                  <Link
-                    href={"/startups/" + categorySlug}
-                    className="flex items-center justify-between group"
-                  >
+                  <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-3">Explore Category</p>
+                  <Link href={"/startups/" + categorySlug} className="flex items-center justify-between group">
                     <span className="text-sm font-semibold text-slate-900 group-hover:underline">
                       {startup.category + " Startups in India"}
                     </span>
@@ -481,57 +452,39 @@ export function StartupDetail({
         </div>
       </main>
 
-      {/* BOTTOM INTERNAL LINKS */}
+      {/* ── BOTTOM INTERNAL LINKS ── */}
       <footer className="border-t border-slate-100 bg-slate-50 mt-12">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <nav aria-label="Explore more startups">
-            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-4">
-              Explore UpForge Registry
-            </p>
+            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-4">Explore UpForge Registry</p>
             <ul className="flex flex-wrap gap-x-6 gap-y-2">
               <li>
-                <Link
-                  href="/startup"
-                  className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors"
-                >
-                  All Indian Startups
-                </Link>
+                <Link href="/startup" className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">All Indian Startups</Link>
               </li>
               {categorySlug && startup.category && (
                 <li>
-                  <Link
-                    href={"/startups/" + categorySlug}
-                    className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors"
-                  >
+                  <Link href={"/startups/" + categorySlug} className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">
                     {startup.category + " Startups"}
                   </Link>
                 </li>
               )}
               {citySlug && startup.city && (
                 <li>
-                  <Link
-                    href={"/startups/" + citySlug}
-                    className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors"
-                  >
+                  <Link href={"/startups/" + citySlug} className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">
                     {"Startups in " + startup.city}
                   </Link>
                 </li>
               )}
               <li>
-                <Link
-                  href="/blog"
-                  className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors"
-                >
-                  Startup Journal
-                </Link>
+                <Link href="/blog" className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">Startup Journal</Link>
               </li>
               <li>
-                <Link
-                  href="/submit"
-                  className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors"
-                >
-                  Submit Your Startup
-                </Link>
+                <Link href="/submit" className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">Submit Your Startup</Link>
+              </li>
+              <li>
+                <a href="https://www.upforge.org/registry" className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">
+                  Global Registry (upforge.org)
+                </a>
               </li>
             </ul>
           </nav>
