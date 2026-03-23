@@ -45,10 +45,6 @@ export function Navbar() {
 
     { name: "Reports", href: "/reports" },
 
-    { name: "Rankings", href: "/rankings" },
-
-    { name: "Archive", href: "/archive" },
-
     { name: "About", href: "/about" },
   ];
 
