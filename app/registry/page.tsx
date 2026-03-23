@@ -274,9 +274,10 @@ export default async function RegistryPage({ searchParams }: PageProps) {
           .t-inp::placeholder { font-size:13px }
           .t-btn { padding:0 14px; font-size:7.5px; letter-spacing:.12em }
           .t-filter-lbl { display:none }
-          /* ── FIX 1: prevent phantom space causing double-footer illusion on mobile ── */
-          .main-wrap { padding-bottom: 0 !important }
-          .page-body { min-height: unset !important }
+          /* ── FIX: kill all bottom spacing that causes phantom second footer on mobile ── */
+          .main-wrap { padding-bottom: 0 !important; margin-bottom: 0 !important }
+          .page-body { min-height: 0 !important; padding-bottom: 0 !important }
+          .cta-block { margin-bottom: 0 !important }
         }
 
         .results-bar { max-width:1300px; margin:0 auto; padding:10px clamp(16px,4vw,48px); display:flex; align-items:center; gap:12px; border-bottom:1px solid #D8D2C4; background:#F3EFE5 }
@@ -396,7 +397,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
       <Navbar />
 
       {/* ── MASTHEAD ── */}
-      <header className="mast" role="banner">
+      <div className="mast">
         <div className="mast-nameplate ri-0">
           <p className="ri-0" style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, letterSpacing:".42em", textTransform:"uppercase", color:"#AAA", marginBottom:16 }}>
             UpForge · Independent Global Registry · Global Edition · 2026
@@ -434,7 +435,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
           ))}
           {cats.length > 8 && <span className="cat-tab" style={{ color:"#AAA" }}>More →</span>}
         </nav>
-      </header>
+      </div>
 
       {/* ── TOOLBAR ── */}
       <div className="toolbar" id="rg-toolbar">
