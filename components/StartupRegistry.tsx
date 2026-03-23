@@ -1,4 +1,13 @@
 // components/StartupRegistry.tsx  ←  CLIENT COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE: UFRN search support
+// - Search box now detects UFRN patterns (starts with UFRN-, UF-, UPF-)
+//   and immediately redirects to the /ufrn/[id] lookup page instead of
+//   searching the registry — this is the "Zero-Result" strategy.
+// - UFRN chip shown on desktop grid cards and mobile list rows
+// - All other logic unchanged
+// ─────────────────────────────────────────────────────────────────────────────
+
 "use client"
 
 import Link from "next/link"
@@ -22,6 +31,7 @@ import {
   X,
   Loader2,
   ChevronDown,
+  ShieldCheck,
 } from "lucide-react"
 
 // ---------------------------------------------------------------------------
@@ -40,6 +50,7 @@ interface Startup {
   city?: string
   is_featured?: boolean
   created_at?: string
+  ufrn?: string | null   // ← added for UFRN chip
 }
 
 interface Props {
@@ -62,10 +73,22 @@ const SORT_OPTIONS = [
   { value: "year",   label: "Founded Year" },
 ]
 
+// ── UFRN DETECTOR ────────────────────────────────────────────────────────────
+// Detects whether a search query looks like a UFRN / UFRN fragment.
+// If so, we redirect to /ufrn/[id] instead of searching.
+function detectUFRN(query: string): string | null {
+  const q = query.trim().toUpperCase()
+  // Exact UFRN format: UFRN-YYYY-CC-NNNNN
+  if (/^UFRN-\d{4}-[A-Z]{2,3}-\d{1,6}$/.test(q)) return q
+  // UF- prefix (misspelling): UF-YYYY-CC-NNNNN
+  if (/^UF-\d{4}-[A-Z]{2,3}-\d{1,6}$/.test(q)) return "UFRN-" + q.slice(3)
+  // UPF- prefix (legacy): UPF-XXX-XXXXX
+  if (/^UPF-/.test(q)) return null // legacy codes don't have a UFRN page yet
+  return null
+}
+
 // ---------------------------------------------------------------------------
 // LOGO COMPONENT
-// Uses Next.js Image for CLS prevention on known logos.
-// Falls back to letter avatar for missing logos.
 // ---------------------------------------------------------------------------
 function StartupLogo({
   name,
@@ -84,16 +107,12 @@ function StartupLogo({
         width={size}
         height={size}
         className="object-cover"
-        // logos are not LCP — lazy load is fine
         loading="lazy"
       />
     )
   }
   return (
-    <span
-      className="pf reg-logo-letter"
-      aria-hidden="true"
-    >
+    <span className="pf reg-logo-letter" aria-hidden="true">
       {name.charAt(0).toUpperCase()}
     </span>
   )
@@ -120,31 +139,27 @@ export default function StartupRegistry({
   const [yearOpen,      setYearOpen]      = useState(false)
   const [sortOpen,      setSortOpen]      = useState(false)
   const [searchFocused, setSearchFocused] = useState(false)
+  // Whether the current search looks like a UFRN — shows hint to user
+  const [ufrnHint, setUfrnHint] = useState<string | null>(null)
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const yearRef     = useRef<HTMLDivElement>(null)
   const sortRef     = useRef<HTMLDivElement>(null)
 
-  // Sync local search with URL on browser back/forward
   useEffect(() => {
     setLocalSearch(searchQuery)
   }, [searchQuery])
 
-  // Close dropdowns when clicking outside
+  // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (yearRef.current && !yearRef.current.contains(e.target as Node)) {
-        setYearOpen(false)
-      }
-      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
-        setSortOpen(false)
-      }
+      if (yearRef.current && !yearRef.current.contains(e.target as Node)) setYearOpen(false)
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) setSortOpen(false)
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [])
 
-  // Build URL — keeps non-default params only
   const buildUrl = useCallback(
     (overrides: Record<string, string | undefined>): string => {
       const base: Record<string, string | undefined> = {
@@ -155,46 +170,46 @@ export default function StartupRegistry({
       }
       const merged = { ...base, ...overrides }
       const p = new URLSearchParams()
-      Object.entries(merged).forEach(([k, v]) => {
-        if (v) p.set(k, v)
-      })
+      Object.entries(merged).forEach(([k, v]) => { if (v) p.set(k, v) })
       const qs = p.toString()
       return `${pathname}${qs ? `?${qs}` : ""}`
     },
     [pathname, searchQuery, yearFilter, sortBy, currentPage]
   )
 
-  // Debounced search — 440ms
+  // ── Debounced search with UFRN intercept ──────────────────────────────────
   useEffect(() => {
     clearTimeout(debounceRef.current)
+
+    // Detect UFRN pattern immediately — show hint
+    const ufrn = detectUFRN(localSearch)
+    setUfrnHint(ufrn)
+
     if (localSearch === searchQuery) return
+
     debounceRef.current = setTimeout(() => {
+      // If it's a UFRN, redirect to the dedicated lookup page
+      if (ufrn) {
+        startTransition(() => { router.push(`/ufrn/${ufrn}`) })
+        return
+      }
       startTransition(() => {
         router.push(buildUrl({ q: localSearch || undefined, page: undefined }))
       })
     }, 440)
+
     return () => clearTimeout(debounceRef.current)
   }, [localSearch, buildUrl, router, searchQuery])
 
   const go = (url: string) => startTransition(() => router.push(url))
 
-  // Featured cards: page 1, no active filters, is_featured = true
   const isFiltered   = !!(searchQuery || yearFilter)
   const showFeatured = currentPage === 1 && !isFiltered
-  const featuredList = showFeatured
-    ? startups.filter((s) => s.is_featured).slice(0, 3)
-    : []
+  const featuredList = showFeatured ? startups.filter((s) => s.is_featured).slice(0, 3) : []
+  const featuredIds  = new Set(featuredList.map((s) => s.id))
+  const gridList     = showFeatured ? startups.filter((s) => !featuredIds.has(s.id)) : startups
 
-  // FIX: Mobile was rendering full `startups` list including featured items,
-  // causing featured startups to appear twice.
-  // Now both desktop and mobile render `gridList` only.
-  const featuredIds = new Set(featuredList.map((s) => s.id))
-  const gridList    = showFeatured
-    ? startups.filter((s) => !featuredIds.has(s.id))
-    : startups
-
-  const currentSortLabel =
-    SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Name A–Z"
+  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? "Name A–Z"
   const hasFilters = !!(yearFilter || (sortBy && sortBy !== "name"))
 
   return (
@@ -211,12 +226,7 @@ export default function StartupRegistry({
               <meta itemProp="position" content="1" />
             </li>
             <li className="reg-bc-sep" aria-hidden="true">/</li>
-            <li
-              className="reg-bc-current"
-              itemProp="itemListElement"
-              itemScope
-              itemType="https://schema.org/ListItem"
-            >
+            <li className="reg-bc-current" itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
               <span itemProp="name">Startup Registry</span>
               <meta itemProp="position" content="2" />
             </li>
@@ -233,13 +243,10 @@ export default function StartupRegistry({
               <span className="reg-eyebrow-text">India Edition · 2026</span>
               <span className="reg-eyebrow-line" />
             </div>
-
             <h1 className="reg-h1 pf">Startup Registry</h1>
-
             <p className="reg-sub rp">
               India's independent registry of verified builders — free, structured, permanent.
             </p>
-
             <div className="reg-meta">
               <span className="reg-live">
                 <span className="reg-ldot" aria-hidden="true" />
@@ -261,7 +268,7 @@ export default function StartupRegistry({
       <div className="reg-toolbar" role="search">
         <div className="reg-container reg-toolbar-inner">
 
-          {/* Search */}
+          {/* Search — now with UFRN intercept */}
           <div className={`reg-search${searchFocused ? " focused" : ""}`}>
             <span className="reg-search-icon" aria-hidden="true">
               {isPending ? (
@@ -273,12 +280,12 @@ export default function StartupRegistry({
             <input
               type="search"
               className="reg-search-input"
-              placeholder="Search startups, founders…"
+              placeholder="Search startups, founders, or UFRN…"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              aria-label="Search startups and founders"
+              aria-label="Search startups, founders, or UFRN registry number"
               autoComplete="off"
               spellCheck={false}
             />
@@ -287,6 +294,7 @@ export default function StartupRegistry({
                 className="reg-search-clear"
                 onClick={() => {
                   setLocalSearch("")
+                  setUfrnHint(null)
                   go(buildUrl({ q: undefined, page: undefined }))
                 }}
                 aria-label="Clear search"
@@ -309,13 +317,7 @@ export default function StartupRegistry({
               type="button"
             >
               <span>{currentSortLabel}</span>
-              <ChevronDown
-                style={{
-                  width: 10, height: 10, flexShrink: 0,
-                  transition: "transform .2s",
-                  transform: sortOpen ? "rotate(180deg)" : "none",
-                }}
-              />
+              <ChevronDown style={{ width: 10, height: 10, flexShrink: 0, transition: "transform .2s", transform: sortOpen ? "rotate(180deg)" : "none" }} />
             </button>
             {sortOpen && (
               <div className="reg-dropdown" role="listbox" aria-label="Sort options">
@@ -325,10 +327,7 @@ export default function StartupRegistry({
                     role="option"
                     aria-selected={sortBy === opt.value}
                     className={`reg-drop-item${sortBy === opt.value ? " active" : ""}`}
-                    onClick={() => {
-                      setSortOpen(false)
-                      go(buildUrl({ sort: opt.value !== "name" ? opt.value : undefined, page: undefined }))
-                    }}
+                    onClick={() => { setSortOpen(false); go(buildUrl({ sort: opt.value !== "name" ? opt.value : undefined, page: undefined })) }}
                     type="button"
                   >
                     <span>{opt.label}</span>
@@ -350,13 +349,7 @@ export default function StartupRegistry({
               type="button"
             >
               <span>{yearFilter ? `Est. ${yearFilter}` : "Year"}</span>
-              <ChevronDown
-                style={{
-                  width: 10, height: 10, flexShrink: 0,
-                  transition: "transform .2s",
-                  transform: yearOpen ? "rotate(180deg)" : "none",
-                }}
-              />
+              <ChevronDown style={{ width: 10, height: 10, flexShrink: 0, transition: "transform .2s", transform: yearOpen ? "rotate(180deg)" : "none" }} />
             </button>
             {yearOpen && (
               <div className="reg-dropdown reg-dropdown-year" role="listbox" aria-label="Year filter options">
@@ -388,6 +381,33 @@ export default function StartupRegistry({
           </div>
         </div>
 
+        {/* ── UFRN HINT — shown when search looks like a UFRN ── */}
+        {ufrnHint && (
+          <div className="reg-container" style={{ paddingTop: 6, paddingBottom: 2 }}>
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "#FFF9E6",
+              border: "1px solid #A89060",
+              borderRadius: 8,
+              padding: "6px 12px",
+              fontFamily: "system-ui, sans-serif",
+            }}>
+              <ShieldCheck style={{ width: 12, height: 12, color: "#A89060" }} />
+              <span style={{ fontSize: 11, color: "#7A6840", fontWeight: 600 }}>
+                UFRN detected —
+              </span>
+              <a
+                href={`/ufrn/${ufrnHint}`}
+                style={{ fontSize: 11, color: "#A89060", fontWeight: 700, textDecoration: "underline" }}
+              >
+                Look up {ufrnHint} →
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Active filter tags */}
         {hasFilters && (
           <div className="reg-container">
@@ -395,32 +415,16 @@ export default function StartupRegistry({
               {yearFilter && (
                 <span className="reg-af-tag">
                   Est. {yearFilter}
-                  <button
-                    className="reg-af-x"
-                    onClick={() => go(buildUrl({ year: undefined, page: undefined }))}
-                    aria-label={`Remove year filter: ${yearFilter}`}
-                    type="button"
-                  >
-                    ×
-                  </button>
+                  <button className="reg-af-x" onClick={() => go(buildUrl({ year: undefined, page: undefined }))} aria-label={`Remove year filter: ${yearFilter}`} type="button">×</button>
                 </span>
               )}
               {sortBy !== "name" && (
                 <span className="reg-af-tag">
                   {currentSortLabel}
-                  <button
-                    className="reg-af-x"
-                    onClick={() => go(buildUrl({ sort: undefined, page: undefined }))}
-                    aria-label="Remove sort filter"
-                    type="button"
-                  >
-                    ×
-                  </button>
+                  <button className="reg-af-x" onClick={() => go(buildUrl({ sort: undefined, page: undefined }))} aria-label="Remove sort filter" type="button">×</button>
                 </span>
               )}
-              <Link href="/startup" className="reg-af-clear">
-                Clear all
-              </Link>
+              <Link href="/startup" className="reg-af-clear">Clear all</Link>
             </div>
           </div>
         )}
@@ -429,15 +433,9 @@ export default function StartupRegistry({
       {/* ── RESULTS BAR ── */}
       <div className="reg-container reg-results-bar" aria-live="polite" aria-atomic="true">
         <span className="reg-results-label">
-          {searchQuery
-            ? `"${searchQuery}"`
-            : yearFilter
-            ? `Est. ${yearFilter}`
-            : "All Startups"}
+          {searchQuery ? `"${searchQuery}"` : yearFilter ? `Est. ${yearFilter}` : "All Startups"}
         </span>
-        <span className="reg-results-count rp">
-          — {totalCount.toLocaleString()} profiles
-        </span>
+        <span className="reg-results-count rp">— {totalCount.toLocaleString()} profiles</span>
         <span className="reg-results-rule" aria-hidden="true" />
         {isPending && (
           <span className="reg-searching" role="status">
@@ -453,7 +451,7 @@ export default function StartupRegistry({
       {/* ── CONTENT ── */}
       <div className={`reg-container reg-content${isPending ? " fading" : ""}`}>
 
-        {/* FEATURED SECTION — page 1, no filters only */}
+        {/* FEATURED SECTION */}
         {featuredList.length > 0 && (
           <section className="reg-featured-section" aria-label="Featured startups">
             <div className="reg-section-head">
@@ -471,21 +469,16 @@ export default function StartupRegistry({
                         alt={`${s.name} — featured startup`}
                         fill
                         className="object-cover"
-                        // First 3 featured cards are above fold — eager load
                         loading={fi === 0 ? "eager" : "lazy"}
                         sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="reg-feat-ph" aria-hidden="true">
-                        <span className="pf reg-feat-ph-letter">
-                          {s.name.charAt(0).toUpperCase()}
-                        </span>
+                        <span className="pf reg-feat-ph-letter">{s.name.charAt(0).toUpperCase()}</span>
                       </div>
                     )}
                     <div className="reg-feat-overlay" aria-hidden="true" />
-                    <span className="reg-feat-num" aria-hidden="true">
-                      No.{String(fi + 1).padStart(2, "0")}
-                    </span>
+                    <span className="reg-feat-num" aria-hidden="true">No.{String(fi + 1).padStart(2, "0")}</span>
                     <BadgeCheck className="reg-feat-check" aria-label="Verified startup" />
                     <div className="reg-feat-caption">
                       <span className="reg-feat-sector">{s.category || "Startup"}</span>
@@ -493,9 +486,7 @@ export default function StartupRegistry({
                     </div>
                   </div>
                   <div className="reg-feat-body">
-                    <p className="rp reg-feat-desc">
-                      {s.description || "Building for India's next decade."}
-                    </p>
+                    <p className="rp reg-feat-desc">{s.description || "Building for India's next decade."}</p>
                     {s.founders && (
                       <p className="reg-feat-founders">
                         <span className="reg-founders-label">Founders — </span>
@@ -510,16 +501,29 @@ export default function StartupRegistry({
                             <span>{s.founded_year}</span>
                           </span>
                         )}
+                        {/* UFRN chip on featured cards */}
+                        {s.ufrn && (
+                          <a
+                            href={`/ufrn/${s.ufrn}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="reg-chip"
+                            style={{ color: "#A89060", textDecoration: "none" }}
+                            aria-label={`UFRN: ${s.ufrn} - Verified Startup Profile`}
+                            title={`Registry: ${s.ufrn}`}
+                          >
+                            <ShieldCheck style={{ width: 9, height: 9 }} />
+                            <span style={{ fontFamily: "monospace", fontSize: 9 }}>
+                              {s.ufrn.split("-").slice(-2).join("-")}
+                            </span>
+                          </a>
+                        )}
                       </div>
                       <div className="reg-feat-actions">
                         <span className="reg-vbadge">
                           <BadgeCheck style={{ width: 8, height: 8 }} aria-hidden="true" />
                           <span>Verified</span>
                         </span>
-                        <ArrowUpRight
-                          style={{ width: 13, height: 13, color: "var(--reg-ink4)" }}
-                          aria-hidden="true"
-                        />
+                        <ArrowUpRight style={{ width: 13, height: 13, color: "var(--reg-ink4)" }} aria-hidden="true" />
                       </div>
                     </div>
                   </div>
@@ -529,7 +533,7 @@ export default function StartupRegistry({
           </section>
         )}
 
-        {/* GRID — desktop and mobile share the same deduplicated gridList */}
+        {/* GRID */}
         {gridList.length > 0 && (
           <section aria-label="All startups">
             {showFeatured && featuredList.length > 0 && (
@@ -554,29 +558,36 @@ export default function StartupRegistry({
                     </div>
                     <div className="reg-card-titles">
                       <h3 className="pf reg-card-name">{s.name}</h3>
-                      <span className="reg-card-cat">
-                        {(s.category || "Startup").slice(0, 24)}
-                      </span>
+                      <span className="reg-card-cat">{(s.category || "Startup").slice(0, 24)}</span>
                     </div>
-                    <BadgeCheck
-                      className="reg-card-badge"
-                      aria-label="Verified startup"
-                    />
+                    <BadgeCheck className="reg-card-badge" aria-label="Verified startup" />
                   </div>
                   <div className="reg-card-body">
-                    <p className="rp reg-card-desc">
-                      {s.description || "Building for India's next decade."}
-                    </p>
-                    {s.founders && (
-                      <p className="reg-card-founders">↳ {s.founders}</p>
-                    )}
+                    <p className="rp reg-card-desc">{s.description || "Building for India's next decade."}</p>
+                    {s.founders && <p className="reg-card-founders">↳ {s.founders}</p>}
                     <div className="reg-card-footer">
-                      {s.founded_year && (
-                        <span className="reg-chip">
-                          <Calendar style={{ width: 7, height: 7 }} aria-hidden="true" />
-                          <span>{s.founded_year}</span>
-                        </span>
-                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        {s.founded_year && (
+                          <span className="reg-chip">
+                            <Calendar style={{ width: 7, height: 7 }} aria-hidden="true" />
+                            <span>{s.founded_year}</span>
+                          </span>
+                        )}
+                        {/* ── UFRN chip — links to /ufrn/[id] ── */}
+                        {s.ufrn && (
+                          <a
+                            href={`/ufrn/${s.ufrn}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="reg-chip"
+                            style={{ color: "#A89060", textDecoration: "none", fontSize: 9, fontFamily: "monospace" }}
+                            aria-label={`UFRN: ${s.ufrn} - Verified Startup Profile`}
+                            title={s.ufrn}
+                          >
+                            <ShieldCheck style={{ width: 7, height: 7, color: "#A89060" }} />
+                            <span>{s.ufrn.split("-").slice(-2).join("-")}</span>
+                          </a>
+                        )}
+                      </div>
                       <ArrowUpRight className="reg-card-arrow" aria-hidden="true" />
                     </div>
                   </div>
@@ -584,19 +595,14 @@ export default function StartupRegistry({
               ))}
             </div>
 
-            {/* Mobile list — same gridList, no duplicates */}
+            {/* Mobile list */}
             <div className="reg-mob-list reg-show-mob">
               {gridList.map((s, idx) => (
                 <Link
                   key={s.id}
                   href={`/startup/${s.slug}`}
                   className="reg-mob-row"
-                  style={{
-                    borderBottom:
-                      idx < gridList.length - 1
-                        ? "1px solid var(--reg-rule2)"
-                        : "none",
-                  }}
+                  style={{ borderBottom: idx < gridList.length - 1 ? "1px solid var(--reg-rule2)" : "none" }}
                 >
                   <div className="reg-mob-logo" aria-hidden="true">
                     <StartupLogo name={s.name} logo_url={s.logo_url} size={38} />
@@ -604,20 +610,20 @@ export default function StartupRegistry({
                   <div className="reg-mob-info">
                     <div className="reg-mob-name-row">
                       <span className="pf reg-mob-name">{s.name}</span>
-                      <BadgeCheck
-                        style={{ width: 9, height: 9, color: "#15803D", flexShrink: 0 }}
-                        aria-label="Verified"
-                      />
+                      <BadgeCheck style={{ width: 9, height: 9, color: "#15803D", flexShrink: 0 }} aria-label="Verified" />
                     </div>
                     <span className="reg-mob-meta">
                       {s.category || "Startup"}
                       {s.founded_year && ` · ${s.founded_year}`}
+                      {/* UFRN in mobile meta row */}
+                      {s.ufrn && (
+                        <span style={{ color: "#A89060", fontFamily: "monospace", fontSize: 9, marginLeft: 4 }}>
+                          · {s.ufrn.split("-").slice(-2).join("-")}
+                        </span>
+                      )}
                     </span>
                   </div>
-                  <ChevronRight
-                    style={{ width: 11, height: 11, color: "var(--reg-ink5)", flexShrink: 0 }}
-                    aria-hidden="true"
-                  />
+                  <ChevronRight style={{ width: 11, height: 11, color: "var(--reg-ink5)", flexShrink: 0 }} aria-hidden="true" />
                 </Link>
               ))}
             </div>
@@ -631,18 +637,16 @@ export default function StartupRegistry({
             <h3 className="pf reg-empty-title">No startups found</h3>
             <p className="rp reg-empty-body">
               {searchQuery ? (
-                <>Nothing matched &ldquo;{searchQuery}&rdquo;. Try a different term.</>
+                <>Nothing matched &ldquo;{searchQuery}&rdquo;. Try a different term or search by UFRN.</>
               ) : (
                 <>No startups found for your filters. Try adjusting them.</>
               )}
             </p>
-            <Link href="/startup" className="reg-empty-btn">
-              Clear filters
-            </Link>
+            <Link href="/startup" className="reg-empty-btn">Clear filters</Link>
           </div>
         )}
 
-        {/* SKELETON — shown while searching with empty results */}
+        {/* SKELETON */}
         {isPending && startups.length === 0 && (
           <div className="reg-grid" aria-label="Loading startups" aria-busy="true">
             {Array.from({ length: 12 }).map((_, i) => (
@@ -668,9 +672,7 @@ export default function StartupRegistry({
         {totalPages > 1 && (
           <nav className="reg-pagination" aria-label="Registry pagination">
             <Link
-              href={buildUrl({
-                page: currentPage > 2 ? String(currentPage - 1) : undefined,
-              })}
+              href={buildUrl({ page: currentPage > 2 ? String(currentPage - 1) : undefined })}
               className={`reg-pg-btn${currentPage === 1 ? " disabled" : ""}`}
               aria-disabled={currentPage === 1}
               aria-label="Previous page"
@@ -679,7 +681,6 @@ export default function StartupRegistry({
               <ChevronLeft style={{ width: 10, height: 10 }} aria-hidden="true" />
               <span>Prev</span>
             </Link>
-
             <div className="reg-pg-nums" role="list">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let p: number
@@ -701,11 +702,8 @@ export default function StartupRegistry({
                 )
               })}
             </div>
-
             <Link
-              href={buildUrl({
-                page: String(Math.min(totalPages, currentPage + 1)),
-              })}
+              href={buildUrl({ page: String(Math.min(totalPages, currentPage + 1)) })}
               className={`reg-pg-btn${currentPage === totalPages ? " disabled" : ""}`}
               aria-disabled={currentPage === totalPages}
               aria-label="Next page"
@@ -723,46 +721,24 @@ export default function StartupRegistry({
         <div className="reg-cta">
           <div className="reg-cta-text">
             <p className="reg-cta-eyebrow">UpForge Registry</p>
-            <p className="pf reg-cta-headline">
-              Your founder story starts with a verified profile.
-            </p>
-            <p className="rp reg-cta-sub">
-              Independently verified and indexed in India's most trusted startup
-              registry. Free forever.
-            </p>
+            <p className="pf reg-cta-headline">Your founder story starts with a verified profile.</p>
+            <p className="rp reg-cta-sub">Independently verified and indexed in India's most trusted startup registry. Free forever.</p>
           </div>
-          <Link href="/submit" className="reg-cta-btn">
-            List Free →
-          </Link>
+          <Link href="/submit" className="reg-cta-btn">List Free →</Link>
         </div>
       </div>
 
-      {/* ── INTERNAL LINK FOOTER NAV ──
-          IMPORTANT: All hrefs below must be real, live routes.
-          Dead links waste crawl budget. Uncomment each line only
-          when the target page actually exists and returns 200.
-      ── */}
-      <nav
-        className="reg-container reg-footer-nav"
-        aria-label="Explore startup categories"
-      >
+      {/* ── FOOTER NAV ── */}
+      <nav className="reg-container reg-footer-nav" aria-label="Explore startup categories">
         <ul className="reg-footer-links">
           {[
-            // Live routes only. Comment out any that don't exist yet.
-            { l: "All Indian Startups 2026",  h: "/startup"   },
-            { l: "Submit Your Startup",        h: "/submit"    },
-            { l: "About UpForge",              h: "/about"     },
-            { l: "Startup Journal",            h: "/blog"      },
-            // Uncomment when /startups/[category] pages are live:
-            // { l: "AI Startups India",       h: "/startups/ai"      },
-            // { l: "Fintech Startups India",  h: "/startups/fintech" },
-            // { l: "Edtech Founders India",   h: "/startups/edtech"  },
-            // { l: "Indian Unicorns List",    h: "/startups/unicorns"},
+            { l: "All Indian Startups 2026", h: "/startup" },
+            { l: "Submit Your Startup",       h: "/submit"  },
+            { l: "About UpForge",             h: "/about"   },
+            { l: "Startup Journal",           h: "/blog"    },
           ].map((lnk) => (
             <li key={lnk.h}>
-              <Link href={lnk.h} className="reg-footer-link">
-                {lnk.l}
-              </Link>
+              <Link href={lnk.h} className="reg-footer-link">{lnk.l}</Link>
             </li>
           ))}
         </ul>
