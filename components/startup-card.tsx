@@ -1,3 +1,12 @@
+// components/startup-card.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE: UFRN is now the primary trust signal on listing cards.
+// - Shows real UFRN (e.g. UFRN-2026-IND-00001) instead of fake UPF- code
+// - UFRN links to /ufrn/[id] for the dedicated lookup page
+// - Badge alt-text matches the SEO anchor loop: "UFRN: [ID] - Verified Startup Profile"
+// - Falls back gracefully if ufrn is null (pending approval / legacy records)
+// ─────────────────────────────────────────────────────────────────────────────
+
 "use client"
 
 import Link from "next/link"
@@ -11,20 +20,27 @@ interface StartupCardProps {
 
 export function StartupCard({ startup, featured = false }: StartupCardProps) {
   const getDisplayFounder = () => {
-    // 1. Handle null or empty string
     if (!startup.founders || startup.founders.trim() === "") {
       return { name: "Institutional Lead", hasMore: false }
     }
-
-    // 2. Handle string parsing (since type is string | null)
     const parts = startup.founders.split(",")
-    return { 
-      name: parts[0].trim(), 
-      hasMore: parts.length > 1 
+    return {
+      name: parts[0].trim(),
+      hasMore: parts.length > 1,
     }
   }
 
   const founderInfo = getDisplayFounder()
+
+  // ── UFRN display helpers ──────────────────────────────────────────────────
+  // If a real UFRN exists, show it and link to the dedicated UFRN page.
+  // If not, fall back to the slug-based code (legacy behaviour).
+  const hasRealUFRN = !!startup.ufrn
+  const ufrnDisplay = startup.ufrn ?? `UPF-${startup.slug?.substring(0, 6).toUpperCase()}`
+  // Truncate long UFRNs for the card: show last two segments e.g. "IND-00001"
+  const ufrnShort = startup.ufrn
+    ? startup.ufrn.split("-").slice(-2).join("-")
+    : ufrnDisplay
 
   return (
     <Link href={`/startup/${startup.slug || ""}`} className="group block h-full">
@@ -49,13 +65,15 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
 
         {/* Logo Section */}
         <div className="mb-6 flex items-start justify-between">
-          <div className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border bg-white transition-colors ${
-            featured ? "border-slate-100 shadow-sm" : "border-slate-50 shadow-none"
-          }`}>
+          <div
+            className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border bg-white transition-colors ${
+              featured ? "border-slate-100 shadow-sm" : "border-slate-50 shadow-none"
+            }`}
+          >
             {startup.logo_url ? (
-              <img 
-                src={startup.logo_url} 
-                alt={`${startup.name} logo`} 
+              <img
+                src={startup.logo_url}
+                alt={`${startup.name} logo`}
                 className="h-full w-full object-contain p-3"
               />
             ) : (
@@ -64,7 +82,7 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
               </span>
             )}
           </div>
-          
+
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-all group-hover:bg-slate-900 group-hover:text-white group-hover:scale-110">
             <ArrowUpRight className="h-4 w-4" />
           </div>
@@ -91,7 +109,7 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
           </p>
         </div>
 
-        {/* Footer: Founder & Verification ID */}
+        {/* Footer: Founder & UFRN Verification */}
         <div className="mt-8 flex items-center justify-between border-t border-slate-50 pt-5">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400 border border-white">
@@ -107,15 +125,30 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
               </p>
             </div>
           </div>
-          
-          <div className="flex flex-col items-end">
-             <div className="flex items-center gap-1 text-green-600">
-               <ShieldCheck className="h-3 w-3" />
-               <span className="text-[9px] font-black uppercase tracking-tighter">Verified</span>
-             </div>
-             <p className="text-[9px] font-mono text-slate-300">
-               UPF-{startup.slug?.substring(0, 6).toUpperCase()}
-             </p>
+
+          {/* ── UFRN Trust Signal ── */}
+          <div className="flex flex-col items-end gap-0.5">
+            <div className="flex items-center gap-1 text-green-600">
+              <ShieldCheck className="h-3 w-3" />
+              <span className="text-[9px] font-black uppercase tracking-tighter">Verified</span>
+            </div>
+
+            {/* Link to UFRN page if real UFRN exists, otherwise plain text */}
+            {hasRealUFRN ? (
+              // Stop propagation so click on UFRN doesn't also navigate to startup profile
+              <a
+                href={`/ufrn/${startup.ufrn}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-[9px] font-mono text-[#A89060] hover:underline hover:text-[#7A6840] transition-colors"
+                title={`Registry lookup: ${startup.ufrn}`}
+                // Critical: alt/title text matches SEO anchor loop
+                aria-label={`UFRN: ${startup.ufrn} - Verified Startup Profile`}
+              >
+                {ufrnShort}
+              </a>
+            ) : (
+              <p className="text-[9px] font-mono text-slate-300">{ufrnDisplay}</p>
+            )}
           </div>
         </div>
 
