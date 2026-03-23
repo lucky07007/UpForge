@@ -6,7 +6,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
-import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
+import { ArrowRight, ArrowUpRight, ChevronRight, MapPin, Calendar, Users, Award } from "lucide-react"
 
 const PAGE_SIZE = 10
 
@@ -164,38 +164,36 @@ export default async function StartupPage({ searchParams }: PageProps) {
           box-sizing: border-box; 
         }
 
-     
-      html, body {
-        height: 100%;
-        margin: 0;
-      }
-      
-      body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      
-      .page-wrapper {
-        display: flex;
-        flex-direction: column;
-        flex: 1 0 auto;
-      }
-      
-      .page-body {
-        flex: 1 0 auto; /* This pushes the footer down */
-      }
-      
-      /* Fix mobile header overlap with Navbar */
-      .hero-section {
-        padding-top: 64px; /* Adjust this to match your Navbar height */
-      }
-      
-      @media (max-width: 768px) {
-        .mast-content {
-          padding: 100px 20px 60px !important;
+        html, body {
+          height: 100%;
+          margin: 0;
         }
-      }
+        
+        body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+        
+        .page-wrapper {
+          display: flex;
+          flex-direction: column;
+          flex: 1 0 auto;
+        }
+        
+        .page-body {
+          flex: 1 0 auto;
+        }
+        
+        .hero-section {
+          padding-top: 0;
+        }
+        
+        @media (max-width: 768px) {
+          .mast-content {
+            padding: 100px 20px 60px !important;
+          }
+        }
 
         @keyframes riseIn { 
           from { opacity: 0; transform: translateY(12px); } 
@@ -206,7 +204,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
         .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
 
-        /* Hero Section */
         .hero-section {
           position: relative;
           background: linear-gradient(135deg, rgba(26,18,8,0.88) 0%, rgba(26,18,8,0.75) 100%);
@@ -325,7 +322,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
           100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
 
-        /* Category Tabs */
         .cat-tabs { 
           display: flex; 
           overflow-x: auto; 
@@ -354,7 +350,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .cat-tab:hover { color: var(--ink); border-bottom-color: var(--rule); }
         .cat-tab.on { color: var(--accent); border-bottom-color: var(--accent); }
 
-        /* Toolbar */
         .toolbar { 
           position: sticky; 
           top: 0; 
@@ -466,7 +461,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
           flex-shrink: 0;
         }
 
-        /* Results Bar */
         .results-bar { 
           max-width: 1300px; 
           margin: 0 auto; 
@@ -482,7 +476,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .results-rule { flex: 1; height: 1px; background: var(--rule2); }
         .results-pg { font-size: 11px; color: #AAA; }
 
-        /* Main Layout */
         .main-wrap { 
           max-width: 1300px; 
           margin: 0 auto; 
@@ -503,7 +496,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .sh-l { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap; }
         .sh-r { flex: 1; height: 1px; background: var(--rule2); }
 
-        /* Featured Cards */
         .feat-grid { 
           display: grid; 
           grid-template-columns: repeat(3, 1fr); 
@@ -575,102 +567,110 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .feat-foot { display: flex; align-items: center; justify-content: space-between; }
         .feat-chips { font-size: 11px; color: #AAA; display: flex; gap: 12px; flex-wrap: wrap; }
 
-        /* List Items - Enhanced with better number section */
+        /* Enhanced Unified Card Design - No separate number section */
         .startup-list { display: flex; flex-direction: column; gap: 12px; }
         .s-row { 
-          display: grid; 
-          grid-template-columns: 70px 1fr auto; 
+          display: flex;
           background: white; 
           border-radius: 16px; 
           text-decoration: none; 
           transition: all 0.25s ease;
           border: 1px solid var(--rule2); 
           overflow: hidden;
+          position: relative;
         }
         .s-row:hover { 
           transform: translateX(5px); 
           border-color: var(--accent); 
           box-shadow: 0 6px 16px rgba(0,0,0,0.08);
         }
-        @media (max-width: 560px) { 
-          .s-row { grid-template-columns: 1fr auto; } 
-          .s-num-col { display: none; } 
+        
+        .s-body { 
+          flex: 1;
+          padding: 20px 24px;
+          display: flex;
+          gap: 20px;
+          align-items: flex-start;
         }
         
-        /* Enhanced Number Section */
-        .s-num-col { 
-          display: flex; 
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, var(--parch-dark) 0%, var(--parch) 100%);
-          border-right: 1px solid var(--rule2);
-          padding: 20px 0;
-        }
-        .s-num { 
-          font-family: 'Playfair Display', serif; 
-          font-size: 24px; 
-          font-weight: 900; 
-          color: var(--accent);
-          line-height: 1;
-        }
-        .s-num-label {
-          font-family: system-ui, sans-serif;
-          font-size: 7px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: #AAA;
-          margin-top: 6px;
-        }
-        .s-rank-badge {
-          margin-top: 8px;
-          padding: 2px 8px;
-          background: rgba(217,119,6,0.1);
-          border-radius: 20px;
-          font-size: 7px;
-          font-weight: 700;
-          color: var(--accent);
+        @media (max-width: 600px) {
+          .s-body {
+            flex-direction: column;
+            padding: 16px;
+          }
         }
         
-        .s-body { padding: 18px 20px; }
-        .s-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
         .s-logo-wrap { 
-          width: 48px; 
-          height: 48px; 
-          border-radius: 14px; 
+          width: 70px;
+          height: 70px;
+          flex-shrink: 0;
+          border-radius: 16px; 
           border: 1px solid var(--rule2); 
           background: var(--parch-dark); 
           display: flex; 
           align-items: center; 
-          justify-content: center; 
-          flex-shrink: 0; 
+          justify-content: center;
+          overflow: hidden;
         }
-        .s-meta { flex: 1; min-width: 0; }
+        
+        .s-logo-wrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        
+        .s-content {
+          flex: 1;
+        }
+        
+        .s-head {
+          display: flex;
+          align-items: baseline;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+        
         .s-name { 
           font-family: 'Playfair Display', serif; 
           font-size: 18px; 
           font-weight: 700; 
           color: var(--ink); 
-          line-height: 1.3; 
-          margin-bottom: 4px;
+          line-height: 1.3;
         }
+        
+        .s-rank {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--accent);
+          background: rgba(217,119,6,0.1);
+          padding: 2px 10px;
+          border-radius: 20px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+        
         .s-cat { 
           font-size: 10px; 
           color: #AAA; 
           text-transform: uppercase; 
-          letter-spacing: 0.1em; 
+          letter-spacing: 0.1em;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
         }
+        
         .s-verified { 
           display: inline-flex; 
           align-items: center; 
-          gap: 5px; 
+          gap: 4px; 
           font-size: 9px; 
           font-weight: 800; 
           text-transform: uppercase; 
-          color: var(--green); 
-          margin-left: 10px; 
+          color: var(--green);
         }
+        
         .s-desc { 
           font-size: 13px; 
           color: #5A4A30; 
@@ -680,18 +680,37 @@ export default async function StartupPage({ searchParams }: PageProps) {
           -webkit-line-clamp: 2; 
           -webkit-box-orient: vertical; 
           overflow: hidden; 
-          margin-bottom: 8px;
+          margin-bottom: 12px;
         }
-        .s-founders { 
-          font-size: 12px; 
-          color: #AAA; 
-          display: -webkit-box; 
-          -webkit-line-clamp: 1; 
-          -webkit-box-orient: vertical; 
-          overflow: hidden; 
-          margin-bottom: 6px;
+        
+        .s-info-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin-bottom: 12px;
         }
-        .s-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        
+        .s-info-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: var(--muted);
+        }
+        
+        .s-info-item svg {
+          width: 14px;
+          height: 14px;
+          stroke-width: 1.5;
+        }
+        
+        .s-chips { 
+          display: flex; 
+          gap: 10px; 
+          flex-wrap: wrap; 
+          margin-top: 8px;
+        }
+        
         .s-chip { 
           font-size: 10px; 
           color: var(--muted); 
@@ -700,6 +719,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
           background: var(--parch); 
           border-radius: 24px; 
         }
+        
         .s-ufrn { 
           font-family: monospace; 
           font-size: 9px; 
@@ -710,7 +730,15 @@ export default async function StartupPage({ searchParams }: PageProps) {
           padding: 3px 10px; 
           border-radius: 14px; 
         }
-        .s-arrow-col { display: flex; align-items: center; justify-content: center; padding: 0 24px; border-left: 1px solid var(--rule2); }
+        
+        .s-arrow-col { 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          padding: 0 24px; 
+          border-left: 1px solid var(--rule2);
+          background: white;
+        }
         .s-arrow { 
           width: 36px; 
           height: 36px; 
@@ -726,7 +754,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
 
         .empty-state { text-align: center; padding: 80px 32px; border-radius: 24px; border: 2px dashed var(--rule); background: white; }
 
-        /* Pagination */
         .pag { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--rule2); }
         .pag-btn { 
           padding: 10px 24px; 
@@ -758,7 +785,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .pag-num:hover { border-color: var(--accent); color: var(--accent); }
         .pag-num.on { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* Aside */
         .rg-aside { display: flex; flex-direction: column; gap: 24px; }
         .aside-box { border-radius: 20px; border: 1px solid var(--rule2); background: white; padding: 24px; }
         .aside-box.dk { background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); border-color: var(--accent); }
@@ -796,7 +822,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         }
         .aside-list a:hover { color: var(--accent); }
 
-        /* CTA Block */
         .cta-block { 
           background: linear-gradient(135deg, var(--ink) 0%, #2A2012 100%); 
           border-radius: 24px; 
@@ -828,7 +853,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         }
         .cta-btn:hover { background: var(--accent-light); transform: translateY(-2px); }
 
-        /* Links Grid */
         .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--rule2); }
         @media (max-width: 700px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
         .link-card { 
@@ -853,7 +877,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         }
         .link-desc { font-size: 10px; color: #AAA; }
 
-        /* Mobile Responsive - Fixed header spacing */
         @media (max-width: 768px) {
           .mast-content { 
             padding: 140px 20px 80px !important; 
@@ -884,8 +907,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
           .main-grid { gap: 32px; }
           .feat-grid { gap: 20px; margin-bottom: 40px; }
           .feat-company { font-size: 18px; }
-          .s-body { padding: 16px; }
+          .s-body { padding: 16px; gap: 16px; }
           .s-name { font-size: 16px; }
+          .s-logo-wrap { width: 60px; height: 60px; }
           .cta-block { padding: 28px 24px; }
           .cta-h { font-size: 18px; }
         }
@@ -908,6 +932,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
           .s-body { padding: 14px; }
           .s-name { font-size: 15px; }
           .s-desc { font-size: 12px; }
+          .s-info-item { font-size: 11px; }
         }
       `}</style>
 
@@ -1061,30 +1086,57 @@ export default async function StartupPage({ searchParams }: PageProps) {
                         const rank = baseNum + idx + 1;
                         return (
                           <Link key={s.id} href={`/startup/${s.slug}`} className="s-row">
-                            <div className="s-num-col">
-                              <div className="s-num">{rank}</div>
-                              <div className="s-num-label">Rank</div>
-                              {rank <= 3 && <div className="s-rank-badge">⭐ Top {rank}</div>}
-                            </div>
                             <div className="s-body">
-                              <div className="s-head">
-                                <div className="s-logo-wrap">
-                                  {s.logo_url
-                                    ? <Image src={s.logo_url} alt={s.name} width={48} height={48} className="object-contain" loading="lazy" />
-                                    : <span style={{ fontSize:18, fontWeight:700, color:"#AAA" }}>{s.name.charAt(0)}</span>
-                                  }
-                                </div>
-                                <div className="s-meta">
-                                  <div className="s-name">{s.name}</div>
-                                  <div className="s-cat">{s.category ?? "Startup"}<span className="s-verified">✓ Verified</span></div>
-                                </div>
+                              <div className="s-logo-wrap">
+                                {s.logo_url
+                                  ? <Image src={s.logo_url} alt={s.name} width={70} height={70} className="object-cover" loading="lazy" />
+                                  : <span style={{ fontSize: 24, fontWeight: 700, color: "#AAA" }}>{s.name.charAt(0)}</span>
+                                }
                               </div>
-                              {s.description && <p className="s-desc">{s.description.slice(0, 120)}</p>}
-                              {s.founders && <p className="s-founders">👥 {s.founders}</p>}
-                              <div className="s-chips">
-                                {s.founded_year && <span className="s-chip">📅 {s.founded_year}</span>}
-                                {s.city && <span className="s-chip">📍 {s.city}</span>}
-                                {s.ufrn && <span className="s-ufrn">{s.ufrn}</span>}
+                              <div className="s-content">
+                                <div className="s-head">
+                                  <h3 className="s-name">{s.name}</h3>
+                                  <span className="s-rank">
+                                    <Award size={12} /> Rank #{rank}
+                                  </span>
+                                </div>
+                                
+                                <div className="s-cat">
+                                  {s.category ?? "Startup"}
+                                  <span className="s-verified">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    Verified
+                                  </span>
+                                </div>
+                                
+                                {s.description && <p className="s-desc">{s.description.slice(0, 120)}</p>}
+                                
+                                <div className="s-info-grid">
+                                  {s.founders && (
+                                    <div className="s-info-item">
+                                      <Users size={14} />
+                                      <span>{s.founders}</span>
+                                    </div>
+                                  )}
+                                  {s.founded_year && (
+                                    <div className="s-info-item">
+                                      <Calendar size={14} />
+                                      <span>Founded {s.founded_year}</span>
+                                    </div>
+                                  )}
+                                  {s.city && (
+                                    <div className="s-info-item">
+                                      <MapPin size={14} />
+                                      <span>{s.city}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                <div className="s-chips">
+                                  {s.ufrn && <span className="s-ufrn">{s.ufrn}</span>}
+                                </div>
                               </div>
                             </div>
                             <div className="s-arrow-col">
