@@ -34,7 +34,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://www.upforge.org",
+            value: 'https://www.upforge.org, https://www.upforge.in',
           },
           {
             key: "Access-Control-Allow-Methods",
