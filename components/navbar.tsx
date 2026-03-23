@@ -1,11 +1,10 @@
-//components/navbar.tsx
-
+// components/navbar.tsx
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight, Globe } from "lucide-react";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,17 +17,15 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => setIsOpen(false), [pathname]);
 
   const links = [
-    { name: "Home", href: "/" },
+    { name: "Home",     href: "/" },
     { name: "Registry", href: "/startup" },
-    { name: "Journal", href: "/blog" },
-    { name: "Reports", href: "/reports" },
+    { name: "Journal",  href: "/blog" },
+    { name: "Reports",  href: "/reports" },
     { name: "Archives", href: "/archive" },
-    { name: "About", href: "/about" },
-    
+    { name: "About",    href: "/about" },
   ];
 
   return (
@@ -46,12 +43,7 @@ export function Navbar() {
           {/* ── Brand ── */}
           <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
             <div className="relative w-7 h-7 overflow-hidden flex-shrink-0">
-              <Image
-                src="/logo.jpg"
-                alt="UpForge"
-                fill
-                className="object-cover"
-              />
+              <Image src="/logo.jpg" alt="UpForge" fill className="object-cover" />
             </div>
             <div className="flex items-baseline gap-2">
               <span
@@ -69,7 +61,8 @@ export function Navbar() {
           {/* ── Desktop Nav ── */}
           <nav className="hidden md:flex items-center gap-0 flex-1 justify-center">
             {links.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              const isActive =
+                pathname === link.href || pathname.startsWith(link.href + "/");
               return (
                 <Link
                   key={link.name}
@@ -84,6 +77,19 @@ export function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Global Registry link — subtle, newspaper-style separator */}
+            <span className="text-[#D5D0C8] mx-2 text-xs select-none">|</span>
+            <a
+              href="https://www.upforge.org/registry"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-3 py-1 text-[11px] font-medium tracking-wide uppercase text-[#A89060] border-b-2 border-transparent hover:border-[#A89060] transition-colors"
+              title="UpForge Global Registry (.org)"
+            >
+              <Globe className="w-3 h-3" aria-hidden="true" />
+              Global
+            </a>
           </nav>
 
           {/* ── Right Side ── */}
@@ -122,23 +128,18 @@ export function Navbar() {
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" onClick={() => setIsOpen(false)} />
 
-        {/* Drawer */}
         <div
           className={`absolute top-14 left-0 right-0 bg-[#F7F5F0] border-b-2 border-[#1C1C1C] transition-transform duration-200 ${
             isOpen ? "translate-y-0" : "-translate-y-2"
           }`}
           style={{ fontFamily: "system-ui, sans-serif" }}
         >
-          {/* Nav links */}
           <div className="divide-y divide-[#E8E4DC]">
             {links.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              const isActive =
+                pathname === link.href || pathname.startsWith(link.href + "/");
               return (
                 <Link
                   key={link.name}
@@ -151,22 +152,37 @@ export function Navbar() {
                   }`}
                 >
                   {link.name}
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#1C1C1C]" />
-                  )}
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#1C1C1C]" />}
                 </Link>
               );
             })}
+
+            {/* Global Registry in mobile menu */}
+            <a
+              href="https://www.upforge.org/registry"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between px-5 py-4 text-sm font-medium tracking-wide uppercase text-[#A89060] hover:bg-white/60 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <Globe className="w-4 h-4" aria-hidden="true" />
+                Global Registry
+              </span>
+              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">.org</span>
+            </a>
           </div>
 
-          {/* Bottom CTA + Live */}
+          {/* Bottom CTA */}
           <div className="px-5 py-4 flex items-center justify-between gap-3 border-t border-[#D5D0C8] bg-white/40">
             <div className="flex items-center gap-1.5">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
               </span>
-              <span className="text-[10px] text-[#888] font-medium uppercase tracking-wider">Live · Updated every 10 min</span>
+              <span className="text-[10px] text-[#888] font-medium uppercase tracking-wider">
+                Live · Updated every 10 min
+              </span>
             </div>
             <Link
               href="/submit"
