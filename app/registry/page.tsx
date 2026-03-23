@@ -400,7 +400,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
       <div className="mast">
         <div className="mast-nameplate ri-0">
           <p className="ri-0" style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, letterSpacing:".42em", textTransform:"uppercase", color:"#AAA", marginBottom:16 }}>
-            UpForge · Independent Global Registry · Global Edition · 2026
+            UpForge · Global Edition · 2026
           </p>
 
           <h1 className="pf ri-0" style={{ fontSize:"clamp(2.2rem,6vw,5.2rem)", fontWeight:900, letterSpacing:"-.025em", color:"#1A1208", lineHeight:1.02, marginBottom:12 }}>
@@ -421,7 +421,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
           <div className="live-badge ri-1">
             <span className="live-dot" />
             <span style={{ fontFamily:"system-ui,sans-serif", fontSize:8.5, fontWeight:700, textTransform:"uppercase", letterSpacing:".2em", color:"#15803D" }}>
-              Live · {total.toLocaleString()} Profiles · All Verified · UFRN Assigned on Approval
+              Live · {total.toLocaleString()} Profiles · UFRN Assigned on Approval
             </span>
           </div>
         </div>
