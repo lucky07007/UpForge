@@ -349,16 +349,9 @@ export default async function StartupPage({ searchParams }: PageProps) {
       <header className="mast" role="banner">
         <div className="mast-nameplate ri-0">
 
-          {/* Edition tag */}
-          <div className="edition-tag ri-0">
-            <span className="edition-flag">🇮🇳</span>
-            <span style={{ fontFamily:"system-ui,sans-serif", fontSize:8, fontWeight:700, letterSpacing:".3em", textTransform:"uppercase", color:"#B45309" }}>
-              India Edition · 2026
-            </span>
-          </div>
 
           <h1 className="pf ri-0" style={{ fontSize:"clamp(2rem,5.5vw,4.6rem)", fontWeight:900, letterSpacing:"-.025em", color:"#1A1208", lineHeight:1.02, marginBottom:10 }}>
-            Startup Registry
+            Indian Registry
           </h1>
 
           <p className="ri-1" style={{ fontSize:"clamp(12px,1.6vw,15px)", color:"#6B5C40", fontStyle:"italic", lineHeight:1.7, maxWidth:520, margin:"0 auto 16px" }}>
