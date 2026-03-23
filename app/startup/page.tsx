@@ -1,8 +1,7 @@
 // app/startup/page.tsx — REDESIGN v8 + UFRN
-// Same as original v8 design — only changes:
-//   • createClient → createReadClient (faster, no session overhead)
-//   • ufrn field added to select + display on cards
-//   • Stats bar REMOVED (per request)
+// FIXES:
+//   1. Inline <footer className="pg-footer"> REMOVED — layout.tsx already renders <Footer />
+//   2. .toolbar z-index: 40 → 20 to fix hamburger menu overlap on mobile
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
@@ -173,7 +172,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .cat-tab:hover { color:#1A1208 }
         .cat-tab.on { color:#B45309; border-bottom-color:#B45309 }
 
-        .toolbar { position:sticky; top:0; z-index:40; background:#F3EFE5; border-bottom:1px solid #C8C2B4 }
+        /* FIX: z-index 40 → 20 so navbar hamburger menu renders above toolbar */
+        .toolbar { position:sticky; top:0; z-index:20; background:#F3EFE5; border-bottom:1px solid #C8C2B4 }
         .toolbar-inner { max-width:1300px; margin:0 auto; padding:0 clamp(16px,4vw,48px) }
 
         .t-search-row { display:flex; align-items:center; height:48px; border-bottom:1px solid #D8D2C4 }
@@ -306,12 +306,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
         .link-card:hover { border-color:#1A1208; background:#fff }
         .link-title { font-family:system-ui,sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:#1A1208; display:flex; align-items:center; gap:3px }
         .link-desc { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA }
-
-        .pg-footer { border-top:1px solid #D8D2C4; padding-top:1rem; margin-top:clamp(22px,3.5vw,36px); padding-bottom:10px; background:#F3EFE5 }
-        .footer-note { font-family:system-ui,sans-serif; font-size:8.5px; color:#BBB0A0; line-height:1.75 }
-        .footer-nav { display:flex; flex-wrap:wrap; gap:6px 16px; list-style:none; margin:12px 0 0; padding:0 }
-        .footer-nav a { font-family:system-ui,sans-serif; font-size:8.5px; color:#AAA; text-transform:uppercase; letter-spacing:.1em; text-decoration:none; transition:color .15s }
-        .footer-nav a:hover { color:#1A1208 }
       `}</style>
 
       <Navbar />
@@ -338,7 +332,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
               Live · {total.toLocaleString()} Profiles · All Verified
             </span>
           </div>
-          {/* Stats bar REMOVED */}
         </div>
 
         <nav className="cat-tabs ri-2" aria-label="Browse by sector" style={{ padding:"0 clamp(16px,4vw,48px)" }}>
@@ -621,27 +614,6 @@ export default async function StartupPage({ searchParams }: PageProps) {
             </div>
           </section>
 
-          <footer className="pg-footer ri-4">
-            <p className="footer-note">
-              * Registry data sourced from DPIIT, Tracxn, Inc42, Forbes India, Hurun India 2025, and company announcements as of March 2026.
-              UpForge is an independent registry — no paid placements, no sponsored rankings.
-            </p>
-            <nav aria-label="Footer navigation">
-              <ul className="footer-nav">
-                {[
-                  { l:"The Founder Chronicle",  h:"/"        },
-                  { l:"Startup Registry India", h:"/startup" },
-                  { l:"Browse by Sector",       h:"/startups"},
-                  { l:"Indian Unicorns 2026",   h:"/blog/top-indian-unicorns-2026" },
-                  { l:"The Forge — Blog",       h:"/blog"    },
-                  { l:"Free Valuation Tool",    h:"/report"  },
-                  { l:"Submit Startup",         h:"/submit"  },
-                ].map(lnk => (
-                  <li key={lnk.h + lnk.l}><Link href={lnk.h}>{lnk.l}</Link></li>
-                ))}
-              </ul>
-            </nav>
-          </footer>
         </div>
       </div>
 
