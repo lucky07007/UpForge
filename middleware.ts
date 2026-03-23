@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   if (isOrgRegistry) {
     // If they are on the homepage of .org, show the clean registry list
     if (url.pathname === '/') {
-      url.pathname = '/startups'; 
+      url.pathname = '/home'; 
       return NextResponse.rewrite(url);
     }
     
