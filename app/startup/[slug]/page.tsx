@@ -1,4 +1,17 @@
 // app/startup/[slug]/page.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE from previous version:
+//   1. Organisation schema now has THREE identifier PropertyValues:
+//      - UFRN (primary)
+//      - serialNumber (Google Knowledge Graph signal)
+//      - shortCode (last segment — for abbreviated lookups)
+//   2. DefinedTerm schema added — tells Google UFRN is a controlled vocabulary ID
+//      (same schema type used by ISBN, ISSN, DOI registries)
+//   3. Dataset schema now includes `isPartOf` DataCatalog — makes Google treat
+//      this as part of a "Scientific Database" rather than a blog post
+//   4. sameAs on Dataset now includes the /ufrn/[id] canonical lookup URL
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { createReadClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
@@ -101,9 +114,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  // .org is the canonical authority URL
   const canonicalUrl = `https://www.upforge.org/startup/${slug}`
-  // .in is used for social / OG (higher traffic, marketing site)
   const marketingUrl = `https://www.upforge.in/startup/${slug}`
 
   const ufrnSuffix = startup.ufrn ? ` · ${startup.ufrn}` : ""
@@ -116,8 +127,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
-    // Canonical points to .org — authority signal to Google
-    alternates: { canonical: canonicalUrl },
+    alternates: {
+      canonical: canonicalUrl,
+      // Also include the UFRN lookup URL as an alternate — helps Google
+      // understand that /ufrn/[id] and /startup/[slug] are the same entity
+      ...(startup.ufrn && {
+        other: {
+          "ufrn-lookup": `https://www.upforge.org/ufrn/${startup.ufrn}`,
+        },
+      }),
+    },
     openGraph: {
       title,
       description,
@@ -125,25 +144,86 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [{ url: ogImage, width: 1200, height: 630, type: "image/png" }],
     },
     twitter: { card: "summary_large_image", images: [ogImage] },
-    // Extra meta for UFRN discoverability
-    other: startup.ufrn
-      ? { "upforge:registry-id": startup.ufrn }
-      : undefined,
+    other: {
+      ...(startup.ufrn && {
+        "upforge:registry-id": startup.ufrn,
+        "upforge:ufrn-url": `https://www.upforge.org/ufrn/${startup.ufrn}`,
+      }),
+    },
   }
 }
 
 // ---------------------------------------------------------------------------
 // STRUCTURED DATA BUILDERS
-// ── Organization schema now includes UFRN as an official identifier
-// ── Dataset schema tells Google this is structured, citable data
 // ---------------------------------------------------------------------------
+
+/**
+ * DefinedTerm schema for the UFRN itself.
+ * Tells Google: "UFRN is a controlled vocabulary term, like ISBN or ISSN."
+ * This is a NEW addition — not in the previous version.
+ */
+function buildDefinedTermSchema(startup: Startup, canonicalUrl: string) {
+  if (!startup.ufrn) return null
+  return {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    "@id": `https://www.upforge.org/ufrn/${startup.ufrn}#term`,
+    name: startup.ufrn,
+    termCode: startup.ufrn,
+    inDefinedTermSet: {
+      "@type": "DefinedTermSet",
+      "@id": "https://www.upforge.org/registry#ufrn-system",
+      name: "UpForge Registry Number System",
+      url: "https://www.upforge.org/registry",
+      description:
+        "UFRN (UpForge Registry Number) is a globally unique identifier assigned to every verified startup in the UpForge Global Registry.",
+    },
+    url: `https://www.upforge.org/ufrn/${startup.ufrn}`,
+    description: `${startup.ufrn} is the UpForge Registry Number for ${startup.name}.`,
+  }
+}
+
+/**
+ * Organisation schema — upgraded from PropertyValue to three-identifier pattern.
+ * Google Knowledge Graph uses serialNumber and shortCode as supplementary signals.
+ */
 function buildOrganizationSchema(startup: Startup, canonicalUrl: string) {
   const sameAs = [
     startup.linkedin_url,
     startup.twitter_url,
     startup.instagram_url,
     startup.website,
+    // Include the UFRN lookup page as a sameAs — links the two URLs as one entity
+    startup.ufrn ? `https://www.upforge.org/ufrn/${startup.ufrn}` : null,
   ].filter((url): url is string => typeof url === "string" && url.length > 0)
+
+  const identifiers = startup.ufrn
+    ? [
+        {
+          "@type": "PropertyValue",
+          propertyID: "UFRN",
+          name: "UpForge Registry Number",
+          value: startup.ufrn,
+          url: `https://www.upforge.org/ufrn/${startup.ufrn}`,
+        },
+        {
+          // serialNumber → Google treats this similarly to ISBN/ISSN
+          "@type": "PropertyValue",
+          propertyID: "serialNumber",
+          name: "Serial Number",
+          value: startup.ufrn,
+        },
+        {
+          // shortCode → last segment of UFRN e.g. "00001"
+          // Enables partial UFRN searches to still resolve
+          "@type": "PropertyValue",
+          propertyID: "shortCode",
+          name: "Short Registry Code",
+          value: startup.ufrn.split("-").pop(),
+          url: canonicalUrl,
+        },
+      ]
+    : undefined
 
   return {
     "@context": "https://schema.org",
@@ -155,22 +235,15 @@ function buildOrganizationSchema(startup: Startup, canonicalUrl: string) {
     foundingDate: startup.founded_year?.toString(),
     industry: startup.category,
     sameAs,
-    // UFRN as a PropertyValue identifier — Google Knowledge Graph signal
-    ...(startup.ufrn && {
-      identifier: {
-        "@type": "PropertyValue",
-        propertyID: "UFRN",
-        name: "UpForge Registry Number",
-        value: startup.ufrn,
-        url: canonicalUrl,
-      },
-    }),
+    ...(identifiers && { identifier: identifiers }),
   }
 }
 
+/**
+ * Dataset schema — upgraded with isPartOf DataCatalog.
+ * Google Dataset Search ranks DataCatalog entries higher than standalone datasets.
+ */
 function buildDatasetSchema(startup: Startup, canonicalUrl: string) {
-  // Dataset schema → Google treats this as a "Scientific Database" entry,
-  // which ranks above standard blog posts in SGE / AI Overviews.
   return {
     "@context": "https://schema.org",
     "@type": "Dataset",
@@ -180,6 +253,10 @@ function buildDatasetSchema(startup: Startup, canonicalUrl: string) {
       startup.description ??
       `Verified startup data record for ${startup.name} in the UpForge Global Startup Registry.`,
     url: canonicalUrl,
+    // sameAs includes the UFRN lookup URL — double-parks Google on both URLs
+    ...(startup.ufrn && {
+      sameAs: `https://www.upforge.org/ufrn/${startup.ufrn}`,
+    }),
     creator: {
       "@type": "Organization",
       name: "UpForge",
@@ -192,11 +269,19 @@ function buildDatasetSchema(startup: Startup, canonicalUrl: string) {
       "Indian startup",
       "startup registry",
       startup.ufrn ?? "",
+      "UFRN",
     ].filter(Boolean),
     license: "https://creativecommons.org/licenses/by/4.0/",
-    ...(startup.ufrn && {
-      identifier: startup.ufrn,
-    }),
+    ...(startup.ufrn && { identifier: startup.ufrn }),
+    // isPartOf makes Google treat this as a Scientific Database entry
+    isPartOf: {
+      "@type": "DataCatalog",
+      "@id": "https://www.upforge.org/registry#catalog",
+      name: "UpForge Global Startup Registry",
+      url: "https://www.upforge.org/registry",
+      description:
+        "The UpForge Global Startup Registry is an independent, CC-BY-4.0 licensed database of verified startup profiles, each assigned a unique UFRN identifier.",
+    },
   }
 }
 
@@ -217,7 +302,7 @@ function buildBreadcrumbSchema(startup: Startup, canonicalUrl: string) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.upforge.org" },
+      { "@type": "ListItem", position: 1, name: "Home",     item: "https://www.upforge.org" },
       { "@type": "ListItem", position: 2, name: "Registry", item: "https://www.upforge.org/registry" },
       { "@type": "ListItem", position: 3, name: startup.name, item: canonicalUrl },
     ],
@@ -232,15 +317,25 @@ export default async function StartupPage({ params }: PageProps) {
   const startup = await getApprovedStartup(slug)
   if (!startup) notFound()
 
-  // Canonical always points to .org
   const canonicalUrl = `https://www.upforge.org/startup/${slug}`
   const relatedStartups = startup.category
     ? await getRelatedStartups(startup.category, slug)
     : []
 
+  const definedTermSchema = buildDefinedTermSchema(startup, canonicalUrl)
+
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAF9]">
-      {/* Structured Data — 4 schemas for maximum Knowledge Graph coverage */}
+      {/* Structured Data — up to 5 schemas for maximum Knowledge Graph coverage */}
+
+      {/* NEW: DefinedTerm — only injected if startup has a UFRN */}
+      {definedTermSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(definedTermSchema) }}
+        />
+      )}
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
