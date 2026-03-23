@@ -1,5 +1,5 @@
-// app/startup/page.tsx — FINAL POLISHED VERSION
-// Indian Startup Registry — Clean spacing, fixed header/footer, improved card design
+// app/startup/page.tsx — FINAL FIXED VERSION
+// Indian Startup Registry — Fixed mobile header spacing, header/footer collapse resolved
 
 import { createReadClient } from "@/lib/supabase/server"
 import type { Metadata } from "next"
@@ -158,11 +158,19 @@ export default async function StartupPage({ searchParams }: PageProps) {
           --accent-light: #F59E0B;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+          margin: 0; 
+          padding: 0; 
+          box-sizing: border-box; 
+        }
+
+        html, body {
+          min-height: 100vh;
+          scroll-behavior: smooth;
+        }
 
         body { 
           background: var(--parch); 
-          min-height: 100vh;
           display: flex;
           flex-direction: column;
         }
@@ -172,6 +180,12 @@ export default async function StartupPage({ searchParams }: PageProps) {
           flex: 1;
           display: flex;
           flex-direction: column;
+          min-height: 100vh;
+        }
+
+        /* Ensure content pushes footer down */
+        .page-body {
+          flex: 1;
         }
 
         @keyframes riseIn { 
@@ -237,7 +251,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
           position: relative;
           z-index: 10;
           text-align: center;
-          padding: 80px 24px 64px;
+          padding: 100px 24px 80px;
         }
 
         .mast-h1 {
@@ -830,12 +844,26 @@ export default async function StartupPage({ searchParams }: PageProps) {
         }
         .link-desc { font-size: 10px; color: #AAA; }
 
-        /* Mobile Responsive - Fixed spacing */
+        /* Mobile Responsive - Fixed header spacing */
         @media (max-width: 768px) {
-          .mast-content { padding: 60px 20px 48px; }
-          .mast-h1 { font-size: 44px; margin-bottom: 16px; }
-          .mast-tagline { font-size: 14px; line-height: 1.6; }
-          .live-text { font-size: 10px; letter-spacing: 0.16em; }
+          .mast-content { 
+            padding: 140px 20px 80px !important; 
+          }
+          .mast-h1 { 
+            font-size: 48px; 
+            margin-bottom: 20px;
+          }
+          .mast-tagline { 
+            font-size: 15px; 
+            line-height: 1.6; 
+          }
+          .mast-tagline br {
+            display: none;
+          }
+          .live-text { 
+            font-size: 10px; 
+            letter-spacing: 0.16em; 
+          }
           .toolbar-inner { padding: 0 16px; }
           .t-search-row { height: 50px; margin: 12px 0; }
           .t-inp { font-size: 14px; }
@@ -854,9 +882,15 @@ export default async function StartupPage({ searchParams }: PageProps) {
         }
 
         @media (max-width: 480px) {
-          .mast-content { padding: 48px 16px 40px; }
-          .mast-h1 { font-size: 36px; }
-          .mast-tagline { font-size: 13px; }
+          .mast-content { 
+            padding: 120px 16px 64px !important; 
+          }
+          .mast-h1 { 
+            font-size: 40px; 
+          }
+          .mast-tagline { 
+            font-size: 14px; 
+          }
           .t-search-row { height: 46px; }
           .t-inp { font-size: 13px; }
           .t-inp::placeholder { font-size: 12px; }
