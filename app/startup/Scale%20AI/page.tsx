@@ -107,8 +107,7 @@ const JSON_LD = {
           "@type": "Question",
           "name": "How does Scale AI support Generative AI?",
           "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Scale AI provides the 'data engine' for LLMs, including RLHF (Reinforcement Learning from Human Feedback), red-teaming, and model evaluation. They work with industry leaders like OpenAI, Meta, Google, and Microsoft to fine-tune foundational models."
+            "@type": { "@type": "Answer", "text": "Scale AI provides the 'data engine' for LLMs, including RLHF (Reinforcement Learning from Human Feedback), red-teaming, and model evaluation. They work with industry leaders like OpenAI, Meta, Google, and Microsoft to fine-tune foundational models." }
           }
         }
       ]
@@ -370,7 +369,7 @@ export default function ScaleAIPage() {
                 className="w-full object-cover object-top"
                 style={{ height: "min(300px,60vw)", display: "block" }}
                 loading="eager"
-                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800'; }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800'; }}
               />
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
                 <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Alexandr Wang</p>
@@ -520,7 +519,7 @@ export default function ScaleAIPage() {
                   alt="Alexandr Wang, Founder & CEO of Scale AI — UpForge Founder Chronicle"
                   className="w-full h-full object-cover object-top"
                   loading="eager"
-                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800'; }}
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800'; }}
                 />
                 <div
                   className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
