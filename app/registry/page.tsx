@@ -2,6 +2,7 @@
 // Fixes: 1) Header/footer collapse  2) Cleaner card design  3) Global = ALL countries, no country filter
 
 import { createReadClient } from "@/lib/supabase/server"
+import { unstable_cache } from "next/cache"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
@@ -23,7 +24,7 @@ interface PageProps {
   searchParams: Promise<{ page?: string; q?: string; year?: string; sort?: string; sector?: string }>
 }
 
-async function getData(q: string, year: string, sort: string, cat: string, page: number) {
+async function _getData(q: string, year: string, sort: string, cat: string, page: number) {
   const sb = createReadClient()
   const from = (page - 1) * PAGE_SIZE
   let query = sb.from("startups")
@@ -42,7 +43,15 @@ async function getData(q: string, year: string, sort: string, cat: string, page:
   return { startups: (data ?? []) as StartupRow[], total: count ?? 0 }
 }
 
-async function getFilters() {
+// Cache per unique [q, year, sort, cat, page] combo — revalidates every 1s in background
+const getData = (q: string, year: string, sort: string, cat: string, page: number) =>
+  unstable_cache(
+    () => _getData(q, year, sort, cat, page),
+    ["registry-global", q, year, sort, cat, String(page)],
+    { revalidate: 1, tags: ["registry-global"] }
+  )()
+
+async function _getFilters() {
   const sb = createReadClient()
   // No country filter — show all years and sectors from global data
   const [{ data: yd }, { data: cd }] = await Promise.all([
@@ -59,6 +68,13 @@ async function getFilters() {
     cats:  [...new Set((cd ?? []).map(r => r.category as string))].filter(Boolean).sort(),
   }
 }
+
+// Filters shared across all pages — single cache slot, revalidates every 1s
+const getFilters = unstable_cache(
+  _getFilters,
+  ["registry-global-filters"],
+  { revalidate: 1, tags: ["registry-global"] }
+)
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const sp = await searchParams
@@ -90,7 +106,13 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   }
 }
 
-export const revalidate = 300
+// Strategy: stale-while-revalidate
+// Serve cached page instantly for speed, revalidate in background on every request.
+// On each refresh: user gets last cached version immediately, Next.js fetches fresh
+// from DB in the background, stores it — next request gets that fresh version.
+// revalidate = 1 means cache is always considered stale after 1 second,
+// so background refresh fires on every single page request.
+export const revalidate = 1
 
 export default async function RegistryPage({ searchParams }: PageProps) {
   const sp   = await searchParams
@@ -218,7 +240,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
         }
         .hero-bg {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          background-image: url('https://www.unesco.org/sites/default/files/2022-04/visages%20de%20couleur%20surr%C3%A9aliste.jpg');
+          background-image: url('https://simplemaps.com/static/demos/resources/svg-library/svgs/world.svg');
           background-size: cover; background-position: center 30%;
           opacity: 0.2; z-index: 0;
         }
@@ -475,10 +497,6 @@ export default async function RegistryPage({ searchParams }: PageProps) {
                 <div className="live-badge">
                   <span className="live-dot" />
                   <span className="live-text">Live · {total.toLocaleString()} Profiles · UFRN on Approval</span>
-                </div>
-                <div className="ufrn-sample">
-                  <span className="ufrn-label">Sample UFRN:</span>
-                  <span className="ufrn-code">UF-2026-IND-00001</span>
                 </div>
               </div>
             </div>
