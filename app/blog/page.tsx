@@ -1,21 +1,7 @@
 // app/blog/page.tsx
 // THE FORGE — Blog Index (www.upforge.in/blog)
-// ─────────────────────────────────────────────
-// Updated March 2026: 2 new posts added —
-//   • Top AI Startups in India (2026 Updated List)
-//   • How to Start a Startup in India (Step-by-Step Guide 2026)
-//
-// Changes from previous version:
-//   1. JSON_LD: 2 new BlogPosting nodes added
-//   2. SECONDARY_POSTS: now 4 entries (was 2) — new posts fill the row
-//   3. GRID_POSTS: now 6 entries (was 4) — new posts added
-//   4. OPINION_POSTS: 2 new opinion-style entries added
-//   5. ALL_POSTS: 2 new rows in the archive table (total: 8)
-//   6. Stats ticker: "8 Articles Published" (was 6)
-//   7. Internal links grid: 2 new link cards added
-//   8. Footer nav: 2 new links added
-//   9. Footer CTA copy updated to reflect 8 articles
-//  10. Metadata keywords + description updated
+// Updated: Hero section now matches registry page style exactly
+// — dark overlay background image, Playfair Display, teal accents, live badge, animated rule
 
 import Link from "next/link"
 import type { Metadata } from "next"
@@ -73,7 +59,6 @@ const JSON_LD = {
         { "@type": "BlogPosting", "headline": "25 Best Indian Startup Founders to Follow 2026",                 "url": "https://www.upforge.in/blog/best-indian-startup-founders-to-follow-2026"    },
         { "@type": "BlogPosting", "headline": "IND vs NZ Final 2026: 7 Leadership Lessons",                     "url": "https://www.upforge.in/blog/leadership-lessons-ind-vs-nz-final-2026"        },
         { "@type": "BlogPosting", "headline": "5 Startup Ideas Inspired by IND vs NZ Final 2026",               "url": "https://www.upforge.in/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026" },
-        // ── NEW ──
         { "@type": "BlogPosting", "headline": "Top AI Startups in India (2026 Updated List)",                   "url": "https://www.upforge.in/blog/top-ai-startups-india-2026"                     },
         { "@type": "BlogPosting", "headline": "How to Start a Startup in India (Step-by-Step Guide 2026)",      "url": "https://www.upforge.in/blog/how-to-start-startup-india-2026"                 },
       ],
@@ -104,7 +89,6 @@ const HERO_POST = {
   accentBg: "#FEF3C7",
 }
 
-// ── Now 4 posts: original 2 + 2 new ──
 const SECONDARY_POSTS = [
   {
     title:    "How to Get Startup Funding in India 2026: Complete Founder's Guide",
@@ -128,7 +112,6 @@ const SECONDARY_POSTS = [
     tag:      "Trending",
     accent:   "#D97706",
   },
-  // ── NEW ──
   {
     title:    "Top AI Startups in India (2026 Updated List)",
     excerpt:  "Sarvam AI, Krutrim, Darwinbox, Qure.ai, Perfios and 8 more — the companies building India's AI future profiled with funding data, founder stories, and verified insights.",
@@ -153,7 +136,6 @@ const SECONDARY_POSTS = [
   },
 ]
 
-// ── Now 6 posts: original 4 + 2 new ──
 const GRID_POSTS = [
   {
     title:    "10 Best Indian Startup Founders to Follow in 2026",
@@ -199,7 +181,6 @@ const GRID_POSTS = [
     accent:   "#2563EB",
     accentBg: "#EFF6FF",
   },
-  // ── NEW ──
   {
     title:    "India's AI Ecosystem: Why Sarvam & Krutrim Are Not Building ChatGPT",
     excerpt:  "India's AI startups are solving problems that OpenAI was never designed to solve — 22 languages, 400M thin-file borrowers, rural healthcare. The case for a sovereign AI stack.",
@@ -224,7 +205,6 @@ const GRID_POSTS = [
   },
 ]
 
-// ── Opinion posts — original 6 + 2 new ──
 const OPINION_POSTS = [
   { num: "I",    title: "Why India's Startup Valuations Are Being Re-Set — and What It Means for Founders",  category: "Opinion",          date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
   { num: "II",   title: "The Bootstrapped Advantage: Why 2026 May Be the Best Year to Build Without VC",    category: "Analysis",         date: "Mar 2026", slug: "/blog/how-to-get-startup-funding-india-2026" },
@@ -232,12 +212,10 @@ const OPINION_POSTS = [
   { num: "IV",   title: "What the IND vs NZ Final Tells Us About Indian Consumer Attention in 2026",        category: "Trend Watch",      date: "Mar 2026", slug: "/blog/leadership-lessons-ind-vs-nz-final-2026" },
   { num: "V",    title: "Founder-Market Fit: Why Domain Obsession Beats MBA Strategy Every Time",           category: "Strategy",         date: "Mar 2026", slug: "/blog/best-indian-startup-founders-to-follow-2026" },
   { num: "VI",   title: "Bharat Is the New Engine: Why Tier 2 Startups Will Define India's Next Decade",   category: "Trend Watch",      date: "Mar 2026", slug: "/blog/india-startup-ecosystem-2026" },
-  // ── NEW ──
   { num: "VII",  title: "India Cannot Be a Consumer of AI Built Elsewhere — the Case for Sarvam & Krutrim", category: "AI Opinion",       date: "Mar 2026", slug: "/blog/top-ai-startups-india-2026" },
   { num: "VIII", title: "Why Most First-Time Indian Founders Fail — and the Exact Steps to Avoid It",       category: "Founder Playbook", date: "Mar 2026", slug: "/blog/how-to-start-startup-india-2026" },
 ]
 
-// ── All posts — original 6 + 2 new rows ──
 const ALL_POSTS = [
   { title: "India Startup Ecosystem 2026: State of the Nation",      slug: "/blog/india-startup-ecosystem-2026",                   category: "Annual Report",    date: "Mar 2026", readTime: "20 min" },
   { title: "How to Get Startup Funding in India 2026",               slug: "/blog/how-to-get-startup-funding-india-2026",           category: "Funding Guide",    date: "Mar 2026", readTime: "12 min" },
@@ -245,7 +223,6 @@ const ALL_POSTS = [
   { title: "25 Best Indian Startup Founders to Follow 2026",         slug: "/blog/best-indian-startup-founders-to-follow-2026",    category: "Founder Profiles", date: "Mar 2026", readTime: "18 min" },
   { title: "IND vs NZ Final 2026: 7 Leadership Lessons",             slug: "/blog/leadership-lessons-ind-vs-nz-final-2026",        category: "Leadership",       date: "Mar 2026", readTime: "7 min"  },
   { title: "5 Startup Ideas Inspired by IND vs NZ Final 2026",       slug: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026", category: "Startup Ideas",    date: "Mar 2026", readTime: "6 min"  },
-  // ── NEW ──
   { title: "Top AI Startups in India (2026 Updated List)",           slug: "/blog/top-ai-startups-india-2026",                     category: "AI & Deep Tech",   date: "Mar 2026", readTime: "11 min" },
   { title: "How to Start a Startup in India (Step-by-Step 2026)",    slug: "/blog/how-to-start-startup-india-2026",                category: "Founder Playbook", date: "Mar 2026", readTime: "14 min" },
 ]
@@ -253,8 +230,7 @@ const ALL_POSTS = [
 const CATEGORIES = [
   "All", "Annual Report", "Funding Guide", "Unicorn Report",
   "Founder Profiles", "Leadership", "Startup Ideas",
-  "AI & Deep Tech", "Founder Playbook",           // ← 2 new categories
-  "Analysis", "Opinion",
+  "AI & Deep Tech", "Founder Playbook", "Analysis", "Opinion",
 ]
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
@@ -270,115 +246,331 @@ export default function BlogIndexPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
 
+        /* ─── SHARED TOKENS (mirrors registry) ─── */
+        :root {
+          --teal: #0D9488;
+          --teal-dark: #0F766E;
+          --teal-light: #5EEAD4;
+          --ink: #0F1A1C;
+          --parch: #F2F4F3;
+          --parch-dark: #E8EDEC;
+          --rule: #C4CCCB;
+          --rule2: #D4DCDA;
+          --muted: #4A6360;
+          --gold: #C59A2E;
+        }
+
         .pf  { font-family: 'Playfair Display', Georgia, serif !important; }
 
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes riseIn {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: none; }
         }
-        .a0 { animation: fadeUp .38s .00s ease both; }
-        .a1 { animation: fadeUp .38s .07s ease both; }
-        .a2 { animation: fadeUp .38s .14s ease both; }
-        .a3 { animation: fadeUp .38s .20s ease both; }
-        .a4 { animation: fadeUp .38s .27s ease both; }
+        .ri-0 { animation: riseIn 0.5s 0.00s ease both; }
+        .ri-1 { animation: riseIn 0.5s 0.08s ease both; }
+        .ri-2 { animation: riseIn 0.5s 0.16s ease both; }
+        .ri-3 { animation: riseIn 0.5s 0.24s ease both; }
+        .ri-4 { animation: riseIn 0.5s 0.32s ease both; }
 
-        .tabs-strip { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .tabs-strip::-webkit-scrollbar { display: none; }
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: #C8C2B4; }
+        /* ─── HERO — exact registry pattern ─── */
+        .blog-hero {
+          position: relative;
+          background: linear-gradient(135deg, rgba(15,26,28,0.88) 0%, rgba(15,26,28,0.75) 100%);
+          overflow: hidden;
+          border-bottom: 1px solid var(--rule);
+        }
+        .blog-hero-bg {
+          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+          background-image: url('https://img.freepik.com/free-vector/hand-drawn-twitch-banner-template-school-graduation_23-2150237117.jpg?semt=ais_hybrid&w=740&q=80');
+          background-size: cover; background-position: center 40%;
+          opacity: 0.22; z-index: 0;
+        }
+        .blog-hero-bg::after {
+          content: ''; position: absolute; inset: 0;
+          background: linear-gradient(90deg, rgba(15,26,28,0.85) 0%, rgba(15,26,28,0.5) 50%, rgba(15,26,28,0.85) 100%);
+        }
+        .blog-hero::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, #0F766E 0%, #0D9488 50%, #5EEAD4 100%); z-index: 2;
+        }
+        .blog-mast { position: relative; z-index: 2; }
+        .blog-mast-content {
+          position: relative; z-index: 10; text-align: center;
+          padding: 100px 24px 80px;
+        }
+        .blog-eyebrow {
+          font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.32em;
+          color: rgba(94,234,212,0.85); margin-bottom: 16px; font-family: system-ui, sans-serif;
+          display: block;
+        }
+        .blog-mast-h1 {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(40px, 6vw, 68px); font-weight: 900;
+          letter-spacing: -0.02em; color: white; line-height: 1.05;
+          text-shadow: 0 2px 12px rgba(0,0,0,0.3); margin-bottom: 20px;
+        }
+        .blog-mast-h1 em {
+          font-style: italic; color: var(--teal-light);
+        }
+        .blog-mast-rule {
+          display: block; width: 200px; height: 2px;
+          background: linear-gradient(90deg, transparent, var(--teal), var(--teal-light), var(--teal), transparent);
+          margin: 20px auto 24px;
+        }
+        .blog-mast-tagline {
+          font-family: Georgia, serif; font-size: 16px; color: rgba(255,255,255,0.88);
+          font-style: italic; line-height: 1.7; max-width: 600px; margin: 0 auto 28px;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .blog-live-badge {
+          display: inline-flex; align-items: center; gap: 10px;
+          background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.25); padding: 10px 28px; border-radius: 100px;
+        }
+        .blog-live-dot {
+          width: 8px; height: 8px; border-radius: 50%; background: var(--teal-light);
+          animation: pulse 2s infinite;
+        }
+        .blog-live-text {
+          font-family: system-ui, sans-serif; font-size: 11px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: 0.2em; color: white;
+        }
+        @keyframes pulse {
+          0%   { box-shadow: 0 0 0 0 rgba(94,234,212,0.4); }
+          70%  { box-shadow: 0 0 0 8px rgba(94,234,212,0); }
+          100% { box-shadow: 0 0 0 0 rgba(94,234,212,0); }
+        }
 
+        /* ─── CATEGORY TABS (mirrors registry nav) ─── */
+        .cat-tabs {
+          display: flex; overflow-x: auto; border-bottom: 1px solid var(--rule2);
+          scrollbar-width: none; background: white; padding: 0 24px;
+        }
+        .cat-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab {
+          flex-shrink: 0; padding: 14px 20px; font-family: system-ui, sans-serif;
+          font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+          color: #999; text-decoration: none; border-bottom: 2px solid transparent;
+          transition: all 0.2s; white-space: nowrap; cursor: pointer;
+        }
+        .cat-tab:hover { color: var(--ink); }
+        .cat-tab.on { color: var(--teal); border-bottom-color: var(--teal); }
+
+        /* ─── PAGE SHELL ─── */
+        .page-root {
+          min-height: 100vh;
+          background: var(--parch);
+          font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        /* ─── SECTION HEADERS ─── */
         .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        .sh-l { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap; }
-        .sh-r { flex: 1; height: 1px; background: #D8D2C4; }
+        .sh-l {
+          font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em;
+          color: #AAA; font-family: system-ui, sans-serif; white-space: nowrap;
+        }
+        .sh-r { flex: 1; height: 1px; background: var(--rule2); }
 
+        /* ─── IMAGE ZOOM ─── */
         .imgf { position: relative; overflow: hidden; }
-        .imgf img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform .6s ease; }
+        .imgf img {
+          position: absolute; inset: 0; width: 100%; height: 100%;
+          object-fit: cover; object-position: center; transition: transform .6s ease;
+        }
         .imgf:hover img { transform: scale(1.04); }
 
+        /* ─── CARD HOVER ─── */
         .card-hover { transition: transform .15s ease, box-shadow .15s ease; text-decoration: none; display: block; }
-        .card-hover:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 #1A1208; z-index: 1; position: relative; }
+        .card-hover:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); z-index: 1; position: relative; }
 
-        .hero-grid { display: grid; grid-template-columns: 1fr 420px; border: 1.5px solid #1A1208; overflow: hidden; background: #FDFCF9; }
+        /* ─── HERO POST GRID ─── */
+        .hero-grid {
+          display: grid; grid-template-columns: 1fr 420px;
+          border: 1.5px solid var(--ink); overflow: hidden; background: #FDFCF9;
+        }
         @media (max-width: 900px) {
           .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-img-col { height: 220px !important; border-left: none !important; border-top: 1.5px solid #1A1208 !important; order: -1; }
+          .hero-img-col { height: 220px !important; border-left: none !important; border-top: 1.5px solid var(--ink) !important; order: -1; }
         }
 
-        /* ── SECONDARY: now 4-col (was 2-col) ── */
-        .sec-grid { display: grid; grid-template-columns: repeat(4,1fr); border: 1.5px solid #1A1208; background: #1A1208; gap: 1.5px; }
+        /* ─── SECONDARY GRID ─── */
+        .sec-grid {
+          display: grid; grid-template-columns: repeat(4,1fr);
+          border: 1.5px solid var(--ink); background: var(--ink); gap: 1.5px;
+        }
         @media (max-width: 1100px) { .sec-grid { grid-template-columns: repeat(2,1fr) !important; } }
         @media (max-width: 640px)  { .sec-grid { grid-template-columns: 1fr !important; } }
 
-        .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: clamp(14px, 2vw, 22px); align-items: start; }
+        /* ─── MAIN 2-COL ─── */
+        .main-grid {
+          display: grid; grid-template-columns: 1fr 320px;
+          gap: clamp(14px, 2vw, 22px); align-items: start;
+        }
         @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr !important; } }
 
-        /* ── GRID: now 3-col for 6 posts (was 2-col for 4) ── */
-        .grid-6 { display: grid; grid-template-columns: repeat(3,1fr); border: 1.5px solid #1A1208; background: #1A1208; gap: 1.5px; }
+        /* ─── ARTICLE GRID 3×2 ─── */
+        .grid-6 {
+          display: grid; grid-template-columns: repeat(3,1fr);
+          border: 1.5px solid var(--ink); background: var(--ink); gap: 1.5px;
+        }
         @media (max-width: 900px) { .grid-6 { grid-template-columns: repeat(2,1fr) !important; } }
         @media (max-width: 480px) { .grid-6 { grid-template-columns: 1fr !important; } }
 
-        .arch-row { display: grid; grid-template-columns: 1fr 145px 85px 70px; align-items: center; gap: 16px; padding: 13px 16px; border-bottom: 1px solid #D8D2C4; text-decoration: none; background: #FDFCF9; transition: background .12s, padding-left .15s; }
+        /* ─── ARCHIVE TABLE ─── */
+        .arch-row {
+          display: grid; grid-template-columns: 1fr 145px 85px 70px;
+          align-items: center; gap: 16px; padding: 13px 16px;
+          border-bottom: 1px solid var(--rule2); text-decoration: none;
+          background: #FDFCF9; transition: background .12s, padding-left .15s;
+        }
         .arch-row:last-child { border-bottom: none; }
         .arch-row:hover { background: #EDE9DF; padding-left: 22px; }
         @media (max-width: 640px) { .arch-row { grid-template-columns: 1fr !important; } .arch-meta { display: none !important; } }
 
-        .op-row { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #D8D2C4; text-decoration: none; transition: padding-left .15s; }
+        /* ─── OPINION ROWS ─── */
+        .op-row {
+          display: flex; align-items: flex-start; gap: 14px; padding: 14px 0;
+          border-bottom: 1px solid var(--rule2); text-decoration: none; transition: padding-left .15s;
+        }
         .op-row:last-child { border-bottom: none; padding-bottom: 0; }
         .op-row:hover { padding-left: 6px; }
 
-        .tag-badge { display: inline-block; font-size: 7px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; padding: 2px 8px; font-family: system-ui, sans-serif; }
+        /* ─── TAGS ─── */
+        .tag-badge {
+          display: inline-block; font-size: 7px; font-weight: 800; letter-spacing: 0.22em;
+          text-transform: uppercase; padding: 2px 8px; font-family: system-ui, sans-serif;
+        }
         .tag-trending    { background: #FEFCE8; color: #854D0E; border: 1px solid rgba(133,77,14,.25); }
         .tag-new         { background: #EFF6FF; color: #1D4ED8; border: 1px solid rgba(29,78,216,.25); }
         .tag-mustread    { background: #FEF3C7; color: #92400E; border: 1px solid rgba(180,83,9,.30); }
         .tag-hightraffic { background: #F0FDF4; color: #15803D; border: 1px solid rgba(21,128,61,.25); }
 
-        .nl-box { background: #1A1208; position: relative; overflow: hidden; padding: clamp(16px, 2.8vw, 28px); }
-        .nl-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #92400E, #D97706, #E8C547, #D97706, #92400E); }
+        /* ─── DARK NL BOX ─── */
+        .nl-box {
+          background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%);
+          position: relative; overflow: hidden;
+          padding: clamp(16px, 2.8vw, 28px);
+        }
+        .nl-box::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
+        }
 
-        .cpill { display: inline-flex; align-items: center; font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 13px; border: 1px solid #D8D2C4; background: transparent; color: #888; font-family: system-ui, sans-serif; transition: all .15s; white-space: nowrap; cursor: pointer; border-bottom: 2.5px solid transparent; }
-        .cpill:hover { color: #1A1208; border-color: #1A1208; }
-        .cpill.active { color: #B45309; border-color: #D8D2C4; border-bottom: 2.5px solid #B45309; background: rgba(255,255,255,0.55); }
+        /* ─── STATS TICKER ─── */
+        .ticker-wrap {
+          display: flex; overflow: hidden; flex-wrap: wrap;
+          border: 1.5px solid var(--ink); background: var(--ink);
+        }
+        .ticker-item {
+          padding: 14px 24px; border-right: 1px solid rgba(255,255,255,.07);
+          flex: 1; text-align: center; min-width: 90px;
+        }
 
-        .ticker-wrap { display: flex; overflow: hidden; flex-wrap: wrap; border: 1.5px solid #1A1208; background: #1A1208; }
-        .ticker-item { padding: 14px 24px; border-right: 1px solid rgba(255,255,255,.07); flex: 1; text-align: center; min-width: 90px; }
+        /* ─── CTA BLOCK (mirrors registry) ─── */
+        .cta-block {
+          background: linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%);
+          border-radius: 20px; padding: 36px 44px;
+          display: flex; flex-wrap: wrap; align-items: center;
+          justify-content: space-between; gap: 24px; margin-top: 48px;
+          position: relative; overflow: hidden;
+        }
+        .cta-block::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4, #0D9488, #0F766E);
+        }
+        .cta-ey {
+          font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em;
+          color: rgba(94,234,212,0.7); margin-bottom: 8px; font-family: system-ui, sans-serif;
+        }
+        .cta-h {
+          font-family: 'Playfair Display', Georgia, serif; font-size: 19px;
+          font-weight: 700; color: white; margin-bottom: 6px;
+        }
+        .cta-p { font-size: 12px; color: rgba(255,255,255,0.45); font-style: italic; }
+        .cta-btn {
+          flex-shrink: 0; display: inline-flex; align-items: center; gap: 10px;
+          background: var(--teal); color: white; padding: 13px 28px;
+          font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+          text-decoration: none; border-radius: 40px; transition: all 0.2s;
+        }
+        .cta-btn:hover { background: var(--teal-dark); transform: translateY(-2px); }
 
-        @media (max-width: 640px) { .nl-inner { grid-template-columns: 1fr !important; } .nl-btns { flex-direction: row !important; flex-wrap: wrap; } }
+        /* ─── LINKS GRID ─── */
+        .links-grid {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+          margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--rule2);
+        }
+        @media (max-width: 700px) { .links-grid { grid-template-columns: repeat(2, 1fr); } }
+        .link-card {
+          padding: 12px 14px; border-radius: 12px; border: 1px solid var(--rule2);
+          background: white; text-decoration: none; transition: all 0.2s;
+        }
+        .link-card:hover { border-color: var(--teal); transform: translateY(-1px); }
+        .link-title {
+          font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+          color: var(--ink); display: flex; align-items: center; gap: 5px;
+          margin-bottom: 4px; font-family: system-ui, sans-serif;
+        }
+        .link-desc { font-size: 10px; color: #AAA; font-family: system-ui, sans-serif; }
+
+        /* ─── MAIN WRAP ─── */
+        .main-wrap { max-width: 1300px; margin: 0 auto; padding: 32px 24px 56px; }
+
+        @media (max-width: 768px) {
+          .blog-mast-content { padding: 120px 20px 70px !important; }
+          .blog-mast-tagline br { display: none; }
+          .main-wrap { padding: 24px 16px 40px; }
+          .cta-block { padding: 24px 20px; }
+        }
+        @media (max-width: 480px) {
+          .blog-mast-content { padding: 100px 16px 60px !important; }
+          .blog-mast-h1 { font-size: 36px; }
+        }
+
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--rule); }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#F3EFE5", fontFamily: "'Georgia','Times New Roman',serif" }}>
+      <div className="page-root">
 
-        {/* ── MASTHEAD ── */}
-        <header className="a0" style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }} role="banner">
-          <div className="text-center px-4 pt-10 sm:pt-14 pb-5 sm:pb-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
-            <p className="text-[8px] tracking-[0.42em] uppercase mb-3" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
-              Independent Startup Registry
-            </p>
-            <p className="pf font-black leading-none tracking-tight" style={{ fontSize: "clamp(1.9rem,5.5vw,4.6rem)", color: "#1A1208" }}>
-              The Forge
-            </p>
-            <p className="italic mt-2" style={{ fontSize: "clamp(12px,1.7vw,15px)", color: "#6B5C40" }}>
-              Startup analysis, founder stories &amp; strategy for India's builders — March 2026
-            </p>
-            <div className="flex items-center justify-center gap-3 mt-4">
-              <div className="h-px w-16 sm:w-32" style={{ background: "#C8C2B4" }} />
-              <span style={{ color: "#C8C2B4", fontSize: 12 }} aria-hidden="true">✦</span>
-              <div className="h-px w-16 sm:w-32" style={{ background: "#C8C2B4" }} />
+        {/* ── HERO — exact registry pattern ── */}
+        <div className="blog-hero">
+          <div className="blog-hero-bg" />
+          <div className="blog-mast">
+            <div className="blog-mast-content ri-0">
+              <span className="blog-eyebrow">UpForge · Independent Startup Intelligence</span>
+              <h1 className="blog-mast-h1">
+                The <em>Forge</em>
+              </h1>
+              <span className="blog-mast-rule" />
+              <p className="blog-mast-tagline">
+                Startup analysis, founder stories &amp; strategy<br />for India's builders — March 2026
+              </p>
+              <div className="blog-live-badge">
+                <span className="blog-live-dot" />
+                <span className="blog-live-text">Live · 8 Articles · Updated March 2026</span>
+              </div>
             </div>
           </div>
-          <nav aria-label="Blog categories" className="tabs-strip flex items-stretch overflow-x-auto a1" style={{ borderBottom: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
-            <span className="text-[7.5px] text-[#BBB] uppercase tracking-widest px-3 py-3 self-center flex-shrink-0 hidden sm:inline">Browse by:</span>
-            {CATEGORIES.map((cat, i) => (
-              <span key={i} className={`cpill flex-shrink-0 px-3 py-3 ${i === 0 ? "active" : ""}`}>{cat}</span>
-            ))}
-          </nav>
-        </header>
+        </div>
+
+        {/* ── CATEGORY TABS ── */}
+        <nav className="cat-tabs" aria-label="Browse by category">
+          <span style={{ fontSize: 9, color: "#CCC", textTransform: "uppercase", letterSpacing: ".2em", padding: "14px 8px 14px 0", flexShrink: 0, fontFamily: "system-ui, sans-serif" }}>
+            Browse:
+          </span>
+          {CATEGORIES.map((cat, i) => (
+            <span key={i} className={`cat-tab${i === 0 ? " on" : ""}`}>{cat}</span>
+          ))}
+        </nav>
 
         {/* ── MAIN CONTENT ── */}
-        <main className="a1 max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pb-14" style={{ paddingTop: "clamp(12px,1.8vw,20px)" }}>
+        <main className="main-wrap">
 
           {/* ── HERO POST ── */}
-          <section aria-label="Cover story" className="a2">
+          <section aria-label="Cover story" className="ri-1">
             <div className="sh">
+              <span style={{ color: "var(--teal)", fontSize: 12 }}>◆</span>
               <span className="sh-l">Cover Story · Most Comprehensive</span>
               <div className="sh-r" />
             </div>
@@ -386,25 +578,25 @@ export default function BlogIndexPage() {
               <div className="hero-grid">
                 <div style={{ padding: "clamp(16px,2.4vw,30px)", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#FDFCF9" }}>
                   <div>
-                    <div style={{ height: 3, background: `linear-gradient(90deg,#92400E,${HERO_POST.accent},#E8C547,${HERO_POST.accent},#92400E)`, marginBottom: 14 }} />
+                    <div style={{ height: 3, background: `linear-gradient(90deg,#0F766E,${HERO_POST.accent},#E8C547,${HERO_POST.accent},#0F766E)`, marginBottom: 14 }} />
                     <div className="flex items-center gap-3 mb-3" style={{ fontFamily: "system-ui,sans-serif" }}>
                       <span className="text-[8px] font-black tracking-[0.26em] uppercase px-3 py-1.5 text-white" style={{ background: HERO_POST.accent }}>{HERO_POST.category}</span>
                       <span className="tag-badge tag-mustread">{HERO_POST.tag}</span>
                       <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider" style={{ fontFamily: "system-ui,sans-serif" }}>{HERO_POST.date}</span>
                     </div>
-                    <h2 className="pf font-black leading-[1.06] mb-4" style={{ fontSize: "clamp(1.5rem,3.2vw,2.6rem)", color: "#1A1208" }}>{HERO_POST.title}</h2>
+                    <h2 className="pf font-black leading-[1.06] mb-4" style={{ fontSize: "clamp(1.5rem,3.2vw,2.6rem)", color: "var(--ink)" }}>{HERO_POST.title}</h2>
                     <div style={{ width: 40, height: 3, background: HERO_POST.accent, marginBottom: 12 }} />
                     <p className="italic leading-[1.78] mb-4" style={{ fontSize: "clamp(13px,1.6vw,15px)", color: "#5A4A30", maxWidth: 520 }}>{HERO_POST.subtitle}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {HERO_POST.topics.map(t => (
-                        <span key={t} className="text-[8px] uppercase tracking-wider" style={{ color: "#6B5C40", border: "1px solid #D8D2C4", padding: "3px 9px", background: "#F3EFE5", fontFamily: "system-ui,sans-serif" }}>{t}</span>
+                        <span key={t} className="text-[8px] uppercase tracking-wider" style={{ color: "#6B5C40", border: "1px solid var(--rule2)", padding: "3px 9px", background: "var(--parch)", fontFamily: "system-ui,sans-serif" }}>{t}</span>
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: "1px solid #C8C2B4", fontFamily: "system-ui,sans-serif" }}>
+                  <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: "1px solid var(--rule2)", fontFamily: "system-ui,sans-serif" }}>
                     <div className="flex gap-4 items-center">
                       <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{HERO_POST.date}</span>
-                      <span style={{ color: "#C8C2B4", fontSize: 10 }}>·</span>
+                      <span style={{ color: "var(--rule)", fontSize: 10 }}>·</span>
                       <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{HERO_POST.readTime} read</span>
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: HERO_POST.accent, fontFamily: "system-ui,sans-serif" }}>
@@ -412,16 +604,16 @@ export default function BlogIndexPage() {
                     </span>
                   </div>
                 </div>
-                <div className="hero-img-col imgf" style={{ minHeight: 340, borderLeft: "1.5px solid #1A1208" }}>
+                <div className="hero-img-col imgf" style={{ minHeight: 340, borderLeft: "1.5px solid var(--ink)" }}>
                   <img src={HERO_POST.img} alt={HERO_POST.title} />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, transparent 55%, rgba(26,18,8,.1) 100%)" }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to left, transparent 55%, rgba(15,26,28,.1) 100%)" }} />
                 </div>
               </div>
             </Link>
           </section>
 
-          {/* ── SECONDARY — now 4-col grid ── */}
-          <section aria-label="Essential reads" className="a3" style={{ marginTop: "clamp(14px,2vw,20px)" }}>
+          {/* ── SECONDARY — 4-col ── */}
+          <section aria-label="Essential reads" className="ri-2" style={{ marginTop: "clamp(14px,2vw,20px)" }}>
             <div className="sh">
               <span className="sh-l">Essential Reads · High Traffic · New</span>
               <div className="sh-r" />
@@ -429,9 +621,9 @@ export default function BlogIndexPage() {
             <div className="sec-grid">
               {SECONDARY_POSTS.map((post, i) => (
                 <Link key={i} href={post.slug} className="card-hover" style={{ background: "#FDFCF9", display: "flex", flexDirection: "column" }}>
-                  <div className="imgf" style={{ height: "clamp(110px,12vw,150px)", borderBottom: "1px solid #D8D2C4", flexShrink: 0 }}>
+                  <div className="imgf" style={{ height: "clamp(110px,12vw,150px)", borderBottom: "1px solid var(--rule2)", flexShrink: 0 }}>
                     <img src={post.img} alt={post.title} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,18,8,.65) 0%, transparent 55%)" }} />
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,26,28,.65) 0%, transparent 55%)" }} />
                     <div style={{ position: "absolute", top: 12, left: 14, display: "flex", gap: 7, alignItems: "center" }}>
                       <span className="text-[7.5px] font-black tracking-[0.18em] uppercase px-2 py-1 text-white" style={{ background: post.accent, fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
                       <span className={`tag-badge ${post.tag === "New" ? "tag-new" : post.tag === "Trending" ? "tag-trending" : "tag-hightraffic"}`}>{post.tag}</span>
@@ -441,9 +633,9 @@ export default function BlogIndexPage() {
                     </div>
                   </div>
                   <div style={{ padding: "clamp(10px,1.4vw,14px)", flex: 1, display: "flex", flexDirection: "column" }}>
-                    <h3 className="pf font-bold leading-[1.2] mb-2" style={{ fontSize: "clamp(.9rem,1.5vw,1.1rem)", color: "#1A1208" }}>{post.title}</h3>
+                    <h3 className="pf font-bold leading-[1.2] mb-2" style={{ fontSize: "clamp(.9rem,1.5vw,1.1rem)", color: "var(--ink)" }}>{post.title}</h3>
                     <p className="italic leading-[1.72] flex-1 mb-3" style={{ fontSize: "clamp(11px,1.1vw,12.5px)", color: "#5A4A30", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
-                    <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}>
+                    <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid var(--rule2)", fontFamily: "system-ui,sans-serif" }}>
                       <span className="text-[8.5px] text-[#AAA] uppercase tracking-wider">{post.date}</span>
                       <span className="text-[8.5px] font-black uppercase tracking-wider flex items-center gap-1" style={{ color: post.accent }}>
                         Read <ArrowRight className="w-2.5 h-2.5" aria-hidden="true" />
@@ -455,10 +647,10 @@ export default function BlogIndexPage() {
             </div>
           </section>
 
-          {/* ── MAIN 2-COL: 6-card grid + opinion sidebar ── */}
-          <div className="main-grid a3" style={{ marginTop: "clamp(14px,2.2vw,22px)" }}>
+          {/* ── MAIN 2-COL ── */}
+          <div className="main-grid ri-3" style={{ marginTop: "clamp(14px,2.2vw,22px)" }}>
 
-            {/* LEFT: 6-card grid (3×2) */}
+            {/* LEFT: 6-card grid */}
             <div>
               <div className="sh">
                 <span className="sh-l">Latest Articles — {GRID_POSTS.length} Articles</span>
@@ -467,16 +659,16 @@ export default function BlogIndexPage() {
               <div className="grid-6">
                 {GRID_POSTS.map((post, i) => (
                   <Link key={i} href={post.slug} className="card-hover" style={{ background: "#FDFCF9", display: "flex", flexDirection: "column" }}>
-                    <div className="imgf" style={{ height: 110, borderBottom: "1px solid #D8D2C4", flexShrink: 0 }}>
+                    <div className="imgf" style={{ height: 110, borderBottom: "1px solid var(--rule2)", flexShrink: 0 }}>
                       <img src={post.img} alt={post.title} />
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(26,18,8,.1)" }} />
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(15,26,28,.1)" }} />
                       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: post.accent }} />
                       <div style={{ position: "absolute", bottom: 8, left: 10 }}>
                         <span className="text-[7px] font-black tracking-[0.18em] uppercase" style={{ color: "#E8C547", fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
                       </div>
                     </div>
                     <div style={{ padding: "10px 12px 12px", flex: 1, display: "flex", flexDirection: "column" }}>
-                      <h4 className="pf font-bold leading-[1.22] mb-2 flex-1" style={{ fontSize: "clamp(0.82rem,1.1vw,0.92rem)", color: "#1A1208" }}>{post.title}</h4>
+                      <h4 className="pf font-bold leading-[1.22] mb-2 flex-1" style={{ fontSize: "clamp(0.82rem,1.1vw,0.92rem)", color: "var(--ink)" }}>{post.title}</h4>
                       <p className="leading-[1.6] mb-3" style={{ fontSize: 11, color: "#5A4A30", fontFamily: "'Georgia',serif", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{post.excerpt}</p>
                       <div className="flex items-center justify-between" style={{ fontFamily: "system-ui,sans-serif" }}>
                         <span className="text-[8px] text-[#AAA] uppercase tracking-wider">{post.readTime}</span>
@@ -494,19 +686,19 @@ export default function BlogIndexPage() {
                 <span className="sh-l">Analysis &amp; Opinion</span>
                 <div className="sh-r" />
               </div>
-              <div style={{ border: "1.5px solid #1A1208", background: "#FDFCF9" }}>
-                <div style={{ background: "#1A1208", padding: "14px 18px" }}>
-                  <div style={{ height: 2, background: "linear-gradient(90deg,#92400E,#D97706,#E8C547)", marginBottom: 10 }} />
+              <div style={{ border: "1.5px solid var(--ink)", background: "#FDFCF9" }}>
+                <div style={{ background: "linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%)", padding: "14px 18px", position: "relative" }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4)" }} />
                   <p className="pf font-bold text-white italic" style={{ fontSize: "1rem", lineHeight: 1.25 }}>The UpForge<br />Perspective</p>
-                  <p className="text-[8px] uppercase tracking-[0.16em] mt-1.5" style={{ color: "rgba(255,255,255,.35)", fontFamily: "system-ui,sans-serif" }}>India · Startups · 2026</p>
+                  <p className="text-[8px] uppercase tracking-[0.16em] mt-1.5" style={{ color: "rgba(94,234,212,.5)", fontFamily: "system-ui,sans-serif" }}>India · Startups · 2026</p>
                 </div>
                 <div style={{ padding: "6px 18px 18px" }}>
                   {OPINION_POSTS.map((op, i) => (
                     <Link key={i} href={op.slug} className="op-row">
-                      <span className="pf font-black italic flex-shrink-0" style={{ fontSize: "1.05rem", color: "#C8C2B4", lineHeight: 1, width: 28, marginTop: 2 }}>{op.num}</span>
+                      <span className="pf font-black italic flex-shrink-0" style={{ fontSize: "1.05rem", color: "var(--rule)", lineHeight: 1, width: 28, marginTop: 2 }}>{op.num}</span>
                       <div style={{ flex: 1 }}>
-                        <span className="text-[7.5px] font-black uppercase tracking-[0.14em] block mb-1" style={{ color: "#D97706", fontFamily: "system-ui,sans-serif" }}>{op.category}</span>
-                        <p className="pf font-bold leading-[1.28] mb-1" style={{ fontSize: "0.84rem", color: "#1A1208" }}>{op.title}</p>
+                        <span className="text-[7.5px] font-black uppercase tracking-[0.14em] block mb-1" style={{ color: "var(--teal)", fontFamily: "system-ui,sans-serif" }}>{op.category}</span>
+                        <p className="pf font-bold leading-[1.28] mb-1" style={{ fontSize: "0.84rem", color: "var(--ink)" }}>{op.title}</p>
                         <span className="text-[8px] uppercase tracking-wider" style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}>{op.date}</span>
                       </div>
                     </Link>
@@ -514,34 +706,36 @@ export default function BlogIndexPage() {
                 </div>
               </div>
 
-              {/* Valuation CTA */}
-              <div style={{ marginTop: 12, background: "#1A1208", padding: "20px 18px", border: "1.5px solid #1A1208" }}>
-                <p className="text-[8px] font-black uppercase tracking-[0.24em] mb-2" style={{ color: "rgba(232,197,71,.6)", fontFamily: "system-ui,sans-serif" }}>Free AI Tool</p>
-                <p className="pf font-bold text-white leading-[1.3] mb-2" style={{ fontSize: "1rem" }}>Startup Valuation<br /><em style={{ color: "#E8C547" }}>Report — Free</em></p>
+              {/* Sidebar CTA — mirrors registry sidebar dark box */}
+              <div style={{ marginTop: 12, background: "linear-gradient(135deg, var(--ink) 0%, #1A2A2C 100%)", padding: "20px 18px", border: "1.5px solid transparent", borderRadius: 16, position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #0F766E, #0D9488, #5EEAD4)" }} />
+                <p className="text-[8px] font-black uppercase tracking-[0.24em] mb-2" style={{ color: "rgba(94,234,212,.6)", fontFamily: "system-ui,sans-serif" }}>Free AI Tool</p>
+                <p className="pf font-bold text-white leading-[1.3] mb-2" style={{ fontSize: "1rem" }}>Startup Valuation<br /><em style={{ color: "var(--teal-light)" }}>Report — Free</em></p>
                 <p className="leading-relaxed mb-4" style={{ fontSize: 10.5, color: "rgba(255,255,255,.4)", fontFamily: "system-ui,sans-serif" }}>AI-powered analysis benchmarked against 500+ Indian startups. Takes 3 minutes.</p>
-                <Link href="/report" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "#D97706", padding: "10px", fontFamily: "system-ui,sans-serif", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "#1A1208", textDecoration: "none" }}>
+                <Link href="/report" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "var(--teal)", padding: "10px", fontFamily: "system-ui,sans-serif", fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: "white", textDecoration: "none", borderRadius: 10 }}>
                   Generate Free Report <ArrowRight className="w-3 h-3" aria-hidden="true" />
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* ── ALL PUBLISHED ARTICLES — 8 rows ── */}
-          <section aria-label="All published articles" className="a4" style={{ marginTop: "clamp(18px,2.8vw,30px)" }}>
+          {/* ── ALL PUBLISHED ARTICLES ── */}
+          <section aria-label="All published articles" className="ri-4" style={{ marginTop: "clamp(18px,2.8vw,30px)" }}>
             <div className="sh">
+              <span style={{ color: "var(--teal)", fontSize: 12 }}>◆</span>
               <span className="sh-l">All Published Articles — {ALL_POSTS.length} Articles · March 2026</span>
               <div className="sh-r" />
             </div>
-            <div style={{ border: "1.5px solid #1A1208", background: "#1A1208", display: "flex", flexDirection: "column", gap: "1.5px" }}>
-              <div style={{ background: "#1A1208", padding: "8px 16px", display: "grid", gridTemplateColumns: "1fr 145px 85px 70px", gap: 16, fontFamily: "system-ui,sans-serif" }}>
+            <div style={{ border: "1.5px solid var(--ink)", background: "var(--ink)", display: "flex", flexDirection: "column", gap: "1.5px" }}>
+              <div style={{ background: "var(--ink)", padding: "8px 16px", display: "grid", gridTemplateColumns: "1fr 145px 85px 70px", gap: 16, fontFamily: "system-ui,sans-serif" }}>
                 {["Article", "Category", "Published", "Read Time"].map(h => (
                   <span key={h} className="text-[7.5px] font-black uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,.28)" }}>{h}</span>
                 ))}
               </div>
               {ALL_POSTS.map((post, i) => (
                 <Link key={i} href={post.slug} className="arch-row">
-                  <p className="pf font-bold leading-[1.3]" style={{ fontSize: 13, color: "#1A1208", margin: 0 }}>{post.title}</p>
-                  <span className="arch-meta text-[9px] uppercase tracking-wider text-center" style={{ color: "#B45309", border: "1px solid rgba(180,83,9,.3)", padding: "2px 8px", fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
+                  <p className="pf font-bold leading-[1.3]" style={{ fontSize: 13, color: "var(--ink)", margin: 0 }}>{post.title}</p>
+                  <span className="arch-meta text-[9px] uppercase tracking-wider text-center" style={{ color: "var(--teal-dark)", border: "1px solid rgba(13,148,136,.3)", padding: "2px 8px", fontFamily: "system-ui,sans-serif" }}>{post.category}</span>
                   <span className="arch-meta text-[9px] text-[#6B5C40]" style={{ fontFamily: "system-ui,sans-serif" }}>{post.date}</span>
                   <span className="arch-meta text-[9px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>{post.readTime}</span>
                 </Link>
@@ -549,8 +743,8 @@ export default function BlogIndexPage() {
             </div>
           </section>
 
-          {/* ── STATS TICKER — "8 Articles Published" ── */}
-          <section aria-label="UpForge key statistics" className="a4" style={{ marginTop: "clamp(14px,2.5vw,24px)" }}>
+          {/* ── STATS TICKER ── */}
+          <section aria-label="UpForge key statistics" style={{ marginTop: "clamp(14px,2.5vw,24px)" }}>
             <div className="ticker-wrap">
               {[
                 { v: "8",      l: "Articles Published" },
@@ -567,81 +761,54 @@ export default function BlogIndexPage() {
             </div>
           </section>
 
-          {/* ── FOOTER CTA ── */}
-          <section className="nl-box a4" aria-label="List your startup on UpForge" style={{ marginTop: "clamp(18px,3vw,30px)" }}>
-            <div className="nl-inner" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
-              <div>
-                <p className="text-[8px] font-black uppercase tracking-[0.3em] mb-2" style={{ color: "rgba(232,197,71,.65)", fontFamily: "system-ui,sans-serif" }}>UpForge Intelligence</p>
-                <p className="pf font-bold text-white leading-[1.2] mb-2" style={{ fontSize: "clamp(1.1rem,2.5vw,1.7rem)" }}>
-                  India's most-read startup analysis.<br />
-                  <em style={{ color: "#E8C547" }}>Free. Forever.</em>
-                </p>
-                <p className="leading-[1.75]" style={{ fontSize: 12.5, color: "rgba(255,255,255,.38)", maxWidth: 520, fontFamily: "system-ui,sans-serif" }}>
-                  8 in-depth articles — AI startup guides, funding playbooks, unicorn profiles, founder stories, and ecosystem reports — built for builders who want more than headlines.
-                </p>
-              </div>
-              <div className="nl-btns flex flex-col gap-2.5 flex-shrink-0">
-                <Link href="/startup" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#D97706", color: "#1A1208", padding: "13px 24px", fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.14em", fontFamily: "system-ui,sans-serif", whiteSpace: "nowrap", boxShadow: "3px 3px 0 #92400E", textDecoration: "none" }}>
-                  Browse Registry <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                </Link>
-                <Link href="/submit" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, border: "1.5px solid rgba(255,255,255,.15)", color: "rgba(255,255,255,.55)", padding: "11px 24px", fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", fontFamily: "system-ui,sans-serif", whiteSpace: "nowrap", textDecoration: "none", background: "transparent" }}>
-                  Submit Your Startup
-                </Link>
-              </div>
+          {/* ── CTA BLOCK (mirrors registry) ── */}
+          <div className="cta-block">
+            <div>
+              <p className="cta-ey">🌍 UpForge · The Forge Blog</p>
+              <p className="cta-h">India's most-read startup analysis. Free. Forever.</p>
+              <p className="cta-p">8 in-depth articles — AI guides, funding playbooks, unicorn profiles, and ecosystem reports.</p>
             </div>
-          </section>
+            <Link href="/submit" className="cta-btn">
+              Submit Your Startup <ArrowRight size={13} />
+            </Link>
+          </div>
 
-          {/* ── INTERNAL LINKS — 10 cards (was 8) ── */}
-          <section className="py-7 a4" style={{ borderTop: "1px solid #C8C2B4", marginTop: "clamp(18px,3vw,30px)" }} aria-label="Explore more on UpForge">
-            <p className="text-[8.5px] tracking-[0.3em] uppercase text-[#AAA] mb-4" style={{ fontFamily: "system-ui,sans-serif" }}>Explore on UpForge</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { l: "Startup Registry India",        h: "/startup",                                              desc: "Full verified database"        },
-                { l: "Indian Unicorns 2026",          h: "/blog/top-indian-unicorns-2026",                       desc: "All 125 unicorns profiled"      },
-                { l: "Startup Funding Guide 2026",    h: "/blog/how-to-get-startup-funding-india-2026",          desc: "DPIIT, SISFS & VCs"            },
-                { l: "Founders to Follow 2026",       h: "/blog/best-indian-startup-founders-to-follow-2026",    desc: "25 must-follow builders"        },
-                { l: "Ecosystem Report 2026",         h: "/blog/india-startup-ecosystem-2026",                   desc: "$3.44B raised in Q1"            },
-                { l: "Leadership Lessons Blog",       h: "/blog/leadership-lessons-ind-vs-nz-final-2026",        desc: "7 lessons from the crease"      },
-                // ── NEW ──
-                { l: "Top AI Startups India 2026",   h: "/blog/top-ai-startups-india-2026",                     desc: "Sarvam, Krutrim & 10 more"     },
-                { l: "How to Start a Startup India", h: "/blog/how-to-start-startup-india-2026",                desc: "Step-by-step 2026 guide"        },
-                { l: "Startup Ideas India 2026",     h: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026", desc: "5 ideas to build now"           },
-                { l: "Submit Your Startup",          h: "/submit",                                              desc: "Get listed free"               },
-              ].map(lnk => (
-                <Link key={lnk.h + lnk.l} href={lnk.h} className="flex flex-col gap-1 p-3 transition-all hover:border-[#1A1208]" style={{ border: "1px solid #D8D2C4", background: "#FDFCF9" }}>
-                  <span className="text-[9.5px] font-bold uppercase tracking-wider text-[#1A1208] flex items-center gap-1" style={{ fontFamily: "system-ui,sans-serif" }}>
-                    {lnk.l} <ChevronRight className="w-2.5 h-2.5 flex-shrink-0" aria-hidden="true" />
-                  </span>
-                  <span className="text-[8.5px] text-[#AAA]" style={{ fontFamily: "system-ui,sans-serif" }}>{lnk.desc}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
+          {/* ── INTERNAL LINKS ── */}
+          <div className="links-grid">
+            {[
+              { l: "Global Registry →",         h: "https://www.upforge.org/registry", desc: "Full verified database"     },
+              { l: "Indian Unicorns 2026 →",     h: "/blog/top-indian-unicorns-2026",   desc: "All 125 unicorns profiled"  },
+              { l: "Top AI Startups 2026 →",     h: "/blog/top-ai-startups-india-2026", desc: "Sarvam, Krutrim & more"    },
+              { l: "Submit Your Startup →",      h: "/submit",                          desc: "Get listed + UFRN free"    },
+            ].map(lnk => (
+              <Link key={lnk.h} href={lnk.h} className="link-card">
+                <span className="link-title">{lnk.l}</span>
+                <span className="link-desc">{lnk.desc}</span>
+              </Link>
+            ))}
+          </div>
 
           {/* ── FOOTER ── */}
-          <footer className="pb-2" style={{ borderTop: "1px solid #D8D2C4", paddingTop: "1rem" }}>
-            <p className="text-[8.5px] leading-relaxed" style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif" }}>
+          <footer style={{ borderTop: "1px solid var(--rule2)", paddingTop: "1rem", marginTop: 32 }}>
+            <p style={{ fontSize: "8.5px", lineHeight: 1.7, color: "#AAA", fontFamily: "system-ui,sans-serif" }}>
               * Article data sourced from Inc42, Forbes India, Hurun India 2025, Tracxn, and company announcements as of March 2026.
               UpForge is an independent registry — no paid placements, no sponsored rankings.
-              All figures are approximate and reflect latest available public data.
             </p>
-            <nav aria-label="Footer navigation" className="mt-4">
-              <ul className="flex flex-wrap gap-x-4 gap-y-2" style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <nav aria-label="Footer navigation" style={{ marginTop: 16 }}>
+              <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", listStyle: "none", margin: 0, padding: 0 }}>
                 {[
                   { l: "The Founder Chronicle",       h: "/"                                                      },
-                  { l: "Startup Registry India",      h: "/startup"                                               },
+                  { l: "Global Registry",             h: "https://www.upforge.org/registry"                       },
                   { l: "Indian Unicorns 2026",        h: "/blog/top-indian-unicorns-2026"                         },
                   { l: "Startup Funding Guide",       h: "/blog/how-to-get-startup-funding-india-2026"            },
                   { l: "Founders to Follow 2026",     h: "/blog/best-indian-startup-founders-to-follow-2026"      },
-                  // ── NEW ──
-                  { l: "Top AI Startups India 2026", h: "/blog/top-ai-startups-india-2026"                        },
-                  { l: "How to Start a Startup",     h: "/blog/how-to-start-startup-india-2026"                   },
-                  { l: "Startup Ideas India",        h: "/blog/startup-ideas-inspired-by-ind-vs-nz-final-2026"    },
-                  { l: "Free Valuation Tool",        h: "/report"                                                  },
-                  { l: "Submit Startup",             h: "/submit"                                                  },
+                  { l: "Top AI Startups India 2026",  h: "/blog/top-ai-startups-india-2026"                       },
+                  { l: "How to Start a Startup",      h: "/blog/how-to-start-startup-india-2026"                  },
+                  { l: "Free Valuation Tool",         h: "/report"                                                 },
+                  { l: "Submit Startup",              h: "/submit"                                                 },
                 ].map(lnk => (
-                  <li key={lnk.h + lnk.l}>
-                    <Link href={lnk.h} className="text-[8.5px] text-[#AAA] hover:text-[#1A1208] uppercase tracking-wider transition-colors" style={{ fontFamily: "system-ui,sans-serif", textDecoration: "none" }}>
+                  <li key={lnk.h}>
+                    <Link href={lnk.h} style={{ fontSize: "8.5px", color: "#AAA", textTransform: "uppercase", letterSpacing: "0.08em", textDecoration: "none", fontFamily: "system-ui,sans-serif", transition: "color 0.2s" }}>
                       {lnk.l}
                     </Link>
                   </li>
