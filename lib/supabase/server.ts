@@ -129,23 +129,24 @@ export function createReadClient() {
 
   return createServerClient(url, anonKey, {
     auth: {
-      // No session management needed for public read queries
       persistSession: false,
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
 
     cookies: {
-      // Force fresh request each time (prevents Next.js cache reuse)
       getAll: () => [],
       setAll: () => {},
     },
 
     global: {
-      fetch: (input, init) => {
+      fetch: (
+        input: RequestInfo | URL,
+        init?: RequestInit
+      ): Promise<Response> => {
         return fetch(input, {
           ...init,
-          cache: "no-store", // 🚀 MOST IMPORTANT LINE
+          cache: "no-store", // disables caching completely
         })
       },
     },
