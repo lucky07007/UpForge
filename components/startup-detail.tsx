@@ -5,6 +5,8 @@ import React, { useRef, useState, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import type { Startup } from "@/types/startup"
+import type { DomainContext } from "@/lib/domain"
+import { getStartupUrl } from "@/lib/domain"
 import {
   ArrowLeft,
   Download,
@@ -28,6 +30,7 @@ interface StartupDetailProps {
   startup: Startup
   relatedStartups: RelatedStartup[]
   profileUrl: string
+  domain?: DomainContext // passed from Server Component page; defaults to "in"
 }
 
 function getCleanUrl(url?: string | null): string | null {
@@ -53,7 +56,6 @@ function getCitySlug(city?: string | null): string | null {
   return city.toLowerCase().replace(/\s+/g, "-")
 }
 
-/** Legacy verification code — kept for poster / backwards compat */
 function getVerificationCode(name: string, id: string): string {
   const prefix = name.replace(/[^a-zA-Z]/g, "").slice(0, 3).toUpperCase()
   const suffix = id.replace(/-/g, "").slice(-5).toUpperCase()
@@ -89,10 +91,18 @@ function StartupLogo({
   )
 }
 
-function RelatedStartupCard({ startup }: { startup: RelatedStartup }) {
+function RelatedStartupCard({
+  startup,
+  domain,
+}: {
+  startup: RelatedStartup
+  domain: DomainContext
+}) {
+  // Use domain-aware URL so related startup clicks don't cross domains
+  const href = getStartupUrl(startup.slug || "", domain)
   return (
     <Link
-      href={"/startup/" + startup.slug}
+      href={href}
       className="group flex items-start gap-4 p-4 border border-slate-100 rounded-lg hover:border-slate-300 hover:bg-slate-50 transition-all duration-150"
     >
       <div className="h-10 w-10 rounded-lg border border-slate-100 bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -109,8 +119,6 @@ function RelatedStartupCard({ startup }: { startup: RelatedStartup }) {
   )
 }
 
-// ── UFRN REGISTRY STAMP ───────────────────────────────────────────────────────
-// Minimalist government-seal style. Positioned top-right of verification card.
 function UFRNStamp({ ufrn }: { ufrn: string }) {
   return (
     <div
@@ -132,9 +140,12 @@ function UFRNStamp({ ufrn }: { ufrn: string }) {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupDetailProps) {
+export function StartupDetail({
+  startup,
+  relatedStartups,
+  profileUrl,
+  domain = "in",
+}: StartupDetailProps) {
   const posterRef = useRef<HTMLDivElement>(null)
   const [isGenerating, setIsGenerating] = useState(false)
 
@@ -142,6 +153,11 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
   const categorySlug     = getCategorySlug(startup.category)
   const citySlug         = getCitySlug(startup.city)
   const verificationCode = startup.ufrn ?? getVerificationCode(startup.name, startup.id)
+
+  // Canonical global record URL — always points to .org regardless of current domain.
+  // This is intentional: it's a cross-domain link shown explicitly as "View Global Registry Record →"
+  // Users understand they are leaving the current site.
+  const globalRecordUrl = `https://www.upforge.org/startup/${startup.slug}`
 
   const handleDownload = useCallback(async function () {
     if (!posterRef.current || isGenerating) return
@@ -168,7 +184,7 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
   return (
     <div className="min-h-screen bg-white text-slate-900">
 
-      {/* ── HIDDEN POSTER (for download) ── */}
+      {/* Hidden Poster (for download) */}
       <div
         aria-hidden="true"
         style={{ position: "absolute", left: "-9999px", top: 0, pointerEvents: "none" }}
@@ -214,7 +230,7 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
         </div>
       </div>
 
-      {/* ── BACK NAV ── */}
+      {/* Back Nav */}
       <div className="border-b bg-white sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 h-12 flex items-center justify-between">
           <Link
@@ -237,7 +253,7 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
         </div>
       </div>
 
-      {/* ── BREADCRUMB ── */}
+      {/* Breadcrumb */}
       <div className="border-b bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 h-10 flex items-center">
           <nav aria-label="Breadcrumb">
@@ -262,11 +278,11 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
         </div>
       </div>
 
-      {/* ── MAIN ── */}
+      {/* Main */}
       <main className="max-w-6xl mx-auto px-6 py-12" id="main-content">
         <div className="grid lg:grid-cols-12 gap-12">
 
-          {/* LEFT COLUMN */}
+          {/* Left Column */}
           <div className="lg:col-span-8 space-y-8">
 
             {/* Logo + Name */}
@@ -348,7 +364,8 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
                 </div>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {relatedStartups.map((related) => (
-                    <RelatedStartupCard key={related.slug} startup={related} />
+                    // Pass domain down so related card links stay on current domain
+                    <RelatedStartupCard key={related.slug} startup={related} domain={domain} />
                   ))}
                 </div>
               </div>
@@ -356,14 +373,13 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
 
           </div>
 
-          {/* RIGHT COLUMN */}
+          {/* Right Column */}
           <div className="lg:col-span-4">
             <div className="sticky top-24 space-y-4">
 
-              {/* ── VERIFICATION CARD ── */}
+              {/* Verification Card */}
               <div className="border border-slate-200 rounded-xl p-6 space-y-5 bg-white shadow-sm">
 
-                {/* Header row: verified badge + UFRN stamp */}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0">
@@ -374,8 +390,6 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
                       <p className="text-xs text-slate-500">UpForge Registry</p>
                     </div>
                   </div>
-
-                  {/* UFRN Stamp — the "Seal of Existence" */}
                   {startup.ufrn && <UFRNStamp ufrn={startup.ufrn} />}
                 </div>
 
@@ -410,14 +424,14 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
                   </div>
                 </div>
 
-                {/* UFRN display row */}
                 <div className="border-t border-slate-100 pt-4 space-y-1">
                   <p className="text-xs text-slate-400 font-mono">{verificationCode}</p>
                   {startup.ufrn && (
+                    // "View Global Registry Record" is intentionally cross-domain:
+                    // it explicitly links .in users to the .org canonical record.
+                    // Plain <a> with no target="_blank" — opens in same tab.
                     <a
-                      href={`https://www.upforge.org/startup/${startup.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={globalRecordUrl}
                       className="text-[10px] text-[#A89060] hover:underline block"
                     >
                       View Global Registry Record →
@@ -452,7 +466,7 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
         </div>
       </main>
 
-      {/* ── BOTTOM INTERNAL LINKS ── */}
+      {/* Bottom Internal Links */}
       <footer className="border-t border-slate-100 bg-slate-50 mt-12">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <nav aria-label="Explore more startups">
@@ -482,6 +496,7 @@ export function StartupDetail({ startup, relatedStartups, profileUrl }: StartupD
                 <Link href="/submit" className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">Submit Your Startup</Link>
               </li>
               <li>
+                {/* Intentional cross-domain link in footer — plain <a>, same tab */}
                 <a href="https://www.upforge.org/registry" className="text-sm text-slate-600 hover:text-slate-900 hover:underline transition-colors">
                   Global Registry (upforge.org)
                 </a>
