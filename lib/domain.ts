@@ -3,13 +3,6 @@
  *
  * ✅ Safe to import in BOTH Server Components AND Client Components.
  * ✅ No 'next/headers', no browser APIs at module level.
- *
- * For the server-side getDomainContext() that reads request headers,
- * import from '@/lib/domain.server' — Server Components and layouts ONLY.
- *
- * ARCHITECTURE:
- *   upforge.in   → India hub  : Founder stories, local SEO, Indian startup pages
- *   upforge.org  → Global hub : UFRN Registry, cross-border data, global SEO
  */
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -31,16 +24,6 @@ export interface DomainMeta {
 
 // ─── Client-safe domain detection ────────────────────────────────────────────
 
-/**
- * getDomainContextClient()
- *
- * Safe for Client Components and any shared utility.
- * - During SSR (window undefined) → reads NEXT_PUBLIC_DOMAIN env var
- * - In browser                    → reads data-domain attr on <html> (fastest),
- *                                   then falls back to hostname parsing
- *
- * For Server Components / layouts use getDomainContext() from '@/lib/domain.server'.
- */
 export function getDomainContextClient(): DomainContext {
   if (typeof window === 'undefined') {
     return process.env.NEXT_PUBLIC_DOMAIN === 'org' ? 'org' : 'in'
@@ -86,19 +69,15 @@ export function getDomainMeta(context: DomainContext): DomainMeta {
 
 /**
  * getStartupUrl(slug, context)
- * .in  → /startup/[slug]
- * .org → https://www.upforge.in/startup/[slug]
+ * Ab ye hamesha relative path return karega taaki domain change na ho.
  */
 export function getStartupUrl(slug: string, context: DomainContext): string {
-  return context === 'org'
-    ? `https://www.upforge.in/startup/${slug}`
-    : `/startup/${slug}`
+  return `/startup/${slug}`
 }
 
 /**
  * getRegistryUrl(path, context)
- * .org → /registry/[path]
- * .in  → https://www.upforge.org/registry/[path]
+ * Registry ke liye domain switch logic rakha hai (optional).
  */
 export function getRegistryUrl(path = '', context: DomainContext): string {
   const suffix = path ? `/${path}` : ''
@@ -109,24 +88,22 @@ export function getRegistryUrl(path = '', context: DomainContext): string {
 
 /**
  * getNavUrl(route, context)
- * Keeps Navbar/Footer links on the correct domain.
- * .in  owns: /startup/*, /founders, /sector, /reports
- * .org owns: /registry/*, /ufrn, /global
- * shared:    /about, /contact, etc. → always relative
+ * Isme se 'inRoutes' ka redirection logic hata diya gaya hai.
  */
 export function getNavUrl(route: string, context: DomainContext): string {
   const orgRoutes = ['/registry', '/ufrn', '/global']
-  const inRoutes  = ['/startup', '/founders', '/sector', '/reports']
-  if (orgRoutes.some(r => route.startsWith(r)) && context === 'in')
+  
+  // Sirf tabhi switch karein jab .in wala user specifically Global Registry dekhna chahe
+  if (orgRoutes.some(r => route.startsWith(r)) && context === 'in') {
     return `https://www.upforge.org${route}`
-  if (inRoutes.some(r => route.startsWith(r)) && context === 'org')
-    return `https://www.upforge.in${route}`
+  }
+
+  // Pehle yahan .org se .in par bhejne ka logic tha, use hata diya gaya hai.
   return route
 }
 
 /**
  * getCanonicalUrl(pathname, context)
- * Returns full canonical URL for a page path on the current domain.
  */
 export function getCanonicalUrl(pathname: string, context: DomainContext): string {
   const { baseUrl } = getDomainMeta(context)
@@ -136,8 +113,6 @@ export function getCanonicalUrl(pathname: string, context: DomainContext): strin
 
 /**
  * getAlternatesForLayout(pathname, context)
- * Returns Next.js `alternates` metadata object for hreflang.
- * Drop directly into generateMetadata() return values.
  */
 export function getAlternatesForLayout(pathname: string, context: DomainContext) {
   const inUrl  = `https://www.upforge.in${pathname === '/' ? '' : pathname}`
