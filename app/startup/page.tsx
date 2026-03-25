@@ -668,7 +668,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                   </div>
 
                   <div className="fp-group">
-                    <label className="fp-label" htmlFor="rg-cat-sel">Sector</option>
+                    <label className="fp-label" htmlFor="rg-cat-sel">Sector</label>
                     <select className={`fp-sel${cat ? " active" : ""}`} id="rg-cat-sel" aria-label="Filter by sector">
                       <option value="">All Sectors</option>
                       {cats.map(c => (
