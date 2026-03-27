@@ -36,13 +36,13 @@ export const metadata: Metadata = {
 };
 
 const IMGS = {
-  hero:     "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=85&auto=format",
-  byju:     "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=900&q=80&auto=format",
-  flipkart: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=900&q=80&auto=format",
-  ola:      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=900&q=80&auto=format",
-  paytm:    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=900&q=80&auto=format",
-  nykaa:    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format",
-  banner:   "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=80&auto=format",
+  hero:     "https://static.startuptalky.com/2022/11/indian-cities-with-their-unicorn-count-startuptalky.jpg",
+  byju:     "https://etimg.etb2bimg.com/photo/100823351.cms",
+  flipkart: "https://images.icon-icons.com/729/PNG/512/flipkart_icon-icons.com_62718.png",
+  ola:      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR56NFlZg4u4xUyNLNBOoX835Lh-bXr1gi-MA&s",
+  paytm:    "https://etimg.etb2bimg.com/photo/109397034.cms",
+  nykaa:    "https://mir-s3-cdn-cf.behance.net/projects/404/a3658a212975871.Y3JvcCw4NjEsNjczLDI2OCw4Mw.png",
+  banner:   "https://i.ytimg.com/vi/ObFFb839mC0/maxresdefault.jpg",
 };
 
 // Full unicorn registry — 30 companies
@@ -57,26 +57,6 @@ const UNICORNS = [
   { rank:8,  name:"Razorpay",         founded:2014, sector:"FinTech",          val:"$7.5B",  stage:"Series F",           city:"Bengaluru", slug:"razorpay",       decacorn:false },
   { rank:9,  name:"CRED",             founded:2018, sector:"FinTech",          val:"$6.4B",  stage:"Series F",           city:"Bengaluru", slug:"cred",           decacorn:false },
   { rank:10, name:"Lenskart",         founded:2010, sector:"D2C Eyewear",      val:"$4.5B",  stage:"Series J",           city:"New Delhi", slug:"lenskart",       decacorn:false },
-  { rank:11, name:"Zepto",            founded:2021, sector:"Quick Commerce",   val:"$5B",    stage:"Series F",           city:"Mumbai",    slug:"zepto",          decacorn:false },
-  { rank:12, name:"Zomato",           founded:2008, sector:"Food Delivery",    val:"$17B",   stage:"BSE/NSE Listed",     city:"Gurugram",  slug:"zomato",         decacorn:true  },
-  { rank:13, name:"Groww",            founded:2016, sector:"WealthTech",       val:"$3B",    stage:"Series F",           city:"Bengaluru", slug:"groww",          decacorn:false },
-  { rank:14, name:"Meesho",           founded:2015, sector:"Social Commerce",  val:"$3.9B",  stage:"Series F",           city:"Bengaluru", slug:"meesho",         decacorn:false },
-  { rank:15, name:"Chargebee",        founded:2011, sector:"SaaS / Billing",   val:"$3.5B",  stage:"Series G",           city:"Chennai",   slug:"chargebee",      decacorn:false },
-  { rank:16, name:"Postman",          founded:2014, sector:"Developer Tools",  val:"$5.6B",  stage:"Series D",           city:"Bengaluru", slug:"postman",        decacorn:false },
-  { rank:17, name:"BrowserStack",     founded:2011, sector:"Dev / QA",         val:"$4B",    stage:"Series B",           city:"Mumbai",    slug:"browserstack",   decacorn:false },
-  { rank:18, name:"PhysicsWallah",    founded:2014, sector:"EdTech",           val:"$1.1B",  stage:"Series B",           city:"Noida",     slug:"physicswallah",  decacorn:false },
-  { rank:19, name:"Unacademy",        founded:2015, sector:"EdTech",           val:"$3.4B",  stage:"Series J",           city:"Bengaluru", slug:"unacademy",      decacorn:false },
-  { rank:20, name:"boAt",             founded:2016, sector:"Consumer Electronics", val:"$1.6B", stage:"Pre-IPO",         city:"New Delhi", slug:"boat",           decacorn:false },
-  { rank:21, name:"Mamaearth",        founded:2016, sector:"D2C Beauty",       val:"$1.2B",  stage:"BSE/NSE Listed",     city:"Gurugram",  slug:"mamaearth",      decacorn:false },
-  { rank:22, name:"Zerodha",          founded:2010, sector:"FinTech / Broking","val":"$3.6B", stage:"Bootstrapped",      city:"Bengaluru", slug:"zerodha",        decacorn:false },
-  { rank:23, name:"Vedantu",          founded:2011, sector:"EdTech",           val:"$1B",    stage:"Series E",           city:"Bengaluru", slug:"vedantu",        decacorn:false },
-  { rank:24, name:"Krutrim",          founded:2023, sector:"AI / LLMs",        val:"$1B",    stage:"Series A",           city:"Bengaluru", slug:"krutrim",        decacorn:false },
-  { rank:25, name:"OYO",              founded:2013, sector:"HospitalityTech",  val:"$2.4B",  stage:"Pre-IPO",            city:"Gurugram",  slug:"oyo",            decacorn:false },
-  { rank:26, name:"Scaler Academy",   founded:2019, sector:"EdTech / Upskill", val:"$710M",  stage:"Series B",           city:"Bengaluru", slug:"scaler",         decacorn:false },
-  { rank:27, name:"Jupiter",          founded:2019, sector:"Neobanking",       val:"$710M",  stage:"Series C",           city:"Mumbai",    slug:"jupiter",        decacorn:false },
-  { rank:28, name:"Sarvam AI",        founded:2023, sector:"AI / Voice",       val:"$500M+", stage:"Series A",           city:"Bengaluru", slug:"sarvam-ai",      decacorn:false },
-  { rank:29, name:"Wakefit",          founded:2016, sector:"D2C Furniture",    val:"$350M",  stage:"Series B",           city:"Bengaluru", slug:"wakefit",        decacorn:false },
-  { rank:30, name:"Noise",            founded:2014, sector:"Consumer Electronics", val:"$1.5B", stage:"Series A",        city:"Gurugram",  slug:"noise",          decacorn:false },
 ];
 
 // Featured deep-dives — top 5 spotlight cards
@@ -170,7 +150,7 @@ const YEAR_MILESTONES = [
   { year: "2011", count: "1",  event: "InMobi — India's first unicorn" },
   { year: "2014", count: "4",  event: "Flipkart, Snapdeal, Ola, MakeMyTrip" },
   { year: "2018", count: "9",  event: "Byju's, Zomato, Swiggy reach unicorn status" },
-  { year: "2021", count: "44", event: "The supercycle — record 44 unicorns in one year" },
+  { year: "2021", count: "44", event: "Record 44 unicorns in one year" },
   { year: "2023", count: "6",  event: "Post-correction: quality over quantity" },
   { year: "2026", count: "111",event: "India: 3rd largest unicorn nation globally" },
 ];
@@ -356,19 +336,15 @@ export default function IndianUnicornsPage() {
                 111 companies. $340B+ in combined value. One generation of founders who refused to think small.
               </p>
             </div>
-            <div className="sf" style={{ position:"absolute", top:18, right:18, background:"rgba(15,23,42,.75)", border:"1px solid rgba(255,255,255,.1)", padding:"5px 12px", fontSize:8, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(255,255,255,.55)" }}>
-              UpForge · Unicorn Registry
-            </div>
           </div>
 
           <div style={{ background:"var(--ink)" }}>
             <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 clamp(16px,3vw,36px)" }}>
               <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center" }}>
                 {[
-                  { l:"Registry Updated",  v:new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}) },
+                  { l:"Registry Updated",  v: "12 MARCH 2026" },
                   { l:"Total Unicorns",    v:"111 Companies" },
                   { l:"Total Value",       v:"$340B+ Combined" },
-                  { l:"Decacorns",         v:"12 ($10B+ Each)" },
                 ].map((m,i)=>(
                   <div key={i} style={{ padding:"12px 20px", borderRight:"1px solid rgba(255,255,255,.07)" }}>
                     <p className="sf" style={{ fontSize:7.5, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.18em", color:"rgba(255,255,255,.3)", marginBottom:3 }}>{m.l}</p>
