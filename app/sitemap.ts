@@ -1,28 +1,41 @@
 // app/sitemap.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// UPGRADE: /ufrn/[id] routes now included as a separate tier.
+// DOMAIN-AWARE SITEMAP — Critical SEO fix.
 //
-// URL tiers (in priority order):
-//   1. Static routes     — home, registry, categories hub, about, etc.
-//   2. Category pages    — /startups/[category]
-//   3. Startup profiles  — /startup/[slug]         (priority: 0.8–0.9)
-//   4. UFRN lookup pages — /ufrn/[ufrn-id]         (priority: 0.85)
-//      ↑ NEW — these are "double-parked" ranking pages for UFRN searches.
-//      Each UFRN page is a second chance to rank #1 when someone searches
-//      the exact ID. Google indexes them as Dataset entries.
-//   5. Blog posts        — /blog/[slug]
+// PROBLEM FIXED:
+//   The old sitemap always emitted "https://www.upforge.in/..." URLs, meaning
+//   Google's crawler on upforge.org was told "all authority lives on .in".
+//   This destroyed the .org domain's ability to rank for global queries.
 //
-// ARCHITECTURE NOTE:
-// At 5000+ startups, split into sub-sitemaps. See comments below.
+// SOLUTION:
+//   We now detect the domain from the incoming request (x-upforge-domain header
+//   set by middleware, or host header fallback) and emit ONLY URLs for that
+//   domain. Google gets two clean, non-overlapping sitemaps:
+//     • upforge.in/sitemap.xml  → India hub (startup/ + blog/ + category pages)
+//     • upforge.org/sitemap.xml → Global hub (startup/ + blog/ + /ufrn/ pages)
+//
+// URL TIERS (priority order):
+//   1. Static routes          — home, registry, categories hub, about, etc.
+//   2. Category pages         — /startups/[category]
+//   3. City+Category pages    — /startups/[category]/[city]    (NEW long-tail)
+//   4. Startup profiles       — /startup/[slug]                (0.8–0.9)
+//   5. UFRN lookup pages      — /ufrn/[ufrn-id]                (0.85, .org only)
+//   6. Blog posts             — /blog/[slug]
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { MetadataRoute } from "next"
+import { headers } from "next/headers"
 import { createClient } from "@/lib/supabase/server"
 import { categoryToSlug } from "@/lib/categories"
 
-const BASE = "https://www.upforge.in"
-// UFRN pages are canonical on .org — they point to the authority domain
-const BASE_ORG = "https://www.upforge.org"
+// ─────────────────────────────────────────────────────────────────────────────
+// TOP INDIAN CITIES — used to generate city+category long-tail pages.
+// Each combo (e.g. "fintech-mumbai") is a near-zero-competition keyword cluster.
+// ─────────────────────────────────────────────────────────────────────────────
+const TOP_CITIES = [
+  "mumbai", "bangalore", "delhi", "hyderabad", "pune",
+  "chennai", "kolkata", "ahmedabad", "jaipur", "noida",
+]
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STATIC ROUTES
@@ -32,7 +45,8 @@ const STATIC_ROUTES: Array<{
   priority: number
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]
   lastModified: string
-  base?: string
+  orgOnly?: boolean   // Include only on .org
+  inOnly?: boolean    // Include only on .in
 }> = [
   { path: "",           priority: 1.0, changeFrequency: "daily",   lastModified: "2026-01-01" },
   { path: "/startup",   priority: 0.9, changeFrequency: "daily",   lastModified: "2026-01-01" },
@@ -41,10 +55,23 @@ const STATIC_ROUTES: Array<{
   { path: "/about",     priority: 0.7, changeFrequency: "monthly", lastModified: "2026-01-01" },
   { path: "/submit",    priority: 0.6, changeFrequency: "monthly", lastModified: "2026-01-01" },
   { path: "/contact",   priority: 0.5, changeFrequency: "monthly", lastModified: "2026-01-01" },
-  // UFRN index page on .org — the "UFRN system" landing page
-  // Uncomment when /ufrn route exists and returns 200:
-  // { path: "/ufrn",    priority: 0.8, changeFrequency: "daily",   lastModified: "2026-01-01", base: BASE_ORG },
+  // UFRN index — only on .org (this is the authority landing for UFRN system)
+  { path: "/ufrn",      priority: 0.8, changeFrequency: "daily",   lastModified: "2026-01-01", orgOnly: true },
 ]
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DOMAIN DETECTION
+// ─────────────────────────────────────────────────────────────────────────────
+async function getRequestDomain(): Promise<"in" | "org"> {
+  const headersList = await headers()
+  const ctx = headersList.get("x-upforge-domain")
+  if (ctx === "in" || ctx === "org") return ctx
+
+  // Fallback: read the Host header directly
+  const host = headersList.get("host") ?? ""
+  if (host.includes(".org")) return "org"
+  return "in" // Default to India hub
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -59,6 +86,12 @@ function parseDate(raw: string | null | undefined): Date {
 // SITEMAP
 // ─────────────────────────────────────────────────────────────────────────────
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const domain = await getRequestDomain()
+  const isOrg  = domain === "org"
+
+  // Each domain is its own authority — never cross-link in sitemaps.
+  const BASE = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+
   const supabase = await createClient()
 
   // ── 1. Fetch approved startups ────────────────────────────────────────────
@@ -82,6 +115,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const slug = categoryToSlug(s.category)
     if (seenCategorySlugs.has(slug)) continue
     seenCategorySlugs.add(slug)
+
+    // Main category page
     categoryEntries.push({
       url: `${BASE}/startups/${slug}`,
       lastModified: new Date("2026-01-01"),
@@ -90,31 +125,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   }
 
-  // ── 3. Startup profile routes ─────────────────────────────────────────────
+  // ── 3. City + Category long-tail pages (NEW) ──────────────────────────────
+  // e.g. /startups/fintech/mumbai — near-zero competition, high conversion.
+  // Only generate for .in (India-local SEO), not for .org (global hub).
+  const cityEntries: MetadataRoute.Sitemap = []
+  if (!isOrg) {
+    for (const catSlug of seenCategorySlugs) {
+      for (const city of TOP_CITIES) {
+        cityEntries.push({
+          url: `${BASE}/startups/${catSlug}/${city}`,
+          lastModified: new Date("2026-01-01"),
+          changeFrequency: "weekly",
+          priority: 0.75,
+        })
+      }
+    }
+  }
+
+  // ── 4. Startup profile routes ─────────────────────────────────────────────
   const startupEntries: MetadataRoute.Sitemap = (startups ?? []).map((s) => ({
     url: `${BASE}/startup/${s.slug}`,
     lastModified: parseDate(s.updated_at ?? s.created_at),
-    changeFrequency: "weekly",
+    changeFrequency: "weekly" as const,
     priority: s.is_featured ? 0.9 : 0.8,
   }))
 
-  // ── 4. UFRN lookup routes (NEW) ───────────────────────────────────────────
-  // These are canonical on .org — separate from the /startup/[slug] entries.
-  // Google will index these as Dataset pages, "double-parking" UpForge on
-  // the first SERP for any UFRN search.
-  //
-  // Priority 0.85 — higher than a blog post (0.7), lower than a profile (0.8–0.9).
-  // These pages exist purely for UFRN lookup authority, not for general traffic.
-  const ufrnEntries: MetadataRoute.Sitemap = (startups ?? [])
-    .filter((s): s is typeof s & { ufrn: string } => typeof s.ufrn === "string" && s.ufrn.length > 0)
-    .map((s) => ({
-      url: `${BASE_ORG}/ufrn/${s.ufrn}`,
-      lastModified: parseDate(s.updated_at ?? s.created_at),
-      changeFrequency: "monthly" as const,
-      priority: 0.85,
-    }))
+  // ── 5. UFRN lookup routes — ONLY on .org ─────────────────────────────────
+  // These are canonical on .org. Each UFRN page "double-parks" UpForge for
+  // the exact UFRN search query. Google indexes them as Dataset entries.
+  // NOT included in .in sitemap — no duplicate signals.
+  const ufrnEntries: MetadataRoute.Sitemap = isOrg
+    ? (startups ?? [])
+        .filter((s): s is typeof s & { ufrn: string } => typeof s.ufrn === "string" && s.ufrn.length > 0)
+        .map((s) => ({
+          url: `${BASE}/ufrn/${s.ufrn}`,
+          lastModified: parseDate(s.updated_at ?? s.created_at),
+          changeFrequency: "monthly" as const,
+          priority: 0.85,
+        }))
+    : []
 
-  // ── 5. Blog posts ─────────────────────────────────────────────────────────
+  // ── 6. Blog posts ─────────────────────────────────────────────────────────
   const { data: blogs, error: blogError } = await supabase
     .from("blogs")
     .select("slug, updated_at, created_at, is_featured")
@@ -127,24 +178,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogEntries: MetadataRoute.Sitemap = (blogs ?? []).map((b) => ({
     url: `${BASE}/blog/${b.slug}`,
     lastModified: parseDate(b.updated_at ?? b.created_at),
-    changeFrequency: "monthly",
+    changeFrequency: "monthly" as const,
     priority: b.is_featured ? 0.8 : 0.7,
   }))
 
-  // ── 6. Static routes ──────────────────────────────────────────────────────
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
-    url: `${r.base ?? BASE}${r.path}`,
-    lastModified: new Date(r.lastModified),
-    changeFrequency: r.changeFrequency,
-    priority: r.priority,
-  }))
+  // ── 7. Static routes (domain-filtered) ───────────────────────────────────
+  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES
+    .filter((r) => {
+      if (r.orgOnly && !isOrg) return false
+      if (r.inOnly  &&  isOrg) return false
+      return true
+    })
+    .map((r) => ({
+      url: `${BASE}${r.path}`,
+      lastModified: new Date(r.lastModified),
+      changeFrequency: r.changeFrequency,
+      priority: r.priority,
+    }))
 
-  // ── 7. Combine — most important first ────────────────────────────────────
+  // ── 8. Combine — most important first ────────────────────────────────────
   return [
     ...staticEntries,
     ...categoryEntries,
+    ...cityEntries,        // ← NEW: long-tail city+category pages (.in only)
     ...startupEntries,
-    ...ufrnEntries,     // ← NEW: UFRN lookup pages on .org
+    ...ufrnEntries,        // ← .org only: UFRN lookup pages
     ...blogEntries,
   ]
 }
