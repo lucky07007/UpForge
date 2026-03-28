@@ -601,11 +601,10 @@ export default function IndianUnicornsPage() {
             <div style={{display:"grid",gridTemplateColumns:"1fr clamp(180px,22vw,240px)",gap:"clamp(24px,3vw,44px)",alignItems:"start"}}>
               <div>
                 <p className="pf" itemProp="description" style={{fontSize:"clamp(1.1rem,2.3vw,1.4rem)",fontWeight:400,lineHeight:1.72,color:"var(--ink)",marginBottom:18,maxWidth:780}}>
-                  India became the world's third-largest startup ecosystem in under a decade. The 126 companies on this page were not built in Silicon Valley. They were built in Bengaluru, Gurugram, Mumbai, Chennai, and Noida — by founders who saw the billion-person opportunity that the world took too long to notice.
+                  India became the world's third-largest startup ecosystem in under a decade.
                 </p>
                 <p className="ss" style={{fontSize:13.5,color:"var(--ink3)",lineHeight:1.88,maxWidth:740}}>
-                  This is UpForge's live unicorn registry — every Indian startup valued at $1 billion or more, ranked by valuation, cross-referenced by sector, city, and founding year. As of March 2026, India has 126 unicorns collectively worth over $365 billion, with Flipkart and PhonePe both preparing landmark IPOs. The most comprehensive public list of Indian unicorns available.
-                </p>
+                  This is UpForge's live unicorn registry — every Indian startup valued at $1 billion or more.
               </div>
               <div style={{borderLeft:"1px solid var(--rule2)",paddingLeft:"clamp(16px,2.5vw,30px)"}}>
                 <p className="dm" style={{fontSize:7.5,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.22em",color:"var(--ink5)",marginBottom:12}}>Quick Facts · 2026</p>
