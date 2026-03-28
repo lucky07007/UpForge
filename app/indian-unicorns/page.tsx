@@ -733,7 +733,7 @@ export default function IndianUnicornsPage() {
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10,paddingTop:16,borderTop:"1px solid var(--rule2)",marginTop:4}}>
                     <div>
                       <p className="dm" style={{fontSize:7.5,color:"var(--ink5)",textTransform:"uppercase",letterSpacing:"0.14em",marginBottom:3}}>Founded by</p>
-                      <p className="dm" style={{fontSize:11.5,fontWeight:700,color:"var(--ink)}} itemProp="founder">{s.founder}</p>
+                      <p className="dm" style={{fontSize:11.5,fontWeight:700,color:"var(--ink)"}} itemProp="founder">{s.founder}</p>
                     </div>
                     <Link href={`/startup/${s.slug}`} style={{display:"inline-flex",alignItems:"center",gap:7,background:"var(--ink)",color:"white",padding:"9px 18px",textDecoration:"none",fontSize:8.5,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.15em",fontFamily:"'DM Sans',system-ui"}}>
                       Full Story →
