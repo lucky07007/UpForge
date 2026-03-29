@@ -1,11 +1,12 @@
 "use client"
 // components/verify-client.tsx
-// Full client-side UFRN verification experience
-// Animated world map → lookup → result card → certificate
+// Fixed: UFRN format UF-2026-IND-XXXXX, Navbar/Footer included, editorial cream design
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useCallback } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 interface StartupRecord {
@@ -31,90 +32,51 @@ interface StartupRecord {
 
 type Phase = "idle" | "searching" | "found" | "notfound" | "error"
 
-// ─── PROPS ───────────────────────────────────────────────────────────────────
 interface VerifyClientProps {
   totalCount: number
   isOrg: boolean
 }
 
-// ─── PARTICLE DOTS for world map feel ────────────────────────────────────────
-const DOTS = Array.from({ length: 80 }, (_, i) => ({
-  id: i,
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  size: Math.random() * 3 + 1,
-  delay: Math.random() * 4,
-  duration: Math.random() * 3 + 2,
-}))
-
-// Rough world landmass dots (normalized 0–100)
-const LANDMASS_DOTS = [
-  // North America
-  { x: 14, y: 28 }, { x: 18, y: 32 }, { x: 22, y: 30 }, { x: 16, y: 38 }, { x: 20, y: 42 },
-  { x: 25, y: 35 }, { x: 28, y: 40 }, { x: 22, y: 48 }, { x: 19, y: 52 }, { x: 24, y: 55 },
-  // South America
-  { x: 26, y: 58 }, { x: 28, y: 62 }, { x: 30, y: 68 }, { x: 27, y: 72 }, { x: 29, y: 76 },
-  { x: 31, y: 65 }, { x: 25, y: 64 },
-  // Europe
-  { x: 46, y: 24 }, { x: 50, y: 26 }, { x: 48, y: 30 }, { x: 52, y: 28 }, { x: 54, y: 32 },
-  { x: 56, y: 27 }, { x: 44, y: 28 }, { x: 58, y: 30 },
-  // Africa
-  { x: 48, y: 42 }, { x: 50, y: 48 }, { x: 52, y: 54 }, { x: 48, y: 58 }, { x: 50, y: 64 },
-  { x: 46, y: 50 }, { x: 54, y: 46 }, { x: 52, y: 62 },
-  // Asia
-  { x: 64, y: 26 }, { x: 68, y: 28 }, { x: 72, y: 32 }, { x: 76, y: 30 }, { x: 80, y: 34 },
-  { x: 66, y: 38 }, { x: 70, y: 42 }, { x: 74, y: 38 }, { x: 78, y: 26 }, { x: 82, y: 28 },
-  { x: 68, y: 34 }, { x: 72, y: 40 }, { x: 76, y: 44 }, { x: 80, y: 40 },
-  // India
-  { x: 70, y: 46 }, { x: 72, y: 50 }, { x: 68, y: 52 }, { x: 70, y: 56 },
-  // Southeast Asia
-  { x: 78, y: 48 }, { x: 80, y: 52 }, { x: 82, y: 48 }, { x: 84, y: 44 },
-  // Australia
-  { x: 82, y: 62 }, { x: 86, y: 64 }, { x: 84, y: 68 }, { x: 80, y: 66 }, { x: 88, y: 60 },
-  // Russia
-  { x: 62, y: 20 }, { x: 68, y: 18 }, { x: 74, y: 20 }, { x: 80, y: 18 }, { x: 86, y: 22 },
-]
-
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export function VerifyClient({ totalCount, isOrg }: VerifyClientProps) {
-  const [input, setInput]         = useState("")
-  const [phase, setPhase]         = useState<Phase>("idle")
-  const [result, setResult]       = useState<StartupRecord | null>(null)
-  const [ping, setPing]           = useState<{ x: number; y: number } | null>(null)
-  const [scanLines, setScanLines] = useState<number[]>([])
-  const [copied, setCopied]       = useState(false)
+  const [input, setInput]   = useState("")
+  const [phase, setPhase]   = useState<Phase>("idle")
+  const [result, setResult] = useState<StartupRecord | null>(null)
+  const [copied, setCopied] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // ── Animate scan lines on searching ──────────────────────────────────────
-  useEffect(() => {
-    if (phase !== "searching") { setScanLines([]); return }
-    let frame = 0
-    const interval = setInterval(() => {
-      frame++
-      setScanLines(prev => {
-        const next = [...prev, Math.random() * 100]
-        return next.slice(-6)
-      })
-    }, 180)
-    return () => clearInterval(interval)
-  }, [phase])
+  // ── Normalize UFRN input ──────────────────────────────────────────────────
+  // Accepts: "00013", "IND-00013", "2026-IND-00013", "UF-2026-IND-00013"
+  function normalizeUFRN(raw: string): string {
+    const s = raw.trim().toUpperCase()
+    // Already fully formed
+    if (/^UF-\d{4}-[A-Z]{3}-\d+$/.test(s)) return s
+    // Strip any leading "UF-" if present but malformed
+    const stripped = s.replace(/^UF-/, "")
+    // If it's just digits, pad and prepend
+    if (/^\d+$/.test(stripped)) {
+      return `UF-2026-IND-${stripped.padStart(5, "0")}`
+    }
+    // If YEAR-CC-NUM
+    if (/^\d{4}-[A-Z]{3}-\d+$/.test(stripped)) {
+      return `UF-${stripped}`
+    }
+    // CC-NUM format
+    if (/^[A-Z]{3}-\d+$/.test(stripped)) {
+      return `UF-2026-${stripped}`
+    }
+    // Fallback: return as-is with UF- prefix
+    return s.startsWith("UF-") ? s : `UF-${s}`
+  }
 
   // ── UFRN Lookup ───────────────────────────────────────────────────────────
   const handleVerify = useCallback(async () => {
-    const raw = input.trim().toUpperCase()
+    const raw = input.trim()
     if (!raw) return
 
-    // Accept with or without "UFRN-" prefix
-    const ufrn = raw.startsWith("UFRN-") ? raw : `UFRN-${raw}`
-
+    const ufrn = normalizeUFRN(raw)
     setPhase("searching")
     setResult(null)
-    setPing(null)
-
-    // Animate ping to a "random" location after 1.2s
-    setTimeout(() => {
-      setPing({ x: 55 + Math.random() * 30, y: 30 + Math.random() * 30 })
-    }, 1200)
 
     try {
       const sb = createClient()
@@ -125,18 +87,17 @@ export function VerifyClient({ totalCount, isOrg }: VerifyClientProps) {
         .eq("status", "approved")
         .single()
 
-      await new Promise(r => setTimeout(r, 1800)) // min animation time
+      // Min animation time
+      await new Promise(r => setTimeout(r, 1200))
 
       if (error || !data) {
         setPhase("notfound")
-        setPing(null)
       } else {
         setResult(data as StartupRecord)
         setPhase("found")
       }
     } catch {
       setPhase("error")
-      setPing(null)
     }
   }, [input])
 
@@ -147,7 +108,6 @@ export function VerifyClient({ totalCount, isOrg }: VerifyClientProps) {
   const handleReset = () => {
     setPhase("idle")
     setResult(null)
-    setPing(null)
     setInput("")
     setTimeout(() => inputRef.current?.focus(), 100)
   }
@@ -163,889 +123,760 @@ export function VerifyClient({ totalCount, isOrg }: VerifyClientProps) {
   const formatFunding = (amt: number | null | undefined) => {
     if (!amt) return null
     if (amt >= 1_000_000_000) return `$${(amt / 1_000_000_000).toFixed(1)}B`
-    if (amt >= 1_000_000) return `$${(amt / 1_000_000).toFixed(1)}M`
-    if (amt >= 1_000) return `$${(amt / 1_000).toFixed(0)}K`
+    if (amt >= 1_000_000)     return `$${(amt / 1_000_000).toFixed(1)}M`
+    if (amt >= 1_000)         return `$${(amt / 1_000).toFixed(0)}K`
     return `$${amt}`
   }
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Space+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
         :root {
-          --ink: #0A0E1A;
-          --ink2: #111827;
-          --gold: #F59E0B;
-          --gold2: #D97706;
-          --emerald: #10B981;
-          --red: #EF4444;
-          --blue: #3B82F6;
-          --parch: #FDFAF5;
-          --rule: rgba(255,255,255,0.08);
-          --rule2: rgba(255,255,255,0.14);
-          --muted: rgba(255,255,255,0.45);
-          --saffron: #FF9933;
-          --green-in: #138808;
+          --cream:   #F2EFE6;
+          --cream2:  #EDE9DC;
+          --cream3:  #FAF8F3;
+          --ink:     #1A1208;
+          --ink2:    #3D2E18;
+          --ink3:    #6B5C40;
+          --ink4:    #9C8B72;
+          --rule:    #D5CEBC;
+          --rule2:   #EAE4D4;
+          --saffron: #E8933A;
+          --gold:    #C9A84C;
+          --white:   #FDFCF8;
+          --emerald: #15803D;
+          --red:     #DC2626;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .vp-root {
+        body { background: var(--cream); }
+
+        .vp-wrap {
           min-height: 100vh;
-          background: var(--ink);
-          font-family: 'Space Mono', monospace;
-          position: relative;
-          overflow-x: hidden;
+          background: var(--cream);
+          font-family: 'EB Garamond', Georgia, serif;
+          color: var(--ink);
         }
 
-        /* ── GRAIN OVERLAY ── */
-        .vp-root::before {
-          content: '';
-          position: fixed; inset: 0;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-          pointer-events: none; z-index: 0; opacity: 0.4;
+        /* ── BREADCRUMB ── */
+        .vp-bc { border-bottom: 1px solid var(--rule); background: var(--white); }
+        .vp-bc-inner {
+          max-width: 1280px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px);
+          display: flex; align-items: center; gap: 6px; height: 34px;
+          font-family: system-ui,sans-serif; font-size: 10px; letter-spacing: .04em;
+          color: var(--ink4); list-style: none;
         }
+        .vp-bc-inner a { color: var(--ink4); text-decoration: none; transition: color .15s; }
+        .vp-bc-inner a:hover { color: var(--ink); }
+        .vp-bc-sep { color: var(--rule); }
 
-        /* ── TOP STRIPE ── */
-        .vp-stripe {
-          position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
-          z-index: 10;
-        }
-
-        /* ── NAVBAR ── */
-        .vp-nav {
-          position: relative; z-index: 20;
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 20px 32px; border-bottom: 1px solid var(--rule);
-        }
-        .vp-nav-logo {
-          font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900;
-          color: white; text-decoration: none; letter-spacing: -0.02em;
-        }
-        .vp-nav-logo span { color: var(--gold); }
-        .vp-nav-links { display: flex; gap: 24px; align-items: center; }
-        .vp-nav-link {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-          color: var(--muted); text-decoration: none; transition: color 0.2s;
-        }
-        .vp-nav-link:hover { color: white; }
-        .vp-nav-link.active { color: var(--gold); }
-        .vp-nav-submit {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--ink); background: var(--gold); padding: 8px 16px; border-radius: 6px;
-          text-decoration: none; transition: background 0.2s;
-        }
-        .vp-nav-submit:hover { background: #FBBF24; }
-
-        /* ── HERO SECTION ── */
-        .vp-hero {
-          position: relative; z-index: 5;
-          display: flex; flex-direction: column; align-items: center;
-          padding: 64px 24px 48px;
+        /* ── MASTHEAD ── */
+        .vp-mast { border-bottom: 3px solid var(--ink); background: var(--cream); }
+        .vp-mast-inner {
+          max-width: 1280px; margin: 0 auto;
+          padding: clamp(40px,6vw,72px) clamp(16px,4vw,48px) clamp(32px,5vw,56px);
           text-align: center;
         }
-        .vp-eyebrow {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-size: 8px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
-          color: var(--gold); margin-bottom: 20px;
-          border: 1px solid rgba(245,158,11,0.3); padding: 6px 16px; border-radius: 100px;
-          background: rgba(245,158,11,0.06);
+        .vp-edition {
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 700;
+          letter-spacing: .42em; text-transform: uppercase; color: var(--ink4);
+          margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
-        .vp-eyebrow-dot {
-          width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
-          animation: pulse2 2s infinite;
-        }
-        @keyframes pulse2 {
-          0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
-          70%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
-          100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
-        }
+        .vp-edition-line { height: 1px; width: 60px; background: var(--rule); }
         .vp-h1 {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(36px, 6vw, 72px); font-weight: 900;
-          color: white; line-height: 1.05; letter-spacing: -0.03em;
-          margin-bottom: 16px; max-width: 760px;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(2.2rem,5.5vw,4.8rem); font-weight: 900;
+          letter-spacing: -.025em; color: var(--ink); line-height: 1.05; margin-bottom: 14px;
         }
-        .vp-h1 em { color: var(--gold); font-style: italic; }
+        .vp-h1 em { font-style: italic; color: var(--ink2); }
         .vp-sub {
-          font-size: 13px; color: var(--muted); line-height: 1.7;
-          max-width: 520px; margin-bottom: 48px;
+          font-size: clamp(13px,1.6vw,15px); color: var(--ink3); font-style: italic;
+          line-height: 1.7; max-width: 560px; margin: 0 auto 28px;
         }
-
-        /* ── WORLD MAP CONTAINER ── */
-        .vp-map-wrap {
-          position: relative; width: 100%; max-width: 900px;
-          margin: 0 auto 48px; border-radius: 20px;
-          border: 1px solid var(--rule2);
-          background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-          overflow: hidden;
-          padding: 32px 24px 24px;
+        .vp-divider {
+          display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 36px;
         }
-        .vp-map-inner {
-          position: relative; width: 100%; aspect-ratio: 2/1;
-          min-height: 260px;
-        }
-
-        /* Dot grid */
-        .vp-dot {
-          position: absolute; border-radius: 50%;
-          background: rgba(255,255,255,0.18);
-          transition: all 0.3s ease;
-        }
-        .vp-dot.active {
-          background: var(--gold);
-          box-shadow: 0 0 8px var(--gold);
-        }
-        .vp-dot.scanning {
-          animation: dotPulse 0.4s ease infinite alternate;
-        }
-        @keyframes dotPulse {
-          from { background: rgba(245,158,11,0.3); transform: scale(1); }
-          to   { background: var(--gold); transform: scale(1.4); box-shadow: 0 0 12px var(--gold); }
-        }
-
-        /* Scan lines */
-        .vp-scanline {
-          position: absolute; left: 0; right: 0; height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(245,158,11,0.6), transparent);
-          pointer-events: none;
-          animation: scanSlide 0.6s linear forwards;
-        }
-        @keyframes scanSlide {
-          from { opacity: 0.8; }
-          to   { opacity: 0; transform: scaleX(1.5); }
-        }
-
-        /* Ping animation */
-        .vp-ping {
-          position: absolute; transform: translate(-50%, -50%);
-          pointer-events: none;
-        }
-        .vp-ping-ring {
-          position: absolute; top: 50%; left: 50%;
-          transform: translate(-50%, -50%);
-          border-radius: 50%; border: 2px solid var(--emerald);
-          animation: pingExpand 1.5s ease-out infinite;
-        }
-        @keyframes pingExpand {
-          0%  { width: 8px; height: 8px; opacity: 1; }
-          100% { width: 60px; height: 60px; opacity: 0; }
-        }
-        .vp-ping-core {
-          width: 12px; height: 12px; border-radius: 50%;
-          background: var(--emerald);
-          box-shadow: 0 0 20px var(--emerald);
-          animation: pingPulse 1s ease-in-out infinite;
-        }
-        @keyframes pingPulse {
-          0%, 100% { transform: scale(1); }
-          50%       { transform: scale(1.3); }
-        }
-
-        /* Grid lines on map */
-        .vp-gridline-h, .vp-gridline-v {
-          position: absolute; background: rgba(255,255,255,0.04); pointer-events: none;
-        }
-        .vp-gridline-h { left: 0; right: 0; height: 1px; }
-        .vp-gridline-v { top: 0; bottom: 0; width: 1px; }
-
-        /* Map overlay text */
-        .vp-map-label {
-          position: absolute; font-size: 7px; font-weight: 700; letter-spacing: 0.2em;
-          text-transform: uppercase; color: rgba(255,255,255,0.2);
-        }
-        .vp-map-status {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 10px 4px 0;
-        }
-        .vp-map-stat {
-          font-size: 8px; color: rgba(255,255,255,0.25); letter-spacing: 0.15em; text-transform: uppercase;
-        }
-        .vp-map-stat span { color: rgba(255,255,255,0.55); }
-
-        /* ── SEARCH BOX ── */
-        .vp-search-wrap {
-          width: 100%; max-width: 600px; margin: 0 auto;
-        }
-        .vp-search-label {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;
-          color: var(--muted); margin-bottom: 12px; display: block; text-align: left;
-        }
-        .vp-search-row {
-          display: flex; gap: 0; border: 1px solid var(--rule2);
-          border-radius: 12px; overflow: hidden;
-          background: rgba(255,255,255,0.04);
-          transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .vp-search-row:focus-within {
-          border-color: rgba(245,158,11,0.5);
-          box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
-        }
-        .vp-prefix {
-          display: flex; align-items: center; padding: 0 16px;
-          font-size: 11px; font-weight: 700; color: var(--gold);
-          border-right: 1px solid var(--rule2); white-space: nowrap;
-          background: rgba(245,158,11,0.05);
-        }
-        .vp-input {
-          flex: 1; background: transparent; border: none; outline: none;
-          padding: 18px 20px; font-size: 15px; font-family: 'Space Mono', monospace;
-          font-weight: 700; color: white; letter-spacing: 0.08em;
-        }
-        .vp-input::placeholder { color: rgba(255,255,255,0.18); font-weight: 400; letter-spacing: 0; }
-        .vp-verify-btn {
-          padding: 0 28px; background: var(--gold); border: none; cursor: pointer;
-          font-family: 'Space Mono', monospace; font-size: 9px; font-weight: 700;
-          letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink);
-          transition: background 0.2s; flex-shrink: 0; white-space: nowrap;
-        }
-        .vp-verify-btn:hover:not(:disabled) { background: #FBBF24; }
-        .vp-verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .vp-verify-btn.loading { background: rgba(245,158,11,0.2); color: var(--gold); }
-
-        .vp-hint {
-          margin-top: 10px; font-size: 10px; color: rgba(255,255,255,0.2);
-          text-align: left;
-        }
-        .vp-hint a { color: rgba(255,255,255,0.35); text-decoration: underline; }
-
-        /* ── LOADING STATE ── */
-        .vp-loading {
-          display: flex; flex-direction: column; align-items: center; gap: 16px;
-          padding: 48px 32px; animation: fadeIn 0.4s ease;
-        }
-        .vp-loader-ring {
-          width: 56px; height: 56px; border-radius: 50%;
-          border: 2px solid rgba(245,158,11,0.15);
-          border-top-color: var(--gold);
-          animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-        .vp-loading-text {
-          font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;
-          color: var(--gold);
-        }
-        .vp-loading-sub { font-size: 10px; color: var(--muted); }
-
-        /* ── RESULT CARD ── */
-        .vp-result {
-          width: 100%; max-width: 700px; margin: 0 auto;
-          animation: riseIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-        @keyframes riseIn {
-          from { opacity: 0; transform: translateY(20px) scale(0.98); }
-          to   { opacity: 1; transform: none; }
-        }
-
-        .vp-result-header {
-          border-radius: 16px 16px 0 0;
-          background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(16,185,129,0.04) 100%);
-          border: 1px solid rgba(16,185,129,0.3); border-bottom: none;
-          padding: 24px 28px; display: flex; align-items: flex-start; gap: 16px;
-        }
-        .vp-verified-icon {
-          width: 48px; height: 48px; border-radius: 50%;
-          background: linear-gradient(135deg, var(--emerald), #059669);
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; box-shadow: 0 0 24px rgba(16,185,129,0.4);
-        }
-        .vp-verified-icon svg { width: 24px; height: 24px; }
-        .vp-verified-title {
-          font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-          color: var(--emerald); margin-bottom: 4px;
-        }
-        .vp-verified-h2 {
-          font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900;
-          color: white; line-height: 1.2;
-        }
-        .vp-ufrn-badge {
-          margin-left: auto; flex-shrink: 0;
-          font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
-          color: var(--gold); background: rgba(245,158,11,0.1);
-          border: 1px solid rgba(245,158,11,0.3); padding: 6px 14px; border-radius: 6px;
-          letter-spacing: 0.05em;
-        }
-
-        .vp-result-body {
-          background: rgba(255,255,255,0.03); border: 1px solid var(--rule2); border-top: none;
-          padding: 28px;
-        }
-
-        .vp-logo-row {
-          display: flex; align-items: center; gap: 20px; margin-bottom: 24px;
-          padding-bottom: 24px; border-bottom: 1px solid var(--rule);
-        }
-        .vp-logo {
-          width: 72px; height: 72px; border-radius: 16px; border: 1px solid var(--rule2);
-          background: rgba(255,255,255,0.06); object-fit: cover; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.25);
-          overflow: hidden;
-        }
-        .vp-logo img { width: 100%; height: 100%; object-fit: cover; }
-        .vp-logo-info { flex: 1; min-width: 0; }
-        .vp-cat-badge {
-          display: inline-block; font-size: 8px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-          color: var(--gold); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2);
-          padding: 3px 10px; border-radius: 4px; margin-bottom: 8px;
-        }
-        .vp-company-name {
-          font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
-          color: white; line-height: 1.2; margin-bottom: 4px;
-        }
-        .vp-founders { font-size: 11px; color: var(--muted); }
-
-        .vp-fields {
-          display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;
-        }
-        @media (max-width: 560px) { .vp-fields { grid-template-columns: 1fr; } }
-        .vp-field { display: flex; flex-direction: column; gap: 4px; }
-        .vp-field-label {
-          font-size: 8px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-          color: rgba(255,255,255,0.25);
-        }
-        .vp-field-val { font-size: 13px; color: white; font-weight: 700; }
-        .vp-field-val.mono { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--gold); }
-        .vp-field-val.green { color: var(--emerald); }
-        .vp-field-val.muted { color: var(--muted); font-weight: 400; font-size: 12px; }
-
-        .vp-desc {
-          font-size: 12px; color: rgba(255,255,255,0.5); font-style: italic; line-height: 1.7;
-          margin-bottom: 24px; padding: 16px; background: rgba(255,255,255,0.03);
-          border-radius: 10px; border-left: 2px solid rgba(245,158,11,0.3);
-        }
-
-        .vp-actions {
-          display: flex; gap: 12px; flex-wrap: wrap;
-        }
-        .vp-action-btn {
-          display: inline-flex; align-items: center; gap: 8px;
-          padding: 12px 20px; border-radius: 10px; font-family: 'Space Mono', monospace;
-          font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-          cursor: pointer; transition: all 0.2s; text-decoration: none; border: 1px solid transparent;
-        }
-        .vp-action-primary {
-          background: var(--emerald); color: white;
-        }
-        .vp-action-primary:hover { background: #059669; transform: translateY(-1px); }
-        .vp-action-secondary {
-          background: transparent; border-color: var(--rule2); color: var(--muted);
-        }
-        .vp-action-secondary:hover { border-color: white; color: white; }
-        .vp-action-ghost {
-          background: transparent; border-color: rgba(245,158,11,0.3); color: var(--gold);
-        }
-        .vp-action-ghost:hover { background: rgba(245,158,11,0.08); }
-
-        /* ── CERTIFICATE STRIP ── */
-        .vp-cert {
-          border-radius: 0 0 16px 16px;
-          background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03));
-          border: 1px solid rgba(245,158,11,0.2); border-top: none;
-          padding: 16px 28px; display: flex; align-items: center; gap: 14px;
-          flex-wrap: wrap;
-        }
-        .vp-cert-icon { font-size: 20px; flex-shrink: 0; }
-        .vp-cert-text { flex: 1; }
-        .vp-cert-title { font-size: 10px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
-        .vp-cert-sub { font-size: 9px; color: rgba(255,255,255,0.3); }
-        .vp-cert-hash { font-family: 'Space Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.2); }
-
-        /* ── NOT FOUND ── */
-        .vp-notfound {
-          width: 100%; max-width: 580px; margin: 0 auto; text-align: center;
-          padding: 48px 32px; border: 1px solid rgba(239,68,68,0.2); border-radius: 16px;
-          background: rgba(239,68,68,0.04);
-          animation: riseIn 0.4s ease both;
-        }
-        .vp-notfound-icon { font-size: 48px; margin-bottom: 16px; }
-        .vp-notfound-h { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 8px; }
-        .vp-notfound-p { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
-        .vp-notfound-btn {
-          display: inline-flex; align-items: center; gap: 8px;
-          padding: 12px 24px; border-radius: 10px; background: transparent;
-          border: 1px solid var(--rule2); color: var(--muted);
-          font-family: 'Space Mono', monospace; font-size: 9px; font-weight: 700;
-          letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer;
-          transition: all 0.2s;
-        }
-        .vp-notfound-btn:hover { border-color: white; color: white; }
+        .vp-div-line { height: 1px; width: 80px; background: var(--rule); }
+        .vp-div-dot { color: var(--rule); font-size: 12px; }
 
         /* ── STATS ROW ── */
         .vp-stats {
-          display: flex; justify-content: center; gap: 48px; margin-top: 64px;
-          padding-top: 64px; border-top: 1px solid var(--rule); flex-wrap: wrap;
+          display: flex; align-items: center; justify-content: center; gap: 0;
+          border: 1px solid var(--rule); background: var(--ink);
+          max-width: 560px; margin: 0 auto;
         }
-        .vp-stat { text-align: center; }
-        .vp-stat-num {
-          font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900;
-          color: white; line-height: 1; margin-bottom: 6px;
+        .vp-stat { flex: 1; padding: 14px 20px; text-align: center; border-right: 1px solid rgba(255,255,255,.08); }
+        .vp-stat:last-child { border-right: none; }
+        .vp-stat-v {
+          font-family: 'Playfair Display', serif; font-size: clamp(1.2rem,2.4vw,1.7rem);
+          font-weight: 900; color: #fff; line-height: 1; margin-bottom: 3px;
         }
-        .vp-stat-num span { color: var(--gold); }
-        .vp-stat-label {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
-          color: rgba(255,255,255,0.3);
+        .vp-stat-l {
+          font-family: system-ui,sans-serif; font-size: 7.5px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .2em; color: rgba(255,255,255,.38);
+        }
+        @media(max-width:480px) {
+          .vp-stats { flex-direction: column; }
+          .vp-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+          .vp-stat:last-child { border-bottom: none; }
         }
 
-        /* ── HOWTO SECTION ── */
-        .vp-howto {
-          max-width: 900px; margin: 0 auto;
-          padding: 64px 32px;
+        /* ── MAIN CONTENT AREA ── */
+        .vp-main {
+          max-width: 1280px; margin: 0 auto;
+          padding: clamp(28px,5vw,56px) clamp(16px,4vw,48px) 72px;
+          display: grid; grid-template-columns: 1fr 340px; gap: 48px; align-items: start;
         }
-        .vp-section-eyebrow {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase;
-          color: var(--gold); margin-bottom: 16px; display: block;
-        }
-        .vp-section-h {
-          font-family: 'Playfair Display', serif; font-size: clamp(26px, 4vw, 40px);
-          font-weight: 900; color: white; margin-bottom: 12px; line-height: 1.1;
-        }
-        .vp-section-p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 40px; max-width: 520px; }
+        @media(max-width:1024px) { .vp-main { grid-template-columns: 1fr; } .vp-aside { display: none; } }
 
-        .vp-steps {
-          display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+        /* ── SEARCH PANEL ── */
+        .vp-search-panel {
+          background: var(--ink); padding: clamp(28px,4vw,48px); border: none;
         }
-        @media (max-width: 680px) { .vp-steps { grid-template-columns: 1fr; } }
+        .vp-panel-ey {
+          font-family: system-ui,sans-serif; font-size: 8px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .3em; color: var(--saffron); margin-bottom: 14px;
+        }
+        .vp-panel-h {
+          font-family: 'Playfair Display', serif; font-size: clamp(1.2rem,2.2vw,1.6rem);
+          font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 8px;
+        }
+        .vp-panel-p {
+          font-size: 12.5px; color: rgba(255,255,255,.45); font-style: italic;
+          line-height: 1.7; margin-bottom: 28px;
+        }
+
+        .vp-search-label {
+          font-family: system-ui,sans-serif; font-size: 8px; font-weight: 700;
+          letter-spacing: .25em; text-transform: uppercase; color: rgba(255,255,255,.35);
+          display: block; margin-bottom: 10px;
+        }
+        .vp-search-row {
+          display: flex; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.04);
+        }
+        .vp-search-row:focus-within { border-color: var(--saffron); }
+        .vp-prefix {
+          display: flex; align-items: center; padding: 0 16px;
+          font-family: system-ui,sans-serif; font-size: 10px; font-weight: 900;
+          color: var(--saffron); border-right: 1px solid rgba(255,255,255,.1);
+          white-space: nowrap; background: rgba(232,147,58,.07); letter-spacing: .04em;
+        }
+        .vp-input {
+          flex: 1; background: transparent; border: none; outline: none;
+          padding: 16px 18px; font-size: 15px; font-family: 'EB Garamond', serif;
+          font-style: italic; color: #fff; letter-spacing: .04em; min-width: 0;
+        }
+        .vp-input::placeholder { color: rgba(255,255,255,.2); font-size: 14px; }
+        .vp-verify-btn {
+          padding: 0 28px; background: var(--saffron); border: none; cursor: pointer;
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 900;
+          letter-spacing: .2em; text-transform: uppercase; color: #fff;
+          transition: background .2s; flex-shrink: 0; white-space: nowrap;
+        }
+        .vp-verify-btn:hover:not(:disabled) { background: var(--gold); }
+        .vp-verify-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+        .vp-hint {
+          margin-top: 10px; font-size: 11px; color: rgba(255,255,255,.22);
+          font-style: italic;
+        }
+        .vp-hint a { color: rgba(255,255,255,.4); text-decoration: underline; }
+
+        /* ── SAMPLE UFRNs ── */
+        .vp-samples {
+          margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.08);
+        }
+        .vp-samples-label {
+          font-family: system-ui,sans-serif; font-size: 8px; font-weight: 700;
+          text-transform: uppercase; letter-spacing: .24em; color: rgba(255,255,255,.28);
+          margin-bottom: 10px;
+        }
+        .vp-sample-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .vp-chip {
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 700;
+          letter-spacing: .06em; color: rgba(255,255,255,.45);
+          border: 1px solid rgba(255,255,255,.12); padding: 5px 12px;
+          cursor: pointer; transition: all .15s; background: transparent;
+        }
+        .vp-chip:hover { border-color: var(--saffron); color: var(--saffron); background: rgba(232,147,58,.06); }
+
+        /* ── RESULT STATES ── */
+        .vp-result-area { margin-top: 28px; }
+
+        /* Loading */
+        .vp-loading {
+          display: flex; align-items: center; gap: 16px; padding: 24px;
+          border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.02);
+          animation: fadeUp .3s ease both;
+        }
+        .vp-loader-ring {
+          width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+          border: 2px solid rgba(232,147,58,.15); border-top-color: var(--saffron);
+          animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: none; }
+        }
+        .vp-loading-text {
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 700;
+          letter-spacing: .22em; text-transform: uppercase; color: var(--saffron);
+        }
+        .vp-loading-sub { font-size: 11px; color: rgba(255,255,255,.3); font-style: italic; margin-top: 3px; }
+
+        /* Found */
+        .vp-found { border: 1px solid rgba(21,128,61,.35); animation: fadeUp .4s ease both; }
+        .vp-found-head {
+          background: rgba(21,128,61,.08); border-bottom: 1px solid rgba(21,128,61,.2);
+          padding: 18px 22px; display: flex; align-items: center; gap: 12px;
+        }
+        .vp-check-icon {
+          width: 36px; height: 36px; border-radius: 50%; background: var(--emerald);
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+          box-shadow: 0 0 16px rgba(21,128,61,.4);
+        }
+        .vp-check-icon svg { width: 18px; height: 18px; }
+        .vp-found-title {
+          font-family: system-ui,sans-serif; font-size: 8px; font-weight: 700;
+          letter-spacing: .2em; text-transform: uppercase; color: var(--emerald); margin-bottom: 3px;
+        }
+        .vp-found-name {
+          font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #fff; line-height: 1.2;
+        }
+        .vp-ufrn-tag {
+          margin-left: auto; flex-shrink: 0;
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .04em;
+          color: var(--saffron); background: rgba(232,147,58,.08);
+          border: 1px solid rgba(232,147,58,.25); padding: 5px 12px;
+        }
+
+        .vp-found-body { padding: 22px; background: rgba(255,255,255,.02); }
+        .vp-logo-row {
+          display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+          padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+        .vp-logo {
+          width: 60px; height: 60px; border: 1px solid rgba(255,255,255,.1);
+          background: rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center;
+          font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700;
+          color: rgba(255,255,255,.25); overflow: hidden; flex-shrink: 0;
+        }
+        .vp-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .vp-cat-tag {
+          display: inline-block; font-family: system-ui,sans-serif; font-size: 8px; font-weight: 700;
+          letter-spacing: .14em; text-transform: uppercase; color: var(--saffron);
+          background: rgba(232,147,58,.08); border: 1px solid rgba(232,147,58,.2);
+          padding: 2px 8px; margin-bottom: 6px;
+        }
+        .vp-company-big {
+          font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 3px;
+        }
+        .vp-founders-sm { font-size: 12px; color: rgba(255,255,255,.4); font-style: italic; }
+
+        .vp-fields {
+          display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-bottom: 20px;
+        }
+        @media(max-width:560px) { .vp-fields { grid-template-columns: 1fr; } }
+        .vp-field-label {
+          font-family: system-ui,sans-serif; font-size: 8px; font-weight: 700;
+          letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.22); margin-bottom: 3px;
+        }
+        .vp-field-val { font-size: 13px; color: #fff; font-weight: 600; }
+        .vp-field-val.mono { font-family: system-ui,monospace; font-size: 11px; color: var(--saffron); font-weight: 700; }
+        .vp-field-val.green { color: #4ade80; }
+        .vp-field-val.muted { color: rgba(255,255,255,.4); font-size: 12px; font-weight: 400; font-style: italic; }
+
+        .vp-desc-box {
+          font-size: 12px; color: rgba(255,255,255,.45); font-style: italic; line-height: 1.7;
+          padding: 14px 16px; background: rgba(255,255,255,.03);
+          border-left: 2px solid rgba(232,147,58,.3); margin-bottom: 20px;
+        }
+
+        .vp-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .vp-btn-primary {
+          display: inline-flex; align-items: center; gap: 7px;
+          background: var(--emerald); color: #fff; padding: 11px 20px;
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 900;
+          letter-spacing: .18em; text-transform: uppercase; text-decoration: none;
+          transition: background .15s; border: none; cursor: pointer;
+        }
+        .vp-btn-primary:hover { background: #166534; }
+        .vp-btn-ghost {
+          display: inline-flex; align-items: center; gap: 7px;
+          background: transparent; color: rgba(255,255,255,.5);
+          border: 1px solid rgba(255,255,255,.14); padding: 11px 20px;
+          font-family: system-ui,sans-serif; font-size: 9px; font-weight: 700;
+          letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: all .15s;
+        }
+        .vp-btn-ghost:hover { border-color: rgba(255,255,255,.4); color: #fff; }
+
+        /* Not Found / Error */
+        .vp-notfound {
+          padding: 32px; border: 1px solid rgba(220,38,38,.25); background: rgba(220,38,38,.03);
+          text-align: center; animation: fadeUp .3s ease both;
+        }
+        .vp-notfound-icon { font-size: 36px; margin-bottom: 12px; }
+        .vp-notfound-h {
+          font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+          color: #fff; margin-bottom: 8px;
+        }
+        .vp-notfound-p { font-size: 12px; color: rgba(255,255,255,.4); font-style: italic; line-height: 1.7; margin-bottom: 20px; }
+
+        /* Certificate footer strip */
+        .vp-cert {
+          padding: 14px 22px; background: rgba(232,147,58,.05); border-top: 1px solid rgba(232,147,58,.15);
+          display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+        .vp-cert-title { font-family: system-ui,sans-serif; font-size: 8.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--saffron); }
+        .vp-cert-sub { font-size: 10px; color: rgba(255,255,255,.25); font-style: italic; margin-top: 1px; }
+        .vp-cert-hash { margin-left: auto; font-family: monospace; font-size: 9px; color: rgba(255,255,255,.18); }
+
+        /* ── SIDEBAR ── */
+        .vp-aside { display: flex; flex-direction: column; gap: 20px; }
+        .aside-block { border: 1px solid var(--rule); background: var(--white); padding: 22px; }
+        .aside-ey { font-family: system-ui,sans-serif; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .28em; color: var(--ink4); margin-bottom: 12px; }
+        .aside-h { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+        .aside-p { font-size: 12.5px; color: var(--ink3); font-style: italic; line-height: 1.65; margin-bottom: 14px; }
+        .aside-list { list-style: none; padding: 0; }
+        .aside-list li { border-bottom: 1px solid var(--rule2); }
+        .aside-list li:last-child { border-bottom: none; }
+        .aside-list a { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; font-size: 13px; color: var(--ink3); text-decoration: none; font-style: italic; transition: color .15s; }
+        .aside-list a:hover { color: var(--ink); }
+
+        /* ── HOW TO SECTION ── */
+        .vp-howto { max-width: 1280px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px) 64px; }
+        .sec-hd2 { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+        .sec-hd2-label { font-family: system-ui,sans-serif; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .32em; color: var(--ink4); white-space: nowrap; }
+        .sec-hd2-rule { flex: 1; height: 1px; background: var(--rule); }
+        .vp-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; background: var(--rule2); border: 1px solid var(--rule); }
+        @media(max-width:900px) { .vp-steps { grid-template-columns: repeat(2,1fr); } }
+        @media(max-width:520px) { .vp-steps { grid-template-columns: 1fr; } }
         .vp-step {
-          padding: 24px; border-radius: 14px;
-          border: 1px solid var(--rule2); background: rgba(255,255,255,0.02);
-          transition: border-color 0.2s, background 0.2s;
+          background: var(--white); padding: 24px 20px; border-right: 1px solid var(--rule2);
+          border-bottom: 1px solid var(--rule2);
         }
-        .vp-step:hover { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.03); }
-        .vp-step-num {
-          font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900;
-          color: rgba(255,255,255,0.06); line-height: 1; margin-bottom: 12px;
-        }
-        .vp-step-h { font-size: 13px; font-weight: 700; color: white; margin-bottom: 8px; }
-        .vp-step-p { font-size: 11px; color: var(--muted); line-height: 1.7; }
+        .vp-step:last-child { border-right: none; }
+        .vp-step-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; color: var(--rule2); line-height: 1; margin-bottom: 12px; }
+        .vp-step-h { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+        .vp-step-p { font-size: 12px; color: var(--ink3); font-style: italic; line-height: 1.65; }
 
         /* ── FAQ ── */
-        .vp-faq {
-          max-width: 900px; margin: 0 auto;
-          padding: 0 32px 80px;
-        }
-        .vp-faq-list { display: flex; flex-direction: column; gap: 1px; }
-        .vp-faq-item {
-          border-bottom: 1px solid var(--rule);
-        }
+        .vp-faq-wrap { max-width: 1280px; margin: 0 auto; padding: 0 clamp(16px,4vw,48px) 72px; }
+        .vp-faq-list { border: 1px solid var(--rule); background: var(--white); }
+        .vp-faq-item { border-bottom: 1px solid var(--rule2); }
+        .vp-faq-item:last-child { border-bottom: none; }
         .vp-faq-q {
           width: 100%; background: none; border: none; cursor: pointer;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 20px 0; gap: 16px; text-align: left;
+          padding: 18px 24px; gap: 16px; text-align: left;
         }
-        .vp-faq-q-text { font-size: 13px; font-weight: 700; color: white; line-height: 1.4; }
+        .vp-faq-q-text { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.3; }
         .vp-faq-q-icon {
-          width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--rule2);
-          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-          color: var(--muted); font-size: 16px; transition: all 0.2s;
+          width: 22px; height: 22px; border: 1px solid var(--rule); display: flex;
+          align-items: center; justify-content: center; flex-shrink: 0;
+          color: var(--ink4); font-size: 16px; transition: all .2s;
         }
-        .vp-faq-item.open .vp-faq-q-icon { transform: rotate(45deg); border-color: var(--gold); color: var(--gold); }
+        .vp-faq-item.open .vp-faq-q-icon { transform: rotate(45deg); border-color: var(--saffron); color: var(--saffron); }
         .vp-faq-a {
-          font-size: 12px; color: var(--muted); line-height: 1.8;
-          max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.2s;
+          font-size: 13.5px; color: var(--ink3); font-style: italic; line-height: 1.75;
+          max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .2s;
+          padding: 0 24px;
         }
-        .vp-faq-item.open .vp-faq-a { max-height: 300px; padding-bottom: 20px; }
+        .vp-faq-item.open .vp-faq-a { max-height: 400px; padding: 0 24px 20px; }
 
-        /* ── FOOTER ── */
-        .vp-footer {
-          border-top: 1px solid var(--rule);
-          padding: 32px;
-          display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
-          max-width: 1200px; margin: 0 auto;
-        }
-        .vp-footer-brand {
-          font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700;
-          color: white;
-        }
-        .vp-footer-brand span { color: var(--gold); }
-        .vp-footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-        .vp-footer-link {
-          font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-          color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s;
-        }
-        .vp-footer-link:hover { color: white; }
-
-        @media (max-width: 768px) {
-          .vp-nav { padding: 16px 20px; }
-          .vp-nav-links { display: none; }
-          .vp-hero { padding: 48px 20px 32px; }
-          .vp-map-wrap { padding: 20px 16px 16px; }
-          .vp-howto, .vp-faq { padding-left: 20px; padding-right: 20px; }
-          .vp-result-header { flex-direction: column; gap: 12px; }
-          .vp-ufrn-badge { margin-left: 0; }
-          .vp-result-body { padding: 20px; }
-          .vp-cert { padding: 14px 20px; }
-          .vp-stats { gap: 32px; }
+        /* ── PROMISE BAR ── */
+        .promise-bar { display: flex; flex-wrap: wrap; background: var(--white); border: 1px solid var(--rule); margin-bottom: 40px; }
+        .promise-item { flex: 1; min-width: 180px; padding: 16px 20px; border-right: 1px solid var(--rule); display: flex; align-items: flex-start; gap: 10px; }
+        .promise-item:last-child { border-right: none; }
+        .promise-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+        .promise-label { font-family: system-ui,sans-serif; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .16em; color: var(--ink); margin-bottom: 2px; }
+        .promise-desc { font-size: 11.5px; color: var(--ink3); font-style: italic; line-height: 1.5; }
+        @media(max-width:640px) {
+          .promise-item { border-right: none !important; border-bottom: 1px solid var(--rule); flex: 0 0 100%; }
+          .promise-item:last-child { border-bottom: none; }
         }
       `}</style>
 
-      <div className="vp-root">
-        <div className="vp-stripe" />
+      <div className="vp-wrap">
+        <Navbar />
 
-        {/* NAV */}
-        <nav className="vp-nav">
-          <Link href="/" className="vp-nav-logo">Up<span>Forge</span></Link>
-          <div className="vp-nav-links">
-            <Link href="/startup" className="vp-nav-link">Registry</Link>
-            <Link href="/verify" className="vp-nav-link active">Verify UFRN</Link>
-            <Link href="/blog" className="vp-nav-link">Blog</Link>
-            <Link href="/about" className="vp-nav-link">About</Link>
-            <Link href="/submit" className="vp-nav-submit">Submit Startup →</Link>
-          </div>
-        </nav>
+        {/* BREADCRUMB */}
+        <div className="vp-bc">
+          <ol className="vp-bc-inner">
+            <li><a href="/">Home</a></li>
+            <li className="vp-bc-sep">/</li>
+            <li><a href="/startup">Startup Registry</a></li>
+            <li className="vp-bc-sep">/</li>
+            <li style={{ color: "var(--ink)", fontWeight: 600 }}>Verify UFRN</li>
+          </ol>
+        </div>
 
-        {/* HERO */}
-        <section className="vp-hero">
-          <div className="vp-eyebrow">
-            <div className="vp-eyebrow-dot" />
-            Official Verification Tool
-          </div>
-          <h1 className="vp-h1">
-            Verify Any Startup's<br /><em>UFRN</em> Instantly
-          </h1>
-          <p className="vp-sub">
-            The world's only independent startup identity system. Enter a UFRN to view
-            the official registry record — founders, funding, category, and verification status.
-          </p>
-
-          {/* WORLD MAP */}
-          <div className="vp-map-wrap">
-            <div className="vp-map-inner">
-              {/* Grid lines */}
-              {[20, 40, 60, 80].map(y => (
-                <div key={`h${y}`} className="vp-gridline-h" style={{ top: `${y}%` }} />
-              ))}
-              {[20, 40, 60, 80].map(x => (
-                <div key={`v${x}`} className="vp-gridline-v" style={{ left: `${x}%` }} />
-              ))}
-
-              {/* Scan lines */}
-              {scanLines.map((y, i) => (
-                <div key={i} className="vp-scanline" style={{ top: `${y}%` }} />
-              ))}
-
-              {/* Landmass dots */}
-              {LANDMASS_DOTS.map((d, i) => (
-                <div
-                  key={i}
-                  className={`vp-dot${phase === "searching" ? " scanning" : ""}`}
-                  style={{
-                    left: `${d.x}%`, top: `${d.y}%`,
-                    width: 4, height: 4,
-                    animationDelay: phase === "searching" ? `${(i * 37) % 400}ms` : "0ms",
-                    animationDuration: phase === "searching" ? `${0.3 + (i % 5) * 0.07}s` : "0s",
-                  }}
-                />
-              ))}
-
-              {/* Ping location marker */}
-              {ping && (
-                <div className="vp-ping" style={{ left: `${ping.x}%`, top: `${ping.y}%` }}>
-                  <div className="vp-ping-ring" />
-                  <div className="vp-ping-ring" style={{ animationDelay: "0.5s" }} />
-                  <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }}>
-                    <div className="vp-ping-core" />
-                  </div>
-                </div>
-              )}
-
-              {/* Map region labels */}
-              <span className="vp-map-label" style={{ left: "12%", top: "28%" }}>N. AMERICA</span>
-              <span className="vp-map-label" style={{ left: "44%", top: "20%" }}>EUROPE</span>
-              <span className="vp-map-label" style={{ left: "64%", top: "16%" }}>ASIA</span>
-              <span className="vp-map-label" style={{ left: "44%", top: "40%" }}>AFRICA</span>
-              <span className="vp-map-label" style={{ left: "80%", top: "60%" }}>AUSTRALIA</span>
+        {/* MASTHEAD */}
+        <header className="vp-mast">
+          <div className="vp-mast-inner">
+            <div className="vp-edition">
+              <span className="vp-edition-line" />
+              UpForge · Official Verification Tool
+              <span className="vp-edition-line" />
             </div>
-
-            {/* Map status bar */}
-            <div className="vp-map-status">
-              <span className="vp-map-stat">
-                {phase === "searching" ? "🔍 Scanning registry…" : `✓ Registry Online · `}
-                {phase !== "searching" && <span>{totalCount.toLocaleString()}+ Entries</span>}
-              </span>
-              <span className="vp-map-stat">upforge.org · <span>Global Registry</span></span>
-            </div>
-          </div>
-
-          {/* SEARCH BOX */}
-          <div className="vp-search-wrap">
-            <label className="vp-search-label" htmlFor="ufrn-input">
-              Enter UFRN to verify
-            </label>
-            <div className="vp-search-row">
-              <span className="vp-prefix">UFRN —</span>
-              <input
-                ref={inputRef}
-                id="ufrn-input"
-                className="vp-input"
-                type="text"
-                placeholder="e.g. UFRN-001234"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={phase === "searching"}
-                autoComplete="off"
-                spellCheck={false}
-                aria-label="UFRN Lookup Input"
-              />
-              <button
-                className={`vp-verify-btn${phase === "searching" ? " loading" : ""}`}
-                onClick={handleVerify}
-                disabled={!input.trim() || phase === "searching"}
-                aria-label="Verify UFRN"
-              >
-                {phase === "searching" ? "Scanning…" : "Verify →"}
-              </button>
-            </div>
-            <p className="vp-hint">
-              Don't have a UFRN?{" "}
-              <a href="/submit">Submit your startup</a> to get one free.
+            <h1 className="vp-h1">
+              Verify Any Startup's<br />
+              <em>Registry Number</em>
+            </h1>
+            <p className="vp-sub">
+              Enter a UFRN to instantly access the official registry record —
+              founders, funding, category, verification status, and more.
+              India's only independent startup identity system.
             </p>
-          </div>
-        </section>
-
-        {/* ── RESULTS AREA ─────────────────────────────────────────────────── */}
-        <div style={{ padding: "0 24px 64px", position: "relative", zIndex: 5 }}>
-
-          {/* LOADING */}
-          {phase === "searching" && (
-            <div className="vp-loading">
-              <div className="vp-loader-ring" />
-              <p className="vp-loading-text">Querying Registry</p>
-              <p className="vp-loading-sub">Cross-referencing {totalCount.toLocaleString()}+ verified entries…</p>
+            <div className="vp-divider">
+              <span className="vp-div-line" />
+              <span className="vp-div-dot">✦</span>
+              <span className="vp-div-line" />
             </div>
-          )}
-
-          {/* FOUND */}
-          {phase === "found" && result && (
-            <div className="vp-result">
-              {/* Header */}
-              <div className="vp-result-header">
-                <div className="vp-verified-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17L4 12" />
-                  </svg>
+            <div className="vp-stats">
+              {[
+                { v: `${(totalCount / 1000).toFixed(1)}K+`, l: "Verified Startups" },
+                { v: "100%", l: "Manual Review" },
+                { v: "Free", l: "Always" },
+              ].map((s, i) => (
+                <div key={i} className="vp-stat">
+                  <div className="vp-stat-v">{s.v}</div>
+                  <div className="vp-stat-l">{s.l}</div>
                 </div>
-                <div>
-                  <p className="vp-verified-title">✓ Registry Verified</p>
-                  <h2 className="vp-verified-h2">{result.name}</h2>
-                </div>
-                <div className="vp-ufrn-badge">{result.ufrn}</div>
-              </div>
+              ))}
+            </div>
+          </div>
+        </header>
 
-              {/* Body */}
-              <div className="vp-result-body">
-                {/* Logo + name row */}
-                <div className="vp-logo-row">
-                  <div className="vp-logo">
-                    {result.logo_url
-                      ? <img src={result.logo_url} alt={result.name} />
-                      : result.name.charAt(0)
-                    }
-                  </div>
-                  <div className="vp-logo-info">
-                    {result.category && <span className="vp-cat-badge">{result.category}</span>}
-                    <div className="vp-company-name">{result.name}</div>
-                    {result.founders && <div className="vp-founders">Founded by {result.founders}</div>}
-                  </div>
-                </div>
+        {/* MAIN */}
+        <main>
+          <div className="vp-main">
 
-                {/* Fields grid */}
-                <div className="vp-fields">
-                  <div className="vp-field">
-                    <span className="vp-field-label">Registry Status</span>
-                    <span className="vp-field-val green">✓ Approved & Verified</span>
-                  </div>
-                  <div className="vp-field">
-                    <span className="vp-field-label">UFRN</span>
-                    <span className="vp-field-val mono">{result.ufrn}</span>
-                  </div>
-                  {result.founded_year && (
-                    <div className="vp-field">
-                      <span className="vp-field-label">Founded</span>
-                      <span className="vp-field-val">{result.founded_year}</span>
-                    </div>
-                  )}
-                  {result.city && (
-                    <div className="vp-field">
-                      <span className="vp-field-label">Headquarters</span>
-                      <span className="vp-field-val">{result.city}{result.country_code ? `, ${result.country_code}` : ""}</span>
-                    </div>
-                  )}
-                  {result.funding_stage && (
-                    <div className="vp-field">
-                      <span className="vp-field-label">Funding Stage</span>
-                      <span className="vp-field-val">{result.funding_stage}</span>
-                    </div>
-                  )}
-                  {result.funding_amount && (
-                    <div className="vp-field">
-                      <span className="vp-field-label">Total Raised</span>
-                      <span className="vp-field-val">{formatFunding(result.funding_amount)}</span>
-                    </div>
-                  )}
-                  {result.updated_at && (
-                    <div className="vp-field">
-                      <span className="vp-field-label">Last Verified</span>
-                      <span className="vp-field-val muted">{new Date(result.updated_at).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</span>
-                    </div>
-                  )}
-                  <div className="vp-field">
-                    <span className="vp-field-label">Registry</span>
-                    <span className="vp-field-val muted">UpForge Global Registry</span>
-                  </div>
-                </div>
+            {/* LEFT — SEARCH + RESULT */}
+            <div>
+              {/* Search panel */}
+              <div className="vp-search-panel">
+                <div className="vp-panel-ey">UFRN Verification</div>
+                <div className="vp-panel-h">Enter a Registry Number</div>
+                <p className="vp-panel-p">
+                  Type or paste the startup's UFRN below. Accepts full format
+                  (UF-2026-IND-00013) or just the number (00013).
+                </p>
 
-                {/* Description */}
-                {result.description && (
-                  <p className="vp-desc">{result.description}</p>
-                )}
-
-                {/* Actions */}
-                <div className="vp-actions">
-                  <Link href={`/startup/${result.slug}`} className="vp-action-btn vp-action-primary">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M8 2L14 8L8 14"/><path d="M2 8h12"/>
-                    </svg>
-                    View Full Profile
-                  </Link>
-                  <button className="vp-action-btn vp-action-ghost" onClick={handleCopy}>
-                    {copied ? "✓ Copied!" : "📎 Share Verification"}
-                  </button>
-                  <button className="vp-action-btn vp-action-secondary" onClick={handleReset}>
-                    Search Again
+                <label className="vp-search-label" htmlFor="ufrn-input">UFRN — UpForge Registry Number</label>
+                <div className="vp-search-row">
+                  <span className="vp-prefix">UFRN</span>
+                  <input
+                    ref={inputRef}
+                    id="ufrn-input"
+                    className="vp-input"
+                    type="text"
+                    placeholder="e.g. UF-2026-IND-00013 or just 00013"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={phase === "searching"}
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-label="UFRN Lookup Input"
+                  />
+                  <button
+                    className="vp-verify-btn"
+                    onClick={handleVerify}
+                    disabled={!input.trim() || phase === "searching"}
+                    aria-label="Verify UFRN"
+                  >
+                    {phase === "searching" ? "Scanning…" : "Verify →"}
                   </button>
                 </div>
-              </div>
+                <p className="vp-hint">
+                  No UFRN? <a href="/submit">Submit your startup free</a> to receive one.
+                </p>
 
-              {/* Certificate strip */}
-              <div className="vp-cert">
-                <span className="vp-cert-icon">🏅</span>
-                <div className="vp-cert-text">
-                  <div className="vp-cert-title">UpForge Verification Certificate</div>
-                  <div className="vp-cert-sub">This startup has been manually verified by the UpForge editorial team.</div>
+                {/* Sample numbers */}
+                <div className="vp-samples">
+                  <p className="vp-samples-label">Try a sample UFRN format:</p>
+                  <div className="vp-sample-chips">
+                    {["UF-2026-IND-00001", "UF-2026-IND-00013", "UF-2026-IND-00100"].map(s => (
+                      <button key={s} className="vp-chip" onClick={() => setInput(s)}>{s}</button>
+                    ))}
+                  </div>
                 </div>
-                <span className="vp-cert-hash">#{result.id?.slice(0,8).toUpperCase()}</span>
+
+                {/* Result area */}
+                <div className="vp-result-area">
+
+                  {/* Searching */}
+                  {phase === "searching" && (
+                    <div className="vp-loading">
+                      <div className="vp-loader-ring" />
+                      <div>
+                        <div className="vp-loading-text">Querying Registry</div>
+                        <div className="vp-loading-sub">Cross-referencing {totalCount.toLocaleString()}+ entries…</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Found */}
+                  {phase === "found" && result && (
+                    <div className="vp-found">
+                      <div className="vp-found-head">
+                        <div className="vp-check-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6L9 17L4 12" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="vp-found-title">✓ Verified in Registry</div>
+                          <div className="vp-found-name">{result.name}</div>
+                        </div>
+                        <div className="vp-ufrn-tag">{result.ufrn}</div>
+                      </div>
+
+                      <div className="vp-found-body">
+                        {/* Logo + info */}
+                        <div className="vp-logo-row">
+                          <div className="vp-logo">
+                            {result.logo_url
+                              ? <img src={result.logo_url} alt={result.name} />
+                              : result.name.charAt(0)
+                            }
+                          </div>
+                          <div>
+                            {result.category && <span className="vp-cat-tag">{result.category}</span>}
+                            <div className="vp-company-big">{result.name}</div>
+                            {result.founders && <div className="vp-founders-sm">Founded by {result.founders}</div>}
+                          </div>
+                        </div>
+
+                        {/* Fields */}
+                        <div className="vp-fields">
+                          <div>
+                            <div className="vp-field-label">Registry Status</div>
+                            <div className="vp-field-val green">✓ Approved & Verified</div>
+                          </div>
+                          <div>
+                            <div className="vp-field-label">UFRN</div>
+                            <div className="vp-field-val mono">{result.ufrn}</div>
+                          </div>
+                          {result.founded_year && (
+                            <div>
+                              <div className="vp-field-label">Founded</div>
+                              <div className="vp-field-val">{result.founded_year}</div>
+                            </div>
+                          )}
+                          {result.city && (
+                            <div>
+                              <div className="vp-field-label">Headquarters</div>
+                              <div className="vp-field-val">{result.city}{result.country_code ? `, ${result.country_code}` : ""}</div>
+                            </div>
+                          )}
+                          {result.funding_stage && (
+                            <div>
+                              <div className="vp-field-label">Funding Stage</div>
+                              <div className="vp-field-val">{result.funding_stage}</div>
+                            </div>
+                          )}
+                          {formatFunding(result.funding_amount) && (
+                            <div>
+                              <div className="vp-field-label">Total Raised</div>
+                              <div className="vp-field-val">{formatFunding(result.funding_amount)}</div>
+                            </div>
+                          )}
+                          {result.updated_at && (
+                            <div>
+                              <div className="vp-field-label">Last Verified</div>
+                              <div className="vp-field-val muted">{new Date(result.updated_at).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</div>
+                            </div>
+                          )}
+                          <div>
+                            <div className="vp-field-label">Registry</div>
+                            <div className="vp-field-val muted">UpForge Global Registry</div>
+                          </div>
+                        </div>
+
+                        {result.description && (
+                          <div className="vp-desc-box">{result.description}</div>
+                        )}
+
+                        <div className="vp-actions">
+                          <Link href={`/startup/${result.slug}`} className="vp-btn-primary">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                              <path d="M8 2L14 8L8 14"/><path d="M2 8h12"/>
+                            </svg>
+                            View Full Profile
+                          </Link>
+                          <button className="vp-btn-ghost" onClick={handleCopy}>
+                            {copied ? "✓ Copied!" : "Share Verification"}
+                          </button>
+                          <button className="vp-btn-ghost" onClick={handleReset}>
+                            New Search
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Certificate strip */}
+                      <div className="vp-cert">
+                        <div>
+                          <div className="vp-cert-title">🏅 UpForge Verification Certificate</div>
+                          <div className="vp-cert-sub">Manually reviewed by the UpForge editorial team</div>
+                        </div>
+                        <span className="vp-cert-hash">#{result.id?.slice(0, 8).toUpperCase()}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Not Found */}
+                  {phase === "notfound" && (
+                    <div className="vp-notfound">
+                      <div className="vp-notfound-icon">🔍</div>
+                      <h2 className="vp-notfound-h">UFRN Not Found</h2>
+                      <p className="vp-notfound-p">
+                        No approved startup was found with that UFRN in the UpForge registry.
+                        Double-check the number — format should be <strong style={{ color: "rgba(255,255,255,.6)", fontStyle: "normal" }}>UF-2026-IND-XXXXX</strong>.
+                        The startup may not have been submitted or approved yet.
+                      </p>
+                      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+                        <button className="vp-btn-ghost" onClick={handleReset}>Try Again</button>
+                        <Link href="/submit" className="vp-btn-primary">Register Startup →</Link>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Error */}
+                  {phase === "error" && (
+                    <div className="vp-notfound">
+                      <div className="vp-notfound-icon">⚠️</div>
+                      <h2 className="vp-notfound-h">Registry Unavailable</h2>
+                      <p className="vp-notfound-p">Could not connect to the registry. Please try again in a moment.</p>
+                      <button className="vp-btn-ghost" onClick={handleReset}>Try Again</button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          )}
 
-          {/* NOT FOUND */}
-          {phase === "notfound" && (
-            <div className="vp-notfound">
-              <div className="vp-notfound-icon">🔍</div>
-              <h2 className="vp-notfound-h">UFRN Not Found</h2>
-              <p className="vp-notfound-p">
-                No approved startup was found with that UFRN in the UpForge global registry.
-                Double-check the number — or this startup may not be registered yet.
-              </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <button className="vp-notfound-btn" onClick={handleReset}>Try Again</button>
-                <Link href="/submit" className="vp-action-btn vp-action-ghost" style={{ fontSize: "9px" }}>
-                  Register a Startup →
-                </Link>
+            {/* RIGHT SIDEBAR */}
+            <aside className="vp-aside" style={{ position: "sticky", top: 80 }}>
+              <div className="aside-block">
+                <div className="aside-ey">What is UFRN?</div>
+                <div className="aside-h">UpForge Registry Number</div>
+                <p className="aside-p">
+                  A unique permanent identifier assigned to every verified startup.
+                  Format: <strong style={{ fontStyle: "normal", color: "var(--ink)" }}>UF-YEAR-CC-NUMBER</strong>
+                  <br /><br />
+                  Example: <code style={{ fontFamily: "monospace", fontSize: 12, color: "var(--saffron)", background: "var(--cream2)", padding: "2px 6px" }}>UF-2026-IND-00013</code>
+                </p>
               </div>
-            </div>
-          )}
 
-          {/* ERROR */}
-          {phase === "error" && (
-            <div className="vp-notfound" style={{ borderColor: "rgba(239,68,68,0.2)" }}>
-              <div className="vp-notfound-icon">⚠️</div>
-              <h2 className="vp-notfound-h">Registry Unavailable</h2>
-              <p className="vp-notfound-p">We couldn't connect to the registry. Please try again in a moment.</p>
-              <button className="vp-notfound-btn" onClick={handleReset}>Try Again</button>
-            </div>
-          )}
-        </div>
-
-        {/* ── STATS ─────────────────────────────────────────────────────────── */}
-        <div style={{ padding: "0 32px", position: "relative", zIndex: 5 }}>
-          <div className="vp-stats">
-            <div className="vp-stat">
-              <div className="vp-stat-num">{(totalCount / 1000).toFixed(0)}K<span>+</span></div>
-              <div className="vp-stat-label">Verified Startups</div>
-            </div>
-            <div className="vp-stat">
-              <div className="vp-stat-num">50<span>+</span></div>
-              <div className="vp-stat-label">Countries</div>
-            </div>
-            <div className="vp-stat">
-              <div className="vp-stat-num">100<span>%</span></div>
-              <div className="vp-stat-label">Manual Verification</div>
-            </div>
-            <div className="vp-stat">
-              <div className="vp-stat-num">Free<span>.</span></div>
-              <div className="vp-stat-label">Always & Forever</div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── HOW TO ────────────────────────────────────────────────────────── */}
-        <section className="vp-howto">
-          <span className="vp-section-eyebrow">How it works</span>
-          <h2 className="vp-section-h">Verify a startup in<br />under 10 seconds</h2>
-          <p className="vp-section-p">
-            The UFRN system gives every startup a permanent, searchable identity.
-            Investors, journalists, and partners use it for instant due diligence.
-          </p>
-          <div className="vp-steps">
-            {[
-              { n: "01", h: "Get the UFRN", p: "Ask the startup for their UpForge Registry Number. It looks like UFRN-XXXXXX and appears on their website, deck, or card." },
-              { n: "02", h: "Enter it above", p: "Type or paste the UFRN into the search box at the top of this page and hit Verify." },
-              { n: "03", h: "View registry record", p: "See the official record — company name, founders, sector, city, founding year, funding, and live verification status." },
-              { n: "04", h: "Share or download", p: "Copy the verification link or download the certificate to share as proof in a deal, press piece, or due diligence report." },
-            ].map(s => (
-              <div key={s.n} className="vp-step">
-                <div className="vp-step-num">{s.n}</div>
-                <div className="vp-step-h">{s.h}</div>
-                <p className="vp-step-p">{s.p}</p>
+              <div className="aside-block">
+                <div className="aside-ey">UFRN Format Guide</div>
+                <ul className="aside-list">
+                  {[
+                    { l: "UF", d: "UpForge prefix" },
+                    { l: "2026", d: "Year of registration" },
+                    { l: "IND", d: "Country code (India)" },
+                    { l: "00013", d: "Sequential registry number" },
+                  ].map(item => (
+                    <li key={item.l}>
+                      <a href="#" onClick={e => e.preventDefault()}>
+                        <span>
+                          <code style={{ fontFamily: "monospace", fontSize: 11, color: "var(--saffron)", fontStyle: "normal" }}>{item.l}</code>
+                          {" "}<span style={{ color: "var(--ink4)", fontSize: 11, fontStyle: "italic" }}>— {item.d}</span>
+                        </span>
+                        <span style={{ color: "var(--rule)" }}>→</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
+
+              <div className="aside-block" style={{ background: "var(--ink)", border: "none" }}>
+                <div className="aside-ey" style={{ color: "rgba(232,147,58,.8)" }}>No UFRN yet?</div>
+                <div className="aside-h" style={{ color: "#fff" }}>Get your startup listed free</div>
+                <p className="aside-p" style={{ color: "rgba(255,255,255,.4)" }}>
+                  Join {totalCount.toLocaleString()}+ verified startups. Free forever, manually verified.
+                </p>
+                <a href="/submit" style={{ display: "block", textAlign: "center", background: "var(--saffron)", color: "#fff", padding: "12px", fontFamily: "system-ui,sans-serif", fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: ".18em", textDecoration: "none", transition: "background .15s" }}>
+                  Submit Your Startup →
+                </a>
+              </div>
+            </aside>
           </div>
-        </section>
 
-        {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-        <section className="vp-faq">
-          <span className="vp-section-eyebrow">FAQ</span>
-          <h2 className="vp-section-h">Common questions</h2>
-          <FAQ />
-        </section>
-
-        {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-        <footer style={{ borderTop: "1px solid var(--rule)", padding: "32px", position: "relative", zIndex: 5 }}>
-          <div className="vp-footer">
-            <span className="vp-footer-brand">Up<span>Forge</span> · Global Registry</span>
-            <div className="vp-footer-links">
-              <Link href="/"        className="vp-footer-link">Home</Link>
-              <Link href="/startup" className="vp-footer-link">Registry</Link>
-              <Link href="/verify"  className="vp-footer-link">Verify UFRN</Link>
-              <Link href="/submit"  className="vp-footer-link">Submit Startup</Link>
-              <Link href="/blog"    className="vp-footer-link">Blog</Link>
-              <Link href="/about"   className="vp-footer-link">About</Link>
+          {/* PROMISE BAR */}
+          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(16px,4vw,48px)", marginBottom: 48 }}>
+            <div className="promise-bar">
+              {[
+                { label: "Manually Verified", desc: "Every UFRN assigned after editorial review", color: "#15803D" },
+                { label: "Permanent Record",  desc: "UFRNs never expire or get reassigned",       color: "#2563EB" },
+                { label: "Free Lookup",        desc: "Unlimited verifications, no account needed", color: "#7C3AED" },
+                { label: "Trusted by Investors", desc: "Used for startup due diligence in India",  color: "#E8933A" },
+              ].map((item, i) => (
+                <div key={i} className="promise-item">
+                  <div className="promise-dot" style={{ background: item.color }} />
+                  <div>
+                    <div className="promise-label">{item.label}</div>
+                    <div className="promise-desc">{item.desc}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </footer>
+
+          {/* HOW TO */}
+          <div className="vp-howto">
+            <div className="sec-hd2">
+              <span className="sec-hd2-label">How Verification Works</span>
+              <span className="sec-hd2-rule" />
+            </div>
+            <div className="vp-steps">
+              {[
+                { n: "01", h: "Get the UFRN", p: "Ask the startup for their UpForge Registry Number. Format: UF-YEAR-CC-XXXXX. Found on their website, deck, or profile page." },
+                { n: "02", h: "Enter It Above", p: "Type or paste the UFRN in the search box. Short form (just the number) works too — we auto-format." },
+                { n: "03", h: "View the Record", p: "See the official registry entry — name, founders, sector, city, funding, and live verification status." },
+                { n: "04", h: "Share or Download", p: "Copy the verification link or share the certificate as proof in a deal, pitch, or press piece." },
+              ].map(s => (
+                <div key={s.n} className="vp-step">
+                  <div className="vp-step-num">{s.n}</div>
+                  <div className="vp-step-h">{s.h}</div>
+                  <p className="vp-step-p">{s.p}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* FAQ */}
+          <div className="vp-faq-wrap">
+            <div className="sec-hd2" style={{ marginBottom: 20 }}>
+              <span className="sec-hd2-label">Frequently Asked Questions</span>
+              <span className="sec-hd2-rule" />
+            </div>
+            <FAQAccordion />
+          </div>
+        </main>
+
+        <Footer />
       </div>
     </>
   )
 }
 
-// ─── FAQ SUB-COMPONENT ────────────────────────────────────────────────────────
+// ─── FAQ ─────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
-  { q: "What is a UFRN?", a: "A UFRN (UpForge Registry Number) is a unique permanent identifier assigned to every verified startup in the UpForge global registry. It's the world's first startup-specific identity number — like a passport number for companies." },
-  { q: "Is UFRN verification free?", a: "Yes, completely free. No account required. Unlimited lookups. The registry is funded by UpForge and will remain free forever." },
+  { q: "What is a UFRN and what does it look like?", a: "A UFRN (UpForge Registry Number) is a unique permanent identifier assigned to every verified startup. Format: UF-YEAR-COUNTRYCODE-NUMBER, e.g. UF-2026-IND-00013. It acts as a startup's official proof of existence in the UpForge global registry." },
+  { q: "Why does the verification say 'Not Found'?", a: "This usually means (a) the UFRN was entered incorrectly — double-check the format UF-2026-IND-XXXXX, (b) the startup hasn't been approved yet, or (c) the startup hasn't been submitted. You can also try entering just the numeric portion (e.g. '13' or '00013') and we'll auto-format it." },
+  { q: "Is UFRN verification free?", a: "Yes, completely free. No account required, no limits. The registry is maintained by UpForge and will remain free forever for lookups." },
   { q: "What does 'Verified' actually mean?", a: "Verified means the UpForge editorial team has manually reviewed the startup — confirmed it's active, has real founders, and submitted accurate information. It's not just a database entry; it's a human-reviewed record." },
-  { q: "My startup isn't in the registry — how do I get a UFRN?", a: "Submit your startup at upforge.org/submit (or upforge.in/submit for India). The process is free and the team reviews within a few days." },
-  { q: "Can investors trust UFRN verification for due diligence?", a: "UFRN verification provides a verified baseline — official company name, founders, sector, and existence. It should be used as a starting point alongside standard due diligence, not a replacement for it." },
-  { q: "What if the UFRN I entered isn't found?", a: "Either the UFRN is wrong (check for typos), the startup hasn't been approved yet, or it hasn't been submitted. Contact the startup directly or ask them to submit at upforge.org/submit." },
+  { q: "How is UFRN different from company registration (like MCA/CIN)?", a: "Company registration (CIN, MCA) verifies legal incorporation. UFRN verifies that a startup is actively building, has a real product and real founders. It's the world's first startup-specific identity system — complementary to, not a replacement for, legal registration." },
+  { q: "How do I get a UFRN for my startup?", a: "Submit your startup for free at upforge.in/submit. The editorial team reviews each application and assigns a permanent UFRN upon approval, typically within a few days." },
 ]
 
-function FAQ() {
+function FAQAccordion() {
   const [open, setOpen] = useState<number | null>(null)
   return (
     <div className="vp-faq-list">
