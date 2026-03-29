@@ -2,14 +2,13 @@
 /**
  * components/verify-client.tsx
  * UFRN Verification — Premium Editorial Design
+ * Optimized visual layout with global radar scanning and professional typography.
  */
 
 import { useState, useRef, useCallback, useEffect } from "react"
-import Link from "next/link" // <--- Add this missing import
+import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CheckCircle2, Search, Share2, RotateCcw, ShieldCheck, MapPin, Calendar, Layers } from "lucide-react"
+import { CheckCircle2, Search, Share2, RotateCcw, ShieldCheck, MapPin, Calendar, Layers, Globe } from "lucide-react"
 
 interface StartupRecord {
   id: string; name: string; slug: string; ufrn: string
@@ -24,7 +23,7 @@ interface StartupRecord {
 type Phase = "idle" | "searching" | "found" | "notfound" | "error"
 interface Props { totalCount: number; isOrg: boolean }
 
-// Landmass dot positions [x%, y%] for the background map
+// Landmass dot positions [x%, y%] for the world map visualization
 const DOTS: [number, number][] = [
   [13,28],[17,32],[21,30],[15,38],[20,42],[25,35],[28,40],[22,48],[19,52],[24,55],[27,36],[23,44],
   [26,58],[28,62],[30,68],[27,72],[29,76],[31,65],[25,64],[27,60],[29,70],
@@ -88,7 +87,7 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         .eq("status", "approved")
         .single()
       
-      await new Promise(r => setTimeout(r, 1600))
+      await new Promise(r => setTimeout(r, 1800))
       stopScan()
       
       if (error || !data) setPhase("notfound")
@@ -118,189 +117,177 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
-        
-        .vp-wrap { 
-          --cream: #FDFCF8; --ink: #111111; --gold: #C59A2E; --border: #D8D2C8;
-          background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-col: column;
-        }
-
-        .vp-main { flex: 1; padding-top: 80px; text-align: center; }
-        
-        .vp-header { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
-        .vp-label { font-size: 10px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: block; }
-        .vp-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.02em; }
-        .vp-title em { font-style: italic; font-weight: 400; }
-        .vp-desc { font-family: 'EB Garamond', serif; font-size: 1.25rem; font-style: italic; color: #666; max-width: 540px; margin: 0 auto 40px; line-height: 1.6; }
-
         .vp-search-box { 
-          max-width: 600px; margin: 0 auto 60px; position: relative;
-          background: #FFF; border: 2px solid var(--ink); display: flex;
-          box-shadow: 12px 12px 0px rgba(17, 17, 17, 0.04); transition: transform 0.2s ease;
+          max-width: 680px; margin: 0 auto 60px; position: relative;
+          background: #FFF; border: 2px solid #111; display: flex;
+          box-shadow: 10px 10px 0px rgba(17, 17, 17, 0.05); transition: all 0.2s ease;
         }
         .vp-search-box:focus-within { transform: translate(-2px, -2px); box-shadow: 14px 14px 0px rgba(197, 154, 46, 0.15); }
-        .vp-input { flex: 1; padding: 20px 24px; border: none; font-family: 'EB Garamond', serif; font-size: 1.2rem; font-style: italic; outline: none; }
-        .vp-submit { background: var(--ink); color: #FFF; border: none; padding: 0 32px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .vp-submit:hover:not(:disabled) { background: var(--gold); }
-        .vp-submit:disabled { opacity: 0.5; }
-
-        .vp-map-container { max-width: 1000px; margin: 0 auto; position: relative; border-top: 1px solid var(--border); overflow: hidden; padding: 40px 0; }
-        .vp-dot-map { width: 100%; height: 220px; opacity: 0.8; }
-        .vp-map-label { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-around; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: #AAA; }
+        .vp-input { flex: 1; padding: 22px 28px; border: none; font-size: 1.15rem; font-weight: 600; outline: none; letter-spacing: 0.02em; }
+        .vp-submit { background: #111; color: #FFF; border: none; padding: 0 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; cursor: pointer; transition: 0.2s; }
+        .vp-submit:hover:not(:disabled) { background: #C59A2E; }
+        
+        .vp-map-container { max-width: 1000px; margin: 0 auto; position: relative; border-top: 1px solid #EEE; overflow: hidden; padding: 60px 0; }
+        .vp-dot-map { width: 100%; height: 240px; opacity: 0.9; }
+        .vp-map-label { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.25em; color: #BBB; }
 
         .vp-certificate { 
-          max-width: 800px; margin: 0 auto 80px; background: #FFF; border: 1px solid var(--border); 
-          text-align: left; position: relative; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          max-width: 850px; margin: 0 auto 100px; background: #FFF; border: 1px solid #D8D2C8; 
+          text-align: left; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.03);
+          animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
         
-        .vp-cert-top { background: var(--ink); color: #FFF; padding: 32px; display: flex; justify-content: space-between; align-items: center; }
-        .vp-cert-body { padding: 40px; }
-        .vp-field-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 32px; border-top: 1px solid #EEE; pt: 32px; }
-        .vp-f-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #AAA; margin-bottom: 4px; }
-        .vp-f-value { font-size: 14px; font-weight: 600; }
-
-        .vp-how-section { background: #F6F3ED; padding: 80px 24px; border-top: 1px solid var(--border); }
-        .vp-step-grid { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 1100px; margin: 40px auto 0; gap: 40px; }
-        @media (max-width: 768px) { .vp-step-grid { grid-template-columns: 1fr; } .vp-field-grid { grid-template-columns: 1fr; } }
+        .vp-cert-top { background: #111; color: #FFF; padding: 36px 44px; display: flex; justify-content: space-between; align-items: center; }
+        .vp-cert-body { padding: 48px 54px; }
+        .vp-field-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 40px; }
+        
+        .vp-how-section { padding: 100px 24px; border-top: 1px solid #EEE; text-align: center; }
+        .vp-step-grid { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 1100px; margin: 60px auto 0; gap: 48px; }
+        @media (max-width: 850px) { .vp-step-grid { grid-template-columns: 1fr; } .vp-field-grid { grid-template-columns: 1fr; } .vp-cert-body { padding: 30px; } }
       `}</style>
 
-      <div className="vp-wrap">
-        <Navbar />
-        
-        <main className="vp-main">
-          {/* Hero Section */}
-          <header className="vp-header">
-            <span className="vp-label">Official Registry Certificate</span>
-            <h1 className="vp-title">Verify Startup <br/><em>Identity & Status</em></h1>
-            <p className="vp-desc">
-              Cross-reference founders, funding, and registry status. Access the official record of any verified entity in the global ecosystem.
-            </p>
+      <div className="max-w-6xl mx-auto px-6 text-center">
+        {/* Masthead */}
+        <header className="pt-16 pb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#111] text-white text-[9px] font-black tracking-[0.25em] uppercase mb-8">
+            <ShieldCheck size={12} /> UpForge Verified Registry
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tighter text-[#111] mb-6">
+            Registry Lookup
+          </h1>
+          <p className="text-[#777] text-xl max-w-2xl mx-auto font-medium leading-relaxed mb-12">
+            Confirm operational status, verified founders, and official records of any entity within the UpForge Global Index.
+          </p>
 
-            <div className="vp-search-box">
-              <input 
-                ref={inputRef}
-                className="vp-input"
-                placeholder="Enter UFRN (e.g. 00013 or UF-2026-IND-00013)"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleVerify()}
-                disabled={phase === "searching"}
+          <div className="vp-search-box">
+            <input 
+              ref={inputRef}
+              className="vp-input"
+              placeholder="Enter UFRN (e.g. 00013)"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleVerify()}
+              disabled={phase === "searching"}
+            />
+            <button 
+              className="vp-submit"
+              onClick={handleVerify}
+              disabled={!input || phase === "searching"}
+            >
+              {phase === "searching" ? "Scanning" : "Verify Number"}
+            </button>
+          </div>
+        </header>
+
+        {/* Interactive Radar Scanning Map */}
+        <section className="vp-map-container">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#C59A2E]/5 to-transparent w-1/3 animate-[scan_2.5s_linear_infinite]" />
+          <style>{`@keyframes scan { from { left: -30%; } to { left: 130%; } }`}</style>
+          <svg className="vp-dot-map" viewBox="0 0 100 50">
+            {DOTS.map(([x, y], i) => (
+              <circle 
+                key={i} cx={x} cy={y} 
+                r={activeDots.has(i) ? 1 : 0.55} 
+                fill={activeDots.has(i) ? "#C59A2E" : "#D8D2C8"}
+                style={{ transition: 'all 0.15s ease', opacity: activeDots.has(i) ? 1 : 0.35 }}
               />
-              <button 
-                className="vp-submit"
-                onClick={handleVerify}
-                disabled={!input || phase === "searching"}
-              >
-                {phase === "searching" ? "Scanning..." : "Verify"}
-              </button>
-            </div>
-          </header>
+            ))}
+          </svg>
+          <div className="vp-map-label">
+            <span>Global Node Audit Active</span>
+            <span>{totalCount.toLocaleString()}+ Verified Entities</span>
+            <span>Real-time Registry Index</span>
+          </div>
+        </section>
 
-          {/* Interactive Map Section */}
-          <section className="vp-map-container">
-            <svg className="vp-dot-map" viewBox="0 0 100 50">
-              {DOTS.map(([x, y], i) => (
-                <circle 
-                  key={i} cx={x} cy={y} 
-                  r={activeDots.has(i) ? 0.9 : 0.5} 
-                  fill={activeDots.has(i) ? "var(--gold)" : "#D8D2C8"}
-                  style={{ transition: 'all 0.1s ease', opacity: activeDots.has(i) ? 1 : 0.3 }}
-                />
-              ))}
-            </svg>
-            <div className="vp-map-label">
-              <span>UpForge Global Registry Index</span>
-              <span>{totalCount.toLocaleString()}+ Verified Entities</span>
-              <span>Real-time Audit Active</span>
+        {/* Search Results */}
+        <section className="mt-12">
+          {phase === "searching" && (
+            <div className="py-24 animate-pulse">
+              <div className="text-[10px] font-black uppercase tracking-[0.5em] text-[#AAA] mb-2">Secure Connection Established</div>
+              <div className="text-xs font-bold text-[#111]">Cross-Referencing Global Database...</div>
             </div>
-          </section>
+          )}
 
-          {/* Results Display */}
-          <section className="px-6">
-            {phase === "searching" && (
-              <div className="py-20 animate-pulse text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400">
-                Searching Secure Database...
+          {phase === "found" && result && (
+            <div className="vp-certificate">
+              <div className="vp-cert-top">
+                <div className="flex items-center gap-5">
+                  <div className="bg-emerald-500 p-2.5 rounded-full shadow-lg shadow-emerald-500/20"><CheckCircle2 className="text-white" size={22}/></div>
+                  <div>
+                    <div className="text-[10px] font-black uppercase tracking-widest opacity-50">Identity Verified</div>
+                    <div className="text-2xl font-bold tracking-tight uppercase">{result.name}</div>
+                  </div>
+                </div>
+                <div className="text-right border-l border-white/20 pl-8">
+                  <div className="text-[10px] font-black uppercase tracking-widest opacity-50">UFRN Number</div>
+                  <div className="font-mono text-lg text-[#C59A2E] font-black tracking-tighter">{result.ufrn}</div>
+                </div>
               </div>
-            )}
 
-            {phase === "found" && result && (
-              <div className="vp-certificate">
-                <div className="vp-cert-top">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-emerald-500 p-2 rounded-full"><CheckCircle2 className="text-white" size={20}/></div>
-                    <div>
-                      <div className="text-[9px] font-bold uppercase tracking-widest opacity-60">Status: Approved</div>
-                      <div className="text-xl font-serif font-bold">{result.name}</div>
+              <div className="vp-cert-body">
+                 <div className="flex flex-col md:flex-row gap-10 items-start">
+                    <div className="w-28 h-28 bg-[#FBFBFB] border border-[#EEE] flex items-center justify-center shrink-0 shadow-sm">
+                       {result.logo_url ? <img src={result.logo_url} className="w-full h-full object-cover" alt=""/> : <span className="text-5xl font-black text-[#DDD]">{result.name[0]}</span>}
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[9px] font-bold uppercase tracking-widest opacity-60">UFRN ID</div>
-                    <div className="font-mono text-sm text-[#C59A2E] font-bold">{result.ufrn}</div>
-                  </div>
-                </div>
+                    <div>
+                      <span className="inline-block px-3 py-1 bg-amber-50 text-amber-800 text-[10px] font-black uppercase tracking-widest border border-amber-100 mb-3">
+                         Sector: {result.category}
+                      </span>
+                      <h3 className="text-3xl font-bold text-[#111] mb-2 tracking-tight">{result.name}</h3>
+                      <p className="text-base font-medium text-[#777]">Managed by {result.founders}</p>
+                    </div>
+                 </div>
 
-                <div className="vp-cert-body">
-                   <div className="flex gap-8 items-start">
-                      <div className="w-24 h-24 bg-[#F9F9F9] border border-[#EEE] flex items-center justify-center shrink-0">
-                         {result.logo_url ? <img src={result.logo_url} className="w-full h-full object-cover"/> : <span className="text-4xl font-serif text-gray-300">{result.name[0]}</span>}
-                      </div>
-                      <div>
-                        <span className="inline-block px-2 py-1 bg-amber-50 text-amber-700 text-[9px] font-bold uppercase tracking-wider border border-amber-100 mb-2">
-                           {result.category}
-                        </span>
-                        <h3 className="text-2xl font-serif font-bold mb-1">{result.name}</h3>
-                        <p className="text-sm font-serif italic text-gray-500">Founded by {result.founders}</p>
-                      </div>
-                   </div>
+                 <div className="vp-field-grid">
+                    <Field icon={ShieldCheck} label="Audit Status" value="Editorial Board Verified" />
+                    <Field icon={MapPin} label="Official HQ" value={`${result.city || 'Global'}, ${result.country_code}`} />
+                    <Field icon={Layers} label="Investment Stage" value={result.funding_stage || 'Private'} />
+                    <Field icon={Calendar} label="Registered Since" value={result.founded_year?.toString() || '2026'} />
+                    <Field icon={RotateCcw} label="Last Updated" value={new Date(result.updated_at || "").toLocaleDateString()} />
+                    <Field icon={Search} label="Ledger Index" value={`#${result.id.slice(0,8).toUpperCase()}`} />
+                 </div>
 
-                   <div className="vp-field-grid pt-8">
-                      <Field icon={ShieldCheck} label="Verification" value="Editorial Board Verified" />
-                      <Field icon={MapPin} label="Location" value={`${result.city || 'Global'}, ${result.country_code}`} />
-                      <Field icon={Layers} label="Funding" value={result.funding_stage || 'Undisclosed'} />
-                      <Field icon={Calendar} label="Registered" value={result.founded_year?.toString() || '2026'} />
-                      <Field icon={RotateCcw} label="Last Audit" value={new Date(result.updated_at || "").toLocaleDateString()} />
-                      <Field icon={Search} label="Index" value={`#${result.id.slice(0,6).toUpperCase()}`} />
-                   </div>
-
-                   <div className="mt-10 flex gap-4">
-                      <Link href={`/startup/${result.slug}`} className="bg-black text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-[#C59A2E] transition-all">View Full Dossier</Link>
-                      <button onClick={handleCopy} className="border border-gray-200 px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 flex items-center gap-2">
-                        <Share2 size={12}/> {copied ? "Link Copied" : "Share Link"}
-                      </button>
-                      <button onClick={handleReset} className="ml-auto text-gray-400 hover:text-black text-[10px] font-bold uppercase tracking-widest">New Search</button>
-                   </div>
-                </div>
+                 <div className="mt-12 flex flex-wrap gap-5">
+                    <Link href={`/startup/${result.slug}`} className="bg-[#111] text-white px-10 py-4 text-[11px] font-black uppercase tracking-widest hover:bg-[#C59A2E] transition-all shadow-xl shadow-black/5">
+                      Full Registry Dossier
+                    </Link>
+                    <button onClick={handleCopy} className="border-2 border-[#111] px-8 py-4 text-[11px] font-black uppercase tracking-widest hover:bg-[#F6F3ED] flex items-center gap-2 transition-colors">
+                      <Share2 size={14}/> {copied ? "Verified Link Copied" : "Share Record"}
+                    </button>
+                    <button onClick={handleReset} className="ml-auto text-[#AAA] hover:text-[#111] text-[10px] font-black uppercase tracking-widest transition-colors">
+                      New Search
+                    </button>
+                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {phase === "notfound" && (
-              <div className="max-w-[500px] mx-auto py-20 border border-dashed border-gray-200 mb-20">
-                <div className="text-gray-300 mb-4 flex justify-center"><Search size={40}/></div>
-                <h3 className="text-xl font-serif font-bold mb-2">Registry Record Not Found</h3>
-                <p className="text-sm italic text-gray-400 mb-6 px-10">We couldn't find an approved startup with that UFRN. Please check the ID or ensure the startup has been approved.</p>
-                <div className="flex gap-4 justify-center">
-                  <button onClick={handleReset} className="text-[10px] font-bold uppercase tracking-widest border border-black px-6 py-2">Try Again</button>
-                  <Link href="/submit" className="text-[10px] font-bold uppercase tracking-widest bg-black text-white px-6 py-2">Submit Startup</Link>
-                </div>
+          {phase === "notfound" && (
+            <div className="max-w-[550px] mx-auto py-24 border-2 border-dashed border-[#DDD] bg-[#FDFCF8] mb-20">
+              <div className="text-[#CCC] mb-6 flex justify-center"><Search size={50}/></div>
+              <h3 className="text-2xl font-bold uppercase tracking-tight text-[#111] mb-3">Record Not Located</h3>
+              <p className="text-[#888] font-medium mb-10 px-12 leading-relaxed">The Registry Number <span className="font-mono font-black text-[#111]">"{normalizeUFRN(input)}"</span> does not match an approved entity in our global index.</p>
+              <div className="flex gap-4 justify-center">
+                <button onClick={handleReset} className="text-[10px] font-black uppercase tracking-[0.2em] border-2 border-[#111] px-8 py-3 hover:bg-[#111] hover:text-white transition-all">Try Another</button>
+                <Link href="/submit" className="text-[10px] font-black uppercase tracking-[0.2em] bg-[#111] text-white px-8 py-3 hover:bg-[#C59A2E] transition-all">Submit Entity</Link>
               </div>
-            )}
-          </section>
+            </div>
+          )}
+        </section>
 
-          {/* How It Works Section */}
-          <section className="vp-how-section">
-             <span className="vp-label">System Architecture</span>
-             <h2 className="text-3xl font-serif font-bold">How the Registry Works</h2>
-             <div className="vp-step-grid">
-                <Step num="01" title="Data Ingestion" desc="Startups submit operational data through our secure gateway." />
-                <Step num="02" title="Manual Review" desc="Our editorial board audits the founding team and legal status." />
-                <Step num="03" title="UFRN Issuance" desc="Upon approval, a unique Registry Number is cryptographically issued." />
-                <Step num="04" title="Public Ledger" desc="The entity is added to the searchable global database for due diligence." />
-             </div>
-          </section>
-        </main>
-
-        <Footer />
+        {/* System Architecture / How it Works */}
+        <section className="vp-how-section">
+           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C59A2E] mb-4 block">System Architecture</span>
+           <h2 className="text-4xl font-bold tracking-tight text-[#111]">Registry Workflow</h2>
+           <div className="vp-step-grid">
+              <Step num="01" title="Data Ingestion" desc="Entities submit operational data through secure encrypted gateways." />
+              <Step num="02" title="Manual Audit" desc="Our editorial board performs manual due diligence on founders and status." />
+              <Step num="03" title="UFRN Cryptography" desc="Upon approval, a unique sequential Registry Number is issued." />
+              <Step num="04" title="Public Ledger" desc="The record is added to the global searchable index for verification." />
+           </div>
+        </section>
       </div>
     </>
   )
@@ -309,20 +296,21 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
 function Field({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
     return (
         <div>
-            <div className="vp-f-label flex items-center gap-2">
-                <Icon size={10} className="text-[#C59A2E]"/> {label}
+            <div className="flex items-center gap-2 text-[#AAA] mb-2">
+                <Icon size={12} className="text-[#C59A2E]"/>
+                <span className="text-[9px] font-black uppercase tracking-widest">{label}</span>
             </div>
-            <div className="vp-f-value">{value}</div>
+            <div className="text-[15px] font-bold text-[#111] tracking-tight">{value}</div>
         </div>
     )
 }
 
 function Step({ num, title, desc }: { num: string, title: string, desc: string }) {
     return (
-        <div className="text-left border-l border-gray-200 pl-6 py-4">
-            <div className="text-4xl font-serif font-black text-gray-100 mb-2">{num}</div>
-            <h4 className="text-sm font-bold uppercase tracking-tight mb-2">{title}</h4>
-            <p className="text-xs font-serif italic text-gray-500 leading-relaxed">{desc}</p>
+        <div className="text-left border-l-2 border-[#111] pl-8 py-2">
+            <div className="text-5xl font-black text-[#F0F0F0] mb-4 leading-none">{num}</div>
+            <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-[#111]">{title}</h4>
+            <p className="text-[13px] font-medium text-[#777] leading-relaxed">{desc}</p>
         </div>
     )
 }
