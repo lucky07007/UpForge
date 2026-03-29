@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight, ShieldCheck } from "lucide-react";
 
 type NavLink = {
   name: string;
@@ -65,7 +65,6 @@ export function Navbar() {
 
   const renderDesktop = (link: NavLink) =>
     link.external ? (
-      // Plain <a> for cross-domain: no target="_blank", opens same tab like all other nav links
       <a key={link.name} href={link.href} className={desktopClass(link)}>
         {link.name}
       </a>
@@ -139,15 +138,15 @@ export function Navbar() {
             {links.map(renderDesktop)}
           </nav>
 
-          {/* Right side */}
-          <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-            <div className="flex items-center gap-1.5 border border-[#DDD] bg-white px-2.5 py-1">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
-              </span>
-              <span className="text-[9px] text-[#666] font-medium tracking-wider uppercase">Live</span>
-            </div>
+          {/* Right side — Verify UFRN + List Startup */}
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+            <Link
+              href="/verify"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-[#D5D0C8] bg-white text-[11px] font-semibold tracking-wider uppercase text-[#555] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors"
+            >
+              <ShieldCheck className="w-3 h-3" />
+              Verify UFRN
+            </Link>
             <Link
               href="/submit"
               className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#1C1C1C] text-white text-[11px] font-bold tracking-wider uppercase hover:bg-[#333] transition-colors"
@@ -187,15 +186,14 @@ export function Navbar() {
             {links.map(renderMobile)}
           </div>
           <div className="px-5 py-4 flex items-center justify-between gap-3 border-t border-[#D5D0C8] bg-white/40">
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
-              </span>
-              <span className="text-[10px] text-[#888] font-medium uppercase tracking-wider">
-                Live · Updated every 10 min
-              </span>
-            </div>
+            <Link
+              href="/verify"
+              onClick={() => setIsOpen(false)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-[#D5D0C8] bg-white text-[11px] font-semibold tracking-wider uppercase text-[#555] hover:border-[#1C1C1C] hover:text-[#1C1C1C] transition-colors"
+            >
+              <ShieldCheck className="w-3 h-3" />
+              Verify UFRN
+            </Link>
             <Link
               href="/submit"
               onClick={() => setIsOpen(false)}
