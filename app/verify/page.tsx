@@ -4,7 +4,6 @@ import { headers } from "next/headers"
 import { VerifyClient } from "@/components/verify-client"
 import { createReadClient } from "@/lib/supabase/server"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 
 async function getDomain(): Promise<"org" | "in"> {
   const h = await headers()
