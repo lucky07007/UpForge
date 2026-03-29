@@ -1,14 +1,10 @@
-// app/verify/page.tsx — UpForge UFRN Verification Page
-// CRITICAL: Server component — static SEO shell + client search widget
-//
-// SEO STRATEGY:
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. Targets "UFRN lookup", "verify startup UFRN", "startup registry number",
-//    "UpForge Registry Number", "how to verify a startup" — zero-competition keywords
-// 2. SpecialAnnouncement + HowTo + FAQPage schema = triple rich result eligibility
-// 3. Canonical on both .org and .in pointing to upforge.org/verify (authority)
-// 4. SoftwareApplication schema signals this is a tool, not a page — different SERP treatment
-// ─────────────────────────────────────────────────────────────────────────────
+// app/verify/page.tsx — UpForge UFRN Verification Page (FIXED)
+// Changes:
+// 1. UFRN format corrected to UF-YEAR-CC-NUMBER (e.g. UF-2026-IND-00013)
+// 2. normalizeUFRN() in client handles partial input
+// 3. Navbar + Footer now rendered via VerifyClient (not inline — avoids collapse)
+// 4. Massive SEO: SoftwareApplication + HowTo + FAQPage + BreadcrumbList schemas
+// 5. Schema targets "UFRN lookup", "verify startup India", "startup registry number" — zero competition
 
 import type { Metadata } from "next"
 import { headers } from "next/headers"
@@ -24,7 +20,7 @@ async function getDomain(): Promise<"org" | "in"> {
   return host.includes("upforge.org") ? "org" : "in"
 }
 
-// ─── LIVE STATS FOR SCHEMA ───────────────────────────────────────────────────
+// ─── LIVE STATS ──────────────────────────────────────────────────────────────
 async function getVerifyStats() {
   try {
     const sb = createReadClient()
@@ -38,27 +34,28 @@ async function getVerifyStats() {
   }
 }
 
-// ─── METADATA ───────────────────────────────────────────────────────────────
+// ─── METADATA ────────────────────────────────────────────────────────────────
 export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  const canonical = `https://www.upforge.org/verify`
+  const canonical = "https://www.upforge.org/verify"
   const ogImage = "https://www.upforge.in/og/ufrn-verify.png"
 
   return {
-    title: "Verify UFRN — UpForge Registry Number Lookup | Official Startup Verification",
+    title: "Verify UFRN — UpForge Startup Registry Number Lookup | Official Verification Tool",
     description:
-      "Instantly verify any startup's UFRN (UpForge Registry Number). Look up verified company details, founder info, funding data, and official registry status. The world's only independent startup identity verification system.",
+      "Instantly verify any startup's UFRN (UpForge Registry Number). Format: UF-2026-IND-XXXXX. Look up verified company details, founder info, funding data, and official registry status. India's only independent startup identity verification system — free, instant, trusted.",
     keywords: [
       "UFRN lookup", "verify startup UFRN", "UpForge Registry Number",
-      "startup verification tool", "verify startup legitimacy", "UFRN search",
-      "startup registry number lookup", "check startup registration",
-      "startup identity verification", "UFRN database", "is this startup real",
-      "startup verification India", "verify company startup",
-      "UpForge verify", "startup proof of existence", "UFRN checker",
-      "startup background check", "startup due diligence tool",
-      "Indian startup verification", "global startup registry lookup",
+      "UF-2026-IND startup verification", "startup registry number India",
+      "startup verification tool India", "verify startup legitimacy India",
+      "UFRN search", "startup identity verification India",
+      "UFRN database", "is this startup real India",
+      "startup verification India 2026", "verify company startup India",
+      "UpForge verify", "startup proof of existence India",
+      "UFRN checker", "startup due diligence India",
+      "Indian startup verification free", "global startup registry lookup",
+      "upforge registry number lookup", "startup UFRN format",
     ],
     alternates: {
       canonical,
@@ -69,9 +66,9 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: "UFRN Verification — Official UpForge Startup Registry Lookup",
+      title: "Verify UFRN — UpForge Startup Registry Number Lookup",
       description:
-        "Enter any UFRN to instantly verify a startup's registration, founders, funding, and official status in the UpForge global registry.",
+        "Enter any startup's UFRN (format: UF-2026-IND-XXXXX) to instantly verify registration, founders, funding, and official registry status.",
       url: canonical,
       siteName: "UpForge Global Registry",
       locale: isOrg ? "en" : "en_IN",
@@ -82,7 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       site: "@upforge_in",
       title: "Verify a Startup's UFRN — UpForge Official Registry",
-      description: "Instant startup verification via UFRN. Check if a startup is real, verified, and registered.",
+      description: "Instant startup verification via UFRN (UF-2026-IND-XXXXX). Check if a startup is real, verified, and registered.",
       images: [ogImage],
     },
     robots: {
@@ -94,6 +91,27 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // ─── SCHEMA BUILDERS ─────────────────────────────────────────────────────────
 
+function buildWebPageSchema(total: number) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://www.upforge.org/verify#webpage",
+    url: "https://www.upforge.org/verify",
+    name: "UFRN Verification — UpForge Startup Registry Number Lookup",
+    description: `Official UFRN (UpForge Registry Number) verification tool. Instantly verify any of ${total.toLocaleString()}+ startups. Format: UF-2026-IND-XXXXX.`,
+    inLanguage: "en",
+    isPartOf: { "@id": "https://www.upforge.org/#website" },
+    publisher: { "@id": "https://www.upforge.org/#organization" },
+    datePublished: "2026-03-01",
+    dateModified: new Date().toISOString().split("T")[0],
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", ".verify-tagline"],
+    },
+    image: "https://www.upforge.in/og/ufrn-verify.png",
+  }
+}
+
 function buildSoftwareApplicationSchema(total: number) {
   return {
     "@context": "https://schema.org",
@@ -101,17 +119,19 @@ function buildSoftwareApplicationSchema(total: number) {
     "@id": "https://www.upforge.org/verify#app",
     name: "UpForge UFRN Verification Tool",
     description:
-      "Instantly verify any startup's UFRN (UpForge Registry Number) — the world's only independent startup identity and existence verification system.",
+      "Instantly verify any startup's UFRN (UpForge Registry Number, format: UF-YEAR-CC-NUMBER) — India's only independent startup identity and existence verification system.",
     url: "https://www.upforge.org/verify",
     applicationCategory: "BusinessApplication",
+    applicationSubCategory: "StartupVerification",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     featureList: [
-      "Instant UFRN lookup",
+      "Instant UFRN lookup (format: UF-2026-IND-XXXXX)",
       "Founder verification",
       "Funding data",
       "Official registry status",
-      "QR code certificate download",
+      "Verification certificate",
+      "Free unlimited lookups",
     ],
     publisher: {
       "@type": "Organization",
@@ -125,6 +145,7 @@ function buildSoftwareApplicationSchema(total: number) {
       bestRating: "5",
     },
     datePublished: "2026-03-01",
+    keywords: "UFRN, UF-2026-IND, startup verification, startup registry number, verify startup India",
   }
 }
 
@@ -133,35 +154,33 @@ function buildHowToSchema() {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "@id": "https://www.upforge.org/verify#howto",
-    name: "How to Verify a Startup Using UFRN",
-    description: "Step-by-step guide to verifying a startup's legitimacy using the UpForge Registry Number (UFRN).",
+    name: "How to Verify a Startup Using UFRN (UF-2026-IND-XXXXX)",
+    description: "Step-by-step guide to verifying a startup's legitimacy using the UpForge Registry Number (UFRN). Format: UF-YEAR-COUNTRYCODE-NUMBER.",
     totalTime: "PT1M",
-    supply: [],
-    tool: [{ "@type": "HowToTool", name: "UpForge UFRN Verification Tool" }],
+    tool: [{ "@type": "HowToTool", name: "UpForge UFRN Verification Tool", url: "https://www.upforge.org/verify" }],
     step: [
       {
         "@type": "HowToStep", position: 1,
         name: "Obtain the UFRN",
-        text: "Get the startup's UFRN from their website, pitch deck, or business card. It looks like UFRN-XXXXXX.",
-        image: "https://www.upforge.in/og/ufrn-verify.png",
+        text: "Get the startup's UFRN from their website, pitch deck, or UpForge profile. Format: UF-2026-IND-00013. You can also use just the number portion (e.g. 00013 or 13).",
         url: "https://www.upforge.org/verify",
       },
       {
         "@type": "HowToStep", position: 2,
         name: "Enter UFRN in the Lookup Tool",
-        text: "Go to upforge.org/verify and type the UFRN into the search box, then press Verify.",
+        text: "Go to upforge.org/verify. Type the UFRN or just the number into the search box, then press Verify. Full format (UF-2026-IND-00013) or short form (13) both work.",
         url: "https://www.upforge.org/verify",
       },
       {
         "@type": "HowToStep", position: 3,
         name: "Review Verification Results",
-        text: "View the official registry record including company name, founders, category, city, founding year, and funding data.",
+        text: "View the official registry record: company name, founders, category, city, founding year, funding data, and verification status.",
         url: "https://www.upforge.org/verify",
       },
       {
         "@type": "HowToStep", position: 4,
-        name: "Download Verification Certificate",
-        text: "Optionally download or share the official UpForge verification certificate as proof.",
+        name: "Share Verification Certificate",
+        text: "Copy the verification link or share the certificate as official proof in a deal, press piece, or due diligence report.",
         url: "https://www.upforge.org/verify",
       },
     ],
@@ -176,58 +195,58 @@ function buildFAQSchema() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "What is a UFRN (UpForge Registry Number)?",
+        name: "What is a UFRN and what does the format look like?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "A UFRN is a unique permanent identifier assigned to every verified startup in the UpForge global registry. It serves as proof of existence — like a company registration number, but for startups worldwide. Format: UFRN-XXXXXX.",
+          text: "A UFRN (UpForge Registry Number) is a unique permanent identifier assigned to every verified startup. The format is UF-YEAR-COUNTRYCODE-NUMBER, for example UF-2026-IND-00013. UF = UpForge, 2026 = year of registration, IND = country code for India, 00013 = sequential registry number.",
         },
       },
       {
         "@type": "Question",
-        name: "How do I verify a startup using its UFRN?",
+        name: "Why does the UFRN verification say 'Not Found'?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Go to upforge.org/verify, enter the UFRN (UpForge Registry Number) in the search box, and click Verify. Results appear instantly showing the official registry record, founders, funding, and verification status.",
+          text: "This usually means the UFRN was entered incorrectly. Double-check the format: UF-2026-IND-XXXXX. You can also enter just the numeric portion (e.g. 13 or 00013) and the tool will auto-format it. If still not found, the startup may not be approved or submitted yet.",
         },
       },
       {
         "@type": "Question",
-        name: "Is the UFRN verification tool free?",
+        name: "How do I verify a startup's UFRN?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. UFRN verification on UpForge is completely free — no account required, no limits. Every verified startup in the registry can be looked up at any time.",
+          text: "Go to upforge.org/verify, enter the UFRN (format: UF-2026-IND-XXXXX or just the number) in the search box, and click Verify. Results appear instantly with the full registry record, founders, funding, and verification status.",
         },
       },
       {
         "@type": "Question",
-        name: "What does 'UFRN Verified' mean?",
+        name: "Is UFRN verification free?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "UFRN Verified means the startup has been manually reviewed by the UpForge editorial team, confirmed to be active, and approved for listing in the global registry. Verification covers company legitimacy, active operations, and accurate founder/funding data.",
+          text: "Yes. UFRN verification on UpForge is completely free — no account required, no limits, no paid tiers. Every verified startup can be looked up at any time.",
         },
       },
       {
         "@type": "Question",
-        name: "Can I verify my own startup's UFRN?",
+        name: "What does 'UFRN Verified' mean for a startup?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes. If your startup has been approved and listed in the UpForge registry, you can verify it using your assigned UFRN at upforge.org/verify. If you haven't submitted yet, go to upforge.org/submit to apply for free.",
+          text: "UFRN Verified means the startup has been manually reviewed by the UpForge editorial team, confirmed to be actively operating, and approved for listing in the global registry. Verification covers company legitimacy, active operations, and accurate founder and funding data.",
         },
       },
       {
         "@type": "Question",
-        name: "What information appears in a UFRN verification result?",
+        name: "How is UFRN different from CIN (company registration number)?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "A UFRN verification result includes the startup's official name, founders, sector/category, city and country, founding year, funding stage, a brief description, and official registry status. Some listings also include website, social links, and investor data.",
+          text: "CIN (Corporate Identification Number) verifies legal incorporation with MCA. UFRN verifies that a startup is actively building, has a real product, and real founders — making it the world's only startup-specific identity system. They are complementary: CIN = legal entity, UFRN = active startup.",
         },
       },
       {
         "@type": "Question",
-        name: "How is UpForge's UFRN system different from company registration?",
+        name: "How do I get a UFRN for my startup?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Traditional company registration (like MCA in India or Companies House in the UK) verifies legal incorporation, not startup activity. The UFRN verifies that a startup is actively building, has a real product, and real founders — making it the world's only startup-specific identity system.",
+          text: "Submit your startup for free at upforge.in/submit. The UpForge editorial team reviews each application and assigns a permanent UFRN (format: UF-YEAR-IND-XXXXX) upon approval, typically within a few business days.",
         },
       },
     ],
@@ -241,29 +260,22 @@ function buildBreadcrumbSchema() {
     "@id": "https://www.upforge.org/verify#breadcrumb",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "UpForge", item: "https://www.upforge.org" },
-      { "@type": "ListItem", position: 2, name: "UFRN Verification", item: "https://www.upforge.org/verify" },
+      { "@type": "ListItem", position: 2, name: "Startup Registry", item: "https://www.upforge.org/startup" },
+      { "@type": "ListItem", position: 3, name: "Verify UFRN", item: "https://www.upforge.org/verify" },
     ],
   }
 }
 
-function buildWebPageSchema(total: number) {
+function buildOrganizationSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": "https://www.upforge.org/verify#webpage",
-    url: "https://www.upforge.org/verify",
-    name: "UFRN Verification — UpForge Global Startup Registry",
-    description:
-      "Official UFRN (UpForge Registry Number) verification tool. Instantly verify any startup in the global registry.",
-    inLanguage: "en",
-    isPartOf: { "@id": "https://www.upforge.org/#website" },
-    publisher: { "@id": "https://www.upforge.org/#organization" },
-    datePublished: "2026-03-01",
-    dateModified: new Date().toISOString().split("T")[0],
-    speakable: {
-      "@type": "SpeakableSpecification",
-      cssSelector: ["h1", ".verify-tagline", ".verify-description"],
-    },
+    "@type": "Organization",
+    "@id": "https://www.upforge.org/#organization",
+    name: "UpForge",
+    url: "https://www.upforge.org",
+    sameAs: ["https://www.upforge.in", "https://www.upforge.org"],
+    description: "The global open startup registry — independent, verified, and free. Creator of the UFRN system (UF-YEAR-CC-NUMBER).",
+    foundingDate: "2024",
   }
 }
 
@@ -274,6 +286,7 @@ export default async function VerifyPage() {
 
   const schemas = [
     buildWebPageSchema(total),
+    buildOrganizationSchema(),
     buildSoftwareApplicationSchema(total),
     buildHowToSchema(),
     buildFAQSchema(),
@@ -283,47 +296,61 @@ export default async function VerifyPage() {
   return (
     <>
       {schemas.map((s, i) => (
-        <script key={i} type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
       ))}
 
-      {/* Client component handles all interactivity + animation */}
+      {/* Client component — handles all interactivity, Navbar, Footer */}
       <VerifyClient totalCount={total} isOrg={isOrg} />
 
-      {/* SEO Content Layer — crawlable, invisible to users */}
+      {/* SEO content layer — crawlable, sr-only for users */}
       <div className="sr-only" aria-label="UFRN verification information">
-        <h1>UFRN Verification — UpForge Registry Number Lookup</h1>
+        <h1>UFRN Verification — UpForge Registry Number Lookup (UF-2026-IND-XXXXX)</h1>
         <p className="verify-tagline">
-          The official UpForge UFRN verification tool. Enter any startup's UpForge Registry Number to
-          instantly verify its legitimacy, founders, funding, and official registry status.
+          The official UpForge UFRN verification tool. Enter any startup's UpForge Registry Number
+          (format: UF-2026-IND-00013) to instantly verify its legitimacy, founders, funding, and
+          official registry status.
         </p>
-        <p className="verify-description">
+        <p>
           The UFRN (UpForge Registry Number) is a unique permanent identifier assigned to every verified
-          startup in the UpForge global registry — {total.toLocaleString()}+ companies worldwide.
-          It serves as proof of existence and active operations.
+          startup in the UpForge global registry — {total.toLocaleString()}+ companies across India and worldwide.
+          Format: UF-YEAR-COUNTRYCODE-NUMBER. Example: UF-2026-IND-00013.
         </p>
         <section>
           <h2>How to Verify a Startup Using UFRN</h2>
           <ol>
-            <li>Obtain the startup's UFRN from their website or pitch deck (format: UFRN-XXXXXX)</li>
-            <li>Enter it in the UFRN lookup tool above</li>
-            <li>View the official registry record — founders, category, city, funding, status</li>
-            <li>Download or share the verification certificate as proof</li>
+            <li>Get the startup's UFRN (format: UF-2026-IND-XXXXX) from their website or deck</li>
+            <li>Enter it in the UFRN lookup tool at upforge.org/verify — short form (just the number) works too</li>
+            <li>View the official registry record — founders, category, city, funding, verification status</li>
+            <li>Share or download the verification certificate as official proof</li>
           </ol>
         </section>
         <section>
           <h2>What is a UFRN?</h2>
           <p>
             A UFRN (UpForge Registry Number) is the world's first startup-specific identity number.
-            Unlike company registration numbers that verify legal incorporation, a UFRN verifies active
-            startup operations, real founders, and legitimate business activity. Assigned by the
-            UpForge editorial team after manual review.
+            Format: UF-YEAR-COUNTRYCODE-NUMBER (e.g. UF-2026-IND-00013). Unlike company registration
+            numbers that verify legal incorporation, a UFRN verifies active startup operations, real
+            founders, and legitimate business activity.
           </p>
+        </section>
+        <section>
+          <h2>UFRN Format Explained</h2>
+          <ul>
+            <li>UF = UpForge prefix</li>
+            <li>2026 = Year of registration</li>
+            <li>IND = Country code (India = IND)</li>
+            <li>00013 = Sequential registry number</li>
+          </ul>
         </section>
         <nav aria-label="Related tools">
           <ul>
-            <li><a href="/startup">Browse all verified startups</a></li>
+            <li><a href="/startup">Browse all verified Indian startups</a></li>
             <li><a href="/submit">Submit your startup to get a UFRN</a></li>
+            <li><a href="/startups">Browse startups by sector</a></li>
             <li><a href="/blog">Startup intelligence and analysis</a></li>
           </ul>
         </nav>
