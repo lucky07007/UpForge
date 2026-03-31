@@ -1,30 +1,18 @@
 // app/robots.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// DOMAIN-AWARE ROBOTS.TXT
-//
-// PROBLEM FIXED:
-//   The old file hardcoded "sitemap: https://www.upforge.in/sitemap.xml"
-//   This told every crawler — including Google's global crawler hitting .org —
-//   to use the .in sitemap. That completely undermined .org's authority.
-//
-// SOLUTION:
-//   Detect the host and emit the correct sitemap URL for that domain.
-//   Also: tighten crawl rules to avoid wasting crawl budget on thin pages.
-//
-// CRAWL BUDGET STRATEGY:
-//   • Allow all content pages  → maximum indexation
-//   • Block /api/, /admin/     → don't waste quota on non-indexable responses
-//   • Block duplicate param URLs (e.g. ?page=, ?sort=) → prevent dilution
-//   • Block success/confirm pages → no SEO value
+// UPFORGE GLOBAL ROBOTS.TXT
+// MAXIMUM REACH EDITION
+// Allows all search engines and AI crawlers for maximum visibility
+// Next.js App Router Compatible
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { MetadataRoute } from "next"
 import { headers } from "next/headers"
 
-export default async function robots(): Promise<MetadataRoute.Robots> {
-  const headersList = await headers()
+export default function robots(): MetadataRoute.Robots {
 
-  // Domain detection — same pattern as sitemap.ts and middleware
+  const headersList = headers()
+
   const ctx  = headersList.get("x-upforge-domain")
   const host = headersList.get("host") ?? ""
 
@@ -32,49 +20,93 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     ctx === "org" ||
     (!ctx && (host.includes("upforge.org") || host.includes(".org")))
 
-  const BASE = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const BASE = isOrg
+    ? "https://www.upforge.org"
+    : "https://www.upforge.in"
 
   return {
     rules: [
-      // ── Primary crawlers ─────────────────────────────────────────────────
+
+      // ─────────────────────────────────────────────
+      // GOOGLE CRAWLERS
+      // ─────────────────────────────────────────────
       {
-        userAgent: ["Googlebot", "Bingbot", "Slurp", "DuckDuckBot"],
+        userAgent: [
+          "Googlebot",
+          "Googlebot-News",
+          "Googlebot-Image",
+          "Googlebot-Video",
+          "Google-Extended"
+        ],
+
         allow: [
           "/",
           "/startup/",
           "/startups/",
+          "/founder/",
+          "/founders/",
           "/blog/",
           "/about",
           "/submit",
           "/contact",
-          ...(isOrg ? ["/ufrn/"] : []),  // UFRN pages only exposed on .org
+          "/privacy",
+          "/terms",
+          "/sitemap.xml",
+          ...(isOrg ? ["/ufrn/"] : []),
         ],
+
         disallow: [
           "/admin/",
           "/api/",
           "/submit/success",
           "/submit/confirm",
-          // Block URL parameters that create duplicate content
+
           "/*?page=",
           "/*?sort=",
           "/*?filter=",
+          "/*?search=",
           "/*?ref=",
           "/*?utm_",
           "/*?fbclid=",
           "/*?gclid=",
         ],
-        // Crawl delay in seconds — give Google enough room to index fast
+
         crawlDelay: 0,
       },
 
-      // ── Image crawlers — important for startup logos in Google Images ────
+      // ─────────────────────────────────────────────
+      // GLOBAL SEARCH ENGINES
+      // ─────────────────────────────────────────────
       {
-        userAgent: "Googlebot-Image",
-        allow: ["/"],
-        disallow: ["/api/", "/admin/"],
+        userAgent: [
+          "Bingbot",
+          "Slurp",
+          "DuckDuckBot",
+          "Yandex",
+          "Baiduspider",
+          "NaverBot",
+          "SeznamBot",
+          "Sogou"
+        ],
+
+        allow: [
+          "/",
+          "/startup/",
+          "/startups/",
+          "/founder/",
+          "/founders/",
+          "/blog/",
+        ],
+
+        disallow: [
+          "/admin/",
+          "/api/",
+        ],
       },
 
-      // ── AI training crawlers — block to protect data value ───────────────
+      // ─────────────────────────────────────────────
+      // AI CRAWLERS (ALLOWED FOR MAX REACH)
+      // ─────────────────────────────────────────────
       {
         userAgent: [
           "GPTBot",
@@ -82,31 +114,52 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
           "CCBot",
           "anthropic-ai",
           "Claude-Web",
-          "Omgilibot",
-          "FacebookBot",
+          "PerplexityBot",
           "meta-externalagent",
+          "Omgilibot",
+          "Bytespider",
+          "ImagesiftBot",
+          "Diffbot"
         ],
-        disallow: ["/"],
+
+        allow: ["/"],
+        disallow: [
+          "/admin/",
+          "/api/"
+        ],
       },
 
-      // ── Default (all other bots) ─────────────────────────────────────────
+      // ─────────────────────────────────────────────
+      // IMAGE & MEDIA CRAWLERS
+      // ─────────────────────────────────────────────
+      {
+        userAgent: [
+          "Googlebot-Image",
+          "Bingbot-Image"
+        ],
+
+        allow: ["/"],
+        disallow: ["/api/", "/admin/"],
+      },
+
+      // ─────────────────────────────────────────────
+      // DEFAULT RULE
+      // ─────────────────────────────────────────────
       {
         userAgent: "*",
+
         allow: ["/"],
+
         disallow: [
           "/admin/",
           "/api/",
           "/submit/success",
-          "/submit/confirm",
+          "/submit/confirm"
         ],
       },
     ],
 
-    // ── THIS IS THE CRITICAL FIX ──────────────────────────────────────────
-    // Each domain points to its OWN sitemap.
-    // Google gets two separate authority signals, zero duplication.
     sitemap: `${BASE}/sitemap.xml`,
-
     host: BASE,
   }
 }
