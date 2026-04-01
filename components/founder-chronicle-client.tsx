@@ -10,7 +10,7 @@ import type { Founder } from "@/data/founders"
 // SHARED "WHY UPFORGE?" VIDEO — one video for the whole page, not per founder
 // Swap UPFORGE_VIDEO_ID if the YouTube URL changes.
 // ---------------------------------------------------------------------------
-const UPFORGE_VIDEO_ID = "h9bcSZzOaqT6GA5z"
+const UPFORGE_VIDEO_ID = "ohuGZ7FhoYU"
 const UPFORGE_VIDEO_TITLE = "Why UpForge? — The Global Startup Registry Explained"
 
 // ---------------------------------------------------------------------------
