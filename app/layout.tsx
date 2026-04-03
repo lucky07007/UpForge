@@ -348,8 +348,11 @@ export default async function RootLayout({
     >
       <head>
 
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
-     crossorigin="anonymous"></script>
+<script 
+  async 
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
+  crossOrigin="anonymous"
+></script>
         {/* RESOURCE HINTS */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
