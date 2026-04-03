@@ -173,150 +173,106 @@ const RELATED_SLUGS = [
 const RELATED = ALL_BLOG_SLUGS.filter((b) => RELATED_SLUGS.includes(b.slug))
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PREMIUM MAGAZINE CSS — Full editorial layout, elegant, clean, iconic
+// PREMIUM NEWSPAPER / MAGAZINE CSS — Clean, editorial, iconic, no header/footer
 // ─────────────────────────────────────────────────────────────────────────────
 const PAGE_CSS = `
   :root {
-    --mag-bg: #FDFAF5;
-    --mag-white: #FFFFFF;
-    --mag-ink: #1C1917;
-    --mag-ink-light: #44403C;
-    --mag-muted: #78716C;
-    --mag-border: #E7E5E4;
-    --mag-border-light: #F1EFEC;
-    --mag-accent: #B91C1C;
-    --mag-accent-light: #DC2626;
-    --mag-accent-glow: #FEF2F2;
-    --mag-gold: #B45309;
-    --mag-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif;
-    --mag-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --mag-sans-alt: 'Source Serif Pro', Georgia, serif;
+    --news-bg: #FEFCF8;
+    --news-white: #FFFFFF;
+    --news-ink: #1A1814;
+    --news-ink-light: #3C3730;
+    --news-muted: #8A8378;
+    --news-border: #E8E3D9;
+    --news-accent: #C52828;
+    --news-accent-light: #E05A5A;
+    --news-accent-glow: #FEF2F2;
+    --news-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --news-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  body {
-    background: #E8E4DF;
-  }
-
-  .mag-wrapper {
-    max-width: 1120px;
+  .newspaper-container {
+    max-width: 1200px;
     margin: 0 auto;
-    background: var(--mag-bg);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    background: var(--news-bg);
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .animate-fade { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  .delay-1 { animation-delay: 0.08s; }
-  .delay-2 { animation-delay: 0.16s; }
-  .delay-3 { animation-delay: 0.24s; }
+  .fade-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.1s; }
+  .delay-3 { animation-delay: 0.15s; }
 
-  .dropcap-large::first-letter {
-    font-family: var(--mag-serif);
-    font-size: 4rem;
+  .dropcap::first-letter {
+    font-family: var(--news-serif);
+    font-size: 3.6rem;
     font-weight: 700;
     float: left;
-    line-height: 0.75;
-    margin-right: 14px;
-    margin-top: 6px;
-    color: var(--mag-accent);
-    letter-spacing: -0.02em;
+    line-height: 0.8;
+    margin-right: 12px;
+    margin-top: 5px;
+    color: var(--news-accent);
   }
 
-  .magazine-headline {
-    font-family: var(--mag-serif);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-  }
-
-  .pull-quote {
-    font-family: var(--mag-serif);
-    font-size: 1.5rem;
-    font-style: italic;
-    line-height: 1.35;
-    color: var(--mag-ink);
-    border-left: 4px solid var(--mag-accent);
-    padding-left: 1.8rem;
-    margin: 2rem 0;
-  }
-
-  .stat-card {
-    background: var(--mag-ink);
-    color: white;
-    padding: 1.5rem 2rem;
-    margin: 1.5rem 0;
+  .stat-pill {
+    background: var(--news-ink);
+    padding: 1.2rem 1.8rem;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-  }
-
-  .insight-block {
-    background: var(--mag-accent-glow);
-    border-left: 4px solid var(--mag-accent);
-    padding: 1.2rem 1.5rem;
-    font-family: var(--mag-serif);
-    font-style: italic;
-    font-size: 1rem;
-    color: var(--mag-ink-light);
     margin: 1.5rem 0;
   }
 
-  .img-full {
-    width: 100%;
-    border-radius: 4px;
-    overflow: hidden;
+  .insight-box {
+    background: var(--news-accent-glow);
+    border-left: 4px solid var(--news-accent);
+    padding: 1rem 1.5rem;
+    font-family: var(--news-serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--news-ink-light);
+    margin: 1.5rem 0;
   }
-  .img-full img {
+
+  .img-responsive {
     width: 100%;
     height: auto;
     display: block;
-    transition: transform 0.6s ease;
-  }
-  .img-full:hover img {
-    transform: scale(1.01);
+    transition: opacity 0.3s ease;
   }
 
-  .byline {
-    font-family: var(--mag-sans);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mag-muted);
+  .section-anchor {
+    scroll-margin-top: 40px;
   }
 
-  .section-number {
-    font-family: var(--mag-serif);
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--mag-accent);
-    letter-spacing: 0.1em;
-  }
-
-  hr.mag-rule {
+  hr.newspaper-rule {
     border: none;
     height: 1px;
-    background: linear-gradient(90deg, var(--mag-border), transparent);
+    background: linear-gradient(90deg, var(--news-border), transparent);
     margin: 2.5rem 0;
   }
 
+  .fact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--news-border);
+    gap: 1rem;
+  }
+  .fact-row:last-child { border-bottom: none; }
+
   @media (max-width: 768px) {
-    .pull-quote { font-size: 1.2rem; padding-left: 1.2rem; }
-    .stat-card { padding: 1rem 1.2rem; }
+    .stat-pill { padding: 0.8rem 1rem; }
+    .insight-box { padding: 0.8rem 1rem; }
   }
 `
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT — Full Magazine Layout
+// PAGE COMPONENT — Pure magazine content (no header/footer, uses global layout)
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BlogOracleLayoffs2026() {
   const jsonLd = buildBlogJsonLd(POST)
@@ -329,188 +285,164 @@ export default function BlogOracleLayoffs2026() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <article className="mag-wrapper" itemScope itemType="https://schema.org/NewsArticle">
+      <article className="newspaper-container" itemScope itemType="https://schema.org/NewsArticle">
 
-        {/* ── TOP BAR / BRANDING ── */}
-        <div className="animate-fade" style={{ padding: "2rem 2.5rem 1rem 2.5rem", borderBottom: "1px solid var(--mag-border)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
-            <div>
-              <div className="byline" style={{ marginBottom: "4px" }}>Presented by</div>
-              <div style={{ fontFamily: "var(--mag-serif)", fontSize: "2rem", fontWeight: 700, letterSpacing: "-0.02em" }}>
-                UpForge<span style={{ color: "var(--mag-accent)" }}>.</span>org
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "1.2rem" }}>
-              <span className="byline">Magazine</span>
-              <span className="byline">Deep Dive</span>
-              <span className="byline">April 2026</span>
-            </div>
-          </div>
-          <div style={{ marginTop: "1rem" }}>
-            <span className="byline">
-              <Link href="/" style={{ color: "var(--mag-muted)", textDecoration: "none" }}>Home</Link> /{" "}
-              <Link href="/blog" style={{ color: "var(--mag-muted)", textDecoration: "none" }}>Blog</Link> /{" "}
-              <span style={{ color: "var(--mag-ink)", fontWeight: 600 }}>Oracle Layoffs 2026</span>
-            </span>
+        {/* ── TOP DATE LINE / NEWSPAPER STYLE ── */}
+        <div className="fade-up" style={{ padding: "2rem 2rem 0.5rem 2rem", borderBottom: "2px solid var(--news-ink)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "0.5rem", fontFamily: "var(--news-sans)", fontSize: "0.7rem", letterSpacing: "0.05em", color: "var(--news-muted)", textTransform: "uppercase" }}>
+            <span>VOL. III · SPECIAL REPORT</span>
+            <span>FRIDAY, APRIL 3, 2026</span>
+            <span>EDITION: INDIA + GLOBAL TECH</span>
           </div>
         </div>
 
-        {/* ── BREAKING BANNER ── */}
-        <div className="animate-fade delay-1" style={{ margin: "1.5rem 2.5rem 0 2.5rem", background: "var(--mag-accent-glow)", border: "1px solid rgba(185,28,28,0.15)", padding: "0.75rem 1.25rem", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          <span style={{ background: "var(--mag-accent)", color: "white", fontSize: "0.65rem", fontWeight: 700, padding: "2px 10px", borderRadius: "20px", letterSpacing: "0.1em" }}>BREAKING</span>
-          <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.8rem", fontWeight: 500, color: "var(--mag-ink)" }}>Updated April 3, 2026 — Oracle layoffs ongoing; second India round expected within 30 days</span>
+        {/* ── BREAKING NEWS FLAG ── */}
+        <div className="fade-up delay-1" style={{ margin: "1rem 2rem 0 2rem" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--news-accent)", color: "white", padding: "0.3rem 1rem", fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em" }}>
+            <span style={{ width: 8, height: 8, background: "white", borderRadius: "50%", display: "inline-block", animation: "pulse 1.2s infinite" }}></span>
+            BREAKING NEWS
+          </div>
+          <p style={{ fontFamily: "var(--news-sans)", fontSize: "0.75rem", marginTop: "0.5rem", color: "var(--news-ink-light)", borderLeft: "2px solid var(--news-accent)", paddingLeft: "0.8rem" }}>
+            Updated April 3, 2026 — Oracle layoffs ongoing; second India round expected within 30 days. 12,000 jobs confirmed in India.
+          </p>
         </div>
 
-        {/* ── HERO SECTION ── */}
-        <div className="animate-fade delay-1" style={{ margin: "2rem 2.5rem 0 2.5rem" }}>
-          <div className="img-full" style={{ borderRadius: "8px" }}>
-            <img src={POST.heroImage} alt={POST.heroImageAlt} style={{ width: "100%", maxHeight: "520px", objectFit: "cover" }} />
+        {/* ── HERO HEADLINE ── */}
+        <div className="fade-up delay-1" style={{ margin: "1.5rem 2rem 0 2rem" }}>
+          <div className="img-responsive" style={{ marginBottom: "1.5rem", borderRadius: "2px", overflow: "hidden" }}>
+            <img src={POST.heroImage} alt={POST.heroImageAlt} style={{ width: "100%", maxHeight: "480px", objectFit: "cover" }} />
           </div>
-          <div style={{ marginTop: "2rem", maxWidth: "860px" }}>
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-              <span className="byline" style={{ color: "var(--mag-accent)", fontWeight: 600 }}>TECH INDUSTRY</span>
-              <span className="byline">BREAKING NEWS</span>
-              <span className="byline">AI ECONOMY</span>
+          <div style={{ maxWidth: "880px" }}>
+            <div style={{ display: "flex", gap: "0.8rem", marginBottom: "0.8rem", flexWrap: "wrap" }}>
+              <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.1em", color: "var(--news-accent)", textTransform: "uppercase" }}>TECH · LAYOFFS · AI ECONOMY</span>
             </div>
-            <h1 className="magazine-headline" style={{ fontSize: "clamp(2.2rem, 6vw, 4rem)", marginBottom: "1rem" }}>
-              Oracle Layoffs 2026: <span style={{ color: "var(--mag-accent)" }}>30,000 Jobs, One Email, No Warning</span>
+            <h1 style={{ fontFamily: "var(--news-serif)", fontSize: "clamp(2.2rem, 6vw, 4rem)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--news-ink)", marginBottom: "0.8rem" }}>
+              Oracle Layoffs 2026: <span style={{ color: "var(--news-accent)" }}>30,000 Jobs, One Email, No Warning</span>
             </h1>
-            <p style={{ fontFamily: "var(--mag-sans-alt)", fontSize: "1.1rem", lineHeight: 1.6, color: "var(--mag-ink-light)", borderLeft: "3px solid var(--mag-accent)", paddingLeft: "1.2rem", fontStyle: "italic" }}>
+            <p style={{ fontFamily: "var(--news-serif)", fontSize: "1.1rem", lineHeight: 1.5, color: "var(--news-ink-light)", fontStyle: "italic", borderLeft: "3px solid var(--news-accent)", paddingLeft: "1rem" }}>
               The biggest workforce reduction in Oracle's 48-year history — and what it reveals about the real cost of the AI era.
             </p>
           </div>
-          {/* Meta info bar */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "1.8rem", paddingTop: "1.2rem", borderTop: "1px solid var(--mag-border)" }}>
-            <div><span className="byline">PUBLISHED</span><div style={{ fontWeight: 600 }}>3 April 2026</div></div>
-            <div><span className="byline">READING TIME</span><div style={{ fontWeight: 600 }}>{POST.readTime}</div></div>
-            <div><span className="byline">JOBS AFFECTED</span><div style={{ fontWeight: 600 }}>Up to 30,000</div></div>
-            <div><span className="byline">ORCL TODAY</span><div style={{ fontWeight: 600 }}>~$145 (−57% YTD)</div></div>
+          {/* byline and meta */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "1.8rem", marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--news-border)", fontFamily: "var(--news-sans)", fontSize: "0.7rem", color: "var(--news-muted)" }}>
+            <span>📅 PUBLISHED: 3 APRIL 2026</span>
+            <span>⏱️ READING TIME: {POST.readTime}</span>
+            <span>👥 JOBS AFFECTED: UP TO 30,000</span>
+            <span>📊 ORCL: ~$145 (−57% YTD)</span>
           </div>
         </div>
 
-        {/* ── INTRO + TOC (full width magazine style) ── */}
-        <div className="animate-fade delay-2" style={{ margin: "3rem 2.5rem 0 2.5rem", display: "grid", gridTemplateColumns: "1fr 260px", gap: "3rem" }}>
+        {/* ── INTRO + TOC (newspaper columns) ── */}
+        <div className="fade-up delay-2" style={{ margin: "2.5rem 2rem 0 2rem", display: "grid", gridTemplateColumns: "1fr 280px", gap: "2.5rem" }}>
           <div>
-            <div className="byline" style={{ marginBottom: "0.8rem" }}>THE STORY BEHIND THE HEADLINES</div>
-            <div className="dropcap-large" style={{ fontFamily: "var(--mag-sans-alt)", fontSize: "1rem", lineHeight: 1.7, color: "var(--mag-ink-light)" }}>
+            <div className="dropcap" style={{ fontFamily: "var(--news-sans)", fontSize: "0.95rem", lineHeight: 1.7, color: "var(--news-ink-light)" }}>
               On March 31, 2026, Oracle sent termination emails to up to 30,000 employees before breakfast. The company had never cut this many people in its 48-year history. It also had never had a $553 billion order backlog before.
             </div>
-            <p style={{ fontFamily: "var(--mag-sans-alt)", fontSize: "1rem", lineHeight: 1.7, color: "var(--mag-ink-light)", marginTop: "1rem" }}>
+            <p style={{ fontFamily: "var(--news-sans)", fontSize: "0.95rem", lineHeight: 1.7, color: "var(--news-ink-light)", marginTop: "1rem" }}>
               This is the full story: what happened on the day of the layoffs, why Oracle made the decision, what it means for its share price, and what 30,000 displaced employees — including 12,000 in India — should do right now. UpForge covers the Indian startup ecosystem, the global forces that shape it, and the founders who navigate both.
             </p>
           </div>
-          <div style={{ background: "var(--mag-white)", border: "1px solid var(--mag-border)", padding: "1.2rem 1.5rem", borderRadius: "4px" }}>
-            <div className="byline" style={{ marginBottom: "1rem", color: "var(--mag-accent)" }}>IN THIS REPORT</div>
+          <div style={{ background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem 1.2rem" }}>
+            <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.8rem", textTransform: "uppercase" }}>IN THIS REPORT</div>
             <ul style={{ listStyle: "none" }}>
               {SECTIONS.slice(0, 6).map((s) => (
-                <li key={s.num} style={{ marginBottom: "0.6rem" }}>
-                  <a href={`#section-${s.num}`} style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: "8px" }}>
-                    <span style={{ fontFamily: "var(--mag-serif)", fontSize: "0.7rem", fontWeight: 700, color: "var(--mag-accent)", minWidth: "28px" }}>{s.num}</span>
-                    <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.75rem", color: "var(--mag-ink)", transition: "color 0.15s" }}>{s.title.substring(0, 45)}</span>
+                <li key={s.num} style={{ marginBottom: "0.5rem" }}>
+                  <a href={`#section-${s.num}`} style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "var(--news-sans)", fontSize: "0.7rem", color: "var(--news-ink)" }}>
+                    <span style={{ fontWeight: 700, color: "var(--news-accent)", minWidth: "28px" }}>{s.num}</span>
+                    <span>{s.title.substring(0, 45)}</span>
                   </a>
                 </li>
               ))}
-              <li style={{ marginTop: "0.8rem", paddingTop: "0.5rem", borderTop: "1px solid var(--mag-border)" }}>
-                <a href="#fast-facts" style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: "8px" }}>
-                  <span style={{ color: "var(--mag-accent)", fontWeight: 700 }}>→</span>
-                  <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.75rem", fontWeight: 600, color: "var(--mag-ink)" }}>Fast Facts Table</span>
+              <li style={{ marginTop: "0.6rem", paddingTop: "0.5rem", borderTop: "1px solid var(--news-border)" }}>
+                <a href="#fast-facts" style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "var(--news-sans)", fontSize: "0.7rem", fontWeight: 600, color: "var(--news-ink)" }}>
+                  <span style={{ color: "var(--news-accent)" }}>→</span>
+                  <span>Fast Facts Table</span>
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* ── MAIN ARTICLES — Full magazine vertical flow ── */}
-        <div style={{ margin: "2.5rem 2.5rem 0 2.5rem" }}>
+        {/* ── MAIN ARTICLES (vertical newspaper flow) ── */}
+        <div style={{ margin: "2rem 2rem 0 2rem" }}>
           {SECTIONS.map((sec, idx) => (
-            <div key={idx} id={`section-${sec.num}`} style={{ marginBottom: "3.5rem" }}>
-              {/* Full width image at top of each section */}
-              <div className="img-full" style={{ marginBottom: "1.5rem", borderRadius: "4px" }}>
-                <img src={sec.img} alt={sec.imgAlt} style={{ maxHeight: "420px", objectFit: "cover", width: "100%" }} />
+            <div key={idx} id={`section-${sec.num}`} className="section-anchor" style={{ marginBottom: "3rem" }}>
+              {/* full width image */}
+              <div style={{ marginBottom: "1.2rem", borderRadius: "2px", overflow: "hidden" }}>
+                <img src={sec.img} alt={sec.imgAlt} style={{ width: "100%", maxHeight: "400px", objectFit: "cover" }} className="img-responsive" />
               </div>
               
               <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
-                  <span className="section-number">Section {sec.num}</span>
-                  <span style={{ flex: 1, height: "1px", background: "var(--mag-border)" }} />
-                  <span className="byline">{sec.keyword}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem", flexWrap: "wrap" }}>
+                  <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)" }}>SECTION {sec.num}</span>
+                  <span style={{ flex: 1, height: "1px", background: "var(--news-border)" }} />
+                  <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.6rem", color: "var(--news-muted)", textTransform: "uppercase" }}>{sec.keyword}</span>
                 </div>
                 
-                <h2 style={{ fontFamily: "var(--mag-serif)", fontSize: "clamp(1.6rem, 4vw, 2.2rem)", fontWeight: 700, marginBottom: "1.2rem", letterSpacing: "-0.01em" }}>
+                <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "clamp(1.5rem, 4vw, 2rem)", fontWeight: 700, marginBottom: "1rem", letterSpacing: "-0.01em", color: "var(--news-ink)" }}>
                   {sec.title}
                 </h2>
                 
                 {sec.body.split("\n\n").map((para, pi) => (
-                  <p key={pi} className={pi === 0 ? "dropcap-large" : ""} style={{ fontFamily: "var(--mag-sans-alt)", fontSize: "1rem", lineHeight: 1.7, color: "var(--mag-ink-light)", marginBottom: "1rem" }}>
+                  <p key={pi} className={pi === 0 ? "dropcap" : ""} style={{ fontFamily: "var(--news-sans)", fontSize: "0.95rem", lineHeight: 1.7, color: "var(--news-ink-light)", marginBottom: "0.9rem" }}>
                     {para}
                   </p>
                 ))}
                 
-                <div className="stat-card">
-                  <span style={{ fontSize: "clamp(1.8rem, 4vw, 2.5rem)", fontWeight: 800, fontFamily: "var(--mag-serif)", color: "#FCA5A5" }}>{sec.stat.val}</span>
-                  <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.75rem", letterSpacing: "0.05em", textTransform: "uppercase", opacity: 0.8 }}>{sec.stat.label}</span>
+                <div className="stat-pill">
+                  <span style={{ fontSize: "clamp(1.6rem, 4vw, 2.2rem)", fontWeight: 800, fontFamily: "var(--news-serif)", color: "#FCA5A5" }}>{sec.stat.val}</span>
+                  <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.7rem", letterSpacing: "0.05em", textTransform: "uppercase", color: "rgba(255,255,255,0.8)" }}>{sec.stat.label}</span>
                 </div>
                 
-                <div className="insight-block">
-                  <span style={{ fontFamily: "var(--mag-serif)" }}>✦ {sec.insight}</span>
+                <div className="insight-box">
+                  <span>✧ {sec.insight}</span>
                 </div>
               </div>
-              <hr className="mag-rule" />
+              <hr className="newspaper-rule" />
             </div>
           ))}
         </div>
 
-        {/* ── FAST FACTS TABLE (full width clean) ── */}
-        <div id="fast-facts" style={{ margin: "1rem 2.5rem 2rem 2.5rem" }}>
+        {/* ── FAST FACTS TABLE ── */}
+        <div id="fast-facts" style={{ margin: "0 2rem 2rem 2rem" }}>
           <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-            <div className="byline" style={{ marginBottom: "0.5rem", color: "var(--mag-accent)" }}>⚡ DATA SNAPSHOT</div>
-            <h2 style={{ fontFamily: "var(--mag-serif)", fontSize: "1.8rem", fontWeight: 700, marginBottom: "1.5rem" }}>Oracle Layoffs 2026: Key Numbers at a Glance</h2>
-            <div style={{ background: "var(--mag-white)", border: "1px solid var(--mag-border)", padding: "0 1.8rem" }}>
+            <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.5rem", textTransform: "uppercase" }}>⚡ DATA SNAPSHOT</div>
+            <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "1.6rem", fontWeight: 700, marginBottom: "1rem" }}>Oracle Layoffs 2026: Key Numbers</h2>
+            <div style={{ background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "0 1.5rem" }}>
               {FAST_FACTS.map((item, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "0.9rem 0", borderBottom: i === FAST_FACTS.length - 1 ? "none" : "1px solid var(--mag-border)", gap: "1rem" }}>
-                  <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.8rem", fontWeight: 600, color: "var(--mag-ink)" }}>{item.label}</span>
-                  <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.8rem", color: "var(--mag-ink-light)", textAlign: "right" }}>{item.value}</span>
+                <div key={i} className="fact-row">
+                  <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.8rem", fontWeight: 600, color: "var(--news-ink)" }}>{item.label}</span>
+                  <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.8rem", color: "var(--news-ink-light)" }}>{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* ── RELATED READING ── */}
-        <div style={{ margin: "3rem 2.5rem 2.5rem 2.5rem" }}>
-          <hr className="mag-rule" />
-          <div className="byline" style={{ marginBottom: "0.5rem" }}>FURTHER READING</div>
-          <h2 style={{ fontFamily: "var(--mag-serif)", fontSize: "1.6rem", fontWeight: 700, marginBottom: "1.5rem" }}>From the UpForge Archive</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1.5rem" }}>
-            {RELATED.map((r, i) => (
-              <Link key={i} href={`/blog/${r.slug}`} style={{ textDecoration: "none", background: "var(--mag-white)", border: "1px solid var(--mag-border)", padding: "1rem", borderRadius: "4px", transition: "all 0.2s" }}>
-                <div style={{ fontFamily: "var(--mag-serif)", fontSize: "2rem", fontWeight: 700, color: "rgba(185,28,28,0.15)" }}>0{i+1}</div>
-                <h3 style={{ fontFamily: "var(--mag-serif)", fontSize: "1rem", fontWeight: 700, marginTop: "0.5rem", color: "var(--mag-ink)" }}>{r.title}</h3>
-                <span style={{ fontFamily: "var(--mag-sans)", fontSize: "0.65rem", color: "var(--mag-accent)", marginTop: "0.5rem", display: "inline-block", letterSpacing: "0.05em" }}>READ MORE →</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* ── FOOTER ── */}
-        <footer style={{ borderTop: "2px solid var(--mag-ink)", marginTop: "2rem", padding: "2rem 2.5rem 2.5rem", background: "var(--mag-white)" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "1.5rem" }}>
-            <div>
-              <div style={{ fontFamily: "var(--mag-serif)", fontSize: "1.6rem", fontWeight: 700 }}>UpForge<span style={{ color: "var(--mag-accent)" }}>.</span>org</div>
-              <p style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", marginTop: "0.5rem", color: "var(--mag-muted)" }}>Deep analysis for founders & investors</p>
-            </div>
-            <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
-              {SAFE_BLOG_FOOTER_LINKS.map((lnk) => (
-                <Link key={lnk.h} href={lnk.h} style={{ fontFamily: "var(--mag-sans)", fontSize: "0.7rem", color: "var(--mag-ink-light)", textDecoration: "none" }}>
-                  {lnk.l}
+        {/* ── RELATED ARTICLES (clean card grid) ── */}
+        <div style={{ margin: "2rem 2rem 2.5rem 2rem" }}>
+          <hr className="newspaper-rule" />
+          <div style={{ maxWidth: "860px", margin: "0 auto" }}>
+            <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.5rem", textTransform: "uppercase" }}>FURTHER READING</div>
+            <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "1.4rem", fontWeight: 700, marginBottom: "1.2rem" }}>From the UpForge Archive</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1rem" }}>
+              {RELATED.map((r, i) => (
+                <Link key={i} href={`/blog/${r.slug}`} style={{ textDecoration: "none", background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem", borderRadius: "2px", transition: "all 0.2s" }}>
+                  <div style={{ fontFamily: "var(--news-serif)", fontSize: "1.8rem", fontWeight: 700, color: "rgba(197,40,40,0.15)" }}>0{i+1}</div>
+                  <h3 style={{ fontFamily: "var(--news-serif)", fontSize: "0.9rem", fontWeight: 700, marginTop: "0.5rem", color: "var(--news-ink)" }}>{r.title}</h3>
+                  <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.6rem", color: "var(--news-accent)", marginTop: "0.5rem", display: "inline-block", letterSpacing: "0.05em" }}>READ MORE →</span>
                 </Link>
               ))}
             </div>
           </div>
-          <p style={{ fontFamily: "var(--mag-sans)", fontSize: "0.6rem", marginTop: "2rem", color: "var(--mag-muted)", borderTop: "1px solid var(--mag-border)", paddingTop: "1rem" }}>
-            © 2026 UpForge. All data sourced from SEC filings, TD Cowen, CNBC, TNW, Business Standard.
-          </p>
-        </footer>
+        </div>
+
+        <style jsx>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+          }
+        `}</style>
       </article>
     </>
   )
