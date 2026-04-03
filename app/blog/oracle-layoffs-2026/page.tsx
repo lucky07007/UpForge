@@ -173,7 +173,7 @@ const RELATED_SLUGS = [
 const RELATED = ALL_BLOG_SLUGS.filter((b) => RELATED_SLUGS.includes(b.slug))
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PREMIUM NEWSPAPER / MAGAZINE CSS — Clean, editorial, iconic, no header/footer
+// PREMIUM NEWSPAPER / MAGAZINE CSS — Clean, editorial, iconic
 // ─────────────────────────────────────────────────────────────────────────────
 const PAGE_CSS = `
   :root {
@@ -200,6 +200,11 @@ const PAGE_CSS = `
     from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.9); }
+  }
+
   .fade-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   .delay-1 { animation-delay: 0.05s; }
   .delay-2 { animation-delay: 0.1s; }
@@ -272,7 +277,7 @@ const PAGE_CSS = `
 `
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT — Pure magazine content (no header/footer, uses global layout)
+// PAGE COMPONENT — Pure magazine content
 // ─────────────────────────────────────────────────────────────────────────────
 export default function BlogOracleLayoffs2026() {
   const jsonLd = buildBlogJsonLd(POST)
@@ -344,7 +349,7 @@ export default function BlogOracleLayoffs2026() {
           </div>
           <div style={{ background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem 1.2rem" }}>
             <div style={{ fontFamily: "var(--news-sans)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", color: "var(--news-accent)", marginBottom: "0.8rem", textTransform: "uppercase" }}>IN THIS REPORT</div>
-            <ul style={{ listStyle: "none" }}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {SECTIONS.slice(0, 6).map((s) => (
                 <li key={s.num} style={{ marginBottom: "0.5rem" }}>
                   <a href={`#section-${s.num}`} style={{ textDecoration: "none", display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "var(--news-sans)", fontSize: "0.7rem", color: "var(--news-ink)" }}>
@@ -427,7 +432,7 @@ export default function BlogOracleLayoffs2026() {
             <h2 style={{ fontFamily: "var(--news-serif)", fontSize: "1.4rem", fontWeight: 700, marginBottom: "1.2rem" }}>From the UpForge Archive</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "1rem" }}>
               {RELATED.map((r, i) => (
-                <Link key={i} href={`/blog/${r.slug}`} style={{ textDecoration: "none", background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem", borderRadius: "2px", transition: "all 0.2s" }}>
+                <Link key={i} href={`/blog/${r.slug}`} style={{ textDecoration: "none", background: "var(--news-white)", border: "1px solid var(--news-border)", padding: "1rem", borderRadius: "2px", transition: "all 0.2s", display: "block" }}>
                   <div style={{ fontFamily: "var(--news-serif)", fontSize: "1.8rem", fontWeight: 700, color: "rgba(197,40,40,0.15)" }}>0{i+1}</div>
                   <h3 style={{ fontFamily: "var(--news-serif)", fontSize: "0.9rem", fontWeight: 700, marginTop: "0.5rem", color: "var(--news-ink)" }}>{r.title}</h3>
                   <span style={{ fontFamily: "var(--news-sans)", fontSize: "0.6rem", color: "var(--news-accent)", marginTop: "0.5rem", display: "inline-block", letterSpacing: "0.05em" }}>READ MORE →</span>
@@ -437,12 +442,6 @@ export default function BlogOracleLayoffs2026() {
           </div>
         </div>
 
-        <style jsx>{`
-          @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.9); }
-          }
-        `}</style>
       </article>
     </>
   )
