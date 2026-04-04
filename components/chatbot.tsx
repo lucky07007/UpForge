@@ -136,7 +136,7 @@ function Bubble({ msg, isNew }: { msg: Message; isNew: boolean }) {
     >
       {!isUser && (
         <div style={{ width: 22, height: 22, flexShrink: 0, overflow: "hidden", border: "1px solid #E2DDD4", marginBottom: 2 }}>
-          <Image src="/robot.jpg" alt="Atlas" width={22} height={22} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
+          <Image src="/robot.jpg" alt="Forge" width={22} height={22} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
         </div>
       )}
       {isUser ? (
@@ -172,7 +172,7 @@ export function Chatbot() {
   const [showTooltip, setShowTooltip] = useState(false)
   const [msgs, setMsgs] = useState<Message[]>([{
     role: "assistant",
-    content: "Hello — I'm **Atlas**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
+    content: "Hello — I'm **Forge**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
   }])
   const [justAdded, setJustAdded] = useState<Set<number>>(new Set())
 
@@ -227,7 +227,7 @@ export function Chatbot() {
   const reset = () => {
     setMsgs([{
       role: "assistant",
-      content: "Hello — I'm **Atlas**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
+      content: "Hello — I'm **Forge**, UpForge's global intelligence AI.\n\nI cover:\n- Verified startup data across 40+ countries\n- Unicorn founders & funding intelligence\n- Sector trends and market analysis\n- How to list or verify your startup\n\nWhat would you like to explore?",
     }])
     setJustAdded(new Set())
     setInput("")
@@ -263,7 +263,7 @@ export function Chatbot() {
             <motion.div
               role="dialog"
               aria-modal="true"
-              aria-label="Atlas — UpForge Global Intelligence"
+              aria-label="Forge — UpForge Global Intelligence"
               initial={{ opacity: 0, y: 16, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.96 }}
@@ -291,13 +291,13 @@ export function Chatbot() {
                     {/* Avatar */}
                     <div style={{ position: "relative", flexShrink: 0 }}>
                       <div style={{ width: 32, height: 32, overflow: "hidden", border: "1.5px solid #C59A2E" }}>
-                        <Image src="/robot.jpg" alt="Atlas" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
+                        <Image src="/robot.jpg" alt="Forge" width={32} height={32} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
                       </div>
                       <span style={{ position: "absolute", bottom: -1, right: -1, width: 8, height: 8, background: "#22C55E", borderRadius: "50%", border: "1.5px solid #0D0D0D" }} />
                     </div>
                     <div>
                       <div style={{ fontFamily: "'Georgia', serif", fontSize: 13, fontWeight: 700, color: "#F0EBE0", lineHeight: 1 }}>
-                        Atlas
+                        Forge
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
                         <Globe size={8} style={{ color: "#C59A2E" }} />
@@ -418,7 +418,7 @@ export function Chatbot() {
                           onChange={e => setInput(e.target.value)}
                           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }}
                           placeholder="Ask about global startups…"
-                          aria-label="Message Atlas"
+                          aria-label="Message Forge"
                           className="uf-input"
                           style={{
                             flex: 1,
@@ -456,7 +456,7 @@ export function Chatbot() {
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7 }}>
                         <span style={{ fontSize: 9, color: "#CCC", fontFamily: "system-ui", letterSpacing: "0.1em" }}>
-                          Atlas · UpForge · No paid placements
+                          Forge · UpForge · No paid placements
                         </span>
                         <span style={{ fontSize: 9, color: "#CCC", fontFamily: "system-ui" }}>⏎ send</span>
                       </div>
@@ -491,7 +491,7 @@ export function Chatbot() {
                   <Globe size={10} style={{ color: "#C59A2E" }} />
                   <div>
                     <div style={{ fontFamily: "'Georgia', serif", fontSize: 11, fontWeight: 700, color: "#F0EBE0" }}>
-                      Ask <span style={{ color: "#C59A2E" }}>Atlas</span>
+                      Ask <span style={{ color: "#C59A2E" }}>Forge</span>
                     </div>
                     <div style={{ fontSize: 8, color: "#555", letterSpacing: "0.1em", fontFamily: "system-ui", marginTop: 2 }}>
                       Global Startup Intelligence · Free
@@ -515,7 +515,7 @@ export function Chatbot() {
         {/* FAB */}
         <button
           onClick={() => { setIsOpen(v => !v); setMinimized(false); setShowTooltip(false) }}
-          aria-label="Open Atlas — UpForge Global Intelligence"
+          aria-label="Open Forge — UpForge Global Intelligence"
           style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}
         >
           {/* Pulse ring */}
@@ -560,10 +560,10 @@ export function Chatbot() {
                   style={{ flex: 1, display: "flex", flexDirection: "column" }}
                 >
                   <div style={{ flex: 1, overflow: "hidden" }}>
-                    <Image src="/robot.jpg" alt="Atlas AI" width={52} height={44} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
+                    <Image src="/robot.jpg" alt="Forge AI" width={52} height={44} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
                   </div>
                   <div style={{ height: 12, background: "#C59A2E", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: 6, fontWeight: 900, color: "#0D0D0D", letterSpacing: "0.22em", fontFamily: "system-ui" }}>ATLAS</span>
+                    <span style={{ fontSize: 6, fontWeight: 900, color: "#0D0D0D", letterSpacing: "0.22em", fontFamily: "system-ui" }}>Forge</span>
                   </div>
                 </motion.div>
               )}
