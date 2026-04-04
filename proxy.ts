@@ -6,22 +6,20 @@ export async function proxy(request: NextRequest) {
   const hostname = request.headers.get('host') ?? ''
   const url = request.nextUrl.clone()
 
-  // 1️⃣ STRICT DOMAIN REDIRECT (.in → .org)
+  // 1️⃣ REDIRECT .in to .org (Strict check)
   if (hostname.includes('upforge.in')) {
     url.hostname = 'www.upforge.org'
     url.protocol = 'https'
     return NextResponse.redirect(url, 301)
   }
 
-  // 2️⃣ FORCE NON-WWW → WWW (.org)
-  // Strict equality check prevents ERR_TOO_MANY_REDIRECTS
+  // 2️⃣ FORCE NON-WWW TO WWW (Strict equality check prevents loops)
   if (hostname === 'upforge.org') {
     url.hostname = 'www.upforge.org'
     url.protocol = 'https'
     return NextResponse.redirect(url, 301)
   }
 
-  // 3️⃣ CONTINUE NORMAL REQUEST
   let response = NextResponse.next()
 
   const pathname = request.nextUrl.pathname
@@ -30,7 +28,6 @@ export async function proxy(request: NextRequest) {
   response.headers.set('x-upforge-domain', domainContext)
   response.headers.set('x-upforge-pathname', pathname)
 
-  // 4️⃣ SUPABASE AUTH SAFE COOKIE HANDLING
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
