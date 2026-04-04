@@ -3,7 +3,13 @@
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "upforge.in" }],
-      "destination": "https://www.upforge.in/:path*",
+      "destination": "https://www.upforge.org/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.upforge.in" }],
+      "destination": "https://www.upforge.org/:path*",
       "permanent": true
     },
     {
@@ -11,18 +17,6 @@
       "has": [{ "type": "host", "value": "upforge.org" }],
       "destination": "https://www.upforge.org/:path*",
       "permanent": true
-    },
-    {
-      "source": "/registry/:slug*",
-      "has": [{ "type": "host", "value": "www.upforge.in" }],
-      "destination": "https://www.upforge.org/registry/:slug*",
-      "permanent": true
-    },
-    {
-      "source": "/startup/:slug*",
-      "has": [{ "type": "host", "value": "www.upforge.org" }],
-      "destination": "https://www.upforge.in/startup/:slug*",
-      "permanent": false
     }
   ]
 }
