@@ -1,6 +1,6 @@
 /**
  * lib/domain.ts — UpForge Global Authority
- * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
+ * VERSION: DOMAIN AWARE CONSOLIDATED
  */
 
 export type DomainContext = 'org' | 'in'
@@ -19,13 +19,18 @@ export function getDomainContextClient(): DomainContext {
   return 'org'
 }
 
-export function getDomainMeta(): DomainMeta {
+/**
+ * FIXED: Added 'context' parameter to allow domain-specific metadata
+ */
+export function getDomainMeta(context: DomainContext = 'org'): DomainMeta {
+  const isOrg = context === 'org'
+  
   return {
-    context: 'org',
-    baseUrl: 'https://www.upforge.org',
-    isGlobal: true,
-    locale: 'en-US',
-    hreflangSelf: 'en',
+    context: isOrg ? 'org' : 'in',
+    baseUrl: isOrg ? 'https://www.upforge.org' : 'https://www.upforge.in',
+    isGlobal: isOrg,
+    locale: isOrg ? 'en-US' : 'en-IN',
+    hreflangSelf: isOrg ? 'en' : 'en-in',
     siteName: 'UpForge',
     region: 'GLOBAL',
   }
@@ -58,9 +63,12 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-// FIXED: Added context parameter to satisfy the call in app/layout.tsx
+/**
+ * FIXED: Added context parameter to satisfy the call in app/layout.tsx
+ */
 export function getOrganizationJsonLd(context?: DomainContext) {
-  const baseUrl = 'https://www.upforge.org'
+  const meta = getDomainMeta(context || 'org')
+  const baseUrl = meta.baseUrl
 
   return {
     '@context': 'https://schema.org',
@@ -90,9 +98,12 @@ export function getOrganizationJsonLd(context?: DomainContext) {
   }
 }
 
-// FIXED: Added context parameter to satisfy the call in app/layout.tsx
+/**
+ * FIXED: Added context parameter to satisfy the call in app/layout.tsx
+ */
 export function getWebsiteJsonLd(context?: DomainContext) {
-  const baseUrl = 'https://www.upforge.org'
+  const meta = getDomainMeta(context || 'org')
+  const baseUrl = meta.baseUrl
 
   return {
     '@context': 'https://schema.org',
