@@ -1,482 +1,407 @@
-// app/page.tsx  ←  SERVER COMPONENT
-// CRITICAL: No "use client" here.
-// All 10 founder stories render as static HTML — visible to Google on first crawl.
-//
-// CHANGES vs. PREVIOUS VERSION:
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. LIVE dateModified in ALL JSON-LD schemas.
-//    Static dates were lying to Google. We now query Supabase for the real
-//    latest update timestamp and inject it into every schema block.
-//    Google's freshness algorithm rewards sites that update their schema dates
-//    in sync with actual content updates — this is the simplest "freshness hack"
-//    available.
-//
-// 2. Dataset schema on .org now includes recordCount (real startup count).
-//    A Dataset with a real measurementTechnique and recordCount tells Google
-//    this is a live, authoritative data source — not a static page.
-//
-// 3. Organization.numberOfEmployees and Organization.contactPoint added.
-//    These complete the E-E-A-T (Experience, Expertise, Authority, Trust)
-//    entity signals Google uses for Knowledge Panel eligibility.
-//
-// 4. FAQ schema expanded with 4 high-volume questions (was 2).
-//    FAQ rich results appear directly in SERPs as expandable dropdowns,
-//    stealing extra real estate from competitors without additional clicks.
-// ─────────────────────────────────────────────────────────────────────────────
+// components/founder-chronicle-client.tsx
+"use client"
 
-import type { Metadata } from "next"
-import { headers } from "next/headers"
-import { FounderChronicleClient } from "../components/founder-chronicle-client"
-import { FOUNDERS } from "../data/founders"
-import { createClient } from "@/lib/supabase/server"
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { motion, useScroll, useTransform } from "framer-motion"
+import { 
+  TrendingUp, 
+  Users, 
+  Award, 
+  Zap, 
+  Globe, 
+  CheckCircle, 
+  ArrowRight,
+  Star,
+  BookOpen,
+  Shield,
+  MapPin,
+  Briefcase,
+  DollarSign,
+  Clock,
+  ExternalLink
+} from "lucide-react"
 
-// ---------------------------------------------------------------------------
-// DOMAIN DETECTION
-// ---------------------------------------------------------------------------
-async function getDomain(): Promise<"org" | "in"> {
-  const headersList = await headers()
-  const context = headersList.get("x-upforge-domain")
-  if (context === "org" || context === "in") return context as "org" | "in"
-  const host = headersList.get("host") ?? ""
-  return host.includes("upforge.org") ? "org" : "in"
+interface Founder {
+  slug: string
+  name: string
+  role: string
+  company: string
+  shortBio: string
+  image: string
+  category?: string[]
+  funding?: string
+  valuation?: string
 }
 
-// ---------------------------------------------------------------------------
-// LIVE DATA FETCHERS
-// ---------------------------------------------------------------------------
-
-/** Real last-updated date from Supabase — used in all dateModified fields */
-async function getLatestDate(): Promise<string> {
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase
-      .from("startups")
-      .select("updated_at")
-      .eq("status", "approved")
-      .order("updated_at", { ascending: false })
-      .limit(1)
-      .single()
-    if (data?.updated_at) {
-      return new Date(data.updated_at).toISOString().split("T")[0]
-    }
-  } catch (_) {}
-  return new Date().toISOString().split("T")[0]
+interface LinkItem {
+  l: string
+  h: string
+  desc?: string
 }
 
-/** Real approved startup count — used in Dataset schema recordCount */
-async function getStartupCount(): Promise<number> {
-  try {
-    const supabase = await createClient()
-    const { count } = await supabase
-      .from("startups")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "approved")
-    return count ?? FOUNDERS.length
-  } catch (_) {}
-  return 5000 // conservative fallback
+interface FounderChronicleClientProps {
+  founders: Founder[]
+  featuredFounder: Founder
+  remainingFounders: Founder[]
+  startupCount: number
+  isOrg: boolean
+  internalLinks: LinkItem[]
+  footerLinks: LinkItem[]
 }
 
-// ---------------------------------------------------------------------------
-// METADATA
-// ---------------------------------------------------------------------------
-export async function generateMetadata(): Promise<Metadata> {
-  const domain = await getDomain()
-  const isOrg  = domain === "org"
+// Trust metrics bar component
+const TrustBar = ({ startupCount, isOrg }: { startupCount: number; isOrg: boolean }) => (
+  <div className="bg-gradient-to-r from-gray-50 to-white border-y border-gray-100 py-3">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-wrap justify-center items-center gap-6 md:gap-12 text-sm">
+        <div className="flex items-center gap-2">
+          <Shield className="w-4 h-4 text-emerald-600" />
+          <span className="text-gray-600">Manual verification</span>
+          <CheckCircle className="w-4 h-4 text-emerald-500" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 text-emerald-600" />
+          <span className="font-semibold text-gray-900">{startupCount.toLocaleString()}+</span>
+          <span className="text-gray-600">verified startups</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Globe className="w-4 h-4 text-emerald-600" />
+          <span className="text-gray-600">Global registry</span>
+          {isOrg && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">UFRN</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <Award className="w-4 h-4 text-emerald-600" />
+          <span className="text-gray-600">Trusted by researchers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+)
 
-  const canonicalUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  const ogImage      = "https://www.upforge.in/og/founder-chronicle.png"
-
-  if (isOrg) {
-    return {
-      title: "Global Startup Registry — Verified UFRN Database | UpForge",
-      description:
-        "The official global startup registry. Every listing is manually verified and assigned a unique UpForge Registry Number (UFRN). Access open startup data, verified founder profiles, and global ecosystem intelligence.",
-      keywords: [
-        "global startup registry", "verified startup database", "UFRN registry",
-        "UpForge Registry Number", "open startup data", "startup proof of existence",
-        "independent startup registry", "startup verification", "UFRN lookup",
-        "global founder database", "startup identity number", "verified startup number",
-      ],
-      alternates: { canonical: canonicalUrl },
-      openGraph: {
-        title: "Global Startup Registry — Verified UFRN Database",
-        description:
-          "The independent global registry for startups. Verified proof of existence via UFRN. Features 5000+ companies and world-class founders.",
-        url: canonicalUrl,
-        siteName: "UpForge Global Registry",
-        locale: "en",
-        type: "website",
-        images: [{ url: ogImage, width: 1200, height: 630, alt: "UpForge Global Startup Registry", type: "image/png" }],
-      },
-      twitter: {
-        card: "summary_large_image",
-        site: "@upforge_in",
-        title: "UpForge Global Startup Registry",
-        description: "Open, verified registry of startups. Every company gets a unique UFRN.",
-        images: [ogImage],
-      },
-      robots: {
-        index: true, follow: true,
-        googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
-      },
-    }
+// Category chip component
+const CategoryChip = ({ category }: { category: string }) => {
+  const colors: Record<string, string> = {
+    "Unicorn": "bg-purple-100 text-purple-700",
+    "Fintech": "bg-blue-100 text-blue-700",
+    "D2C": "bg-pink-100 text-pink-700",
+    "SaaS": "bg-indigo-100 text-indigo-700",
+    "Edtech": "bg-orange-100 text-orange-700",
+    "Logistics": "bg-cyan-100 text-cyan-700",
   }
-
-  return {
-    title: "Indian Startup Founders & Unicorn Stories — The Founder Chronicle 2026",
-    description:
-      "Explore verified stories of India's greatest startup founders and unicorn success stories — Zepto, CRED, Zerodha, Nykaa, OYO, Groww, Meesho & more. Funding data, valuations, and entrepreneurial lessons for the Indian ecosystem.",
-    keywords: [
-      "Indian startup founders 2026", "India unicorn stories", "startup success stories India",
-      "Aadit Palicha Zepto story", "Kunal Shah CRED profile", "Nithin Kamath Zerodha lessons",
-      "Falguni Nayar Nykaa journey", "Indian unicorn list 2026", "how was Zepto built",
-      "best startup stories India", "startup founder profiles India", "Indian entrepreneur stories",
-      "UpForge Founder Chronicle", "top founders India 2026", "Indian startup news today",
-    ],
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
-      title: "Indian Startup Founders & Unicorn Stories — The Founder Chronicle 2026",
-      description:
-        "10 deep-dive profiles of India's most iconic startup founders. Verified funding data, unicorn valuations, and the real stories behind the success. UpForge India.",
-      url: canonicalUrl,
-      siteName: "UpForge",
-      locale: "en_IN",
-      type: "website",
-      images: [{ url: ogImage, width: 1200, height: 630, alt: "UpForge Founder Chronicle 2026", type: "image/png" }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      site: "@upforge_in",
-      creator: "@upforge_in",
-      title: "Indian Startup Founders & Unicorn Stories",
-      description: "Verified founder profiles: Zepto, CRED, Zerodha, Nykaa, OYO & more. Lessons from India's unicorns.",
-      images: [ogImage],
-    },
-    robots: {
-      index: true, follow: true,
-      googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
-    },
-  }
+  return (
+    <span className={`text-xs px-2 py-1 rounded-full font-medium ${colors[category] || "bg-gray-100 text-gray-600"}`}>
+      {category}
+    </span>
+  )
 }
 
-// ---------------------------------------------------------------------------
-// STRUCTURED DATA BUILDERS — all now accept liveDate and startupCount
-// ---------------------------------------------------------------------------
+// Magazine-style featured story card
+const FeaturedStory = ({ founder }: { founder: Founder }) => (
+  <motion.article 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-xl mb-12"
+  >
+    <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500 rounded-full -translate-x-16 -translate-y-16 opacity-20" />
+    <div className="relative z-10 grid md:grid-cols-2 gap-8 p-6 md:p-10">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="text-emerald-400 text-sm font-semibold uppercase tracking-wider">Featured Story</span>
+          <span className="text-gray-400 text-sm">•</span>
+          <span className="text-gray-400 text-sm">The Founder Chronicle</span>
+        </div>
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+          {founder.name}
+        </h2>
+        <p className="text-xl text-emerald-400 font-medium">
+          {founder.role} at {founder.company}
+        </p>
+        <p className="text-gray-300 leading-relaxed">
+          {founder.shortBio}
+        </p>
+        <div className="flex flex-wrap gap-3 pt-4">
+          {founder.funding && (
+            <div className="flex items-center gap-1 text-gray-300 text-sm">
+              <DollarSign className="w-4 h-4 text-emerald-400" />
+              <span>{founder.funding}</span>
+            </div>
+          )}
+          {founder.valuation && (
+            <div className="flex items-center gap-1 text-gray-300 text-sm">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <span>{founder.valuation}</span>
+            </div>
+          )}
+        </div>
+        <Link 
+          href={`/startup/${founder.slug}`}
+          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 group"
+        >
+          Read full story
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
+      <div className="relative h-64 md:h-auto rounded-xl overflow-hidden">
+        {founder.image && (
+          <Image
+            src={founder.image}
+            alt={founder.name}
+            fill
+            className="object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent" />
+      </div>
+    </div>
+  </motion.article>
+)
 
-function buildCollectionPageSchema(isOrg: boolean, liveDate: string) {
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  return {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "@id": `${base}/#collectionpage`,
-    name: isOrg
-      ? "UpForge Global Startup Registry — Verified UFRN Database"
-      : "The Founder Chronicle 2026 — Indian Startup Founders & Unicorn Stories",
-    description: isOrg
-      ? "Open, independent, verified database of startups. Every entry is assigned a unique UpForge Registry Number (UFRN)."
-      : "Verified deep-dive profiles of India's most iconic startup founders and unicorn companies.",
-    url: base,
-    inLanguage: isOrg ? "en" : "en-IN",
-    isPartOf: { "@id": `${base}/#website` },
-    publisher: { "@id": `${base}/#organization` },
-    datePublished: "2026-03-01",
-    // ── LIVE dateModified — critical freshness signal ─────────────────────
-    dateModified: liveDate,
-    image: { "@type": "ImageObject", url: "https://www.upforge.in/og/founder-chronicle.png", width: 1200, height: 630 },
-    breadcrumb: { "@id": `${base}/#breadcrumb` },
-  }
-}
+// Magazine grid card (clean, editorial)
+const MagazineCard = ({ founder, index }: { founder: Founder; index: number }) => (
+  <motion.article
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay: index * 0.05 }}
+    className="group bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden"
+  >
+    <Link href={`/startup/${founder.slug}`} className="block">
+      <div className="relative h-48 overflow-hidden bg-gray-100">
+        {founder.image && (
+          <Image
+            src={founder.image}
+            alt={founder.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        )}
+        <div className="absolute top-3 right-3 flex gap-1">
+          {founder.category?.slice(0, 2).map((cat) => (
+            <CategoryChip key={cat} category={cat} />
+          ))}
+        </div>
+      </div>
+      <div className="p-5">
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <h3 className="font-bold text-lg text-gray-900 group-hover:text-emerald-700 transition-colors">
+              {founder.name}
+            </h3>
+            <p className="text-sm text-gray-500">{founder.role}</p>
+          </div>
+          <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+        </div>
+        <p className="text-sm text-gray-600 line-clamp-2 mb-3">{founder.shortBio}</p>
+        <p className="text-sm font-medium text-emerald-600">{founder.company}</p>
+      </div>
+    </Link>
+  </motion.article>
+)
 
-function buildDatasetSchema(liveDate: string, startupCount: number) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "@id": "https://www.upforge.org/#dataset",
-    name: "UpForge Global Startup Registry Dataset (UFRN)",
-    description:
-      "Open, verified database of global startups. Each startup is manually reviewed and assigned a permanent UpForge Registry Number (UFRN).",
-    url: "https://www.upforge.org",
-    creator: {
-      "@type": "Organization",
-      "@id": "https://www.upforge.org/#organization",
-      name: "UpForge",
-      url: "https://www.upforge.org",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "UpForge",
-      url: "https://www.upforge.org",
-    },
-    license: "https://creativecommons.org/licenses/by/4.0/",
-    keywords: ["startups", "UFRN", "startup registry", "verified startups", "global startup database"],
-    variableMeasured: [
-      { "@type": "PropertyValue", name: "UFRN", description: "UpForge Registry Number" },
-      { "@type": "PropertyValue", name: "Status", description: "Verification Status" },
-      { "@type": "PropertyValue", name: "Funding", description: "Funding Amount (USD)" },
-    ],
-    // ── LIVE record count — tells Google this is a live, large dataset ────
-    measurementTechnique: "Manual verification by UpForge editorial team",
-    recordSet: {
-      "@type": "DataFeedItem",
-      item: { "@type": "Dataset", name: "Startup records", identifier: "ufrn-dataset" },
-    },
-    size: `${startupCount}+ verified startup records`,
-    isAccessibleForFree: true,
-    temporalCoverage: "2020/..",
-    // ── LIVE dateModified — Dataset freshness signal ──────────────────────
-    dateModified: liveDate,
-    datePublished: "2026-03-01",
-  }
-}
+// Why Trust UpForge section (engagement hook)
+const TrustSection = () => (
+  <section className="bg-gray-50 rounded-2xl p-8 my-12">
+    <div className="text-center mb-8">
+      <h3 className="text-2xl font-bold text-gray-900 mb-2">Why trust UpForge?</h3>
+      <p className="text-gray-600">The independent global standard for startup verification</p>
+    </div>
+    <div className="grid md:grid-cols-3 gap-6">
+      <div className="text-center p-4">
+        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <CheckCircle className="w-6 h-6 text-emerald-600" />
+        </div>
+        <h4 className="font-semibold mb-1">Manual verification</h4>
+        <p className="text-sm text-gray-500">Every startup reviewed by real people, not bots</p>
+      </div>
+      <div className="text-center p-4">
+        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Shield className="w-6 h-6 text-emerald-600" />
+        </div>
+        <h4 className="font-semibold mb-1">UFRN system</h4>
+        <p className="text-sm text-gray-500">Unique permanent identifier for each startup</p>
+      </div>
+      <div className="text-center p-4">
+        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Globe className="w-6 h-6 text-emerald-600" />
+        </div>
+        <h4 className="font-semibold mb-1">Open data</h4>
+        <p className="text-sm text-gray-500">Free access for researchers & investors</p>
+      </div>
+    </div>
+  </section>
+)
 
-function buildOrganizationSchema(isOrg: boolean, liveDate: string) {
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  return {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${base}/#organization`,
-    name: "UpForge",
-    url: base,
-    logo: {
-      "@type": "ImageObject",
-      url: "https://www.upforge.in/logo.jpg",
-      width: 512,
-      height: 512,
-    },
-    sameAs: [
-      "https://www.upforge.in",
-      "https://www.upforge.org",
-      "https://www.linkedin.com/company/upforge-india",
-    ],
-    description: isOrg
-      ? "The global open startup registry — independent, verified, and free. Creator of the UFRN system."
-      : "India's independent startup registry and discovery platform tracking 5000+ companies and founder stories.",
-    foundingDate: "2024",
-    areaServed: isOrg ? "Worldwide" : "India",
-    // ── E-E-A-T signals — helps with Knowledge Panel eligibility ─────────
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "editorial",
-      url: `${base}/contact`,
-      availableLanguage: "English",
-    },
-    // ── LIVE dateModified ─────────────────────────────────────────────────
-    dateModified: liveDate,
-  }
-}
+// Sticky CTA for submission
+const StickyCTA = () => (
+  <motion.div
+    initial={{ y: 100, opacity: 0 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ delay: 1 }}
+    className="fixed bottom-6 right-6 z-40"
+  >
+    <Link
+      href="/submit"
+      className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-full shadow-lg transition-all duration-200 group"
+    >
+      <Zap className="w-4 h-4" />
+      <span className="font-medium">List your startup</span>
+      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+    </Link>
+  </motion.div>
+)
 
-function buildWebsiteSchema(isOrg: boolean) {
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  return {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": `${base}/#website`,
-    url: base,
-    name: isOrg ? "UpForge Global Registry" : "UpForge",
-    publisher: { "@id": `${base}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: { "@type": "EntryPoint", urlTemplate: `${base}/startup?q={search_term_string}` },
-      "query-input": "required name=search_term_string",
-    },
-    // SearchAction enables the "Search box" in Google's rich results for your domain
-    inLanguage: isOrg ? "en" : "en-IN",
-  }
-}
+export function FounderChronicleClient({ 
+  founders, 
+  featuredFounder, 
+  remainingFounders,
+  startupCount,
+  isOrg,
+  internalLinks, 
+  footerLinks 
+}: FounderChronicleClientProps) {
+  const [mounted, setMounted] = useState(false)
+  const { scrollYProgress } = useScroll()
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.95])
 
-function buildItemListSchema(isOrg: boolean) {
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  return {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "@id": `${base}/#founderlist`,
-    name: "Top Startup Founders & Unicorn Profiles",
-    numberOfItems: FOUNDERS.length,
-    itemListOrder: "https://schema.org/ItemListOrderAscending",
-    itemListElement: FOUNDERS.map((f, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      item: {
-        "@type": "Person",
-        name: f.name,
-        jobTitle: f.role,
-        worksFor: { "@type": "Organization", name: f.company },
-        url: `${base}/startup/${f.slug}`,
-      },
-    })),
-  }
-}
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-function buildBreadcrumbSchema(isOrg: boolean) {
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "@id": `${base}/#breadcrumb`,
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "UpForge", item: base },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: isOrg ? "Global Registry" : "The Founder Chronicle 2026",
-        item: base,
-      },
-    ],
-  }
-}
-
-function buildFAQSchema(isOrg: boolean) {
-  const base = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
-
-  // ── EXPANDED to 5 questions — more FAQ rich results = more SERP real estate
-  const questions = isOrg
-    ? [
-        {
-          q: "What is the UFRN (UpForge Registry Number)?",
-          a: "The UFRN is a unique permanent identifier assigned to every verified startup in the UpForge global registry. It serves as proof of existence and allows anyone to look up a startup's official listing at upforge.org/ufrn/[UFRN].",
-        },
-        {
-          q: "How do I look up a startup's UFRN?",
-          a: "Visit upforge.org/ufrn/[UFRN-ID] with the company's registry number, or search for the company at upforge.org/startup. Every approved listing displays its UFRN prominently.",
-        },
-        {
-          q: "Is UpForge free to use?",
-          a: "Yes. UpForge is a free, independent startup registry. Both browsing and submitting a startup are completely free.",
-        },
-        {
-          q: "How does UpForge verify startups?",
-          a: "Each submission is manually reviewed by the UpForge editorial team for legitimacy, active operations, and accurate data before being approved and assigned a UFRN.",
-        },
-        {
-          q: "Which countries are included in the UpForge global registry?",
-          a: "UpForge covers startups from all major emerging markets including India, Southeast Asia, Africa, Latin America, and the Middle East, as well as global tech hubs worldwide.",
-        },
-      ]
-    : [
-        {
-          q: "Who are the top startup founders in India in 2026?",
-          a: "India's top startup founders in 2026 include Aadit Palicha (Zepto), Kunal Shah (CRED), Nithin Kamath (Zerodha), Falguni Nayar (Nykaa), and Ritesh Agarwal (OYO). UpForge profiles all of these founders with verified funding and valuation data.",
-        },
-        {
-          q: "Which Indian startups are unicorns in 2026?",
-          a: "Top Indian unicorns include Zepto, CRED, Groww, Meesho, Nykaa, PhysicsWallah, Rapido, and Zerodha. UpForge tracks all verified Indian unicorns with real funding data.",
-        },
-        {
-          q: "How do I find verified startups in India?",
-          a: "Browse UpForge's verified Indian startup registry at upforge.in/startup. Filter by sector, city, funding stage, or founding year. All 5000+ listings are manually verified.",
-        },
-        {
-          q: "Which cities have the most startups in India?",
-          a: "Bangalore leads India's startup ecosystem, followed by Mumbai, Delhi NCR, Hyderabad, and Pune. UpForge lets you filter startups by city to find companies in your region.",
-        },
-        {
-          q: "How do I submit my Indian startup to UpForge?",
-          a: "Submit your startup for free at upforge.in/submit. The editorial team reviews each application and assigns a UFRN (UpForge Registry Number) upon approval.",
-        },
-      ]
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "@id": `${base}/#faq`,
-    mainEntity: questions.map(({ q, a }) => ({
-      "@type": "Question",
-      name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
-    })),
-  }
-}
-
-// ---------------------------------------------------------------------------
-// PAGE COMPONENT — SERVER RENDERED
-// ---------------------------------------------------------------------------
-export default async function HomePage() {
-  const domain = await getDomain()
-  const isOrg  = domain === "org"
-
-  // Fetch live data for schema freshness — both run in parallel
-  const [liveDate, startupCount] = await Promise.all([
-    getLatestDate(),
-    getStartupCount(),
-  ])
+  if (!mounted) return null
 
   return (
-    <>
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationSchema(isOrg, liveDate)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebsiteSchema(isOrg)) }} />
-
-      {/* Dataset schema — ONLY on .org — High authority signal */}
-      {isOrg && (
-        <script type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDatasetSchema(liveDate, startupCount)) }} />
-      )}
-
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildCollectionPageSchema(isOrg, liveDate)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItemListSchema(isOrg)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(isOrg)) }} />
-      <script type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }} />
-
-      <FounderChronicleClient
-        founders={FOUNDERS}
-        internalLinks={[
-          { l: "Startup Registry India",   h: "/startup", desc: "5000+ verified startups" },
-          { l: "Submit Your Startup",      h: "/submit",  desc: "Get listed free"         },
-          { l: "The Forge — Startup Blog", h: "/blog",    desc: "Intelligence & analysis" },
-          { l: "About UpForge",            h: "/about",   desc: "Our mission"             },
-        ]}
-        footerLinks={[
-          { l: "The Founder Chronicle", h: "/"        },
-          { l: "Startup Registry",      h: "/startup" },
-          { l: "Blog",                  h: "/blog"    },
-          { l: "Submit Startup",        h: "/submit"  },
-          { l: "About UpForge",         h: "/about"   },
-        ]}
-      />
-
-      {/* SEO CONTENT LAYER — rendered in DOM, invisible to users, read by crawlers */}
-      <div className="sr-only" aria-label="SEO content">
-        <section>
-          <h1>
-            {isOrg
-              ? "Global Startup Registry — Verified UFRN Database"
-              : "Indian Startup Founders & Unicorn Stories — The Founder Chronicle 2026"}
-          </h1>
-          <p>
-            {isOrg
-              ? "UpForge Global Registry provides verified proof of existence for startups worldwide through the UFRN system. Every startup receives a unique UpForge Registry Number upon manual verification."
-              : "Explore the verified stories of India's unicorn founders and the journeys behind their multi-billion dollar companies. Updated daily with real funding data."}
-          </p>
-          {/* ── Semantic internal link cluster — distributes PageRank to profiles ── */}
-          <nav aria-label="Founder profiles">
-            <ul>
-              {FOUNDERS.map((f) => (
-                <li key={f.slug}>
-                  <a href={`/startup/${f.slug}`}>
-                    {f.name} — {f.role} at {f.company}
-                  </a>
-                </li>
+    <div className="min-h-screen bg-white">
+      {/* Header with magazine styling */}
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
+                UpForge
+              </Link>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {isOrg ? "Global Startup Registry" : "The Founder Chronicle"}
+              </p>
+            </div>
+            <nav className="hidden md:flex items-center gap-6">
+              {internalLinks.slice(0, 3).map((link) => (
+                <Link key={link.h} href={link.h} className="text-gray-600 hover:text-emerald-700 text-sm font-medium transition-colors">
+                  {link.l}
+                </Link>
               ))}
-            </ul>
-          </nav>
-          {/* ── Category internal links — help Google understand site structure ── */}
-          <nav aria-label="Startup categories">
-            <ul>
-              <li><a href="/startups/fintech">Fintech Startups India</a></li>
-              <li><a href="/startups/edtech">Edtech Startups India</a></li>
-              <li><a href="/startups/ai">AI Startups India</a></li>
-              <li><a href="/startups/saas">SaaS Startups India</a></li>
-              <li><a href="/startups/d2c">D2C Startups India</a></li>
-              <li><a href="/startups/logistics">Logistics Startups India</a></li>
-            </ul>
-          </nav>
+            </nav>
+            <Link 
+              href="/submit" 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              Submit startup
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Trust bar - social proof */}
+        <TrustBar startupCount={startupCount} isOrg={isOrg} />
+
+        {/* Magazine hero / featured story */}
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-6">
+            <BookOpen className="w-5 h-5 text-emerald-600" />
+            <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">The Founder Chronicle 2026</span>
+          </div>
+          <FeaturedStory founder={featuredFounder} />
+        </div>
+
+        {/* Magazine grid: "More from the Chronicle" */}
+        <section className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">More from the Chronicle</h2>
+              <p className="text-gray-500 text-sm mt-1">Verified founder stories from India's startup ecosystem</p>
+            </div>
+            <Link href="/startup" className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1">
+              View all
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {remainingFounders.map((founder, idx) => (
+              <MagazineCard key={founder.slug} founder={founder} index={idx} />
+            ))}
+          </div>
         </section>
-      </div>
-    </>
+
+        {/* Trust section - engagement hook */}
+        <TrustSection />
+
+        {/* Category quick links - helps SEO and user discovery */}
+        <section className="my-12">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Explore by category</h3>
+          <div className="flex flex-wrap gap-3">
+            {["Fintech", "Unicorn", "D2C", "SaaS", "Edtech", "Logistics", "AI", "Healthtech"].map((cat) => (
+              <Link
+                key={cat}
+                href={`/startups/${cat.toLowerCase()}`}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition-colors"
+              >
+                {cat}
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white mt-16 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="font-bold text-lg mb-3">UpForge</h4>
+              <p className="text-gray-400 text-sm">
+                {isOrg 
+                  ? "The independent global registry for verified startups."
+                  : "India's trusted startup registry and founder chronicle."}
+              </p>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-3">Explore</h5>
+              <ul className="space-y-2 text-sm text-gray-400">
+                {footerLinks.map((link) => (
+                  <li key={link.h}>
+                    <Link href={link.h} className="hover:text-emerald-400 transition-colors">
+                      {link.l}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-3">Resources</h5>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/ufrn" className="hover:text-emerald-400">UFRN Lookup</Link></li>
+                <li><Link href="/api" className="hover:text-emerald-400">API Access</Link></li>
+                <li><Link href="/press" className="hover:text-emerald-400">Press Kit</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-semibold mb-3">Verified by</h5>
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm text-gray-300">Manual review board</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                © 2026 UpForge. Open data under CC BY 4.0
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Sticky CTA */}
+      <StickyCTA />
+    </div>
   )
 }
