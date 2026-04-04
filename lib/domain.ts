@@ -1,10 +1,9 @@
 /**
  * lib/domain.ts — UpForge Global Authority
  * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
- * Goal: Maximize global reach and SEO authority.
  */
 
-export type DomainContext = 'org' | 'in' // Added 'in' to handle legacy context safely
+export type DomainContext = 'org'
 
 export interface DomainMeta {
   context: DomainContext
@@ -16,16 +15,11 @@ export interface DomainMeta {
   region: 'GLOBAL'
 }
 
-// CLIENT DOMAIN DETECTION — Locked to org
 export function getDomainContextClient(): DomainContext {
   return 'org'
 }
 
-/**
- * DOMAIN META CONFIG — Global-First Strategy
- * UPDATED: Now accepts ctx to fix build error, but returns .org data.
- */
-export function getDomainMeta(ctx?: DomainContext): DomainMeta {
+export function getDomainMeta(): DomainMeta {
   return {
     context: 'org',
     baseUrl: 'https://www.upforge.org',
@@ -37,7 +31,6 @@ export function getDomainMeta(ctx?: DomainContext): DomainMeta {
   }
 }
 
-// URL HELPERS — Clean, Authority-Building Paths
 export function getStartupUrl(slug: string): string {
   return `/startup/${slug}`
 }
@@ -52,7 +45,6 @@ export function getCanonicalUrl(pathname: string): string {
   return `${baseUrl}${cleanPath}`
 }
 
-// SEO ALTERNATES — Consolidates all signals to .org
 export function getAlternatesForLayout(pathname: string) {
   const path = pathname === '/' ? '' : pathname
   const orgUrl = `https://www.upforge.org${path}`
@@ -66,11 +58,7 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-/**
- * JSON-LD ORGANIZATION — Global Schema
- * UPDATED: Accepts ctx for compatibility with layout.tsx
- */
-export function getOrganizationJsonLd(ctx?: DomainContext) {
+export function getOrganizationJsonLd() {
   const baseUrl = 'https://www.upforge.org'
 
   return {
@@ -101,11 +89,7 @@ export function getOrganizationJsonLd(ctx?: DomainContext) {
   }
 }
 
-/**
- * JSON-LD WEBSITE
- * UPDATED: Accepts ctx for compatibility with layout.tsx
- */
-export function getWebsiteJsonLd(ctx?: DomainContext) {
+export function getWebsiteJsonLd() {
   const baseUrl = 'https://www.upforge.org'
 
   return {
@@ -129,7 +113,6 @@ export function getWebsiteJsonLd(ctx?: DomainContext) {
   }
 }
 
-// JSON-LD BREADCRUMB
 export function getBreadcrumbJsonLd(items: { name: string; item: string }[]) {
   const baseUrl = 'https://www.upforge.org'
 
