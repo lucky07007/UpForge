@@ -1,23 +1,12 @@
 // app/layout.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// CHANGES vs. PREVIOUS VERSION:
+// CONSOLIDATED GLOBAL AUTHORITY LAYOUT (upforge.org Migration)
 //
-// 1. LIVE dateModified via Supabase max(updated_at)
-//    Google rewards freshness. A static "2026-01-01" in schema tells Google
-//    the dataset is stale. We now query the real latest update timestamp.
-//
-// 2. Canonical URLs are domain-specific and set in generateMetadata()
-//    The <link rel="canonical"> must exactly match the domain being served.
-//    Mixed canonicals (e.g. .org page with .in canonical) cause Google to
-//    silently ignore the page and credit .in instead.
-//
-// 3. Expanded "near me" + location-based keywords for .in
-//    Queries like "fintech startups in Mumbai" or "AI startups near me" have
-//    high commercial intent and near-zero competition. Added to keywords array.
-//
-// 4. verification block added for .org
-//    GSC verification was only on .in. Both domains need independent GSC
-//    properties — each needs its own HTML tag (or DNS record).
+// STRATEGY:
+// 1. Unified Metadata: Point all canonicals and alternates to .org.
+// 2. Global Keywords: Merge high-value India keywords into the global set.
+// 3. Freshness Signal: Maintain live dateModified via Supabase for global SEO.
+// 4. Domain Context: Forced to "org" to ensure UI links use global paths.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata, Viewport } from "next"
@@ -34,9 +23,6 @@ import {
 } from "@/lib/domain"
 import { createClient } from "@/lib/supabase/server"
 
-// ---------------------------------------------------------------------------
-// FONTS
-// ---------------------------------------------------------------------------
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -51,20 +37,12 @@ const playfair = Playfair_Display({
   preload: true,
 })
 
-// ---------------------------------------------------------------------------
-// VIEWPORT
-// ---------------------------------------------------------------------------
 export const viewport: Viewport = {
   themeColor: "#F3EFE5",
   width: "device-width",
   initialScale: 1,
 }
 
-// ---------------------------------------------------------------------------
-// HELPER — get the latest updated_at from the startups table.
-// This gives Google a real "freshness" signal. If the query fails,
-// we fall back to today's date rather than crashing.
-// ---------------------------------------------------------------------------
 async function getLatestStartupDate(): Promise<string> {
   try {
     const supabase = await createClient()
@@ -78,140 +56,17 @@ async function getLatestStartupDate(): Promise<string> {
     if (data?.updated_at) {
       return new Date(data.updated_at).toISOString().split("T")[0]
     }
-  } catch (_) {
-    // Silently fall through to default
-  }
+  } catch (_) {}
   return new Date().toISOString().split("T")[0]
 }
 
-// ---------------------------------------------------------------------------
-// METADATA — Dynamic per domain
-// ---------------------------------------------------------------------------
 export async function generateMetadata(): Promise<Metadata> {
-  const ctx        = await getDomainContext()
-  const meta       = getDomainMeta(ctx)
-  const alternates = getAlternatesForLayout("/", ctx)
+  // During migration, we prioritize the Global Hub metadata for all requests
+  const baseUrl = "https://www.upforge.org"
+  const alternates = getAlternatesForLayout("/", "org")
 
-  // ── .in — India hub ──────────────────────────────────────────────────────
-  if (ctx === "in") {
-    return {
-      metadataBase: new URL(meta.baseUrl),
-
-      title: {
-        default: "UpForge — India's Verified Startup Registry & Founder Stories 2026",
-        template: "%s | UpForge",
-      },
-
-      description:
-        "UpForge is India's independent verified startup registry. Discover 5000+ Indian startups, unicorn founders, funding data, sector analysis, and deep-dive founder stories — all free, all verified.",
-
-      keywords: [
-        // Brand
-        "UpForge", "UpForge startup registry", "UpForge founder chronicle",
-
-        // Core registry
-        "Indian startup registry 2026", "Indian startup database 2026",
-        "verified Indian startups", "startup directory India", "Indian startup list",
-
-        // Founders & stories
-        "Indian startup founders 2026", "Indian unicorn founders", "founder stories India",
-        "startup success stories India", "Indian entrepreneur profiles",
-
-        // Unicorns
-        "Indian unicorn list 2026", "Indian unicorn companies 2026",
-        "funded Indian startups", "Indian startup funding", "startup valuation India",
-
-        // Sector verticals
-        "Indian AI startups 2026", "Indian fintech startups 2026", "Indian edtech startups 2026",
-        "Indian SaaS startups 2026", "Indian deep-tech startups", "quick commerce India startups",
-        "Indian logistics startups", "Indian D2C startups", "Indian mobility startups",
-
-        // ── NEW: Location-based long-tail — near-zero competition ─────────
-        "startups in Mumbai 2026", "startups in Bangalore 2026", "startups in Delhi 2026",
-        "fintech startups in Mumbai", "AI startups in Bangalore", "edtech startups near me",
-        "startup ecosystem Hyderabad", "startup companies in Pune India",
-        "best startups to work for India 2026", "top Indian startup jobs 2026",
-        "unicorn startups Bangalore India", "emerging startups Delhi NCR",
-        "startup funding news India today", "latest Indian startup news 2026",
-
-        // Named companies (explicit brand searches)
-        "Zepto startup", "Sarvam AI India", "CRED startup India", "Zerodha startup",
-        "Groww startup", "Meesho startup", "Nykaa startup", "PhysicsWallah startup",
-        "OYO startup", "Rapido startup",
-      ],
-
-      authors: [{ name: "UpForge Editorial", url: `${meta.baseUrl}/about` }],
-      creator: "UpForge",
-      publisher: "UpForge",
-      category: "Business & Entrepreneurship",
-
-      alternates: {
-        ...alternates,
-        // Canonical MUST match the serving domain exactly — no cross-domain
-        canonical: meta.baseUrl,
-      },
-
-      verification: {
-        google: "g7JT-FIdylY2-2Pq4axQcEP8q_4tuG1fogKPWdWuF1Y",
-        // Add .in GSC verification tag here if different from layout verification
-      },
-
-      icons: {
-        icon: [
-          { url: "/favicon.ico", sizes: "any" },
-          { url: "/icon.svg", type: "image/svg+xml" },
-        ],
-        apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-      },
-
-      manifest: "/site.webmanifest",
-
-      openGraph: {
-        type: "website",
-        locale: meta.locale,
-        url: meta.baseUrl,
-        siteName: "UpForge",
-        title: "UpForge — India's Verified Startup Registry & Founder Stories 2026",
-        description:
-          "5000+ verified Indian startups. Deep-dive founder profiles. Funding data. Sector analysis. The definitive startup intelligence platform for the Indian ecosystem.",
-        images: [
-          {
-            url: `${meta.baseUrl}/og/founder-chronicle.png`,
-            width: 1200,
-            height: 630,
-            alt: "UpForge — India's Verified Startup Registry 2026",
-            type: "image/png",
-          },
-        ],
-      },
-
-      twitter: {
-        card: "summary_large_image",
-        site: "@upforge_in",
-        creator: "@upforge_in",
-        title: "UpForge — India's Verified Startup Registry & Founder Stories 2026",
-        description:
-          "5000+ Indian startups. Verified founder profiles. Funding & valuation data. Free. Independent.",
-        images: [`${meta.baseUrl}/og/founder-chronicle.png`],
-      },
-
-      robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-          index: true,
-          follow: true,
-          "max-video-preview": -1,
-          "max-image-preview": "large",
-          "max-snippet": -1,
-        },
-      },
-    }
-  }
-
-  // ── .org — Global hub ─────────────────────────────────────────────────────
   return {
-    metadataBase: new URL(meta.baseUrl),
+    metadataBase: new URL(baseUrl),
 
     title: {
       default: "UpForge — Global Startup Registry & Emerging Market Intelligence 2026",
@@ -219,48 +74,44 @@ export async function generateMetadata(): Promise<Metadata> {
     },
 
     description:
-      "UpForge is the world's verified startup registry for emerging markets. Discover 5000+ startups, cross-border funding data, founder intelligence, and sector analysis — free and independent.",
+      "UpForge is the world's independent verified startup registry. Discover 5000+ startups across India and emerging markets, unicorn founder stories, funding data, and sector analysis — free and independent.",
 
     keywords: [
-      // Brand
-      "UpForge", "UpForge global registry", "UFRN startup registry",
-
-      // Core registry
-      "global startup database 2026", "emerging market startups 2026",
+      // Unified Brand & Global Registry
+      "UpForge", "UpForge global registry", "UFRN startup registry", "global startup database 2026",
       "verified startup directory", "global founder database", "cross-border venture data",
-      "emerging market unicorns", "global startup intelligence", "startup registry worldwide",
+      "emerging market unicorns", "startup registry worldwide",
 
-      // Geographies
-      "India startup global", "Southeast Asia startups", "Africa startups database",
-      "LatAm startup directory", "Middle East startups", "global unicorn list 2026",
+      // Merged High-Value India Keywords (Retained for Global Ranking)
+      "Indian startup registry 2026", "verified Indian startups", "startup directory India",
+      "Indian unicorn list 2026", "fintech startups in Mumbai", "AI startups in Bangalore",
+      "top Indian startup jobs 2026", "Indian AI startups 2026",
 
-      // Data & funding
-      "international startup funding", "global venture capital data",
-      "startup valuation database", "founder profiles global",
+      // Global Tech Hubs
+      "startups in San Francisco", "startups in London", "startups in Singapore",
+      "global AI startups 2026", "global fintech startups 2026",
 
-      // Sectors (global)
-      "global AI startups 2026", "global fintech startups 2026", "global SaaS startups",
-      "deep tech startups global", "cross-border startup investment", "startup ecosystem data",
-
-      // UFRN-specific — these are near-zero competition, very targeted
-      "UFRN lookup", "UpForge Registry Number", "startup registry number",
-      "verified startup identity", "startup proof of existence", "startup verification number",
+      // Identity & Trust
+      "UFRN lookup", "UpForge Registry Number", "startup verification number",
     ],
 
-    authors: [{ name: "UpForge Editorial", url: `${meta.baseUrl}/about` }],
+    authors: [{ name: "UpForge Editorial", url: `${baseUrl}/about` }],
     creator: "UpForge",
     publisher: "UpForge",
     category: "Business & Entrepreneurship",
 
     alternates: {
-      ...alternates,
-      // Canonical MUST match the serving domain exactly
-      canonical: meta.baseUrl,
+      canonical: baseUrl,
+      languages: {
+        'en': baseUrl,
+        'x-default': baseUrl,
+        'en-IN': baseUrl, // Points India users to the global canonical
+      },
     },
 
-    // ── IMPORTANT: Add the GSC verification tag for upforge.org ────────────
-    // Get this from Google Search Console → Add Property → HTML Tag method.
-    // verification: { google: "YOUR_ORG_VERIFICATION_TAG_HERE" },
+    verification: {
+      google: "YOUR_GLOBAL_ORG_VERIFICATION_TAG", // Replace with .org GSC tag
+    },
 
     icons: {
       icon: [
@@ -274,67 +125,39 @@ export async function generateMetadata(): Promise<Metadata> {
 
     openGraph: {
       type: "website",
-      locale: meta.locale,
-      url: meta.baseUrl,
+      locale: "en_US",
+      url: baseUrl,
       siteName: "UpForge",
       title: "UpForge — Global Startup Registry & Emerging Market Intelligence 2026",
-      description:
-        "5000+ verified startups across emerging markets. Cross-border funding data. Founder intelligence. Sector analysis. The definitive global startup intelligence platform.",
-      images: [
-        {
-          url: `${meta.baseUrl}/og/global-registry.png`,
-          width: 1200,
-          height: 630,
-          alt: "UpForge — Global Startup Registry 2026",
-          type: "image/png",
-        },
-      ],
+      description: "5000+ verified startups globally. Deep-dive founder profiles. Funding & sector analysis.",
+      images: [{ url: `${baseUrl}/og/global-registry.png`, width: 1200, height: 630 }],
     },
 
     twitter: {
       card: "summary_large_image",
       site: "@upforge_in",
-      creator: "@upforge_in",
-      title: "UpForge — Global Startup Registry & Emerging Market Intelligence 2026",
-      description:
-        "5000+ verified startups globally. Cross-border funding data. Founder profiles. Free. Independent.",
-      images: [`${meta.baseUrl}/og/global-registry.png`],
+      title: "UpForge — Global Startup Registry 2026",
+      images: [`${baseUrl}/og/global-registry.png`],
     },
 
     robots: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
     },
   }
 }
 
-// ---------------------------------------------------------------------------
-// ROOT LAYOUT
-// ---------------------------------------------------------------------------
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const ctx  = await getDomainContext()
-  const meta = getDomainMeta(ctx)
-
-  // Fetch the real last-updated date for schema freshness signals
+  // Force "org" context to ensure all components render global-aware URLs
+  const ctx = "org" 
   const latestDate = await getLatestStartupDate()
-
-  // Build JSON-LD for this domain
   const organizationJsonLd = getOrganizationJsonLd(ctx)
-  const websiteJsonLd      = getWebsiteJsonLd(ctx)
+  const websiteJsonLd = getWebsiteJsonLd(ctx)
 
-  // Inject live dateModified into Organization schema
-  // This tells Google "this dataset was last updated TODAY" — freshness signal
   const enrichedOrgJsonLd = {
     ...organizationJsonLd,
     dateModified: latestDate,
@@ -342,45 +165,24 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={meta.locale}
+      lang="en-US"
       className={`${inter.variable} ${playfair.variable}`}
       data-domain={ctx}
     >
       <head>
-
-<script 
-  async 
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
-  crossOrigin="anonymous"
-></script>
-        {/* RESOURCE HINTS */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
+          crossOrigin="anonymous"
+        ></script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://i.ytimg.com" />
-
-        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
-          <link
-            rel="preconnect"
-            href={process.env.NEXT_PUBLIC_SUPABASE_URL}
-            crossOrigin="anonymous"
-          />
-        )}
-
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://static.businessworld.in" />
-
-        {/*
-          Hreflang — belt-and-suspenders alongside Next.js alternates.
-          These are THE most important tags for dual-domain SEO.
-          They tell Google: "these two domains are the same content,
-          serve .in for India users and .org for everyone else."
-        */}
-        <link rel="alternate" hrefLang="en-IN"    href="https://www.upforge.in" />
-        <link rel="alternate" hrefLang="en"       href="https://www.upforge.org" />
+        
+        {/* CRITICAL: Consolidation Hreflang Tags */}
+        <link rel="alternate" hrefLang="en" href="https://www.upforge.org" />
         <link rel="alternate" hrefLang="x-default" href="https://www.upforge.org" />
+        <link rel="alternate" hrefLang="en-IN" href="https://www.upforge.org" />
 
-        {/* Organization JSON-LD with live dateModified */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(enrichedOrgJsonLd) }}
@@ -401,9 +203,7 @@ export default async function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-3J7Y3695TK', { page_path: window.location.pathname });
-            gtag('config', 'G-18282');
-            gtag('config', 'AW-18011511989');
+            gtag('config', 'G-3J7Y3695TK');
           `}
         </Script>
 
