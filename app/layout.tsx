@@ -17,6 +17,7 @@ import {
   getOrganizationJsonLd,
   getWebsiteJsonLd,
 } from "@/lib/domain"
+import { getDomainContext } from "@/lib/domain.server"
 import { createClient } from "@/lib/supabase/server"
 
 const inter = Inter({
@@ -169,10 +170,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const ctx = "org"
+  // FIXED: Await server-side domain detection
+  const ctx = await getDomainContext()
 
   const latestDate = await getLatestStartupDate()
 
+  // FIXED: Passing ctx to satisfy updated function signatures
   const organizationJsonLd = getOrganizationJsonLd(ctx)
   const websiteJsonLd = getWebsiteJsonLd(ctx)
 
