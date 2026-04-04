@@ -29,7 +29,7 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
     ? startup.ufrn.split("-").slice(-2).join("-")
     : ufrnDisplay
 
-  // Global-standard relative URL
+  // Global-standard relative URL (Automatically uses .org logic from lib/domain)
   const startupHref = getStartupUrl(startup.slug || "")
 
   return (
