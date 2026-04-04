@@ -3,7 +3,7 @@
  * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
  */
 
-export type DomainContext = 'org'
+export type DomainContext = 'org' | 'in'
 
 export interface DomainMeta {
   context: DomainContext
@@ -58,7 +58,8 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-export function getOrganizationJsonLd() {
+// FIXED: Added context parameter to satisfy the call in app/layout.tsx
+export function getOrganizationJsonLd(context?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
@@ -89,7 +90,8 @@ export function getOrganizationJsonLd() {
   }
 }
 
-export function getWebsiteJsonLd() {
+// FIXED: Added context parameter to satisfy the call in app/layout.tsx
+export function getWebsiteJsonLd(context?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
