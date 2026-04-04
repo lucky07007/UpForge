@@ -484,7 +484,9 @@ export default function BlogFunding() {
                             <tr key={i} style={{ borderBottom: "1px solid var(--news-border)" }}>
                               <td style={{ padding: "0.5rem 0", fontWeight: 600, color: "var(--news-accent)" }}>{item.stage}</td>
                               <td style={{ padding: "0.5rem 0", color: "var(--news-ink-light)" }}>{item.range}</td>
-                              <td style={{ padding: "0.5rem 0", color: "var(--news-ink-light)" }}>{item.from || item.check}</td>
+                              <td style={{ padding: "0.5rem 0", color: "var(--news-ink-light)" }}>
+                                {(item as any).from || (item as any).check || (item as any).timeline}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
