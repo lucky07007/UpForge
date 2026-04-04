@@ -3,7 +3,7 @@
  * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
  */
 
-export type DomainContext = 'org' | 'in'
+export type DomainContext = 'org'
 
 export interface DomainMeta {
   context: DomainContext
@@ -19,11 +19,7 @@ export function getDomainContextClient(): DomainContext {
   return 'org'
 }
 
-/**
- * FIXED: Added ctx parameter to satisfy calls in app/startup/page.tsx
- * Logic is locked to .org to consolidate SEO authority.
- */
-export function getDomainMeta(ctx?: DomainContext): DomainMeta {
+export function getDomainMeta(): DomainMeta {
   return {
     context: 'org',
     baseUrl: 'https://www.upforge.org',
@@ -35,13 +31,36 @@ export function getDomainMeta(ctx?: DomainContext): DomainMeta {
   }
 }
 
-// ... rest of your URL helpers (getStartupUrl, getRegistryUrl, etc.)
+export function getStartupUrl(slug: string): string {
+  return `/startup/${slug}`
+}
 
-/**
- * FIXED: Added ctx parameter to satisfy calls in app/layout.tsx
- */
-export function getOrganizationJsonLd(ctx?: DomainContext) {
+export function getRegistryUrl(path = ''): string {
+  return `/registry${path ? `/${path}` : ''}`
+}
+
+export function getCanonicalUrl(pathname: string): string {
   const baseUrl = 'https://www.upforge.org'
+  const cleanPath = pathname === '/' ? '' : pathname.replace(/\/$/, '')
+  return `${baseUrl}${cleanPath}`
+}
+
+export function getAlternatesForLayout(pathname: string) {
+  const path = pathname === '/' ? '' : pathname
+  const orgUrl = `https://www.upforge.org${path}`
+
+  return {
+    canonical: orgUrl,
+    languages: {
+      'en': orgUrl,
+      'x-default': orgUrl,
+    },
+  }
+}
+
+export function getOrganizationJsonLd() {
+  const baseUrl = 'https://www.upforge.org'
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -54,21 +73,57 @@ export function getOrganizationJsonLd(ctx?: DomainContext) {
       width: '512',
       height: '512'
     },
-    // ... rest of schema
+    description: 'UpForge is the global independent startup registry providing verified intelligence on emerging startups worldwide.',
+    foundingDate: '2024',
+    areaServed: 'Worldwide',
+    sameAs: [
+      'https://twitter.com/upforge_in',
+      'https://www.linkedin.com/company/upforge'
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'editorial support',
+      email: 'team@upforge.org',
+      url: `${baseUrl}/contact`
+    }
   }
 }
 
-/**
- * FIXED: Added ctx parameter to satisfy calls in app/layout.tsx
- */
-export function getWebsiteJsonLd(ctx?: DomainContext) {
+export function getWebsiteJsonLd() {
   const baseUrl = 'https://www.upforge.org'
+
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${baseUrl}/#website`,
     url: baseUrl,
     name: 'UpForge',
-    // ... rest of schema
+    alternateName: 'UpForge Global Startup Registry',
+    publisher: {
+      '@id': `${baseUrl}/#organization`
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${baseUrl}/registry?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  }
+}
+
+export function getBreadcrumbJsonLd(items: { name: string; item: string }[]) {
+  const baseUrl = 'https://www.upforge.org'
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.item.startsWith('http') ? item.item : `${baseUrl}${item.item}`,
+    })),
   }
 }
