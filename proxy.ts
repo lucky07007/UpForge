@@ -1,3 +1,4 @@
+// proxy.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -13,6 +14,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // 2️⃣ FORCE NON-WWW → WWW (.org)
+  // Strict equality check prevents ERR_TOO_MANY_REDIRECTS
   if (hostname === 'upforge.org') {
     url.hostname = 'www.upforge.org'
     url.protocol = 'https'
@@ -21,6 +23,7 @@ export async function proxy(request: NextRequest) {
 
   // 3️⃣ CONTINUE NORMAL REQUEST
   let response = NextResponse.next()
+
   const pathname = request.nextUrl.pathname
   const domainContext = 'org'
 
