@@ -4,7 +4,7 @@
  * Goal: Maximize global reach and SEO authority.
  */
 
-export type DomainContext = 'org'
+export type DomainContext = 'org' | 'in' // Added 'in' to handle legacy context safely
 
 export interface DomainMeta {
   context: DomainContext
@@ -21,8 +21,11 @@ export function getDomainContextClient(): DomainContext {
   return 'org'
 }
 
-// DOMAIN META CONFIG — Global-First Strategy
-export function getDomainMeta(): DomainMeta {
+/**
+ * DOMAIN META CONFIG — Global-First Strategy
+ * UPDATED: Now accepts ctx to fix build error, but returns .org data.
+ */
+export function getDomainMeta(ctx?: DomainContext): DomainMeta {
   return {
     context: 'org',
     baseUrl: 'https://www.upforge.org',
@@ -63,8 +66,10 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-// JSON-LD ORGANIZATION — Global Schema
-// FIXED: Added ctx parameter to satisfy TypeScript in layout.tsx
+/**
+ * JSON-LD ORGANIZATION — Global Schema
+ * UPDATED: Accepts ctx for compatibility with layout.tsx
+ */
 export function getOrganizationJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
@@ -96,8 +101,10 @@ export function getOrganizationJsonLd(ctx?: DomainContext) {
   }
 }
 
-// JSON-LD WEBSITE
-// FIXED: Added ctx parameter to satisfy TypeScript in layout.tsx
+/**
+ * JSON-LD WEBSITE
+ * UPDATED: Accepts ctx for compatibility with layout.tsx
+ */
 export function getWebsiteJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
