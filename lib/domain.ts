@@ -1,6 +1,7 @@
 /**
  * lib/domain.ts — UpForge Global Authority
  * VERSION: SINGLE DOMAIN CONSOLIDATED (.org PRIMARY)
+ * Goal: Maximize global reach and SEO authority.
  */
 
 export type DomainContext = 'org'
@@ -15,10 +16,12 @@ export interface DomainMeta {
   region: 'GLOBAL'
 }
 
+// CLIENT DOMAIN DETECTION — Locked to org
 export function getDomainContextClient(): DomainContext {
   return 'org'
 }
 
+// DOMAIN META CONFIG — Global-First Strategy
 export function getDomainMeta(): DomainMeta {
   return {
     context: 'org',
@@ -31,6 +34,7 @@ export function getDomainMeta(): DomainMeta {
   }
 }
 
+// URL HELPERS — Clean, Authority-Building Paths
 export function getStartupUrl(slug: string): string {
   return `/startup/${slug}`
 }
@@ -45,6 +49,7 @@ export function getCanonicalUrl(pathname: string): string {
   return `${baseUrl}${cleanPath}`
 }
 
+// SEO ALTERNATES — Consolidates all signals to .org
 export function getAlternatesForLayout(pathname: string) {
   const path = pathname === '/' ? '' : pathname
   const orgUrl = `https://www.upforge.org${path}`
@@ -58,7 +63,9 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-export function getOrganizationJsonLd() {
+// JSON-LD ORGANIZATION — Global Schema
+// UPDATED: Added ctx parameter to fix build error in layout.tsx
+export function getOrganizationJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
@@ -89,7 +96,9 @@ export function getOrganizationJsonLd() {
   }
 }
 
-export function getWebsiteJsonLd() {
+// JSON-LD WEBSITE
+// UPDATED: Added ctx parameter to fix build error in layout.tsx
+export function getWebsiteJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
@@ -113,6 +122,7 @@ export function getWebsiteJsonLd() {
   }
 }
 
+// JSON-LD BREADCRUMB
 export function getBreadcrumbJsonLd(items: { name: string; item: string }[]) {
   const baseUrl = 'https://www.upforge.org'
 
