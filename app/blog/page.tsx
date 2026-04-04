@@ -5,6 +5,7 @@
 // ✅ Original dark hero masthead preserved (eyebrow removed)
 // ✅ Live search bar across all article titles
 // ✅ Header + footer collapse bug fixed
+// ✅ Search dropdown z-index fixed (appears above all content)
 // ✅ Registry-inspired design language
 // ✅ More engaging card interactions
 
@@ -234,7 +235,6 @@ const ALL_POSTS = [
 
 export default function BlogIndexPage() {
   const [searchQ, setSearchQ] = useState("")
-  const [activeSearch, setActiveSearch] = useState(false)
 
   const searchResults = useMemo(() => {
     if (!searchQ.trim()) return []
@@ -263,7 +263,8 @@ export default function BlogIndexPage() {
           --sf: system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
-        html, body { height: 100%; }
+        html { height: 100%; }
+        body { min-height: 100%; }
 
         /* ── PAGE SHELL ── */
         .page-root {
@@ -274,15 +275,21 @@ export default function BlogIndexPage() {
           font-family: Georgia, 'Times New Roman', serif;
           color: var(--ink);
         }
-        .page-body { flex: 1; }
 
-        /* ── HERO MASTHEAD ── */
+        /* page-body takes all remaining space so footer never collapses */
+        .page-body {
+          flex: 1 0 auto;
+        }
+
+        /* ── HERO MASTHEAD ──
+           KEY FIX: overflow must be visible so the search dropdown
+           can escape the hero container and float above the page.       */
         .blog-hero {
           position: relative;
           background: linear-gradient(135deg, rgba(15,26,28,0.92) 0%, rgba(15,26,28,0.80) 100%);
-          overflow: hidden;
           border-bottom: 1px solid var(--rule);
           flex-shrink: 0;
+          /* overflow: visible is the default — do NOT set overflow:hidden here */
         }
         .blog-hero-bg {
           position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -328,9 +335,9 @@ export default function BlogIndexPage() {
         .hero-topbar-cta:hover { background: var(--teal-dark) !important; }
         @media (max-width: 700px) { .hero-topbar-nav { display: none; } }
 
-        /* Center content */
+        /* Center content — must sit above the dropdown backdrop */
         .blog-mast-content {
-          position: relative; z-index: 2;
+          position: relative; z-index: 9999;
           text-align: center; padding: 72px 24px 60px;
         }
         .blog-mast-h1 {
@@ -351,9 +358,11 @@ export default function BlogIndexPage() {
           line-height: 1.7; max-width: 560px; margin: 0 auto 28px;
         }
 
-        /* ── SEARCH BAR ── */
+        /* ── SEARCH BAR ──
+           KEY FIX: z-index: 9999 so dropdown floats above ALL page content  */
         .search-wrap {
-          max-width: 640px; margin: 0 auto; position: relative; z-index: 10;
+          max-width: 640px; margin: 0 auto;
+          position: relative; z-index: 9999;
         }
         .search-bar {
           display: flex; align-items: center;
@@ -382,12 +391,13 @@ export default function BlogIndexPage() {
         }
         .search-clear:hover { background: rgba(255,255,255,0.2); }
 
-        /* Search results dropdown */
+        /* Search results dropdown
+           KEY FIX: z-index: 9999 ensures it's above cards, sections, everything */
         .search-results {
           position: absolute; top: calc(100% + 8px); left: 0; right: 0;
           background: white; border-radius: 12px; border: 1px solid var(--rule2);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-          max-height: 420px; overflow-y: auto; z-index: 100;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+          max-height: 420px; overflow-y: auto; z-index: 9999;
         }
         .search-results-header {
           padding: 10px 16px; border-bottom: 1px solid var(--rule2);
@@ -819,6 +829,12 @@ export default function BlogIndexPage() {
         }
         .bottom-cta-btn:hover { background: var(--teal-dark); transform: translateY(-2px); }
 
+        /* ── FOOTER ──
+           KEY FIX: footer stays at bottom, flex-shrink: 0 prevents collapse  */
+        .site-footer {
+          flex-shrink: 0;
+        }
+
         /* ── FOOTER LINKS ── */
         .footer-grid {
           display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
@@ -906,13 +922,13 @@ export default function BlogIndexPage() {
                 )}
               </div>
 
-              {/* Results dropdown */}
+              {/* Results dropdown — floats above all page content via z-index: 9999 */}
               {showResults && (
                 <div className="search-results" role="listbox" aria-label="Search results">
                   {searchResults.length > 0 ? (
                     <>
                       <div className="search-results-header">
-                        {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for "{searchQ}"
+                        {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} for &ldquo;{searchQ}&rdquo;
                       </div>
                       {searchResults.map((post, i) => (
                         <Link key={i} href={post.slug} className="search-result-item" onClick={() => setSearchQ("")}>
@@ -923,7 +939,7 @@ export default function BlogIndexPage() {
                       ))}
                     </>
                   ) : (
-                    <div className="search-no-results">No articles found for "{searchQ}"</div>
+                    <div className="search-no-results">No articles found for &ldquo;{searchQ}&rdquo;</div>
                   )}
                 </div>
               )}
@@ -1208,7 +1224,7 @@ export default function BlogIndexPage() {
             </div>
 
             {/* ── FOOTER LINKS ── */}
-            <footer>
+            <footer className="site-footer">
               <div className="footer-grid">
                 {[
                   { l: "Global Registry →",        h: "https://www.upforge.org/registry",              desc: "Full verified database"       },
