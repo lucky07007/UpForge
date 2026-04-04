@@ -43,13 +43,18 @@ export function getDomainMeta(context: DomainContext): DomainMeta {
   }
 }
 
-// URL HELPERS
-export function getStartupUrl(slug: string): string {
+// URL HELPERS — UPDATED TO ACCEPT DOMAIN CONTEXT
+export function getStartupUrl(slug: string, context: DomainContext = 'in'): string {
+  // Logic: If on .org, return absolute URL to maintain authority. If on .in, return relative.
+  if (context === 'org') {
+    return `https://www.upforge.org/startup/${slug}`
+  }
   return `/startup/${slug}`
 }
 
-export function getRegistryUrl(path = ''): string {
-  return `/registry${path ? `/${path}` : ''}`
+export function getRegistryUrl(path = '', context: DomainContext = 'in'): string {
+  const base = context === 'org' ? 'https://www.upforge.org/registry' : '/registry'
+  return `${base}${path ? `/${path}` : ''}`
 }
 
 export function getCanonicalUrl(pathname: string): string {
@@ -72,8 +77,8 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-// JSON-LD ORGANIZATION — UPDATED TO ACCEPT CONTEXT
-export function getOrganizationJsonLd(context: DomainContext) {
+// JSON-LD ORGANIZATION
+export function getOrganizationJsonLd(context: DomainContext = 'org') {
   const meta = getDomainMeta(context)
   const baseUrl = meta.baseUrl
 
@@ -83,30 +88,23 @@ export function getOrganizationJsonLd(context: DomainContext) {
     '@id': `${baseUrl}/#organization`,
     name: 'UpForge',
     url: baseUrl,
-
     logo: {
       '@type': 'ImageObject',
       url: `${baseUrl}/logo.png`,
       width: '512',
       height: '512'
     },
-
-    description:
-      'UpForge is the global independent startup registry providing verified intelligence on emerging startups worldwide.',
-
+    description: 'UpForge is the global independent startup registry providing verified intelligence on emerging startups worldwide.',
     foundingDate: '2024',
-
     areaServed: [
       { '@type': 'Country', name: 'India' },
       { '@type': 'Country', name: 'United States' },
       { '@type': 'Country', name: 'United Kingdom' }
     ],
-
     sameAs: [
       'https://twitter.com/upforge_in',
       'https://www.linkedin.com/company/upforge'
     ],
-
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'editorial support',
@@ -116,8 +114,8 @@ export function getOrganizationJsonLd(context: DomainContext) {
   }
 }
 
-// JSON-LD WEBSITE — UPDATED TO ACCEPT CONTEXT
-export function getWebsiteJsonLd(context: DomainContext) {
+// JSON-LD WEBSITE
+export function getWebsiteJsonLd(context: DomainContext = 'org') {
   const meta = getDomainMeta(context)
   const baseUrl = meta.baseUrl
 
@@ -125,52 +123,35 @@ export function getWebsiteJsonLd(context: DomainContext) {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${baseUrl}/#website`,
-
     url: baseUrl,
-
     name: 'UpForge',
-
-    alternateName:
-      'UpForge Global Startup Registry',
-
+    alternateName: 'UpForge Global Startup Registry',
     publisher: {
       '@id': `${baseUrl}/#organization`
     },
-
     potentialAction: {
       '@type': 'SearchAction',
-
       target: {
         '@type': 'EntryPoint',
-
-        urlTemplate:
-          `${baseUrl}/registry?q={search_term_string}`,
+        urlTemplate: `${baseUrl}/registry?q={search_term_string}`,
       },
-
-      'query-input':
-        'required name=search_term_string',
+      'query-input': 'required name=search_term_string',
     },
   }
 }
 
 // JSON-LD BREADCRUMB
-export function getBreadcrumbJsonLd(
-  items: { name: string; item: string }[]
-) {
+export function getBreadcrumbJsonLd(items: { name: string; item: string }[]) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map(
-      (item, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        name: item.name,
-        item: item.item.startsWith('http')
-          ? item.item
-          : `${baseUrl}${item.item}`,
-      })
-    ),
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.item.startsWith('http') ? item.item : `${baseUrl}${item.item}`,
+    })),
   }
 }
