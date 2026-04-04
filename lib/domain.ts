@@ -19,7 +19,6 @@ export interface DomainMeta {
 }
 
 // CLIENT DOMAIN DETECTION
-
 export function getDomainContextClient(): DomainContext {
   if (typeof window === 'undefined') return 'org'
   const htmlDomain = document.documentElement.getAttribute('data-domain')
@@ -27,9 +26,7 @@ export function getDomainContextClient(): DomainContext {
 }
 
 // DOMAIN META CONFIG
-
 export function getDomainMeta(context: DomainContext): DomainMeta {
-
   const isIndia = context === 'in'
 
   return {
@@ -47,7 +44,6 @@ export function getDomainMeta(context: DomainContext): DomainMeta {
 }
 
 // URL HELPERS
-
 export function getStartupUrl(slug: string): string {
   return `/startup/${slug}`
 }
@@ -57,17 +53,13 @@ export function getRegistryUrl(path = ''): string {
 }
 
 export function getCanonicalUrl(pathname: string): string {
-
   const baseUrl = 'https://www.upforge.org'
   const cleanPath = pathname === '/' ? '' : pathname.replace(/\/$/, '')
-
   return `${baseUrl}${cleanPath}`
 }
 
 // HREFLANG + CANONICAL
-
 export function getAlternatesForLayout(pathname: string) {
-
   const path = pathname === '/' ? '' : pathname
   const orgUrl = `https://www.upforge.org${path}`
 
@@ -80,11 +72,10 @@ export function getAlternatesForLayout(pathname: string) {
   }
 }
 
-// JSON-LD ORGANIZATION
-
-export function getOrganizationJsonLd() {
-
-  const baseUrl = 'https://www.upforge.org'
+// JSON-LD ORGANIZATION — UPDATED TO ACCEPT CONTEXT
+export function getOrganizationJsonLd(context: DomainContext) {
+  const meta = getDomainMeta(context)
+  const baseUrl = meta.baseUrl
 
   return {
     '@context': 'https://schema.org',
@@ -125,16 +116,15 @@ export function getOrganizationJsonLd() {
   }
 }
 
-// JSON-LD WEBSITE
-
-export function getWebsiteJsonLd() {
-
-  const baseUrl = 'https://www.upforge.org'
+// JSON-LD WEBSITE — UPDATED TO ACCEPT CONTEXT
+export function getWebsiteJsonLd(context: DomainContext) {
+  const meta = getDomainMeta(context)
+  const baseUrl = meta.baseUrl
 
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': `${baseUrl}/#website`,   // ✅ FIXED LINE
+    '@id': `${baseUrl}/#website`,
 
     url: baseUrl,
 
@@ -164,26 +154,19 @@ export function getWebsiteJsonLd() {
 }
 
 // JSON-LD BREADCRUMB
-
 export function getBreadcrumbJsonLd(
   items: { name: string; item: string }[]
 ) {
-
   const baseUrl = 'https://www.upforge.org'
 
   return {
     '@context': 'https://schema.org',
-
     '@type': 'BreadcrumbList',
-
     itemListElement: items.map(
       (item, index) => ({
         '@type': 'ListItem',
-
         position: index + 1,
-
         name: item.name,
-
         item: item.item.startsWith('http')
           ? item.item
           : `${baseUrl}${item.item}`,
