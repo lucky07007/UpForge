@@ -64,7 +64,8 @@ export function getAlternatesForLayout(pathname: string) {
 }
 
 // JSON-LD ORGANIZATION — Global Schema
-export function getOrganizationJsonLd() {
+// FIXED: Added ctx parameter to satisfy TypeScript in layout.tsx
+export function getOrganizationJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
@@ -96,7 +97,8 @@ export function getOrganizationJsonLd() {
 }
 
 // JSON-LD WEBSITE
-export function getWebsiteJsonLd() {
+// FIXED: Added ctx parameter to satisfy TypeScript in layout.tsx
+export function getWebsiteJsonLd(ctx?: DomainContext) {
   const baseUrl = 'https://www.upforge.org'
 
   return {
