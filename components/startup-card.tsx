@@ -1,29 +1,16 @@
-// components/startup-card.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// FIX: startup card href is now domain-aware.
-// On .in  → /startup/[slug]             (relative, stays on .in)
-// On .org → https://www.upforge.org/... (absolute, stays on .org)
-//
-// getDomainContext() reads the x-upforge-domain header set by middleware.ts.
-// The card itself is a Client Component so we receive `domain` as a prop
-// from the nearest Server Component parent (StartupRegistry, FeaturedStartups, etc).
-// ─────────────────────────────────────────────────────────────────────────────
-
 "use client"
 
 import Link from "next/link"
 import { ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react"
 import type { Startup } from "@/types/startup"
-import type { DomainContext } from "@/lib/domain"
 import { getStartupUrl } from "@/lib/domain"
 
 interface StartupCardProps {
   startup: Startup
   featured?: boolean
-  domain?: DomainContext // passed from Server Component parent; defaults to "in"
 }
 
-export function StartupCard({ startup, featured = false, domain = "in" }: StartupCardProps) {
+export function StartupCard({ startup, featured = false }: StartupCardProps) {
   const getDisplayFounder = () => {
     if (!startup.founders || startup.founders.trim() === "") {
       return { name: "Institutional Lead", hasMore: false }
@@ -36,15 +23,14 @@ export function StartupCard({ startup, featured = false, domain = "in" }: Startu
   }
 
   const founderInfo = getDisplayFounder()
-
   const hasRealUFRN = !!startup.ufrn
   const ufrnDisplay = startup.ufrn ?? `UPF-${startup.slug?.substring(0, 6).toUpperCase()}`
   const ufrnShort = startup.ufrn
     ? startup.ufrn.split("-").slice(-2).join("-")
     : ufrnDisplay
 
-  // Domain-aware startup URL — prevents cross-domain redirect
-  const startupHref = getStartupUrl(startup.slug || "", domain)
+  // Global-standard relative URL
+  const startupHref = getStartupUrl(startup.slug || "")
 
   return (
     <Link href={startupHref} className="group block h-full">
@@ -55,7 +41,6 @@ export function StartupCard({ startup, featured = false, domain = "in" }: Startu
             : "border-slate-100 p-6 hover:border-blue-200 shadow-sm hover:shadow-md"
         }`}
       >
-        {/* Institutional Elite Badge */}
         {featured && (
           <div className="absolute -top-3 left-6">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-1 shadow-lg shadow-slate-200">
@@ -67,7 +52,6 @@ export function StartupCard({ startup, featured = false, domain = "in" }: Startu
           </div>
         )}
 
-        {/* Logo Section */}
         <div className="mb-6 flex items-start justify-between">
           <div
             className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border bg-white transition-colors ${
@@ -113,7 +97,6 @@ export function StartupCard({ startup, featured = false, domain = "in" }: Startu
           </p>
         </div>
 
-        {/* Footer: Founder & UFRN Verification */}
         <div className="mt-8 flex items-center justify-between border-t border-slate-50 pt-5">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400 border border-white">
@@ -130,7 +113,6 @@ export function StartupCard({ startup, featured = false, domain = "in" }: Startu
             </div>
           </div>
 
-          {/* UFRN Trust Signal */}
           <div className="flex flex-col items-end gap-0.5">
             <div className="flex items-center gap-1 text-green-600">
               <ShieldCheck className="h-3 w-3" />
@@ -138,22 +120,18 @@ export function StartupCard({ startup, featured = false, domain = "in" }: Startu
             </div>
 
             {hasRealUFRN ? (
-              <a
-                href={`/ufrn/${startup.ufrn}`}
-                onClick={(e) => e.stopPropagation()}
-                className="text-[9px] font-mono text-[#A89060] hover:underline hover:text-[#7A6840] transition-colors"
-                title={`Registry lookup: ${startup.ufrn}`}
-                aria-label={`UFRN: ${startup.ufrn} - Verified Startup Profile`}
+              <span 
+                className="text-[9px] font-mono text-[#A89060]"
+                title={`Registry ID: ${startup.ufrn}`}
               >
                 {ufrnShort}
-              </a>
+              </span>
             ) : (
               <p className="text-[9px] font-mono text-slate-300">{ufrnDisplay}</p>
             )}
           </div>
         </div>
 
-        {/* Bottom underline animation */}
         <div className="absolute bottom-0 left-6 right-6 h-0.5 scale-x-0 bg-slate-900 transition-transform duration-500 group-hover:scale-x-100" />
       </article>
     </Link>
