@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-export default async function robots(): Promise<MetadataRoute.Robots> {
+export default function robots(): MetadataRoute.Robots {
   const BASE = "https://www.upforge.org"
 
   return {
@@ -10,20 +10,76 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
           "Googlebot",
           "Googlebot-News",
           "Googlebot-Image",
-          "Google-Extended", // AI Crawlers
+          "Google-Extended",
+          "AdsBot-Google",
         ],
         allow: [
-          "/", "/startup/", "/startups/", "/blog/", "/ufrn/", "/about", "/sitemap.xml"
+          "/",
+          "/startup/",
+          "/startups/",
+          "/blog/",
+          "/ufrn/",
+          "/founders/",
+          "/indian-unicorns/",
+          "/about",
+          "/submit",
+          "/contact",
+          "/sitemap.xml",
         ],
-        disallow: ["/admin/", "/api/"],
+        disallow: [
+          "/admin/",
+          "/api/",
+          "/_next/",
+          "/private/",
+          "/*?preview=",
+          "/*?draft=",
+          "/*?token=",
+        ],
       },
+
+      {
+        userAgent: [
+          "GPTBot",
+          "CCBot",
+          "ClaudeBot",
+          "PerplexityBot",
+          "Amazonbot",
+        ],
+        allow: [
+          "/startup/",
+          "/startups/",
+          "/blog/",
+          "/ufrn/",
+          "/founders/",
+        ],
+        disallow: [
+          "/admin/",
+          "/api/",
+          "/private/",
+        ],
+      },
+
       {
         userAgent: "*",
-        allow: ["/"],
-        disallow: ["/admin/", "/api/"],
+        allow: [
+          "/",
+        ],
+        disallow: [
+          "/admin/",
+          "/api/",
+          "/_next/",
+          "/private/",
+          "/*?preview=",
+          "/*?draft=",
+          "/*?token=",
+        ],
       },
     ],
-    sitemap: `${BASE}/sitemap.xml`,
+
+    sitemap: [
+      `${BASE}/sitemap.xml`,
+    ],
+
     host: BASE,
   }
 }
