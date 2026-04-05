@@ -1,12 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-// GLOBAL AUTHORITY ROOT LAYOUT — UpForge.org (Final Production)
-// Adsense-safe
-// Next.js App Router optimized
-// SEO canonical authority enforced
-// JSON-LD structured data compliant
-// Cloudflare cache friendly
-// Vercel production safe
-// ─────────────────────────────────────────────────────────────
+// app/layout.tsx
 
 import type { Metadata, Viewport } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
@@ -78,6 +70,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "UpForge is the world's independent verified startup registry. Discover global startups, unicorn founders, funding intelligence, and emerging market insights.",
 
+    applicationName: "UpForge",
+
     keywords: [
       "global startup registry",
       "startup database worldwide",
@@ -86,7 +80,6 @@ export async function generateMetadata(): Promise<Metadata> {
       "AI startups database",
       "fintech startups global",
       "emerging market startups",
-      "UpForge registry",
       "UFRN lookup",
     ],
 
@@ -99,7 +92,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
     creator: "UpForge",
     publisher: "UpForge",
-    category: "Business & Entrepreneurship",
 
     alternates,
 
@@ -116,6 +108,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
 
     manifest: "/site.webmanifest",
+
+    referrer: "origin-when-cross-origin",
 
     openGraph: {
       type: "website",
@@ -138,6 +132,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       site: "@upforge_in",
+      creator: "@upforge_in",
       title: "UpForge — Global Startup Registry",
       images: [`${baseUrl}/og/global-registry.png`],
     },
@@ -166,7 +161,16 @@ export default async function RootLayout({
   const latestDate = await getLatestStartupDate()
 
   const organizationJsonLd = getOrganizationJsonLd(ctx)
-  const websiteJsonLd = getWebsiteJsonLd(ctx)
+
+  const websiteJsonLd = {
+    ...getWebsiteJsonLd(ctx),
+
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.upforge.org/startups?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  }
 
   const enrichedOrgJsonLd = {
     ...organizationJsonLd,
@@ -182,7 +186,6 @@ export default async function RootLayout({
     >
       <head>
 
-        {/* Adsense Loader (Required for Approval) */}
         <Script
           async
           strategy="afterInteractive"
@@ -190,15 +193,14 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Font Preconnect (Performance Boost) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
 
-        {/* Organization Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -206,7 +208,6 @@ export default async function RootLayout({
           }}
         />
 
-        {/* Website Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -218,7 +219,6 @@ export default async function RootLayout({
 
       <body className="bg-background text-foreground flex flex-col min-h-screen antialiased font-sans">
 
-        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-3J7Y3695TK"
           strategy="afterInteractive"
@@ -233,7 +233,6 @@ export default async function RootLayout({
           `}
         </Script>
 
-        {/* Client Layout Wrapper */}
         <ClientLayout domainContext={ctx}>
           {children}
         </ClientLayout>
