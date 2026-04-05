@@ -8,7 +8,7 @@ import { FounderChronicleClient } from "../components/founder-chronicle-client"
 import { FOUNDERS } from "../data/founders"
 import { createClient } from "@/lib/supabase/server"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Header } from "@/components/header"
+import { Navbar } from "@/components/navbar"
 
 // ---------------------------------------------------------------------------
 // DOMAIN DETECTION
