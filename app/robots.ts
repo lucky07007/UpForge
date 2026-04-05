@@ -10,7 +10,6 @@ export default function robots(): MetadataRoute.Robots {
           "Googlebot",
           "Googlebot-News",
           "Googlebot-Image",
-          "Google-Extended",
           "AdsBot-Google",
         ],
         allow: [
@@ -36,34 +35,22 @@ export default function robots(): MetadataRoute.Robots {
           "/*?token=",
         ],
       },
-
       {
         userAgent: [
           "GPTBot",
           "CCBot",
           "ClaudeBot",
-          "PerplexityBot",
           "Amazonbot",
+          "Google-Extended",
+          "meta-externalagent",
+          "Bytespider",
+          "Applebot-Extended",
         ],
-        allow: [
-          "/startup/",
-          "/startups/",
-          "/blog/",
-          "/ufrn/",
-          "/founders/",
-        ],
-        disallow: [
-          "/admin/",
-          "/api/",
-          "/private/",
-        ],
+        disallow: ["/"],
       },
-
       {
         userAgent: "*",
-        allow: [
-          "/",
-        ],
+        allow: ["/"],
         disallow: [
           "/admin/",
           "/api/",
@@ -75,11 +62,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-
-    sitemap: [
-      `${BASE}/sitemap.xml`,
-    ],
-
+    sitemap: [`${BASE}/sitemap.xml`],
     host: BASE,
   }
 }
