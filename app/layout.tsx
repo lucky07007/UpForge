@@ -1,10 +1,11 @@
-// app/layout.tsx
 // ─────────────────────────────────────────────────────────────
 // GLOBAL AUTHORITY ROOT LAYOUT — UpForge.org (Final Production)
-// Consolidates SEO signals to .org canonical domain
-// Next.js 16 compliant
-// TypeScript-safe
-// Vercel build-safe
+// Adsense-safe
+// Next.js App Router optimized
+// SEO canonical authority enforced
+// JSON-LD structured data compliant
+// Cloudflare cache friendly
+// Vercel production safe
 // ─────────────────────────────────────────────────────────────
 
 import type { Metadata, Viewport } from "next"
@@ -12,11 +13,13 @@ import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { ClientLayout } from "../components/client-layout"
 import Script from "next/script"
+
 import {
   getAlternatesForLayout,
   getOrganizationJsonLd,
   getWebsiteJsonLd,
 } from "@/lib/domain"
+
 import { getDomainContext } from "@/lib/domain.server"
 import { createClient } from "@/lib/supabase/server"
 
@@ -24,14 +27,12 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-  preload: true,
 })
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  preload: true,
 })
 
 export const viewport: Viewport = {
@@ -53,17 +54,16 @@ async function getLatestStartupDate(): Promise<string> {
       .single()
 
     if (data?.updated_at) {
-      return new Date(data.updated_at).toISOString().split("T")[0]
+      return new Date(data.updated_at).toISOString()
     }
   } catch {}
 
-  return new Date().toISOString().split("T")[0]
+  return new Date().toISOString()
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = "https://www.upforge.org"
 
-  // FIXED: now only 1 argument
   const alternates = getAlternatesForLayout("/")
 
   return {
@@ -76,34 +76,18 @@ export async function generateMetadata(): Promise<Metadata> {
     },
 
     description:
-      "UpForge is the world's independent verified startup registry. Discover 5000+ startups across India and emerging markets, unicorn founder stories, funding data, and sector analysis — free and independent.",
+      "UpForge is the world's independent verified startup registry. Discover global startups, unicorn founders, funding intelligence, and emerging market insights.",
 
     keywords: [
-      "UpForge",
-      "UpForge global registry",
-      "UFRN startup registry",
-      "global startup database 2026",
-      "verified startup directory",
-      "global founder database",
-      "cross-border venture data",
-      "emerging market unicorns",
-      "startup registry worldwide",
-      "Indian startup registry 2026",
-      "verified Indian startups",
-      "startup directory India",
-      "Indian unicorn list 2026",
-      "fintech startups in Mumbai",
-      "AI startups in Bangalore",
-      "top Indian startup jobs 2026",
-      "Indian AI startups 2026",
-      "startups in San Francisco",
-      "startups in London",
-      "startups in Singapore",
-      "global AI startups 2026",
-      "global fintech startups 2026",
+      "global startup registry",
+      "startup database worldwide",
+      "verified startups directory",
+      "Indian startup registry",
+      "AI startups database",
+      "fintech startups global",
+      "emerging market startups",
+      "UpForge registry",
       "UFRN lookup",
-      "UpForge Registry Number",
-      "startup verification number",
     ],
 
     authors: [
@@ -141,7 +125,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title:
         "UpForge — Global Startup Registry & Emerging Market Intelligence 2026",
       description:
-        "5000+ verified startups globally. Deep-dive founder profiles. Funding & sector analysis.",
+        "Discover verified startups globally. Founder profiles, funding intelligence, and sector analysis.",
       images: [
         {
           url: `${baseUrl}/og/global-registry.png`,
@@ -154,13 +138,20 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       site: "@upforge_in",
-      title: "UpForge — Global Startup Registry 2026",
+      title: "UpForge — Global Startup Registry",
       images: [`${baseUrl}/og/global-registry.png`],
     },
 
     robots: {
       index: true,
       follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        maxSnippet: -1,
+        maxImagePreview: "large",
+        maxVideoPreview: -1,
+      },
     },
   }
 }
@@ -170,12 +161,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // FIXED: Await server-side domain detection
   const ctx = await getDomainContext()
 
   const latestDate = await getLatestStartupDate()
 
-  // FIXED: Passing ctx to satisfy updated function signatures
   const organizationJsonLd = getOrganizationJsonLd(ctx)
   const websiteJsonLd = getWebsiteJsonLd(ctx)
 
@@ -189,16 +178,19 @@ export default async function RootLayout({
       lang="en-US"
       className={`${inter.variable} ${playfair.variable}`}
       data-domain={ctx}
+      suppressHydrationWarning
     >
       <head>
-        {/* Adsense */}
-        <script
+
+        {/* Adsense Loader (Required for Approval) */}
+        <Script
           async
+          strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
           crossOrigin="anonymous"
         />
 
-        {/* font optimization */}
+        {/* Font Preconnect (Performance Boost) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -206,7 +198,7 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* JSON-LD Organization */}
+        {/* Organization Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -214,16 +206,18 @@ export default async function RootLayout({
           }}
         />
 
-        {/* JSON-LD Website */}
+        {/* Website Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(websiteJsonLd),
           }}
         />
+
       </head>
 
       <body className="bg-background text-foreground flex flex-col min-h-screen antialiased font-sans">
+
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-3J7Y3695TK"
@@ -239,9 +233,11 @@ export default async function RootLayout({
           `}
         </Script>
 
+        {/* Client Layout Wrapper */}
         <ClientLayout domainContext={ctx}>
           {children}
         </ClientLayout>
+
       </body>
     </html>
   )
