@@ -68,8 +68,8 @@ function NewsletterForm() {
 
   return submitted ? (
     <div className="flex items-center gap-2 mt-3">
-      <BadgeCheck size={14} className="text-emerald-600" />
-      <span className="text-[12px] text-[#6B6B6B]">
+      <BadgeCheck size={14} className="text-emerald-500" />
+      <span className="text-[12px] text-[#D0D0D0]">
         Subscribed to UpForge Intel
       </span>
     </div>
@@ -85,11 +85,11 @@ function NewsletterForm() {
         placeholder="you@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="flex-1 px-3 py-2 text-[12px] border border-[#D8D2C8] border-r-0 bg-white/95 outline-none placeholder:text-[#A0A0A0]"
+        className="flex-1 px-3 py-2 text-[12px] border border-[#3A3A3A] border-r-0 bg-[#161616] text-[#F5F3EE] outline-none placeholder:text-[#777777]"
       />
       <button
         type="submit"
-        className="px-4 py-2 text-[11px] font-semibold bg-[#111111] text-white hover:bg-[#333333] flex items-center gap-1"
+        className="px-4 py-2 text-[11px] font-semibold bg-[#F5F3EE] text-[#111111] hover:bg-[#E0D8C7] flex items-center gap-1"
       >
         Subscribe <ArrowRight size={11} />
       </button>
@@ -107,9 +107,9 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-[#EFE9DF] border-t border-[#D8D2C8]">
-      {/* Optional background image strip for subtle texture */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.10] mix-blend-multiply">
+    <footer className="relative overflow-hidden bg-[#111111] border-t border-[#2A2A2A]">
+      {/* Optional background image for subtle global texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-soft-light">
         <Image
           src="/footer.jpg"
           alt="UpForge global startup map"
@@ -121,12 +121,12 @@ export function Footer() {
 
       <div className="relative">
         {/* TRUST STRIP */}
-        <div className="border-b border-[#D8D2C8] bg-[#F6F3ED]/90 backdrop-blur-sm">
+        <div className="border-b border-[#2A2A2A] bg-[#181818]/95 backdrop-blur-sm">
           <div className="max-w-[1400px] mx-auto px-6 py-3 flex flex-wrap gap-6 justify-center lg:justify-between">
             {TRUST_ITEMS.map(({ icon: Icon, label }) => (
               <div key={label} className="flex items-center gap-2">
                 <Icon size={13} className="text-[#C59A2E]" />
-                <span className="text-[11px] text-[#6B6B6B] tracking-wider uppercase">
+                <span className="text-[11px] text-[#D0D0D0] tracking-wider uppercase">
                   {label}
                 </span>
               </div>
@@ -136,11 +136,11 @@ export function Footer() {
 
         <div className="max-w-[1400px] mx-auto px-6">
           {/* MAIN GRID */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-10 gap-y-12 py-14 border-b border-[#D8D2C8] bg-[#EFE9DF]/90">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-10 gap-y-12 py-14 border-b border-[#2A2A2A] bg-[#111111]/95">
             {/* BRAND / PITCH */}
             <div className="col-span-2 lg:col-span-2">
               <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="relative w-7 h-7 overflow-hidden rounded-sm border border-[#D8D2C8] bg-white">
+                <div className="relative w-7 h-7 overflow-hidden rounded-sm border border-[#3A3A3A] bg-[#181818]">
                   <Image
                     src="/logo.jpg"
                     alt="UpForge"
@@ -149,7 +149,7 @@ export function Footer() {
                   />
                 </div>
                 <span
-                  className="text-[22px] font-bold text-[#111111]"
+                  className="text-[22px] font-bold text-[#F5F3EE]"
                   style={{
                     fontFamily: "'Playfair Display','Georgia',serif",
                   }}
@@ -158,17 +158,16 @@ export function Footer() {
                 </span>
               </Link>
 
-              {/* SINGLE, STRONG POSITIONING SENTENCE */}
-              <p className="text-[13px] text-[#4B4B4B] leading-relaxed max-w-[320px]">
-                Independent startup registry and intelligence platform —{" "}
-                providing verified company data, founder insights, and
-                valuation research for teams worldwide.
+              <p className="text-[13px] text-[#D0D0D0] leading-relaxed max-w-[340px]">
+                Independent startup registry and intelligence platform —
+                verified company and founder data, valuation research, and
+                ecosystem signals for teams worldwide.
               </p>
 
               {/* Dual-domain callout */}
               <div className="mt-5 flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-widest text-[#888]">
+                  <span className="text-[10px] uppercase tracking-widest text-[#888888]">
                     India Hub
                   </span>
                   <span className="text-[10px] text-[#C59A2E] font-mono">
@@ -176,7 +175,7 @@ export function Footer() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-widest text-[#888]">
+                  <span className="text-[10px] uppercase tracking-widest text-[#888888]">
                     Global Registry
                   </span>
                   <a
@@ -193,19 +192,19 @@ export function Footer() {
               {/* Primary CTA */}
               <Link
                 href="/submit"
-                className="inline-flex items-center gap-2 mt-5 text-[11px] font-semibold bg-[#111111] text-white px-4 py-2 hover:bg-[#333333]"
+                className="inline-flex items-center gap-2 mt-5 text-[11px] font-semibold bg-[#F5F3EE] text-[#111111] px-4 py-2 hover:bg-[#E0D8C7]"
               >
                 List your startup <ArrowRight size={11} />
               </Link>
 
               {/* NEWSLETTER */}
               <div className="mt-7">
-                <p className="text-[10px] uppercase tracking-widest font-semibold text-[#111111]">
+                <p className="text-[10px] uppercase tracking-widest font-semibold text-[#F5F3EE]">
                   UpForge Intel
                 </p>
-                <p className="text-[12px] text-[#6B6B6B] mt-1 max-w-[280px]">
-                  Weekly briefings on startups, funding rounds, and ecosystem
-                  research.
+                <p className="text-[12px] text-[#BBBBBB] mt-1 max-w-[280px]">
+                  Weekly briefings on startups, funding rounds, and global
+                  ecosystem research.
                 </p>
                 <NewsletterForm />
               </div>
@@ -214,7 +213,7 @@ export function Footer() {
             {/* NAV COLUMNS */}
             {FOOTER_COLUMNS.map(({ heading, links }) => (
               <div key={heading}>
-                <h3 className="text-[11px] uppercase tracking-widest font-semibold text-[#111111] mb-4">
+                <h3 className="text-[11px] uppercase tracking-widest font-semibold text-[#F5F3EE] mb-4">
                   {heading}
                 </h3>
                 <ul className="space-y-2">
@@ -222,7 +221,7 @@ export function Footer() {
                     <li key={href}>
                       <Link
                         href={href}
-                        className="text-[13px] text-[#5C5C5C] hover:text-[#C59A2E]"
+                        className="text-[13px] text-[#BBBBBB] hover:text-[#C59A2E]"
                       >
                         {label}
                       </Link>
@@ -234,10 +233,10 @@ export function Footer() {
           </div>
 
           {/* GLOBAL REGISTRY BANNER */}
-          <div className="py-6 border-b border-[#D8D2C8] flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#EFE9DF]/90">
+          <div className="py-6 border-b border-[#2A2A2A] flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#181818]/95">
             <div className="flex items-center gap-3">
               <Globe size={14} className="text-[#C59A2E]" />
-              <p className="text-[12px] text-[#5C5C5C]">
+              <p className="text-[12px] text-[#D0D0D0]">
                 Need the full global startup database?{" "}
                 <a
                   href="https://www.upforge.org/registry"
@@ -249,39 +248,39 @@ export function Footer() {
                 </a>
               </p>
             </div>
-            <span className="text-[10px] uppercase tracking-widest text-[#888]">
+            <span className="text-[10px] uppercase tracking-widest text-[#888888]">
               upforge.org
             </span>
           </div>
 
           {/* SOCIAL */}
-          <div className="py-8 border-b border-[#D8D2C8] flex flex-col md:flex-row items-center justify-between gap-6 bg-[#EFE9DF]/90">
-            <p className="text-[12px] text-[#5C5C5C]">Follow UpForge</p>
+          <div className="py-8 border-b border-[#2A2A2A] flex flex-col md:flex-row items-center justify-between gap-6 bg-[#111111]/95">
+            <p className="text-[12px] text-[#D0D0D0]">Follow UpForge</p>
             <div className="flex items-center gap-5">
               <a
                 href="https://www.linkedin.com/company/upforge-india"
-                className="text-[#5C5C5C] hover:text-[#C59A2E]"
+                className="text-[#BBBBBB] hover:text-[#C59A2E]"
                 aria-label="UpForge on LinkedIn"
               >
                 <Linkedin size={18} />
               </a>
               <a
                 href="#"
-                className="text-[#5C5C5C] hover:text-[#C59A2E]"
+                className="text-[#BBBBBB] hover:text-[#C59A2E]"
                 aria-label="UpForge on X"
               >
                 <Twitter size={18} />
               </a>
               <a
                 href="#"
-                className="text-[#5C5C5C] hover:text-[#C59A2E]"
+                className="text-[#BBBBBB] hover:text-[#C59A2E]"
                 aria-label="UpForge on Instagram"
               >
                 <Instagram size={18} />
               </a>
               <a
                 href="https://www.youtube.com/@upforge-ind"
-                className="text-[#5C5C5C] hover:text-[#C59A2E]"
+                className="text-[#BBBBBB] hover:text-[#C59A2E]"
                 aria-label="UpForge on YouTube"
               >
                 <Youtube size={18} />
@@ -290,8 +289,8 @@ export function Footer() {
           </div>
 
           {/* TRUST LINE */}
-          <div className="py-6 text-center border-b border-[#D8D2C8] bg-[#EFE9DF]/95">
-            <p className="text-[12px] text-[#5C5C5C] max-w-[720px] mx-auto">
+          <div className="py-6 text-center border-b border-[#2A2A2A] bg-[#181818]/95">
+            <p className="text-[12px] text-[#D0D0D0] max-w-[740px] mx-auto">
               Independent startup intelligence platform · Verified company and
               founder data · Daily updates across India and global markets ·{" "}
               <a
@@ -306,16 +305,16 @@ export function Footer() {
           </div>
 
           {/* COPYRIGHT */}
-          <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#EFE9DF]/95">
+          <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#111111]/95">
             <div>
-              <p className="text-[12px] text-[#5C5C5C]">
+              <p className="text-[12px] text-[#D0D0D0]">
                 © {year} UpForge · Built for founders, investors, and analysts
               </p>
-              <p className="text-[10px] text-[#888] mt-0.5">
+              <p className="text-[10px] text-[#888888] mt-0.5">
                 upforge.in (India) · upforge.org (Global Registry)
               </p>
             </div>
-            <div className="flex gap-6 text-[12px] text-[#5C5C5C]">
+            <div className="flex gap-6 text-[12px] text-[#BBBBBB]">
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>
               <Link href="/cookies">Cookies</Link>
