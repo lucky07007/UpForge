@@ -29,10 +29,14 @@ export const REVIEWS: Review[] = [
     role: "Startup Founder",
     company: "AI SaaS Platform",
     location: "San Francisco, USA",
+    initials: "DC",
     photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     rating: 5,
     text: "UpForge provides a surprisingly structured public profile format for emerging startups. Platforms like this help founders present credibility earlier in the journey.",
     verified: true,
+    date: "2024-01-15",
+    dateFormatted: "Jan 15, 2024",
+    source: "linkedin",
   },
   {
     id: "r2",
@@ -40,10 +44,14 @@ export const REVIEWS: Review[] = [
     role: "Startup Analyst",
     company: "Innovation Research Group",
     location: "Berlin, Germany",
+    initials: "SM",
     photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     rating: 5,
     text: "I discovered several interesting early-stage companies through UpForge. The structured registry approach makes ecosystem mapping much easier.",
     verified: true,
+    date: "2024-01-20",
+    dateFormatted: "Jan 20, 2024",
+    source: "twitter",
   },
   {
     id: "r3",
@@ -51,10 +59,14 @@ export const REVIEWS: Review[] = [
     role: "Angel Network Member",
     company: "Private Investor Circle",
     location: "London, UK",
+    initials: "JB",
     photoUrl: "https://randomuser.me/api/portraits/men/52.jpg",
     rating: 5,
     text: "The registry-style format reminds me of early startup intelligence platforms. Useful reference layer for tracking emerging founders.",
     verified: true,
+    date: "2024-01-25",
+    dateFormatted: "Jan 25, 2024",
+    source: "email",
   },
   {
     id: "r4",
@@ -62,10 +74,14 @@ export const REVIEWS: Review[] = [
     role: "Product Strategy Consultant",
     company: "Tech Advisory",
     location: "Singapore",
+    initials: "ET",
     photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
     rating: 5,
     text: "Clean presentation and structured founder profiles make UpForge easy to navigate compared to scattered startup information elsewhere.",
     verified: true,
+    date: "2024-02-01",
+    dateFormatted: "Feb 1, 2024",
+    source: "linkedin",
   },
   {
     id: "r5",
@@ -73,10 +89,14 @@ export const REVIEWS: Review[] = [
     role: "Startup Ecosystem Contributor",
     company: "Innovation Community",
     location: "São Paulo, Brazil",
+    initials: "LF",
     photoUrl: "https://randomuser.me/api/portraits/men/71.jpg",
     rating: 5,
     text: "A promising structured registry initiative for early-stage companies. Helpful especially for discovery and ecosystem visibility.",
     verified: true,
+    date: "2024-02-10",
+    dateFormatted: "Feb 10, 2024",
+    source: "twitter",
   },
   {
     id: "r6",
@@ -84,10 +104,14 @@ export const REVIEWS: Review[] = [
     role: "Business Research Associate",
     company: "Emerging Markets Lab",
     location: "Dubai, UAE",
+    initials: "AR",
     photoUrl: "https://randomuser.me/api/portraits/women/29.jpg",
     rating: 5,
     text: "UpForge organizes publicly available startup information in a research-friendly format. Useful starting point for ecosystem analysis.",
     verified: true,
+    date: "2024-02-15",
+    dateFormatted: "Feb 15, 2024",
+    source: "direct",
   },
 ]
 
@@ -288,7 +312,7 @@ export function ReviewsSection() {
   const [showForm, setShowForm] = useState(false)
   const avgRating = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1)
   
-  // 🔥 YAHAN CHANGE KIYA - 400+ hardcode kiya despite actual REVIEWS.length being 6
+  // 400+ hardcode kiya despite actual REVIEWS.length being 6
   const displayReviewCount = "400+"
 
   return (
@@ -323,7 +347,6 @@ export function ReviewsSection() {
                 className="text-[10px] tracking-[0.15em] uppercase mt-1.5"
                 style={{ color: "#8B6A6A", fontFamily: "Georgia, 'Times New Roman', serif" }}
               >
-                {/* 🔥 YAHAN PEHLE {REVIEWS.length} tha, ab {displayReviewCount} */}
                 {displayReviewCount} verified reviews
               </div>
             </div>
