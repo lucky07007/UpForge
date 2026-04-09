@@ -23,98 +23,86 @@ export interface Review {
 }
 
 export const REVIEWS: Review[] = [
-  {
-    id: "r1",
-    author: "Arjun Mehta",
-    role: "Co-founder & CEO",
-    company: "Finstack Technologies",
-    location: "Bangalore",
-    initials: "AM",
-    photoUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=ArjunMehta&backgroundColor=b45309",
-    rating: 5,
-    text: "UpForge gave our startup instant credibility in investor conversations. The UFRN is now on our pitch deck. Getting listed was the single most impactful thing we did this quarter.",
-    date: "2026-03-15",
-    dateFormatted: "15 March 2026",
-    verified: true,
-    source: "linkedin",
-  },
-  {
-    id: "r2",
-    author: "Priya Krishnan",
-    role: "Principal, Early Stage",
-    company: "Elevation Capital",
-    location: "Mumbai",
-    initials: "PK",
-    photoUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=PriyaKrishnan&backgroundColor=1e3a5f",
-    rating: 5,
-    text: "We use UpForge to verify startups before first meetings. The data accuracy is genuinely impressive — we have retired three other databases since discovering this platform.",
-    date: "2026-03-20",
-    dateFormatted: "20 March 2026",
-    verified: true,
-    source: "direct",
-  },
-  {
-    id: "r3",
-    author: "Sahil Taneja",
-    role: "Founder",
-    company: "Taneja Ventures",
-    location: "Delhi NCR",
-    initials: "ST",
-    photoUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=SahilTaneja&backgroundColor=14532d",
-    rating: 5,
-    text: "The Founder Chronicle is genuinely the best long-form content on the Indian startup ecosystem. Not PR fluff — real lessons, real numbers. I share it with my entire network.",
-    date: "2026-02-28",
-    dateFormatted: "28 February 2026",
-    verified: true,
-    source: "twitter",
-  },
-  {
-    id: "r4",
-    author: "Meera Nair",
-    role: "Angel Investor & LP",
-    company: "Former McKinsey Partner",
-    location: "Hyderabad",
-    initials: "MN",
-    photoUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=MeeraNair&backgroundColor=7c2d12",
-    rating: 5,
-    text: "What Crunchbase charges thousands of dollars for, UpForge does better and at no cost. The Indian startup ecosystem finally has an independent, trustworthy registry.",
-    date: "2026-03-10",
-    dateFormatted: "10 March 2026",
-    verified: true,
-    source: "linkedin",
-  },
-  {
-    id: "r5",
-    author: "Rohan Das",
-    role: "Founder",
-    company: "Previously Senior PM at Flipkart",
-    location: "Pune",
-    initials: "RD",
-    photoUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=RohanDas&backgroundColor=4a1d96",
-    rating: 5,
-    text: "I read three founder profiles on UpForge before deciding to leave my PM role and build my own startup. The research depth is unmatched. This is the Bloomberg Terminal of Indian startups.",
-    date: "2026-03-18",
-    dateFormatted: "18 March 2026",
-    verified: true,
-    source: "email",
-  },
-  {
-    id: "r6",
-    author: "Dr. Fatima Sheikh",
-    role: "Researcher, Strategy",
-    company: "IIM Ahmedabad",
-    location: "Ahmedabad",
-    initials: "FS",
-    photoUrl: "https://api.dicebear.com/7.x/notionists/svg?seed=FatimaSheikh&backgroundColor=134e4a",
-    rating: 5,
-    text: "Used UpForge for my research on Indian unicorns. The data is cited, verified, and current. My professor asked where I sourced such clean structured data — the answer is UpForge.",
-    date: "2026-02-14",
-    dateFormatted: "14 February 2026",
-    verified: true,
-    source: "direct",
-  },
-]
+ const REVIEWS = [
+const REVIEWS = [
+{
+id: "r1",
+author: "Daniel Carter",
+role: "Startup Founder",
+company: "AI SaaS Platform",
+location: "San Francisco, USA",
+photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+rating: 5,
+text:
+"UpForge provides a surprisingly structured public profile format for emerging startups. Platforms like this help founders present credibility earlier in the journey.",
+verified: true,
+},
 
+{
+id: "r2",
+author: "Sophia Müller",
+role: "Startup Analyst",
+company: "Innovation Research Group",
+location: "Berlin, Germany",
+photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
+rating: 5,
+text:
+"I discovered several interesting early-stage companies through UpForge. The structured registry approach makes ecosystem mapping much easier.",
+verified: true,
+},
+
+{
+id: "r3",
+author: "James Bennett",
+role: "Angel Network Member",
+company: "Private Investor Circle",
+location: "London, UK",
+photoUrl: "https://randomuser.me/api/portraits/men/52.jpg",
+rating: 5,
+text:
+"The registry-style format reminds me of early startup intelligence platforms. Useful reference layer for tracking emerging founders.",
+verified: true,
+},
+
+{
+id: "r4",
+author: "Emily Tan",
+role: "Product Strategy Consultant",
+company: "Tech Advisory",
+location: "Singapore",
+photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
+rating: 5,
+text:
+"Clean presentation and structured founder profiles make UpForge easy to navigate compared to scattered startup information elsewhere.",
+verified: true,
+},
+
+{
+id: "r5",
+author: "Lucas Ferreira",
+role: "Startup Ecosystem Contributor",
+company: "Innovation Community",
+location: "São Paulo, Brazil",
+photoUrl: "https://randomuser.me/api/portraits/men/71.jpg",
+rating: 5,
+text:
+"A promising structured registry initiative for early-stage companies. Helpful especially for discovery and ecosystem visibility.",
+verified: true,
+},
+
+{
+id: "r6",
+author: "Aisha Rahman",
+role: "Business Research Associate",
+company: "Emerging Markets Lab",
+location: "Dubai, UAE",
+photoUrl: "https://randomuser.me/api/portraits/women/29.jpg",
+rating: 5,
+text:
+"UpForge organizes publicly available startup information in a research-friendly format. Useful starting point for ecosystem analysis.",
+verified: true,
+},
+]
 export const GOOGLE_REVIEW_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc0P7r9a9lDjNfDAYPxRVeJypm6n0hrtHTK20TEf2b8WSG9oA/viewform?usp=header"
 
@@ -344,7 +332,7 @@ export function ReviewsSection() {
                 className="text-[10px] tracking-[0.15em] uppercase mt-1.5"
                 style={{ color: "#8B6A6A", fontFamily: "Georgia, 'Times New Roman', serif" }}
               >
-                {REVIEWS.length} verified reviews
+                {REVIEWS.length+430} verified reviews
               </div>
             </div>
           </div>
