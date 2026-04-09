@@ -7,12 +7,11 @@
 import { useState, useEffect } from "react"
 
 export const YOUTUBE_IDS: { id: string; tag: string; date: string }[] = [
-  { id: "nNxh7PQOcnM", tag: "Operations", date: "2 April 2026" },
-  { id: "3fumBcKC6RE", tag: "Growth", date: "28 March 2026" },
-  { id: "5qap5aO4i9A", tag: "Strategy", date: "22 March 2026" },
-  { id: "jNQXAC9IVRw", tag: "D2C", date: "15 March 2026" },
-  { id: "M7FIvfx5J10", tag: "Edtech", date: "8 March 2026" },
-  { id: "LXb3EKWsInQ", tag: "Commerce", date: "1 March 2026" },
+  { id: "Tqke3h25UwI", tag: "Operations", date: "4 April 2026" },
+  { id: "rUA5wMBsrfw", tag: "Growth", date: "15 March 2026" },
+  { id: "QN7FRDlZhRg", tag: "Strategy", date: "22 March 2026" },
+  { id: "PRltUBPyDm4", tag: "D2C", date: "15 March 2026" },
+  { id: "UB9XT-St2sQ", tag: "Edtech", date: "8 March 2026" },
 ]
 
 const TAG_COLORS: Record<string, string> = {
