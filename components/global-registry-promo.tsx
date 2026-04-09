@@ -9,7 +9,6 @@ interface GlobalRegistryPromoProps {
 
 export function GlobalRegistryPromo({
   startupCount,
-  isOrg,
 }: GlobalRegistryPromoProps) {
 
   const formatNumber = (num: number) => {
@@ -20,38 +19,39 @@ export function GlobalRegistryPromo({
   return (
     <section className="relative border-y border-neutral-200 bg-[#faf9f7] overflow-hidden">
 
-      {/* Background masthead watermark */}
+      {/* Masthead watermark background */}
 
       <div
-        className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-[0.05]"
+        className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-[0.04]"
         style={{
-          backgroundImage: "url('/masthead.jpg')",
+          backgroundImage: "url('/mastheade.jpg')",
         }}
       />
 
-      {/* Content */}
+      {/* Ribbon content */}
 
-      <div className="relative max-w-[1100px] mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+      <div className="relative max-w-[1100px] mx-auto px-6 py-[10px] flex items-center justify-between flex-wrap gap-2">
 
-        {/* Registry identity text */}
+        {/* Left side identity */}
 
-        <div>
+        <div className="flex flex-col leading-tight">
 
-          <div className="text-[11px] tracking-[0.26em] uppercase text-neutral-400 font-mono">
+          <span className="text-[10px] tracking-[0.28em] uppercase text-neutral-400 font-mono">
             UpForge Global Registry
-          </div>
+          </span>
 
-          <div className="text-neutral-700 font-serif text-sm">
+          <span className="text-neutral-700 text-[13px] font-serif">
 
-            {formatNumber(startupCount)} verified startups · 190+ countries · UFRN identity layer
+            {formatNumber(startupCount)} verified startups · 190+ countries
 
-          </div>
+          </span>
 
         </div>
 
-        {/* CTA */}
 
-        <div className="flex items-center gap-4 text-sm font-mono">
+        {/* Right side actions */}
+
+        <div className="flex items-center gap-4 text-[13px] font-mono">
 
           <Link
             href="/registry"
