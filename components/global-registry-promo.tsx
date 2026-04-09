@@ -4,10 +4,12 @@ import Link from "next/link"
 
 interface GlobalRegistryPromoProps {
   startupCount: number
+  isOrg: boolean
 }
 
 export function GlobalRegistryPromo({
   startupCount,
+  isOrg,
 }: GlobalRegistryPromoProps) {
 
   const formatNumber = (num: number) => {
@@ -16,26 +18,26 @@ export function GlobalRegistryPromo({
   }
 
   return (
-    <section className="relative border-y border-neutral-200 overflow-hidden">
+    <section className="relative border-y border-neutral-200 bg-[#faf9f7] overflow-hidden">
 
-      {/* Background masthead */}
+      {/* Background masthead watermark */}
 
       <div
-        className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-[0.06]"
+        className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-[0.05]"
         style={{
           backgroundImage: "url('/masthead.jpg')",
         }}
       />
 
-      {/* Content layer */}
+      {/* Content */}
 
-      <div className="relative max-w-[1100px] mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-3">
+      <div className="relative max-w-[1100px] mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
 
-        {/* Left */}
+        {/* Registry identity text */}
 
         <div>
 
-          <div className="text-[11px] tracking-[0.25em] uppercase text-neutral-400 font-mono">
+          <div className="text-[11px] tracking-[0.26em] uppercase text-neutral-400 font-mono">
             UpForge Global Registry
           </div>
 
@@ -47,8 +49,7 @@ export function GlobalRegistryPromo({
 
         </div>
 
-
-        {/* Right */}
+        {/* CTA */}
 
         <div className="flex items-center gap-4 text-sm font-mono">
 
