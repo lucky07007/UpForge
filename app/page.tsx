@@ -5,26 +5,12 @@
 // CHANGES vs. PREVIOUS VERSION:
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. LIVE dateModified in ALL JSON-LD schemas.
-//    Static dates were lying to Google. We now query Supabase for the real
-//    latest update timestamp and inject it into every schema block.
-//    Google's freshness algorithm rewards sites that update their schema dates
-//    in sync with actual content updates — this is the simplest "freshness hack"
-//    available.
-//
 // 2. Dataset schema on .org now includes recordCount (real startup count).
-//    A Dataset with a real measurementTechnique and recordCount tells Google
-//    this is a live, authoritative data source — not a static page.
-//
 // 3. Organization.numberOfEmployees and Organization.contactPoint added.
-//    These complete the E-E-A-T (Experience, Expertise, Authority, Trust)
-//    entity signals Google uses for Knowledge Panel eligibility.
-//
-// 4. FAQ schema expanded with 4 high-volume questions (was 2).
-//    FAQ rich results appear directly in SERPs as expandable dropdowns,
-//    stealing extra real estate from competitors without additional clicks.
-//
+// 4. FAQ schema expanded with 4 high-volume questions.
 // 5. Video and Reviews sections integrated — magazine-style editorial layout.
-//    Global publication aesthetic matching FT/Economist standards.
+// 6. Founder stats section REMOVED — starts directly with Watch & Learn.
+// 7. Global Registry section ADDED with UFRN verification prominence.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next"
@@ -32,6 +18,7 @@ import { headers } from "next/headers"
 import { FounderChronicleClient } from "../components/founder-chronicle-client"
 import { TopVideosSection } from "../components/top-videos"
 import { ReviewsSection } from "../components/reviews"
+import { GlobalRegistrySection } from "../components/global-registry"
 import { FOUNDERS } from "../data/founders"
 import { createClient } from "@/lib/supabase/server"
 
@@ -50,7 +37,6 @@ async function getDomain(): Promise<"org" | "in"> {
 // LIVE DATA FETCHERS
 // ---------------------------------------------------------------------------
 
-/** Real last-updated date from Supabase — used in all dateModified fields */
 async function getLatestDate(): Promise<string> {
   try {
     const supabase = await createClient()
@@ -68,7 +54,6 @@ async function getLatestDate(): Promise<string> {
   return new Date().toISOString().split("T")[0]
 }
 
-/** Real approved startup count — used in Dataset schema recordCount */
 async function getStartupCount(): Promise<number> {
   try {
     const supabase = await createClient()
@@ -78,7 +63,7 @@ async function getStartupCount(): Promise<number> {
       .eq("status", "approved")
     return count ?? FOUNDERS.length
   } catch (_) {}
-  return 5000 // conservative fallback
+  return 5000
 }
 
 // ---------------------------------------------------------------------------
@@ -165,7 +150,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // ---------------------------------------------------------------------------
-// STRUCTURED DATA BUILDERS — all now accept liveDate and startupCount
+// STRUCTURED DATA BUILDERS
 // ---------------------------------------------------------------------------
 
 function buildCollectionPageSchema(isOrg: boolean, liveDate: string) {
@@ -219,10 +204,6 @@ function buildDatasetSchema(liveDate: string, startupCount: number) {
       { "@type": "PropertyValue", name: "Funding", description: "Funding Amount (USD)" },
     ],
     measurementTechnique: "Manual verification by UpForge editorial team",
-    recordSet: {
-      "@type": "DataFeedItem",
-      item: { "@type": "Dataset", name: "Startup records", identifier: "ufrn-dataset" },
-    },
     size: `${startupCount}+ verified startup records`,
     isAccessibleForFree: true,
     temporalCoverage: "2020/..",
@@ -331,11 +312,11 @@ function buildFAQSchema(isOrg: boolean) {
     ? [
         {
           q: "What is the UFRN (UpForge Registry Number)?",
-          a: "The UFRN is a unique permanent identifier assigned to every verified startup in the UpForge global registry. It serves as proof of existence and allows anyone to look up a startup's official listing at upforge.org/ufrn/[UFRN].",
+          a: "The UFRN is a unique permanent identifier assigned to every verified startup in the UpForge global registry. It serves as proof of existence and allows anyone to look up a startup's official listing at upforge.org/verify.",
         },
         {
-          q: "How do I look up a startup's UFRN?",
-          a: "Visit upforge.org/ufrn/[UFRN-ID] with the company's registry number, or search for the company at upforge.org/startup. Every approved listing displays its UFRN prominently.",
+          q: "How do I verify a startup's UFRN?",
+          a: "Visit upforge.org/verify and enter the UFRN to instantly verify any startup's registration status, founding date, and verification details.",
         },
         {
           q: "Is UpForge free to use?",
@@ -387,12 +368,16 @@ function buildFAQSchema(isOrg: boolean) {
 
 // ---------------------------------------------------------------------------
 // PAGE COMPONENT — SERVER RENDERED
+// Layout order:
+// 1. Founder Chronicle (founder profiles)
+// 2. Watch & Learn (video section)
+// 3. Global Registry (UFRN verification + registry prominence)
+// 4. Trusted by Ecosystem (reviews)
 // ---------------------------------------------------------------------------
 export default async function HomePage() {
   const domain = await getDomain()
   const isOrg  = domain === "org"
 
-  // Fetch live data for schema freshness — both run in parallel
   const [liveDate, startupCount] = await Promise.all([
     getLatestDate(),
     getStartupCount(),
@@ -420,31 +405,36 @@ export default async function HomePage() {
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQSchema(isOrg)) }} />
 
-      {/* Main Founder Chronicle Content */}
+      {/* SECTION 1: Founder Chronicle */}
       <FounderChronicleClient
         founders={FOUNDERS}
         internalLinks={[
-          { l: "Startup Registry India",   h: "/startup", desc: "5000+ verified startups" },
-          { l: "Submit Your Startup",      h: "/submit",  desc: "Get listed free"         },
+          { l: "Global Startup Registry", h: "/registry", desc: "5000+ verified startups" },
+          { l: "Verify UFRN",             h: "/verify",  desc: "Check registration status" },
+          { l: "Submit Your Startup",      h: "/submit",  desc: "Get listed free" },
           { l: "The Forge — Startup Blog", h: "/blog",    desc: "Intelligence & analysis" },
-          { l: "About UpForge",            h: "/about",   desc: "Our mission"             },
+          { l: "About UpForge",            h: "/about",   desc: "Our mission" },
         ]}
         footerLinks={[
           { l: "The Founder Chronicle", h: "/"        },
-          { l: "Startup Registry",      h: "/startup" },
+          { l: "Global Registry",       h: "/registry" },
+          { l: "Verify UFRN",           h: "/verify"  },
           { l: "Blog",                  h: "/blog"    },
           { l: "Submit Startup",        h: "/submit"  },
           { l: "About UpForge",         h: "/about"   },
         ]}
       />
 
-      {/* ── TOP VIDEOS SECTION — Magazine-style editorial video gallery ── */}
+      {/* SECTION 2: Watch & Learn — Video Gallery */}
       <TopVideosSection />
 
-      {/* ── REVIEWS SECTION — Trusted by the ecosystem ── */}
+      {/* SECTION 3: Global Registry — UFRN Verification & Registry Prominence */}
+      <GlobalRegistrySection startupCount={startupCount} isOrg={isOrg} />
+
+      {/* SECTION 4: Trusted by the Ecosystem — Reviews */}
       <ReviewsSection />
 
-      {/* SEO CONTENT LAYER — rendered in DOM, invisible to users, read by crawlers */}
+      {/* SEO CONTENT LAYER — screen reader only, crawled by search engines */}
       <div className="sr-only" aria-label="SEO content">
         <section>
           <h1>
