@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 
 interface GlobalRegistryPromoProps {
@@ -17,39 +16,39 @@ export function GlobalRegistryPromo({
   }
 
   return (
-    <section className="border-y border-neutral-200 bg-[#faf9f7]">
+    <section className="relative border-y border-neutral-200 bg-[#faf9f7] overflow-hidden">
 
-      <div className="max-w-[1100px] mx-auto px-6 py-6 flex items-center justify-between gap-6 flex-col sm:flex-row">
+      {/* Background masthead identity layer */}
 
-        {/* Left side — masthead visual */}
+      <div
+        className="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-[0.05]"
+        style={{
+          backgroundImage: "url('/masthead.jpg')",
+        }}
+      />
 
-        <div className="flex items-center gap-4">
+      {/* Content */}
 
-          <Image
-            src="/masthead"
-            alt="UpForge Registry"
-            width={64}
-            height={64}
-            className="opacity-80"
-            priority
-          />
+      <div className="relative max-w-[1100px] mx-auto px-6 py-4 flex items-center justify-between flex-wrap gap-3">
 
-          <div>
+        {/* Registry label */}
 
-            <div className="text-[11px] tracking-[0.22em] uppercase text-neutral-400 font-mono">
-              UpForge Global Registry
-            </div>
+        <div>
 
-            <div className="text-neutral-700 font-serif text-sm">
-              {formatNumber(startupCount)} verified startups · 190+ countries
-            </div>
+          <div className="text-[11px] tracking-[0.26em] uppercase text-neutral-400 font-mono">
+            UpForge Global Registry
+          </div>
+
+          <div className="text-neutral-700 font-serif text-sm">
+
+            {formatNumber(startupCount)} verified startups · 190+ countries · UFRN identity layer
 
           </div>
 
         </div>
 
 
-        {/* Right side — CTA */}
+        {/* CTA */}
 
         <div className="flex items-center gap-4 text-sm font-mono">
 
