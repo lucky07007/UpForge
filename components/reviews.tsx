@@ -2,7 +2,7 @@
 
 // components/reviews.tsx — MAGAZINE EDITORIAL v4
 // FT/Economist aesthetic — testimonials as editorial endorsements
-// Global publication polish
+// Global publication polishSubmit Your Review
 
 import { useState } from "react"
 
@@ -116,7 +116,7 @@ export const REVIEWS: Review[] = [
 ]
 
 export const GOOGLE_REVIEW_FORM_URL =
-  "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?embedded=true"
+  "https://docs.google.com/forms/d/e/1FAIpQLSc0P7r9a9lDjNfDAYPxRVeJypm6n0hrtHTK20TEf2b8WSG9oA/viewform?usp=header"
 
 const SOURCE_LABELS: Record<string, { label: string; icon: string }> = {
   linkedin: { label: "via LinkedIn", icon: "in" },
