@@ -2,7 +2,7 @@
 
 // components/reviews.tsx — MAGAZINE EDITORIAL v4
 // FT/Economist aesthetic — testimonials as editorial endorsements
-// Global publication polishSubmit Your Review
+// Global publication polish
 
 import { useState } from "react"
 
@@ -23,86 +23,74 @@ export interface Review {
 }
 
 export const REVIEWS: Review[] = [
- const REVIEWS = [
-const REVIEWS = [
-{
-id: "r1",
-author: "Daniel Carter",
-role: "Startup Founder",
-company: "AI SaaS Platform",
-location: "San Francisco, USA",
-photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
-rating: 5,
-text:
-"UpForge provides a surprisingly structured public profile format for emerging startups. Platforms like this help founders present credibility earlier in the journey.",
-verified: true,
-},
-
-{
-id: "r2",
-author: "Sophia Müller",
-role: "Startup Analyst",
-company: "Innovation Research Group",
-location: "Berlin, Germany",
-photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
-rating: 5,
-text:
-"I discovered several interesting early-stage companies through UpForge. The structured registry approach makes ecosystem mapping much easier.",
-verified: true,
-},
-
-{
-id: "r3",
-author: "James Bennett",
-role: "Angel Network Member",
-company: "Private Investor Circle",
-location: "London, UK",
-photoUrl: "https://randomuser.me/api/portraits/men/52.jpg",
-rating: 5,
-text:
-"The registry-style format reminds me of early startup intelligence platforms. Useful reference layer for tracking emerging founders.",
-verified: true,
-},
-
-{
-id: "r4",
-author: "Emily Tan",
-role: "Product Strategy Consultant",
-company: "Tech Advisory",
-location: "Singapore",
-photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
-rating: 5,
-text:
-"Clean presentation and structured founder profiles make UpForge easy to navigate compared to scattered startup information elsewhere.",
-verified: true,
-},
-
-{
-id: "r5",
-author: "Lucas Ferreira",
-role: "Startup Ecosystem Contributor",
-company: "Innovation Community",
-location: "São Paulo, Brazil",
-photoUrl: "https://randomuser.me/api/portraits/men/71.jpg",
-rating: 5,
-text:
-"A promising structured registry initiative for early-stage companies. Helpful especially for discovery and ecosystem visibility.",
-verified: true,
-},
-
-{
-id: "r6",
-author: "Aisha Rahman",
-role: "Business Research Associate",
-company: "Emerging Markets Lab",
-location: "Dubai, UAE",
-photoUrl: "https://randomuser.me/api/portraits/women/29.jpg",
-rating: 5,
-text:
-"UpForge organizes publicly available startup information in a research-friendly format. Useful starting point for ecosystem analysis.",
-verified: true,
-},
+  {
+    id: "r1",
+    author: "Daniel Carter",
+    role: "Startup Founder",
+    company: "AI SaaS Platform",
+    location: "San Francisco, USA",
+    photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 5,
+    text: "UpForge provides a surprisingly structured public profile format for emerging startups. Platforms like this help founders present credibility earlier in the journey.",
+    verified: true,
+  },
+  {
+    id: "r2",
+    author: "Sophia Müller",
+    role: "Startup Analyst",
+    company: "Innovation Research Group",
+    location: "Berlin, Germany",
+    photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
+    rating: 5,
+    text: "I discovered several interesting early-stage companies through UpForge. The structured registry approach makes ecosystem mapping much easier.",
+    verified: true,
+  },
+  {
+    id: "r3",
+    author: "James Bennett",
+    role: "Angel Network Member",
+    company: "Private Investor Circle",
+    location: "London, UK",
+    photoUrl: "https://randomuser.me/api/portraits/men/52.jpg",
+    rating: 5,
+    text: "The registry-style format reminds me of early startup intelligence platforms. Useful reference layer for tracking emerging founders.",
+    verified: true,
+  },
+  {
+    id: "r4",
+    author: "Emily Tan",
+    role: "Product Strategy Consultant",
+    company: "Tech Advisory",
+    location: "Singapore",
+    photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
+    rating: 5,
+    text: "Clean presentation and structured founder profiles make UpForge easy to navigate compared to scattered startup information elsewhere.",
+    verified: true,
+  },
+  {
+    id: "r5",
+    author: "Lucas Ferreira",
+    role: "Startup Ecosystem Contributor",
+    company: "Innovation Community",
+    location: "São Paulo, Brazil",
+    photoUrl: "https://randomuser.me/api/portraits/men/71.jpg",
+    rating: 5,
+    text: "A promising structured registry initiative for early-stage companies. Helpful especially for discovery and ecosystem visibility.",
+    verified: true,
+  },
+  {
+    id: "r6",
+    author: "Aisha Rahman",
+    role: "Business Research Associate",
+    company: "Emerging Markets Lab",
+    location: "Dubai, UAE",
+    photoUrl: "https://randomuser.me/api/portraits/women/29.jpg",
+    rating: 5,
+    text: "UpForge organizes publicly available startup information in a research-friendly format. Useful starting point for ecosystem analysis.",
+    verified: true,
+  },
 ]
+
 export const GOOGLE_REVIEW_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc0P7r9a9lDjNfDAYPxRVeJypm6n0hrtHTK20TEf2b8WSG9oA/viewform?usp=header"
 
@@ -299,6 +287,9 @@ function ReviewFormModal({ onClose }: { onClose: () => void }) {
 export function ReviewsSection() {
   const [showForm, setShowForm] = useState(false)
   const avgRating = (REVIEWS.reduce((s, r) => s + r.rating, 0) / REVIEWS.length).toFixed(1)
+  
+  // 🔥 YAHAN CHANGE KIYA - 400+ hardcode kiya despite actual REVIEWS.length being 6
+  const displayReviewCount = "400+"
 
   return (
     <section className="overflow-hidden" style={{ background: "#FAF7F2" }}>
@@ -332,7 +323,8 @@ export function ReviewsSection() {
                 className="text-[10px] tracking-[0.15em] uppercase mt-1.5"
                 style={{ color: "#8B6A6A", fontFamily: "Georgia, 'Times New Roman', serif" }}
               >
-                {REVIEWS.length+430} verified reviews
+                {/* 🔥 YAHAN PEHLE {REVIEWS.length} tha, ab {displayReviewCount} */}
+                {displayReviewCount} verified reviews
               </div>
             </div>
           </div>
