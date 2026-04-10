@@ -1,11 +1,8 @@
 "use client"
 
-// app/startup/alt-mobility/page.tsx
+// app/startup/alt-mobility/page.tsx — FIXED CSS VERSION
 // UpForge — Alt Mobility · Dev Arora & Co-Founders Founder Chronicle
-// FIXED: All CSS issues — responsive grid, mobile layout, stats border, font conflicts
-// Keywords: Alt Mobility EV leasing India, Dev Arora CEO, FleetOS telematics, EV fleet management India,
-//           India EV startup 2024, Eurazeo investment India, Drive-to-Own EV, electric vehicle leasing startup,
-//           last-mile EV delivery India, Shell Ventures India portfolio, Alt Mobility valuation, EV2 Ventures
+// CSS: Unified string-injection approach (same as Perplexity page) — no Tailwind class conflicts
 
 import { useEffect } from "react"
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
@@ -33,13 +30,13 @@ const JSON_LD = {
         { "@type": "Person", "name": "Manas Arora", "jobTitle": "Co-Founder & CFO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } },
         { "@type": "Person", "name": "Jayant Gupta", "jobTitle": "Co-Founder & CCO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } }
       ],
-      "mentions": { "@type": "Organization", "name": "Alt Mobility", "url": "https://alt-mobility.com", "foundingDate": "2020", "foundingLocation": { "@type": "Place", "addressLocality": "New Delhi", "addressCountry": "IN" }, "description": "Alt Mobility is India's leading full-stack EV leasing and lifecycle management platform.", "sameAs": ["https://alt-mobility.com", "https://www.linkedin.com/company/altmobility/"] }
+      "mentions": { "@type": "Organization", "name": "Alt Mobility", "url": "https://alt-mobility.com", "foundingDate": "2020" }
     },
     { "@type": "BreadcrumbList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" }, { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://upforge.in/startup" }, { "@type": "ListItem", "position": 3, "name": "EV Startups India", "item": "https://upforge.in/ev-startups-india" }, { "@type": "ListItem", "position": 4, "name": "Alt Mobility", "item": "https://upforge.in/startup/alt-mobility" } ] },
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Who founded Alt Mobility?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility was co-founded in 2020 by Dev Arora (CEO), Anuj Gupta (CBO), Harsh Dev Goyal (CPO), Manas Arora (CFO), and Jayant Gupta (CCO), born out of IIT Delhi's incubator. Four of the co-founders are second-time entrepreneurs." } },
+        { "@type": "Question", "name": "Who founded Alt Mobility?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility was co-founded in 2020 by Dev Arora (CEO), Anuj Gupta (CBO), Harsh Dev Goyal (CPO), Manas Arora (CFO), and Jayant Gupta (CCO), born out of IIT Delhi's incubator." } },
         { "@type": "Question", "name": "How much funding has Alt Mobility raised?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility has raised $17.3 million in total across 5 rounds. Their Series A of $10 million in November 2024 was led by Eurazeo, with Shell Ventures, Twynam Earth Fund, and EV2 Ventures participating." } },
         { "@type": "Question", "name": "What is FleetOS?", "acceptedAnswer": { "@type": "Answer", "text": "FleetOS is Alt Mobility's proprietary AI-powered fleet management platform providing real-time vehicle tracking, predictive maintenance diagnostics, driver behaviour analytics, charging station integration, and roadside assistance." } },
         { "@type": "Question", "name": "What is Alt Mobility's Drive-to-Own model?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility's Drive-to-Own model enables drivers who lease vehicles to transition into EV ownership over time without requiring credit history, collateral, or high upfront payment. It reduces total cost of ownership by 30-40%." } },
@@ -116,67 +113,138 @@ const RELATED = [
   { name: "Agnikul Cosmos", slug: "agnikul-cosmos", cat: "Spacetech", val: "$500M" },
 ]
 
+const accent = "#16a34a"
+const accentDark = "#15803d"
+const accentBg = "#f0fdf4"
+const accentBorder = "#bbf7d0"
+
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap');
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  .uf-serif{font-family:'Playfair Display',Georgia,serif!important;}
-  .uf-sans{font-family:'DM Sans',system-ui,sans-serif!important;}
-  a{text-decoration:none!important;color:inherit;}
-  img{display:block;max-width:100%;}
-  .uf-dropcap::first-letter{font-family:'Playfair Display',Georgia,serif;font-size:3.8em;font-weight:900;line-height:.82;float:left;margin-right:.09em;margin-top:.07em;margin-bottom:-.04em;color:#1A1208;}
-  @keyframes uf-fu{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-  .uf-fade-up{animation:uf-fu .45s cubic-bezier(.22,1,.36,1) both;}
-  .uf-ncols{display:flex;flex-direction:column;gap:1.5rem;}
-  @media(min-width:768px){
-    .uf-ncols{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
-    .uf-ncols>div{padding:0 1.5rem;border-right:1px solid #C8C2B4;}
-    .uf-ncols>div:first-child{padding-left:0;}
-    .uf-ncols>div:last-child{border-right:none;padding-right:0;}
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  a { text-decoration: none !important; color: inherit; }
+  img { display: block; max-width: 100%; }
+
+  /* Typography utilities */
+  .uf-serif { font-family: 'Playfair Display', Georgia, serif !important; }
+  .uf-sans  { font-family: 'DM Sans', system-ui, sans-serif !important; }
+
+  /* Drop cap */
+  .uf-dropcap::first-letter {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3.8em; font-weight: 900; line-height: .82;
+    float: left; margin-right: .1em; margin-top: .06em; margin-bottom: -.04em;
+    color: #1A1208;
   }
-  .uf-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);}
-  .uf-stats-grid>div{border-right:1px solid #D8D2C4;border-bottom:1px solid #D8D2C4;}
-  .uf-stats-grid>div:nth-child(2n){border-right:none;}
-  .uf-stats-grid>div:nth-last-child(-n+2){border-bottom:none;}
-  .uf-seo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.625rem;}
-  @media(min-width:640px){.uf-seo-grid{grid-template-columns:repeat(4,1fr);}}
-  .uf-main-grid{display:grid;grid-template-columns:1fr;border-bottom:2px solid #1A1208;}
-  @media(min-width:1024px){.uf-main-grid{grid-template-columns:1fr 380px;}}
-  @media(min-width:1280px){.uf-main-grid{grid-template-columns:1fr 420px;}}
-  @media(min-width:1024px){.uf-article{border-right:1px solid #C8C2B4;padding-right:32px;}}
-  .uf-sidebar{display:none;}
-  @media(min-width:1024px){.uf-sidebar{display:block;padding-left:32px;padding-top:32px;padding-bottom:32px;}}
-  .uf-mobile-hero{display:block;margin-bottom:28px;}
-  @media(min-width:1024px){.uf-mobile-hero{display:none;}}
-  .uf-outer{max-width:1280px;margin:0 auto;padding:0 16px 64px;}
-  @media(min-width:640px){.uf-outer{padding-left:24px;padding-right:24px;}}
-  @media(min-width:1024px){.uf-outer{padding-left:32px;padding-right:32px;}}
-  .uf-footer-grid{display:grid;grid-template-columns:1fr;gap:20px;}
-  @media(min-width:640px){.uf-footer-grid{grid-template-columns:1fr auto;align-items:center;}}
-  ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:#C8C2B4;border-radius:2px;}
-  .uf-pq-top{border-top:3px double var(--uf-accent,#888);}
-  .uf-tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;background:var(--uf-accent,#888);}
-  .uf-tl-line{width:1px;flex:1;margin-top:4px;background:var(--uf-aborder,#ddd);min-height:18px;}
-  .uf-web-link{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1.5px solid var(--uf-accent);transition:opacity .2s;}
-  .uf-web-link:hover{opacity:.72;}
-  .uf-li-link{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1.5px solid #0077b5;transition:opacity .2s;}
-  .uf-li-link:hover{opacity:.72;}
-  .uf-seo-link{display:flex;align-items:center;gap:4px;padding:10px 12px;border:1px solid #D8D2C4;background:white;transition:border-color .2s;}
-  .uf-seo-link:hover{border-color:#1A1208;}
-  .uf-rel-link{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #EDE9DF;transition:opacity .2s;}
-  .uf-rel-link:last-child{border-bottom:none;}
-  .uf-rel-link:hover{opacity:.65;}
-  .uf-dot{display:inline-block;width:6px;height:6px;border-radius:1px;flex-shrink:0;}
-  .uf-faq{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #D8D2C4;}
-  .uf-faq:last-child{border-bottom:none;}
-  .uf-badge{display:inline-block;font-family:'DM Sans',system-ui,sans-serif;font-size:8.5px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;padding:5px 10px;color:white;}
+
+  /* Fade-up animation */
+  @keyframes uf-fu { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .uf-fade-up { animation: uf-fu .45s cubic-bezier(.22,1,.36,1) both; }
+
+  /* Outer container */
+  .uf-outer { max-width: 1280px; margin: 0 auto; padding: 0 16px 64px; }
+  @media (min-width:640px)  { .uf-outer { padding-left: 24px; padding-right: 24px; } }
+  @media (min-width:1024px) { .uf-outer { padding-left: 32px; padding-right: 32px; } }
+
+  /* Main 2-col grid */
+  .uf-main-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: 2px solid #1A1208;
+  }
+  @media (min-width:1024px) { .uf-main-grid { grid-template-columns: 1fr 380px; } }
+  @media (min-width:1280px) { .uf-main-grid { grid-template-columns: 1fr 420px; } }
+
+  /* Article */
+  .uf-article { padding: 32px 0; }
+  @media (min-width:1024px) { .uf-article { border-right: 1px solid #C8C2B4; padding-right: 32px; } }
+
+  /* Sidebar */
+  .uf-sidebar { display: none; }
+  @media (min-width:1024px) { .uf-sidebar { display: block; padding: 32px 0 32px 32px; } }
+
+  /* Mobile hero */
+  .uf-mobile-hero { display: block; margin-bottom: 28px; }
+  @media (min-width:1024px) { .uf-mobile-hero { display: none; } }
+
+  /* 3-column newspaper grid */
+  .uf-ncols { display: flex; flex-direction: column; gap: 24px; }
+  @media (min-width:768px) {
+    .uf-ncols { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; }
+    .uf-ncols > div { padding: 0 20px; border-right: 1px solid #C8C2B4; }
+    .uf-ncols > div:first-child { padding-left: 0; }
+    .uf-ncols > div:last-child { border-right: none; padding-right: 0; }
+  }
+
+  /* Stats grid — 2 cols, borders between cells */
+  .uf-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .uf-stats-grid > div {
+    padding: 12px 16px;
+    border-right: 1px solid #D8D2C4;
+    border-bottom: 1px solid #D8D2C4;
+  }
+  .uf-stats-grid > div:nth-child(even)  { border-right: none; }
+  .uf-stats-grid > div:nth-last-child(1),
+  .uf-stats-grid > div:nth-last-child(2) { border-bottom: none; }
+
+  /* SEO link grid */
+  .uf-seo-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  @media (min-width:640px) { .uf-seo-grid { grid-template-columns: repeat(4,1fr); } }
+
+  /* Footer grid */
+  .uf-footer-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width:640px) { .uf-footer-grid { grid-template-columns: 1fr auto; align-items: center; } }
+
+  /* Pull-quote top border */
+  .uf-pq-top { border-top: 3px double ${accent}; }
+
+  /* Timeline dot & line */
+  .uf-tl-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${accent}; }
+  .uf-tl-line { width:1px; flex:1; margin-top:4px; background:${accentBorder}; min-height:18px; }
+
+  /* Shared link styles */
+  .uf-ext-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border: 1.5px solid ${accent};
+    transition: opacity .2s;
+  }
+  .uf-ext-link:hover { opacity: .72; }
+  .uf-li-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border: 1.5px solid #0077b5;
+    transition: opacity .2s;
+  }
+  .uf-li-link:hover { opacity: .72; }
+  .uf-seo-link {
+    display: flex; align-items: center; gap: 4px; padding: 10px 12px;
+    border: 1px solid #D8D2C4; background: white; transition: border-color .2s;
+  }
+  .uf-seo-link:hover { border-color: #1A1208; }
+  .uf-rel-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid #EDE9DF; transition: opacity .2s;
+  }
+  .uf-rel-link:last-child { border-bottom: none; }
+  .uf-rel-link:hover { opacity: .65; }
+
+  /* Misc */
+  .uf-dot  { display:inline-block; width:6px; height:6px; border-radius:1px; flex-shrink:0; background:${accent}; }
+  .uf-faq  { margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid #D8D2C4; }
+  .uf-faq:last-child { border-bottom:none; }
+  .uf-badge {
+    display:inline-block; font-family:'DM Sans',system-ui,sans-serif;
+    font-size:8.5px; font-weight:800; letter-spacing:.28em;
+    text-transform:uppercase; padding:5px 10px; color:white; background:${accent};
+  }
+
+  ::-webkit-scrollbar { width:3px; }
+  ::-webkit-scrollbar-thumb { background:#C8C2B4; border-radius:2px; }
 `
 
 export default function AltMobilityPage() {
-  const accent = "#16a34a"
-  const accentDark = "#15803d"
-  const accentBg = "#f0fdf4"
-  const accentBorder = "#bbf7d0"
-
   useEffect(() => {
     const existing = document.getElementById("page-jsonld")
     if (!existing) {
@@ -189,49 +257,56 @@ export default function AltMobilityPage() {
     return () => { document.getElementById("page-jsonld")?.remove() }
   }, [])
 
-  const S = {
-    accent, accentDark, accentBg, accentBorder,
-    body: { minHeight: "100vh", background: "#F3EFE5" },
-    cssVars: { "--uf-accent": accent, "--uf-aborder": accentBorder } as React.CSSProperties,
-  }
+  const globeSvg = (color: string) => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+  )
+  const liSvg = (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5">
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+      <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+    </svg>
+  )
 
   return (
-    <div style={{ ...S.body, ...S.cssVars }}>
+    <div style={{ minHeight: "100vh", background: "#F3EFE5" }}>
       <style>{CSS}</style>
       <h1 className="sr-only">Alt Mobility Founder Story — Dev Arora | India's Full-Stack EV Leasing Platform | FleetOS | UpForge</h1>
 
       {/* BREADCRUMB */}
       <nav aria-label="Breadcrumb" style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", padding: "8px 24px" }}>
-        <ol style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px", listStyle: "none" }}>
-          {[{ n: "UpForge", h: "/" }, { n: "Startup Registry", h: "/startup" }, { n: "EV Startups India", h: "/ev-startups-india" }, { n: "Alt Mobility", h: "/startup/alt-mobility" }].map((b, i, arr) => (
-            <li key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              {i < arr.length - 1
-                ? <a href={b.h} className="uf-sans" style={{ fontSize: 9, color: "#AAA", textTransform: "uppercase", letterSpacing: ".14em" }}>{b.n}</a>
-                : <span className="uf-sans" style={{ fontSize: 9, color: "#1A1208", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".14em" }}>{b.n}</span>}
-              {i < arr.length - 1 && <ChevronRight style={{ width: 10, height: 10, color: "#C8C2B4" }} />}
+        <ol style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:"6px", listStyle:"none" }}>
+          {[{ n:"UpForge",h:"/" },{ n:"Startup Registry",h:"/startup" },{ n:"EV Startups India",h:"/ev-startups-india" },{ n:"Alt Mobility",h:"/startup/alt-mobility" }].map((b,i,arr)=>(
+            <li key={i} style={{ display:"flex", alignItems:"center", gap:"6px" }}>
+              {i<arr.length-1
+                ? <a href={b.h} className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>{b.n}</a>
+                : <span className="uf-sans" style={{ fontSize:9, color:"#1A1208", fontWeight:700, textTransform:"uppercase", letterSpacing:".14em" }}>{b.n}</span>}
+              {i<arr.length-1 && <ChevronRight style={{ width:10, height:10, color:"#C8C2B4" }}/>}
             </li>
           ))}
         </ol>
       </nav>
 
       {/* MASTHEAD */}
-      <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }}>
-        <div style={{ textAlign: "center", padding: "16px 16px 28px", borderBottom: "1px solid #C8C2B4" }}>
-          <p className="uf-sans" style={{ fontSize: 8, letterSpacing: ".44em", color: "#AAA", textTransform: "uppercase", marginBottom: 10 }}>UpForge · Startup Registry · Electric Vehicles</p>
-          <p className="uf-serif" style={{ fontSize: "clamp(2rem,5.5vw,4.2rem)", fontWeight: 900, lineHeight: 1, color: "#1A1208" }}>The Founder Chronicle</p>
-          <p className="uf-serif" style={{ fontStyle: "italic", marginTop: 10, color: "#6B5C40", fontSize: "clamp(12px,1.8vw,15px)" }}>India's independent startup registry — verified, editorial, March 2026</p>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14, marginTop: 18 }}>
-            <div style={{ height: 1, width: "clamp(60px,10vw,140px)", background: "#C8C2B4" }} />
-            <span style={{ color: "#C8C2B4", fontSize: 13 }}>✦</span>
-            <div style={{ height: 1, width: "clamp(60px,10vw,140px)", background: "#C8C2B4" }} />
+      <header style={{ background:"#F3EFE5", borderBottom:"3px solid #1A1208" }}>
+        <div style={{ textAlign:"center", padding:"16px 16px 28px", borderBottom:"1px solid #C8C2B4" }}>
+          <p className="uf-sans" style={{ fontSize:8, letterSpacing:".44em", color:"#AAA", textTransform:"uppercase", marginBottom:10 }}>UpForge · Startup Registry · Electric Vehicles</p>
+          <p className="uf-serif" style={{ fontSize:"clamp(2rem,5.5vw,4.2rem)", fontWeight:900, lineHeight:1, color:"#1A1208" }}>The Founder Chronicle</p>
+          <p className="uf-serif" style={{ fontStyle:"italic", marginTop:10, color:"#6B5C40", fontSize:"clamp(12px,1.8vw,15px)" }}>India's independent startup registry — verified, editorial, March 2026</p>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14, marginTop:18 }}>
+            <div style={{ height:1, width:"clamp(60px,10vw,140px)", background:"#C8C2B4" }}/>
+            <span style={{ color:"#C8C2B4", fontSize:13 }}>✦</span>
+            <div style={{ height:1, width:"clamp(60px,10vw,140px)", background:"#C8C2B4" }}/>
           </div>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", padding: "8px 24px", gap: 16, borderBottom: "1px solid #C8C2B4" }}>
-          <span className="uf-sans" style={{ fontSize: 8, color: "#AAA", textTransform: "uppercase", letterSpacing: ".16em" }}>Edition · EV</span>
-          <div style={{ width: 1, height: 12, background: "#C8C2B4" }} />
-          <span className="uf-sans" style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".14em", color: accent }}>EV Leasing · March 2026</span>
-          <div style={{ width: 1, height: 12, background: "#C8C2B4" }} />
-          <span className="uf-sans" style={{ fontSize: 9, color: "#AAA" }}>New Delhi, India</span>
+        <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", padding:"8px 24px", gap:16, borderBottom:"1px solid #C8C2B4" }}>
+          <span className="uf-sans" style={{ fontSize:8, color:"#AAA", textTransform:"uppercase", letterSpacing:".16em" }}>Edition · EV</span>
+          <div style={{ width:1, height:12, background:"#C8C2B4" }}/>
+          <span className="uf-sans" style={{ fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:".14em", color:accent }}>EV Leasing · March 2026</span>
+          <div style={{ width:1, height:12, background:"#C8C2B4" }}/>
+          <span className="uf-sans" style={{ fontSize:9, color:"#AAA" }}>New Delhi, India</span>
         </div>
       </header>
 
@@ -240,73 +315,73 @@ export default function AltMobilityPage() {
         <div className="uf-main-grid">
 
           {/* ARTICLE */}
-          <article className="uf-article" style={{ paddingTop: 32, paddingBottom: 32 }}>
-
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-              <span className="uf-badge" style={{ background: accent }}>CLEANTECH / EV</span>
-              <span className="uf-sans" style={{ fontSize: 9, color: "#AAA", textTransform: "uppercase", letterSpacing: ".14em" }}>March 2026</span>
+          <article className="uf-article">
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+              <span className="uf-badge">CLEANTECH / EV</span>
+              <span className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>March 2026</span>
             </div>
 
-            <h2 className="uf-serif" style={{ fontSize: "clamp(1.75rem,4vw,3.1rem)", fontWeight: 900, lineHeight: 1.07, color: "#1A1208", marginBottom: 18 }}>
+            <h2 className="uf-serif" style={{ fontSize:"clamp(1.75rem,4vw,3.1rem)", fontWeight:900, lineHeight:1.07, color:"#1A1208", marginBottom:18 }}>
               They fixed India's solar financing problem in 2014.{" "}
-              <em style={{ color: accent }}>Then they did it again — for electric vehicles.</em>
+              <em style={{ color:accent }}>Then they did it again — for electric vehicles.</em>
             </h2>
 
-            <p className="uf-serif" style={{ fontStyle: "italic", lineHeight: 1.75, marginBottom: 24, paddingBottom: 24, color: "#5A4A30", fontSize: "clamp(14px,1.9vw,17px)", borderBottom: "1px solid #C8C2B4" }}>
+            <p className="uf-serif" style={{ fontStyle:"italic", lineHeight:1.75, marginBottom:24, paddingBottom:24, color:"#5A4A30", fontSize:"clamp(14px,1.9vw,17px)", borderBottom:"1px solid #C8C2B4" }}>
               Alt Mobility's founders didn't discover EVs on a whiteboard. They spent six years removing the financing barrier for rooftop solar — then watched the exact same problem kill EV adoption in India. Dev Arora and his team built the solution they already knew worked: a full-stack lease. $17.3M raised. 16,000+ vehicles. ₹350 crore in assets. 37 cities.
             </p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 8px", marginBottom: 32 }}>
-              {["By UpForge Editorial", "New Delhi", "Est. 2020", "India's EV Fleet OS"].map((t, i, a) => (
-                <span key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span className="uf-sans" style={{ fontSize: 9, color: "#AAA", textTransform: "uppercase", letterSpacing: ".14em" }}>{t}</span>
-                  {i < a.length - 1 && <span style={{ color: "#C8C2B4", fontSize: 10 }}>·</span>}
+            <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:"6px 8px", marginBottom:32 }}>
+              {["By UpForge Editorial","New Delhi","Est. 2020","India's EV Fleet OS"].map((t,i,a)=>(
+                <span key={i} style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <span className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>{t}</span>
+                  {i<a.length-1 && <span style={{ color:"#C8C2B4", fontSize:10 }}>·</span>}
                 </span>
               ))}
             </div>
 
             {/* Mobile hero */}
             <div className="uf-mobile-hero">
-              <img src="/Upforge-alt-mobility.webp" alt="Dev Arora, Co-Founder & CEO of Alt Mobility" style={{ width: "100%", height: "min(300px,60vw)", objectFit: "cover", objectPosition: "top" }} loading="eager"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }} />
-              <div style={{ padding: "12px 16px", background: "#1A1208" }}>
-                <p className="uf-serif" style={{ color: "white", fontWeight: 700, fontSize: 13 }}>Dev Arora</p>
-                <p className="uf-sans" style={{ color: "rgba(255,255,255,.4)", fontSize: 9, textTransform: "uppercase", letterSpacing: ".14em", marginTop: 3 }}>Co-Founder & CEO · Alt Mobility</p>
+              <img src="/Upforge-alt-mobility.webp" alt="Dev Arora, Co-Founder & CEO of Alt Mobility"
+                style={{ width:"100%", height:"min(300px,60vw)", objectFit:"cover", objectPosition:"top" }} loading="eager"
+                onError={e=>{ (e.currentTarget as HTMLImageElement).src='https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }}/>
+              <div style={{ padding:"12px 16px", background:"#1A1208" }}>
+                <p className="uf-serif" style={{ color:"white", fontWeight:700, fontSize:13 }}>Dev Arora</p>
+                <p className="uf-sans" style={{ color:"rgba(255,255,255,.4)", fontSize:9, textTransform:"uppercase", letterSpacing:".14em", marginTop:3 }}>Co-Founder & CEO · Alt Mobility</p>
               </div>
             </div>
 
             {/* 3-col body */}
             <div className="uf-ncols">
-              {COLS.map((col, ci) => (
+              {COLS.map((col,ci)=>(
                 <div key={ci}>
-                  <h3 className="uf-sans" style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".14em", color: "#1A1208", borderBottom: `1.5px solid ${accent}`, paddingBottom: 6, marginBottom: 12 }}>{col.h}</h3>
-                  {col.b.split("\n\n").map((p, pi) => (
-                    <p key={pi} className={ci === 0 && pi === 0 ? "uf-dropcap" : ""} style={{ lineHeight: 1.88, marginBottom: 12, color: "#2C2010", fontSize: "clamp(12.5px,1.3vw,13.5px)" }}>{p}</p>
+                  <h3 className="uf-sans" style={{ fontSize:10, fontWeight:800, textTransform:"uppercase", letterSpacing:".14em", color:"#1A1208", borderBottom:`1.5px solid ${accent}`, paddingBottom:6, marginBottom:12 }}>{col.h}</h3>
+                  {col.b.split("\n\n").map((p,pi)=>(
+                    <p key={pi} className={ci===0&&pi===0?"uf-serif uf-dropcap":"uf-serif"} style={{ lineHeight:1.88, marginBottom:12, color:"#2C2010", fontSize:"clamp(12.5px,1.3vw,13.5px)" }}>{p}</p>
                   ))}
                 </div>
               ))}
             </div>
 
             {/* Pull quote */}
-            <div className="uf-pq-top" style={{ marginTop: 40, paddingTop: 24, paddingBottom: 24, textAlign: "center", borderBottom: "1px solid #C8C2B4" }}>
-              <span style={{ display: "block", color: accentDark, fontSize: 26, marginBottom: 10 }}>❝</span>
-              <blockquote className="uf-serif" style={{ fontStyle: "italic", color: "#1A1208", lineHeight: 1.7, maxWidth: 640, margin: "0 auto", padding: "0 16px", fontSize: "clamp(15px,2.2vw,21px)" }}>"{PULL_QUOTE.text}"</blockquote>
-              <p className="uf-sans" style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: ".24em", color: "#AAA", marginTop: 16 }}>— {PULL_QUOTE.by}</p>
+            <div className="uf-pq-top" style={{ marginTop:40, paddingTop:24, paddingBottom:24, textAlign:"center", borderBottom:"1px solid #C8C2B4" }}>
+              <span style={{ display:"block", color:accentDark, fontSize:26, marginBottom:10 }}>❝</span>
+              <blockquote className="uf-serif" style={{ fontStyle:"italic", color:"#1A1208", lineHeight:1.7, maxWidth:640, margin:"0 auto", padding:"0 16px", fontSize:"clamp(15px,2.2vw,21px)" }}>"{PULL_QUOTE.text}"</blockquote>
+              <p className="uf-sans" style={{ fontSize:9, textTransform:"uppercase", letterSpacing:".24em", color:"#AAA", marginTop:16 }}>— {PULL_QUOTE.by}</p>
             </div>
 
             {/* Timeline */}
-            <div style={{ marginTop: 32 }}>
-              <p className="uf-sans" style={{ fontSize: 8.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".26em", color: accent, borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8, marginBottom: 16 }}>Company Timeline</p>
-              <ol style={{ listStyle: "none" }}>
-                {TIMELINE.map((t, i) => (
-                  <li key={i} style={{ display: "flex", gap: 16, marginBottom: 16 }}>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
-                      <div className="uf-tl-dot" style={{ background: accent }} />
-                      {i < TIMELINE.length - 1 && <div className="uf-tl-line" style={{ background: accentBorder }} />}
+            <div style={{ marginTop:32 }}>
+              <p className="uf-sans" style={{ fontSize:8.5, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:accent, borderBottom:`1px solid ${accentBorder}`, paddingBottom:8, marginBottom:16 }}>Company Timeline</p>
+              <ol style={{ listStyle:"none" }}>
+                {TIMELINE.map((t,i)=>(
+                  <li key={i} style={{ display:"flex", gap:16, marginBottom:16 }}>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0 }}>
+                      <div className="uf-tl-dot"/>
+                      {i<TIMELINE.length-1 && <div className="uf-tl-line"/>}
                     </div>
                     <div>
-                      <span className="uf-sans" style={{ fontSize: 9, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".14em", color: accent }}>{t.year}</span>
-                      <p className="uf-sans" style={{ fontSize: 12, color: "#2C2010", marginTop: 3, lineHeight: 1.6 }}>{t.event}</p>
+                      <span className="uf-sans" style={{ fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:".14em", color:accent }}>{t.year}</span>
+                      <p className="uf-sans" style={{ fontSize:12, color:"#2C2010", marginTop:3, lineHeight:1.6 }}>{t.event}</p>
                     </div>
                   </li>
                 ))}
@@ -314,12 +389,12 @@ export default function AltMobilityPage() {
             </div>
 
             {/* FAQ */}
-            <section style={{ marginTop: 32 }}>
-              <p className="uf-sans" style={{ fontSize: 8.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".26em", color: accent, borderBottom: `1px solid ${accentBorder}`, paddingBottom: 8, marginBottom: 16 }}>Frequently Asked Questions</p>
-              {FAQS.map((faq, i) => (
+            <section style={{ marginTop:32 }}>
+              <p className="uf-sans" style={{ fontSize:8.5, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:accent, borderBottom:`1px solid ${accentBorder}`, paddingBottom:8, marginBottom:16 }}>Frequently Asked Questions</p>
+              {FAQS.map((faq,i)=>(
                 <div key={i} className="uf-faq">
-                  <h3 className="uf-sans" style={{ fontSize: 13, fontWeight: 700, color: "#1A1208", marginBottom: 6 }}>{faq.q}</h3>
-                  <p className="uf-sans" style={{ fontSize: 12.5, color: "#5A4A30", lineHeight: 1.7 }}>{faq.a}</p>
+                  <h3 className="uf-sans" style={{ fontSize:13, fontWeight:700, color:"#1A1208", marginBottom:6 }}>{faq.q}</h3>
+                  <p className="uf-sans" style={{ fontSize:12.5, color:"#5A4A30", lineHeight:1.7 }}>{faq.a}</p>
                 </div>
               ))}
             </section>
@@ -327,79 +402,78 @@ export default function AltMobilityPage() {
 
           {/* SIDEBAR */}
           <aside className="uf-sidebar">
-            <div style={{ position: "sticky", top: 16, display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ position:"sticky", top:16, display:"flex", flexDirection:"column", gap:20 }}>
 
-              <div style={{ position: "relative", overflow: "hidden", height: 340 }}>
-                <img src="/Upforge-alt-mobility.webp" alt="Dev Arora, Co-Founder & CEO of Alt Mobility" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} loading="eager"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }} />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 16px", background: "linear-gradient(to top,rgba(12,7,2,.96) 60%,transparent)" }}>
-                  <p className="uf-serif" style={{ color: "white", fontWeight: 700, fontSize: 14 }}>Dev Arora</p>
-                  <p className="uf-sans" style={{ color: "rgba(255,255,255,.4)", fontSize: 9, textTransform: "uppercase", letterSpacing: ".14em", marginTop: 2 }}>Co-Founder & CEO · Alt Mobility</p>
+              <div style={{ position:"relative", overflow:"hidden", height:340 }}>
+                <img src="/Upforge-alt-mobility.webp" alt="Dev Arora, Co-Founder & CEO of Alt Mobility"
+                  style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} loading="eager"
+                  onError={e=>{ (e.currentTarget as HTMLImageElement).src='https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }}/>
+                <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"14px 16px", background:"linear-gradient(to top,rgba(12,7,2,.96) 60%,transparent)" }}>
+                  <p className="uf-serif" style={{ color:"white", fontWeight:700, fontSize:14 }}>Dev Arora</p>
+                  <p className="uf-sans" style={{ color:"rgba(255,255,255,.4)", fontSize:9, textTransform:"uppercase", letterSpacing:".14em", marginTop:2 }}>Co-Founder & CEO · Alt Mobility</p>
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <a href="https://alt-mobility.com/" target="_blank" rel="noopener noreferrer" className="uf-web-link" aria-label="Visit Alt Mobility official website">
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    <span className="uf-sans" style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", color: accent }}>alt-mobility.com</span>
-                  </div>
-                  <ArrowUpRight style={{ width: 14, height: 14, color: accent }} />
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                <a href="https://alt-mobility.com/" target="_blank" rel="noopener noreferrer" className="uf-ext-link" aria-label="Visit Alt Mobility official website">
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>{globeSvg(accent)}<span className="uf-sans" style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:".12em", color:accent }}>alt-mobility.com</span></div>
+                  <ArrowUpRight style={{ width:14, height:14, color:accent }}/>
                 </a>
                 <a href="https://www.linkedin.com/company/altmobility/" target="_blank" rel="noopener noreferrer" className="uf-li-link" aria-label="View Alt Mobility on LinkedIn">
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                    <span className="uf-sans" style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", color: "#0077b5" }}>LinkedIn — Alt Mobility</span>
-                  </div>
-                  <ArrowUpRight style={{ width: 14, height: 14, color: "#0077b5" }} />
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>{liSvg}<span className="uf-sans" style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:".12em", color:"#0077b5" }}>LinkedIn — Alt Mobility</span></div>
+                  <ArrowUpRight style={{ width:14, height:14, color:"#0077b5" }}/>
                 </a>
               </div>
 
-              <div style={{ border: "2px solid #1A1208" }}>
-                <div style={{ padding: "10px 16px", background: "#1A1208" }}>
-                  <p className="uf-sans" style={{ fontSize: 8, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".3em", color: "white" }}>By the Numbers</p>
+              {/* Stats */}
+              <div style={{ border:"2px solid #1A1208" }}>
+                <div style={{ padding:"10px 16px", background:"#1A1208" }}>
+                  <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".3em", color:"white" }}>By the Numbers</p>
                 </div>
                 <div className="uf-stats-grid">
-                  {STATS.map((s, i) => (
-                    <div key={i} style={{ padding: "12px 16px" }}>
-                      <p className="uf-sans" style={{ fontSize: 7.5, color: "#AAA", textTransform: "uppercase", letterSpacing: ".16em", marginBottom: 4 }}>{s.l}</p>
-                      <p className="uf-serif" style={{ fontSize: "1.2rem", fontWeight: 900, color: "#1A1208", lineHeight: 1 }}>{s.v}</p>
+                  {STATS.map((s,i)=>(
+                    <div key={i}>
+                      <p className="uf-sans" style={{ fontSize:7.5, color:"#AAA", textTransform:"uppercase", letterSpacing:".16em", marginBottom:4 }}>{s.l}</p>
+                      <p className="uf-serif" style={{ fontSize:"1.2rem", fontWeight:900, color:"#1A1208", lineHeight:1 }}>{s.v}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ padding: 16, background: accentBg, border: `1px solid ${accentBorder}` }}>
-                <p className="uf-sans" style={{ fontSize: 8, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".26em", color: accent, marginBottom: 8 }}>The Lesson</p>
-                <p className="uf-serif" style={{ fontStyle: "italic", color: "#1A1208", lineHeight: 1.72, fontSize: 13 }}>{LESSON}</p>
+              {/* Lesson */}
+              <div style={{ padding:16, background:accentBg, border:`1px solid ${accentBorder}` }}>
+                <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:accent, marginBottom:8 }}>The Lesson</p>
+                <p className="uf-serif" style={{ fontStyle:"italic", color:"#1A1208", lineHeight:1.72, fontSize:13 }}>{LESSON}</p>
               </div>
 
-              <div style={{ border: "1px solid #D8D2C4" }}>
-                <div style={{ padding: "8px 16px", background: "#F9F7F2", borderBottom: "1px solid #D8D2C4" }}>
-                  <p className="uf-sans" style={{ fontSize: 8, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".24em", color: "#1A1208" }}>Key Investors</p>
+              {/* Investors */}
+              <div style={{ border:"1px solid #D8D2C4" }}>
+                <div style={{ padding:"8px 16px", background:"#F9F7F2", borderBottom:"1px solid #D8D2C4" }}>
+                  <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".24em", color:"#1A1208" }}>Key Investors</p>
                 </div>
-                <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 7 }}>
-                  {INVESTORS.map((inv, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span className="uf-dot" style={{ background: accent }} />
-                        <span className="uf-sans" style={{ fontSize: 11, color: "#2C2010", fontWeight: 500 }}>{inv.name}</span>
+                <div style={{ padding:"12px 16px", display:"flex", flexDirection:"column", gap:7 }}>
+                  {INVESTORS.map((inv,i)=>(
+                    <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                        <span className="uf-dot"/>
+                        <span className="uf-sans" style={{ fontSize:11, color:"#2C2010", fontWeight:500 }}>{inv.name}</span>
                       </div>
-                      <span className="uf-sans" style={{ fontSize: 8, color: "#AAA", textTransform: "uppercase", letterSpacing: ".1em" }}>{inv.type}</span>
+                      <span className="uf-sans" style={{ fontSize:8, color:"#AAA", textTransform:"uppercase", letterSpacing:".1em" }}>{inv.type}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
+              {/* Also Read */}
               <div>
-                <p className="uf-sans" style={{ fontSize: 8, fontWeight: 800, textTransform: "uppercase", letterSpacing: ".26em", color: "#AAA", marginBottom: 12 }}>Also Read on UpForge</p>
-                {RELATED.map((r) => (
+                <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:"#AAA", marginBottom:12 }}>Also Read on UpForge</p>
+                {RELATED.map(r=>(
                   <a key={r.slug} href={`/startup/${r.slug}`} className="uf-rel-link">
                     <div>
-                      <p className="uf-sans" style={{ fontSize: 11, fontWeight: 700, color: "#1A1208" }}>{r.name}</p>
-                      <p className="uf-sans" style={{ fontSize: 9, color: "#AAA", textTransform: "uppercase", letterSpacing: ".12em", marginTop: 2 }}>{r.cat} · {r.val}</p>
+                      <p className="uf-sans" style={{ fontSize:11, fontWeight:700, color:"#1A1208" }}>{r.name}</p>
+                      <p className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".12em", marginTop:2 }}>{r.cat} · {r.val}</p>
                     </div>
-                    <ArrowUpRight style={{ width: 14, height: 14, color: "#AAA", flexShrink: 0 }} />
+                    <ArrowUpRight style={{ width:14, height:14, color:"#AAA", flexShrink:0 }}/>
                   </a>
                 ))}
               </div>
@@ -408,46 +482,46 @@ export default function AltMobilityPage() {
         </div>
 
         {/* SEO LINKS */}
-        <section style={{ padding: "32px 0", borderBottom: "1px solid #C8C2B4" }}>
-          <p className="uf-sans" style={{ fontSize: 9, letterSpacing: ".3em", textTransform: "uppercase", color: "#AAA", marginBottom: 16 }}>Explore More EV Startups on UpForge</p>
+        <section style={{ padding:"32px 0", borderBottom:"1px solid #C8C2B4" }}>
+          <p className="uf-sans" style={{ fontSize:9, letterSpacing:".3em", textTransform:"uppercase", color:"#AAA", marginBottom:16 }}>Explore More EV Startups on UpForge</p>
           <div className="uf-seo-grid">
             {[
-              { l: "EV Startups India 2026", h: "/ev-startups-india" },
-              { l: "Indian Unicorns Full List", h: "/indian-unicorns" },
-              { l: "Alt Mobility vs Zypp", h: "/ev-startups/alt-mobility-vs-zypp" },
-              { l: "CleanTech Startups India", h: "/cleantech-startups" },
-              { l: "Ather Energy Profile", h: "/startup/ather-energy-ev" },
-              { l: "EV Leasing India Guide", h: "/ev-leasing-india" },
-              { l: "Startup Registry India", h: "/startup" },
-              { l: "Submit Your Startup", h: "/submit" },
-            ].map((lnk) => (
+              { l:"EV Startups India 2026", h:"/ev-startups-india" },
+              { l:"Indian Unicorns Full List", h:"/indian-unicorns" },
+              { l:"Alt Mobility vs Zypp", h:"/ev-startups/alt-mobility-vs-zypp" },
+              { l:"CleanTech Startups India", h:"/cleantech-startups" },
+              { l:"Ather Energy Profile", h:"/startup/ather-energy-ev" },
+              { l:"EV Leasing India Guide", h:"/ev-leasing-india" },
+              { l:"Startup Registry India", h:"/startup" },
+              { l:"Submit Your Startup", h:"/submit" },
+            ].map(lnk=>(
               <a key={lnk.h} href={lnk.h} className="uf-seo-link">
-                <span className="uf-sans" style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".1em", color: "#1A1208" }}>{lnk.l}</span>
-                <ChevronRight style={{ width: 10, height: 10, color: "#AAA", flexShrink: 0, marginLeft: "auto" }} />
+                <span className="uf-sans" style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:".1em", color:"#1A1208" }}>{lnk.l}</span>
+                <ChevronRight style={{ width:10, height:10, color:"#AAA", flexShrink:0, marginLeft:"auto" }}/>
               </a>
             ))}
           </div>
         </section>
 
         {/* FOOTER */}
-        <footer style={{ paddingTop: 32, paddingBottom: 8 }}>
-          <div className="uf-footer-grid" style={{ paddingBottom: 32, borderBottom: "1px solid #D8D2C4" }}>
+        <footer style={{ paddingTop:32, paddingBottom:8 }}>
+          <div className="uf-footer-grid" style={{ paddingBottom:32, borderBottom:"1px solid #D8D2C4" }}>
             <div>
-              <p className="uf-serif" style={{ fontWeight: 700, color: "#1A1208", marginBottom: 8, fontSize: "1.2rem" }}>Building India's next unicorn? Get verified on UpForge.</p>
-              <p className="uf-sans" style={{ fontSize: 12, color: "#6B5C40" }}>Free startup profiles. Independent verification. Indexed by Google.</p>
+              <p className="uf-serif" style={{ fontWeight:700, color:"#1A1208", marginBottom:8, fontSize:"1.2rem" }}>Building India's next unicorn? Get verified on UpForge.</p>
+              <p className="uf-sans" style={{ fontSize:12, color:"#6B5C40" }}>Free startup profiles. Independent verification. Indexed by Google.</p>
             </div>
-            <a href="/submit" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 24px", background: "#1A1208", color: "white" }} className="uf-sans" aria-label="List your startup">
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em" }}>List Your Startup — Free</span>
-              <ArrowRight style={{ width: 14, height: 14 }} />
+            <a href="/submit" style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"14px 24px", background:"#1A1208", color:"white" }} className="uf-sans" aria-label="List your startup">
+              <span style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:".12em" }}>List Your Startup — Free</span>
+              <ArrowRight style={{ width:14, height:14 }}/>
             </a>
           </div>
-          <p className="uf-sans" style={{ fontSize: 9, lineHeight: 1.7, marginTop: 16, color: "#BBB0A0" }}>
+          <p className="uf-sans" style={{ fontSize:9, lineHeight:1.7, marginTop:16, color:"#BBB0A0" }}>
             * Data sourced from Tracxn, Inc42, YourStory, and Alt Mobility press releases as of March 2026. UpForge is an independent registry — no paid placements, no sponsored rankings.
           </p>
-          <nav aria-label="Footer navigation" style={{ marginTop: 12 }}>
-            <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", listStyle: "none" }}>
-              {[{ l: "EV Startups India", h: "/ev-startups-india" }, { l: "Startup Registry", h: "/startup" }, { l: "Indian Unicorns", h: "/indian-unicorns" }, { l: "Ather Energy", h: "/startup/ather-energy-ev" }, { l: "CleanTech Startups", h: "/cleantech-startups" }, { l: "Submit Startup", h: "/submit" }].map((lnk) => (
-                <li key={lnk.h}><a href={lnk.h} className="uf-sans" style={{ fontSize: 9, color: "#AAA", textTransform: "uppercase", letterSpacing: ".14em" }}>{lnk.l}</a></li>
+          <nav aria-label="Footer navigation" style={{ marginTop:12 }}>
+            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 16px", listStyle:"none" }}>
+              {[{ l:"EV Startups India",h:"/ev-startups-india" },{ l:"Startup Registry",h:"/startup" },{ l:"Indian Unicorns",h:"/indian-unicorns" },{ l:"Ather Energy",h:"/startup/ather-energy-ev" },{ l:"CleanTech Startups",h:"/cleantech-startups" },{ l:"Submit Startup",h:"/submit" }].map(lnk=>(
+                <li key={lnk.h}><a href={lnk.h} className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>{lnk.l}</a></li>
               ))}
             </ul>
           </nav>
