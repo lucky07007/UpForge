@@ -61,7 +61,7 @@ export async function generateStaticParams() {
 }
 
 export const revalidate = 86400
-export const dynamicParams = false
+export const dynamicParams = true
 
 // ─── HELPERS ───
 
