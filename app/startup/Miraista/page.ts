@@ -1,7 +1,7 @@
 "use client"
 
 // app/startup/Miraista/page.tsx
-// UpForge — Miraista · Rachit & Harat Parmar Founder Chronicle
+// UpForge — Miraista · Rachit & Bharat Parmar Founder Chronicle
 // SEO: DeepTech AI Consulting, Vehicle Damage Assessment, UKTI EdTech, GenAI Solutions
 // Designed for maximum crawlability and indexing on Google Search.
 
@@ -16,8 +16,8 @@ const JSON_LD = {
     {
       "@type": "Article",
       "@id": "https://www.upforge.org/startup/Miraista#article",
-      "headline": "Miraista — How Rachit & Harat Parmar Are Building a DeepTech AI Powerhouse from India",
-      "description": "Miraista founder story — Rachit and Harat Parmar built a DeepTech product development and consulting company specializing in AI/ML, GenAI, and digital transformation. Creators of UKTI (AI EdTech) and an industry-leading Vehicle Damage Assessment AI solution. Backed by IIM Lucknow's incubation.",
+      "headline": "Miraista — How Rachit & Bharat Parmar Are Building a DeepTech AI Powerhouse from India",
+      "description": "Miraista founder story — Rachit and Bharat Parmar built a DeepTech product development and consulting company specializing in AI/ML, GenAI, and digital transformation. Creators of UKTI (AI EdTech) and an industry-leading Vehicle Damage Assessment AI solution. Backed by IIM Lucknow's incubation.",
       "url": "https://www.upforge.org/startup/Miraista",
       "datePublished": "2026-04-11T00:00:00+05:30",
       "dateModified": "2026-04-11T00:00:00+05:30",
@@ -44,7 +44,7 @@ const JSON_LD = {
         },
         {
           "@type": "Person",
-          "name": "Harat Parmar",
+          "name": "Bharat Parmar",
           "jobTitle": "Co-Founder & COO",
           "worksFor": { "@type": "Organization", "name": "Miraista" },
           "sameAs": ["https://www.linkedin.com/company/miraista/"]
@@ -99,7 +99,7 @@ const JSON_LD = {
           "name": "Who founded Miraista?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Miraista was co-founded by Rachit and Harat Parmar. The company is a DeepTech product development and consulting firm based in Delhi, India, focused on AI/ML, GenAI, and digital transformation."
+            "text": "Miraista was co-founded by Rachit and Bharat Parmar. The company is a DeepTech product development and consulting firm based in Delhi, India, focused on AI/ML, GenAI, and digital transformation."
           }
         },
         {
@@ -163,22 +163,22 @@ const STATS = [
 ]
 
 const TIMELINE = [
-  { year: "2020", event: "Miraista is founded in Delhi by Rachit and Harat Parmar with a vision to build deep-tech AI solutions for enterprises." },
+  { year: "2020", event: "Miraista is founded in Delhi by Rachit and Bharat Parmar with a vision to build deep-tech AI solutions for enterprises." },
   { year: "2022-23", event: "Development of core AI capabilities including computer vision and NLP. Launches intelligent chatbot solutions for banking and insurance sectors." },
   { year: "2024", event: "Launches Vehicle Damage Assessment AI using RCNN and YOLO models, achieving 99.8% accuracy for insurance clients. Processes images in under 2.3 seconds." },
   { year: "Early 2025", event: "Accepted into IIM Lucknow's Enterprise Incubation Centre. Begins development of UKTI, an AI-powered EdTech platform." },
-  { year: "Feb 2026", event: "Officially launches 'UKTI' at the Bharat Bodhan AI Conclave 2026 at IIT Madras in the presence of Union Education Minister Shri Dharmendra Pradhan." },
+  { year: "Feb 2026", event: "Officially launches 'UKTI' at the BBharat Bodhan AI Conclave 2026 at IIT Madras in the presence of Union Education Minister Shri Dharmendra Pradhan." },
   { year: "Mar 2026", event: "Exhibits UKTI at 'Startup ka Mahakumbh' and 'India AI Impact Summit 2026', receiving strong interest from educators and stakeholders." },
 ]
 
 const COLS = [
   {
     h: "From DeepTech Consulting to Product Innovation",
-    b: `Miraista began as a DeepTech consulting firm, helping enterprises design and scale AI/ML and GenAI solutions. Founders Rachit and Harat Parmar recognized a gap in the market: while many offered AI as a service, few provided end-to-end ownership from concept to production with a true engineering-first mindset.\n\nThe company built a reputation for responsible, scalable, and secure AI by design, serving clients in insurance, banking, and healthcare. Their vehicle damage assessment AI became a flagship solution, using RCNN and YOLO models to automate motor claims with 99.8% accuracy. This wasn't just an incremental improvement—it reduced processing time by 70%, transforming how insurers handle claims.\n\n"Strong engineering DNA with real-world problem focus," as the team puts it, became their differentiator. But Miraista wasn't content to only build for others. They saw an opportunity to apply their own AI stack to a problem that mattered deeply: education.`
+    b: `Miraista began as a DeepTech consulting firm, helping enterprises design and scale AI/ML and GenAI solutions. Founders Rachit and Bharat Parmar recognized a gap in the market: while many offered AI as a service, few provided end-to-end ownership from concept to production with a true engineering-first mindset.\n\nThe company built a reputation for responsible, scalable, and secure AI by design, serving clients in insurance, banking, and healthcare. Their vehicle damage assessment AI became a flagship solution, using RCNN and YOLO models to automate motor claims with 99.8% accuracy. This wasn't just an incremental improvement—it reduced processing time by 70%, transforming how insurers handle claims.\n\n"Strong engineering DNA with real-world problem focus," as the team puts it, became their differentiator. But Miraista wasn't content to only build for others. They saw an opportunity to apply their own AI stack to a problem that mattered deeply: education.`
   },
   {
     h: "UKTI: AI for Foundational Learning",
-    b: `In February 2026, Miraista launched UKTI at the Bharat Bodhan AI Conclave at IIT Madras, with India's Union Education Minister in attendance. UKTI is an AI and computer vision-powered, activity-based learning platform designed for primary school children.\n\nIndia faces a foundational learning crisis. The ASER report shows only about 27% of Class 3 students can read a Class 2 text. UKTI directly addresses this gap by moving beyond rote memorization. It uses voice, image recognition, and guided classroom workflows to make learning playful, structured, and scalable.\n\n"Learning should feel like play, not pressure," the Miraista team states. UKTI provides real-time student activity tracking, instant feedback, and insights for teachers. It's aligned with the National Education Policy (NEP) 2020's focus on Foundational Literacy and Numeracy (FLN), turning classrooms into interactive spaces where children learn through movement and participation.`
+    b: `In February 2026, Miraista launched UKTI at the BBharat Bodhan AI Conclave at IIT Madras, with India's Union Education Minister in attendance. UKTI is an AI and computer vision-powered, activity-based learning platform designed for primary school children.\n\nIndia faces a foundational learning crisis. The ASER report shows only about 27% of Class 3 students can read a Class 2 text. UKTI directly addresses this gap by moving beyond rote memorization. It uses voice, image recognition, and guided classroom workflows to make learning playful, structured, and scalable.\n\n"Learning should feel like play, not pressure," the Miraista team states. UKTI provides real-time student activity tracking, instant feedback, and insights for teachers. It's aligned with the National Education Policy (NEP) 2020's focus on Foundational Literacy and Numeracy (FLN), turning classrooms into interactive spaces where children learn through movement and participation.`
   },
   {
     h: "The Vision: Engineering Intelligence Across Sectors",
@@ -188,14 +188,14 @@ const COLS = [
 
 const PULL_QUOTE = {
   text: "At Miraista, we don't just build technology—we engineer intelligence, resilience, and long-term value. Strong engineering DNA with real-world problem focus is our core.",
-  by: "Rachit & Harat Parmar, Co-Founders, Miraista"
+  by: "Rachit & Bharat Parmar, Co-Founders, Miraista"
 }
 
 const LESSON = "Miraista's journey shows that DeepTech consulting can be a launchpad for proprietary AI products. By first mastering enterprise-grade AI for clients in insurance and banking, they built the technical depth to then create UKTI—a socially impactful EdTech platform—without starting from scratch. Solve for others, then build for the world."
 
 const INVESTORS = [
   { name: "IIM Lucknow Enterprise Incubation Centre", location: "India", type: "Incubator" },
-  { name: "Bharat Bodhan AI Conclave", location: "IIT Madras", type: "Partner" },
+  { name: "BBharat Bodhan AI Conclave", location: "IIT Madras", type: "Partner" },
   { name: "Startup ka Mahakumbh", location: "Delhi", type: "Exhibitor" },
   { name: "India AI Impact Summit", location: "Delhi", type: "Exhibitor" },
 ]
@@ -279,7 +279,7 @@ export default function MiraistaPage() {
 
       {/* Hidden H1 for SEO */}
       <h1 className="sr-only">
-        Miraista Founder Story — Rachit & Harat Parmar | DeepTech AI & UKTI EdTech Platform | UpForge
+        Miraista Founder Story — Rachit & Bharat Parmar | DeepTech AI & UKTI EdTech Platform | UpForge
       </h1>
 
       {/* ── BREADCRUMB ── */}
@@ -384,7 +384,7 @@ export default function MiraistaPage() {
               assessment with 99.8% accurate AI. Then they asked a bigger question: if AI can
               understand car damage, can it help a child learn to read? The result is UKTI — an
               activity-based learning platform launched at IIT Madras with India's Education Minister.
-              From RCNN and YOLO to foundational literacy, this is the story of Rachit and Harat Parmar's
+              From RCNN and YOLO to foundational literacy, this is the story of Rachit and Bharat Parmar's
               journey to engineer intelligence with purpose.
             </p>
 
@@ -415,7 +415,7 @@ export default function MiraistaPage() {
                 <Brain className="w-16 h-16 text-[#3B82F6] opacity-50" />
               </div>
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
-                <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Rachit & Harat Parmar</p>
+                <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Rachit & Bharat Parmar</p>
                 <p
                   className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
                   style={{ fontFamily: "system-ui,sans-serif" }}
@@ -564,7 +564,7 @@ export default function MiraistaPage() {
                   className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
                   style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 60%, transparent)" }}
                 >
-                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Rachit & Harat Parmar</p>
+                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Rachit & Bharat Parmar</p>
                   <p
                     className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
                     style={{ fontFamily: "system-ui,sans-serif" }}
@@ -856,7 +856,7 @@ export default function MiraistaPage() {
             style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif" }}
           >
             * Data sourced from Miraista's official website, LinkedIn page, press releases, and event
-            participations (Bharat Bodhan AI Conclave 2026, Startup ka Mahakumbh, India AI Impact Summit 2026)
+            participations (BBharat Bodhan AI Conclave 2026, Startup ka Mahakumbh, India AI Impact Summit 2026)
             as of April 2026. UpForge is an independent registry — no paid placements, no sponsored rankings.
           </p>
 
