@@ -2,14 +2,14 @@
 
 // app/startup/alt-mobility/page.tsx
 // UpForge — Alt Mobility · Dev Arora & Co-Founders Founder Chronicle
-// SEO: FAQPage ONLY in JSON-LD. Zero microdata on FAQ HTML = no duplicate error.
-// SEO: mainEntity is a proper JSON array [].
+// SEO: Enhanced with FAQPage, Organization, BreadcrumbList, and Article schema
+// Target keywords: EV leasing India, Alt Mobility, Dev Arora, electric vehicle fleet management, FleetOS
 
 import { useEffect } from "react"
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
+import { ArrowRight, ArrowUpRight, ChevronRight, Zap, MapPin, Calendar, Users, TrendingUp, Shield, Battery, Cloud, BarChart3, Truck, Smartphone } from "lucide-react"
 
-// ─── JSON-LD ──────────────────────────────────────────────────────────────────
+// ─── ENHANCED JSON-LD WITH MORE SCHEMA TYPES ─────────────────────────────────
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
@@ -17,7 +17,7 @@ const JSON_LD = {
       "@type": "Article",
       "@id": "https://upforge.in/startup/alt-mobility#article",
       "headline": "Alt Mobility — How Dev Arora & Team Built India's Largest Full-Stack EV Leasing Platform",
-      "description": "Alt Mobility founder story — Dev Arora, Anuj Gupta, Harsh Dev Goyal, Manas Arora & Jayant Gupta built India's most comprehensive EV leasing and lifecycle management platform from IIT Delhi's incubator. $17.3M raised. 16,000+ vehicles leased. ₹350Cr+ AUM.",
+      "description": "Alt Mobility founder story — Dev Arora, Anuj Gupta, Harsh Dev Goyal, Manas Arora & Jayant Gupta built India's most comprehensive EV leasing and lifecycle management platform from IIT Delhi's incubator. $17.3M raised. 16,000+ vehicles leased. ₹350Cr+ AUM. FleetOS telematics. Drive-to-Own model.",
       "url": "https://upforge.in/startup/alt-mobility",
       "datePublished": "2026-03-14T00:00:00+05:30",
       "dateModified": "2026-03-14T00:00:00+05:30",
@@ -79,7 +79,7 @@ const JSON_LD = {
           "addressCountry": "IN"
         },
         "description": "Alt Mobility is India's leading full-stack EV leasing and lifecycle management platform, offering vehicle leasing, FleetOS telematics, insurance, maintenance and charging support for B2B commercial fleets.",
-        "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 185 },
+        "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 185, "maxValue": 200 },
         "sameAs": [
           "https://alt-mobility.com",
           "https://www.linkedin.com/company/altmobility/",
@@ -146,20 +146,64 @@ const JSON_LD = {
             "@type": "Answer",
             "text": "Unlike banks that require 20–25% down payments, Alt Mobility only takes a three-month deposit. Its all-inclusive wet lease model bundles vehicle leasing with insurance, maintenance, registration, telematics, and 24/7 support under one contract. This can reduce total cost compared to traditional financing by up to 62%, making EV fleet transition economically viable even for small operators."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Alt Mobility's current valuation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Alt Mobility is currently valued at approximately ₹461 crore (around $55 million USD) based on its Series A funding round in November 2024, which valued the company at post-money ₹461 crore."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which cities does Alt Mobility operate in?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Alt Mobility operates across 37+ cities in India including Delhi NCR, Mumbai, Bangalore, Pune, Hyderabad, Chennai, Ahmedabad, Jaipur, Lucknow, Kanpur, and more. The company is actively expanding into Uttar Pradesh, Haryana, Maharashtra, and Karnataka."
+          }
         }
       ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://alt-mobility.com#organization",
+      "name": "Alt Mobility",
+      "url": "https://alt-mobility.com",
+      "logo": "https://alt-mobility.com/logo.png",
+      "description": "India's leading full-stack EV leasing and lifecycle management platform",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "addressCountry": "IN"
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://upforge.in/startup/alt-mobility#fleetos",
+      "name": "FleetOS",
+      "brand": { "@type": "Brand", "name": "Alt Mobility" },
+      "description": "AI-powered fleet management platform with real-time tracking, predictive maintenance, and driver behaviour analytics",
+      "offers": {
+        "@type": "Offer",
+        "availability": "https://schema.org/InStock",
+        "priceSpecification": { "@type": "PriceSpecification", "price": "Contact for pricing" }
+      }
     }
   ]
 }
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { l: "Total Funding", v: "$17.3M" },
-  { l: "Valuation", v: "₹461 Cr" },
-  { l: "Founded", v: "2020" },
-  { l: "HQ", v: "New Delhi" },
-  { l: "Vehicles Leased", v: "16,000+" },
-  { l: "AUM", v: "₹350 Cr+" },
+  { l: "Total Funding", v: "$17.3M", icon: TrendingUp },
+  { l: "Valuation", v: "₹461 Cr", icon: TrendingUp },
+  { l: "Founded", v: "2020", icon: Calendar },
+  { l: "HQ", v: "New Delhi", icon: MapPin },
+  { l: "Vehicles Leased", v: "16,000+", icon: Truck },
+  { l: "AUM", v: "₹350 Cr+", icon: TrendingUp },
+  { l: "Cities", v: "37+", icon: MapPin },
+  { l: "Employees", v: "185+", icon: Users },
 ]
 
 const TIMELINE = [
@@ -195,14 +239,14 @@ const PULL_QUOTE = {
 const LESSON = "The best infrastructure businesses solve the same problem twice. Alt Mobility's founders broke the solar adoption barrier in 2014, then applied the same playbook to EVs in 2022 — proving that understanding a financing gap is worth more than any single technology."
 
 const INVESTORS = [
-  "Eurazeo (Paris)",
-  "Shell Ventures",
-  "Twynam Earth Fund (Australia)",
-  "EV2 Ventures",
-  "UC Inclusive Credit",
-  "Piper Serica",
-  "PitchRight Ventures",
-  "LetsVenture",
+  { name: "Eurazeo (Paris)", location: "France", type: "PE" },
+  { name: "Shell Ventures", location: "Netherlands", type: "CVC" },
+  { name: "Twynam Earth Fund (Australia)", location: "Australia", type: "VC" },
+  { name: "EV2 Ventures", location: "India", type: "VC" },
+  { name: "UC Inclusive Credit", location: "India", type: "Debt" },
+  { name: "Piper Serica", location: "India", type: "VC" },
+  { name: "PitchRight Ventures", location: "India", type: "Angel" },
+  { name: "LetsVenture", location: "India", type: "Platform" },
 ]
 
 const FAQS = [
@@ -269,6 +313,9 @@ export default function AltMobilityPage() {
         }
         ::-webkit-scrollbar { width:3px; }
         ::-webkit-scrollbar-thumb { background:#C8C2B4; }
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .gradient-text { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
       `}</style>
 
       {/* Hidden H1 for SEO */}
@@ -360,14 +407,14 @@ export default function AltMobilityPage() {
               <span className="text-[9px] text-[#AAA] uppercase tracking-wider">March 2026</span>
             </div>
 
-            {/* Headline */}
+            {/* Headline with gradient accent */}
             <h2
               className="pf font-black leading-[1.05] text-[#1A1208] mb-5"
               style={{ fontSize: "clamp(1.8rem,4vw,3.2rem)" }}
             >
               They fixed India's solar financing problem in 2014.
               Then they did it again —{" "}
-              <em style={{ color: accent }}>for electric vehicles.</em>
+              <span className="gradient-text">for electric vehicles.</span>
             </h2>
 
             {/* Deck */}
@@ -408,6 +455,7 @@ export default function AltMobilityPage() {
                 className="w-full object-cover object-top"
                 style={{ height: "min(300px,60vw)", display: "block" }}
                 loading="eager"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }}
               />
               <div className="px-4 py-3" style={{ background: "#1A1208" }}>
                 <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Dev Arora</p>
@@ -448,7 +496,7 @@ export default function AltMobilityPage() {
               ))}
             </div>
 
-            {/* Pull quote */}
+            {/* Pull quote - enhanced */}
             <div
               className="mt-10 pt-6 pb-6 text-center"
               style={{ borderTop: `3px double ${accent}`, borderBottom: "1px solid #C8C2B4" }}
@@ -468,7 +516,7 @@ export default function AltMobilityPage() {
               </p>
             </div>
 
-            {/* Company Timeline */}
+            {/* Company Timeline - enhanced */}
             <div className="mt-8">
               <p
                 className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
@@ -483,10 +531,10 @@ export default function AltMobilityPage() {
               </p>
               <ol style={{ fontFamily: "system-ui,sans-serif" }}>
                 {TIMELINE.map((t, i) => (
-                  <li key={i} className="flex gap-4 mb-4">
+                  <li key={i} className="flex gap-4 mb-4 group">
                     <div className="flex flex-col items-center flex-shrink-0">
                       <div
-                        className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
+                        className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 transition-all duration-200 group-hover:scale-125"
                         style={{ background: accent }}
                       />
                       {i < TIMELINE.length - 1 && (
@@ -550,13 +598,14 @@ export default function AltMobilityPage() {
           <aside className="hidden lg:block pl-8 pt-8 pb-8">
             <div className="sticky top-4 flex flex-col gap-5">
 
-              {/* Founder image */}
-              <div className="relative w-full overflow-hidden" style={{ height: 340 }}>
+              {/* Founder image with enhanced overlay */}
+              <div className="relative w-full overflow-hidden rounded-sm shadow-md" style={{ height: 340 }}>
                 <img
                   src="/Upforge-alt-mobility.webp"
                   alt="Dev Arora, Co-Founder & CEO of Alt Mobility — UpForge Founder Chronicle"
                   className="w-full h-full object-cover object-top"
                   loading="eager"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }}
                 />
                 <div
                   className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
@@ -578,7 +627,7 @@ export default function AltMobilityPage() {
                   href="https://alt-mobility.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-2.5 transition-all hover:opacity-80"
+                  className="flex items-center justify-between px-4 py-2.5 transition-all hover:opacity-80 rounded-sm"
                   style={{ border: `1.5px solid ${accent}`, textDecoration: "none" }}
                   aria-label="Visit Alt Mobility official website"
                 >
@@ -601,7 +650,7 @@ export default function AltMobilityPage() {
                   href="https://www.linkedin.com/company/altmobility/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-2.5 transition-all hover:opacity-80"
+                  className="flex items-center justify-between px-4 py-2.5 transition-all hover:opacity-80 rounded-sm"
                   style={{ border: "1.5px solid #0077b5", textDecoration: "none" }}
                   aria-label="View Alt Mobility on LinkedIn"
                 >
@@ -622,8 +671,8 @@ export default function AltMobilityPage() {
                 </a>
               </div>
 
-              {/* By the Numbers */}
-              <div style={{ border: "2px solid #1A1208" }}>
+              {/* By the Numbers - enhanced with icons */}
+              <div style={{ border: "2px solid #1A1208" }} className="rounded-sm overflow-hidden">
                 <div className="px-4 py-2.5" style={{ background: "#1A1208" }}>
                   <p
                     className="text-[8px] font-black uppercase tracking-[0.3em] text-white"
@@ -633,28 +682,32 @@ export default function AltMobilityPage() {
                   </p>
                 </div>
                 <dl className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
-                  {STATS.map((s, i) => (
-                    <div key={i} className="px-4 py-3" style={{ borderColor: "#D8D2C4" }}>
-                      <dt
-                        className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1"
-                        style={{ fontFamily: "system-ui,sans-serif" }}
-                      >
-                        {s.l}
-                      </dt>
-                      <dd
-                        className="pf font-black text-[#1A1208] leading-none"
-                        style={{ fontSize: "1.25rem" }}
-                      >
-                        {s.v}
-                      </dd>
-                    </div>
-                  ))}
+                  {STATS.map((s, i) => {
+                    const IconComponent = s.icon
+                    return (
+                      <div key={i} className="px-4 py-3" style={{ borderColor: "#D8D2C4" }}>
+                        <dt
+                          className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1 flex items-center gap-1"
+                          style={{ fontFamily: "system-ui,sans-serif" }}
+                        >
+                          <IconComponent className="w-2.5 h-2.5" style={{ color: accent }} />
+                          {s.l}
+                        </dt>
+                        <dd
+                          className="pf font-black text-[#1A1208] leading-none"
+                          style={{ fontSize: "1.25rem" }}
+                        >
+                          {s.v}
+                        </dd>
+                      </div>
+                    )
+                  })}
                 </dl>
               </div>
 
               {/* The Lesson */}
               <div
-                className="px-4 py-4"
+                className="px-4 py-4 rounded-sm"
                 style={{ background: accentBg, border: `1px solid ${accentBorder}` }}
               >
                 <p
@@ -668,8 +721,8 @@ export default function AltMobilityPage() {
                 </p>
               </div>
 
-              {/* Key Investors */}
-              <div style={{ border: "1px solid #D8D2C4" }}>
+              {/* Key Investors - enhanced */}
+              <div style={{ border: "1px solid #D8D2C4" }} className="rounded-sm overflow-hidden">
                 <div
                   className="px-4 py-2"
                   style={{ background: "#F9F7F2", borderBottom: "1px solid #D8D2C4" }}
@@ -683,23 +736,26 @@ export default function AltMobilityPage() {
                 </div>
                 <div className="px-4 py-3 space-y-1.5">
                   {INVESTORS.map((inv, i) => (
-                    <p
+                    <div
                       key={i}
-                      className="flex items-center gap-2 text-[11px] text-[#2C2010]"
+                      className="flex items-center justify-between text-[11px] text-[#2C2010]"
                       style={{ fontFamily: "system-ui,sans-serif" }}
                     >
-                      <span
-                        style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: 1,
-                          background: accent,
-                          display: "inline-block",
-                          flexShrink: 0,
-                        }}
-                      />
-                      {inv}
-                    </p>
+                      <div className="flex items-center gap-2">
+                        <span
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: 1,
+                            background: accent,
+                            display: "inline-block",
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span className="font-medium">{inv.name}</span>
+                      </div>
+                      <span className="text-[8px] text-[#AAA] uppercase tracking-wider">{inv.type}</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -739,7 +795,7 @@ export default function AltMobilityPage() {
           </aside>
         </div>
 
-        {/* ── SEO INTERNAL LINKS ── */}
+        {/* ── SEO INTERNAL LINKS - Enhanced ── */}
         <section className="py-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
           <p
             className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-4"
@@ -749,28 +805,31 @@ export default function AltMobilityPage() {
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { l: "EV Startups India 2026", h: "/ev-startups-india" },
-              { l: "Indian Unicorns Full List", h: "/indian-unicorns" },
-              { l: "Alt Mobility vs Zypp Electric", h: "/ev-startups/alt-mobility-vs-zypp" },
-              { l: "CleanTech Startups India", h: "/cleantech-startups" },
-              { l: "Ather Energy Profile", h: "/startup/ather-energy-ev" },
-              { l: "EV Leasing India Guide", h: "/ev-leasing-india" },
-              { l: "Startup Registry India", h: "/startup" },
-              { l: "Submit Your Startup", h: "/submit" },
+              { l: "EV Startups India 2026", h: "/ev-startups-india", desc: "Complete directory" },
+              { l: "Indian Unicorns Full List", h: "/indian-unicorns", desc: "Valuations & growth" },
+              { l: "Alt Mobility vs Zypp Electric", h: "/ev-startups/alt-mobility-vs-zypp", desc: "Comparison" },
+              { l: "CleanTech Startups India", h: "/cleantech-startups", desc: "Sustainability" },
+              { l: "Ather Energy Profile", h: "/startup/ather-energy-ev", desc: "EV two-wheeler" },
+              { l: "EV Leasing India Guide", h: "/ev-leasing-india", desc: "Market analysis" },
+              { l: "Startup Registry India", h: "/startup", desc: "All startups" },
+              { l: "Submit Your Startup", h: "/submit", desc: "Free listing" },
             ].map((lnk) => (
               <Link
                 key={lnk.h}
                 href={lnk.h}
-                className="flex items-center gap-1 p-3 hover:border-[#1A1208] transition-all"
+                className="flex items-center justify-between gap-1 p-3 hover:border-[#1A1208] transition-all rounded-sm hover-lift"
                 style={{ border: "1px solid #D8D2C4", background: "white", textDecoration: "none" }}
               >
-                <span
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#1A1208]"
-                  style={{ fontFamily: "system-ui,sans-serif" }}
-                >
-                  {lnk.l}
-                </span>
-                <ChevronRight className="w-2.5 h-2.5 text-[#AAA] flex-shrink-0 ml-auto" />
+                <div>
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider text-[#1A1208] block"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    {lnk.l}
+                  </span>
+                  <span className="text-[7px] text-[#AAA] uppercase tracking-wider hidden sm:inline-block">{lnk.desc}</span>
+                </div>
+                <ChevronRight className="w-2.5 h-2.5 text-[#AAA] flex-shrink-0" />
               </Link>
             ))}
           </div>
@@ -796,7 +855,7 @@ export default function AltMobilityPage() {
             <div className="flex sm:justify-end">
               <Link
                 href="/submit"
-                className="inline-flex items-center gap-2 px-6 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90"
+                className="inline-flex items-center gap-2 px-6 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90 transition-all rounded-sm"
                 style={{
                   background: "#1A1208",
                   fontSize: 11,
