@@ -1,12 +1,14 @@
 "use client"
 
-// app/startup/alt-mobility/page.tsx — FIXED CSS VERSION
-// UpForge — Alt Mobility · Dev Arora & Co-Founders Founder Chronicle
-// CSS: Unified string-injection approach (same as Perplexity page) — no Tailwind class conflicts
+// app/startup/alt-mobility/page.tsx
+// UpForge — Alt Mobility · Dev Arora & Team Founder Chronicle
+// SEO: Alt Mobility EV Leasing India, Dev Arora, FleetOS, Drive-to-Own, Shell Ventures, Eurazeo
+// Designed for maximum crawlability and indexing on Google Search.
 
 import { useEffect } from "react"
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react"
 
+// ─── JSON-LD ──────────────────────────────────────────────────────────────────
 const JSON_LD = {
   "@context": "https://schema.org",
   "@graph": [
@@ -19,232 +21,223 @@ const JSON_LD = {
       "datePublished": "2026-03-14T00:00:00+05:30",
       "dateModified": "2026-04-01T00:00:00+05:30",
       "inLanguage": "en-IN",
-      "image": { "@type": "ImageObject", "url": "https://www.upforge.in/Upforge-alt-mobility.webp", "width": 1200, "height": 630 },
-      "publisher": { "@type": "Organization", "name": "UpForge", "url": "https://upforge.in", "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" } },
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://www.upforge.in/Upforge-alt-mobility.webp",
+        "width": 1200,
+        "height": 630
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "UpForge",
+        "url": "https://upforge.in",
+        "logo": { "@type": "ImageObject", "url": "https://upforge.in/logo.png" }
+      },
       "author": { "@type": "Organization", "name": "UpForge Editorial" },
-      "keywords": "Alt Mobility, Dev Arora, EV leasing India, FleetOS, electric vehicle fleet, Drive-to-Own, Eurazeo India, Shell Ventures India, IIT Delhi startup, last mile EV delivery, EV fleet management platform",
       "about": [
-        { "@type": "Person", "name": "Dev Arora", "jobTitle": "Co-Founder & CEO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } },
-        { "@type": "Person", "name": "Anuj Gupta", "jobTitle": "Co-Founder & CBO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } },
-        { "@type": "Person", "name": "Harsh Dev Goyal", "jobTitle": "Co-Founder & CPO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } },
-        { "@type": "Person", "name": "Manas Arora", "jobTitle": "Co-Founder & CFO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } },
-        { "@type": "Person", "name": "Jayant Gupta", "jobTitle": "Co-Founder & CCO", "worksFor": { "@type": "Organization", "name": "Alt Mobility" } }
+        {
+          "@type": "Person",
+          "name": "Dev Arora",
+          "jobTitle": "Co-Founder & CEO",
+          "worksFor": { "@type": "Organization", "name": "Alt Mobility" },
+          "sameAs": ["https://www.linkedin.com/in/dev-arora-alt/"]
+        },
+        {
+          "@type": "Person",
+          "name": "Anuj Gupta",
+          "jobTitle": "Co-Founder",
+          "worksFor": { "@type": "Organization", "name": "Alt Mobility" }
+        },
+        {
+          "@type": "Person",
+          "name": "Harsh Dev Goyal",
+          "jobTitle": "Co-Founder",
+          "worksFor": { "@type": "Organization", "name": "Alt Mobility" }
+        },
+        {
+          "@type": "Person",
+          "name": "Manas Arora",
+          "jobTitle": "Co-Founder",
+          "worksFor": { "@type": "Organization", "name": "Alt Mobility" }
+        },
+        {
+          "@type": "Person",
+          "name": "Jayant Gupta",
+          "jobTitle": "Co-Founder",
+          "worksFor": { "@type": "Organization", "name": "Alt Mobility" }
+        }
       ],
-      "mentions": { "@type": "Organization", "name": "Alt Mobility", "url": "https://alt-mobility.com", "foundingDate": "2020" }
+      "mentions": {
+        "@type": "Organization",
+        "name": "Alt Mobility",
+        "url": "https://www.altmobility.in",
+        "foundingDate": "2020",
+        "foundingLocation": {
+          "@type": "Place",
+          "addressLocality": "New Delhi",
+          "addressCountry": "IN"
+        },
+        "description": "Alt Mobility is India's largest full-stack EV leasing and lifecycle management platform, offering FleetOS telematics, Drive-to-Own financing, parametric insurance, and fleet depot infrastructure for commercial fleets.",
+        "sameAs": [
+          "https://www.altmobility.in",
+          "https://www.linkedin.com/company/alt-mobility/"
+        ]
+      }
     },
-    { "@type": "BreadcrumbList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" }, { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://upforge.in/startup" }, { "@type": "ListItem", "position": 3, "name": "EV Startups India", "item": "https://upforge.in/ev-startups-india" }, { "@type": "ListItem", "position": 4, "name": "Alt Mobility", "item": "https://upforge.in/startup/alt-mobility" } ] },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.in" },
+        { "@type": "ListItem", "position": 2, "name": "Startup Registry", "item": "https://upforge.in/startup" },
+        { "@type": "ListItem", "position": 3, "name": "EV Startups", "item": "https://upforge.in/ev-startups" },
+        { "@type": "ListItem", "position": 4, "name": "Alt Mobility", "item": "https://upforge.in/startup/alt-mobility" }
+      ]
+    },
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Who founded Alt Mobility?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility was co-founded in 2020 by Dev Arora (CEO), Anuj Gupta (CBO), Harsh Dev Goyal (CPO), Manas Arora (CFO), and Jayant Gupta (CCO), born out of IIT Delhi's incubator." } },
-        { "@type": "Question", "name": "How much funding has Alt Mobility raised?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility has raised $17.3 million in total across 5 rounds. Their Series A of $10 million in November 2024 was led by Eurazeo, with Shell Ventures, Twynam Earth Fund, and EV2 Ventures participating." } },
-        { "@type": "Question", "name": "What is FleetOS?", "acceptedAnswer": { "@type": "Answer", "text": "FleetOS is Alt Mobility's proprietary AI-powered fleet management platform providing real-time vehicle tracking, predictive maintenance diagnostics, driver behaviour analytics, charging station integration, and roadside assistance." } },
-        { "@type": "Question", "name": "What is Alt Mobility's Drive-to-Own model?", "acceptedAnswer": { "@type": "Answer", "text": "Alt Mobility's Drive-to-Own model enables drivers who lease vehicles to transition into EV ownership over time without requiring credit history, collateral, or high upfront payment. It reduces total cost of ownership by 30-40%." } },
-        { "@type": "Question", "name": "How many EVs has Alt Mobility leased?", "acceptedAnswer": { "@type": "Answer", "text": "As of early 2026, Alt Mobility has leased over 16,000 electric vehicles and manages ₹350 crore+ in Assets Under Management across 37+ cities in India." } }
+        {
+          "@type": "Question",
+          "name": "What does Alt Mobility do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Alt Mobility is a full-stack EV leasing and lifecycle management platform. It leases commercial electric vehicles to fleet operators and individual drivers while bundling insurance, maintenance, charging, roadside assistance, and real-time telematics via its proprietary FleetOS platform — all in a single monthly payment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who are the founders of Alt Mobility?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Alt Mobility was founded in 2020 by Dev Arora (CEO), Anuj Gupta, Harsh Dev Goyal, Manas Arora, and Jayant Gupta. The founding team previously built 8Minute, a rooftop solar startup that deployed over 100MW of clean energy before pivoting their financing expertise to EV adoption."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much funding has Alt Mobility raised?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Alt Mobility has raised $17.3M in total funding. Key rounds include a $6M round co-led by Shell Ventures, Eurazeo, EV2 Ventures and Twynam (Jan 2024), and a $10M Series A led by Eurazeo with participation from Shell Ventures, Twynam Earth Fund, and EV2 Ventures (Nov 2024)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Alt Mobility's FleetOS platform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "FleetOS is Alt Mobility's proprietary AI and IoT-powered asset management platform. It provides real-time vehicle tracking, telematics, predictive maintenance alerts, battery health monitoring, usage analytics, and the Fleet GPT AI assistant — enabling fleet operators to maximise vehicle uptime and reduce total cost of ownership."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Alt Mobility's Drive-to-Own model?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Drive-to-Own (DTO) model allows drivers — particularly gig economy workers who cannot access traditional vehicle financing — to lease an EV and gradually transition to full ownership. This reduces total cost of ownership by 30–40% and builds long-term assets for India's informal workforce."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many cities does Alt Mobility operate in?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "As of early 2026, Alt Mobility operates across 37 cities in India, with a primary focus on Delhi NCR and select cities in Uttar Pradesh. The company plans to expand into Uttarakhand, Haryana, Maharashtra, and Karnataka through its Drive-to-Own model."
+          }
+        }
       ]
     }
   ]
 }
 
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 const STATS = [
   { l: "Total Funding", v: "$17.3M" },
-  { l: "Valuation", v: "₹461 Cr" },
+  { l: "Valuation", v: "₹461Cr" },
   { l: "Founded", v: "2020" },
   { l: "HQ", v: "New Delhi" },
   { l: "Vehicles Leased", v: "16,000+" },
-  { l: "AUM", v: "₹350 Cr+" },
-  { l: "Cities", v: "37+" },
-  { l: "Employees", v: "185+" },
+  { l: "AUM", v: "₹350Cr+" },
 ]
 
 const TIMELINE = [
-  { year: "2014–20", event: "Dev Arora & Anuj Gupta build 8Minute, deploying 100MW+ of rooftop solar across India. They connect with Manas Arora, Harsh Dev Goyal, and Jayant Gupta in the solar industry." },
-  { year: "2020–21", event: "The team identifies EVs facing the same barriers solar once did — unclear residual values, high upfront costs, fragmented after-sales. Alt Mobility is conceived at IIT Delhi's incubator." },
-  { year: "Mar 2022", event: "First deployment: 82 two-wheelers and 10 three-wheelers leased to Lightning Logistics in Delhi. The full-stack leasing model is proven viable in the real world." },
-  { year: "2023", event: "Fleet crosses 6,500 EVs across 10+ cities. AUM reaches ₹100 crore. Drive-to-Own model launched in Delhi NCR under the Delhi EV Aggregators Policy." },
-  { year: "Jan 2024", event: "$6M raised co-led by Shell Ventures, Eurazeo, EV2 Ventures, and Twynam. FleetOS expanded with AI-driven predictive maintenance and Fleet GPT conversational layer." },
-  { year: "Nov 2024", event: "$10M Series A led by Eurazeo. Total funding reaches $17.3M. Target: 30,000 vehicles and ₹500 Cr+ AUM by FY2026. Expansion to buses and trucks begins." },
-  { year: "2025–26", event: "16,000+ vehicles leased. 37+ cities. 185 employees. ₹150 crore in fuel savings generated. Annual revenue reaches ₹63.4 crore. Expansion to UP, Haryana, Maharashtra, Karnataka." },
+  { year: "2014–2020", event: "Dev Arora and Anuj Gupta co-found 8Minute, a rooftop solar startup. They deploy 100MW+ of clean energy capacity across homes and industries, learning firsthand that financing — not technology — is the primary barrier to clean energy adoption." },
+  { year: "2020", event: "Watching the same financing wall kill EV uptake in India's commercial fleet sector, the 8Minute core team pivots. Alt Mobility is incorporated in New Delhi, incubated out of IIT Delhi's ecosystem, with a mission to remove the capital barrier to electric vehicle adoption." },
+  { year: "2021–2022", event: "Alt Mobility launches its first operating leases for electric two- and three-wheelers targeted at last-mile delivery fleets and gig economy drivers in Delhi NCR. FleetOS, the proprietary telematics platform, begins early-stage development." },
+  { year: "Jan 2024", event: "Raises $6M in a pre-Series A round co-led by Shell Ventures, Eurazeo, EV2 Ventures, and Twynam Earth Fund, with participation from UC Inclusive, Piper Serica, Pitchright, and LetsVenture. Fleet reaches 6,000+ vehicles across 12 cities." },
+  { year: "Nov 2024", event: "Closes a $10M Series A led by Eurazeo, bringing total funding to $17.3M. Fleet surpasses 10,000 vehicles across 20 cities. Launches Drive-to-Own, Battery-as-a-Service (BaaS) for second-life batteries, and LCV / 4-wheeler leasing products. FY2025 revenue: ₹63.4Cr." },
+  { year: "2025–2026", event: "Fleet expands to 16,000+ vehicles across 37 cities, capturing ~12.6% of Delhi's three-wheeler EV sales. AUM surpasses ₹350Cr on a path to ₹800Cr target. Fleet GPT AI assistant and parametric insurance verticals launch. Expansion into buses and intercity trucks announced." },
 ]
 
 const COLS = [
   {
-    h: "Solar Veterans Who Bet on EVs",
-    b: `Dev Arora, a computer science graduate from NIT Kurukshetra, built his first company not in tech — but in rooftop solar. In 2014, he and Anuj Gupta founded 8Minute, deploying over 100MW of clean energy projects across homes and industries. Along the way, they met Manas Arora, Harsh Dev Goyal, and Jayant Gupta.\n\nThe solar industry taught them something few people know from the inside: new energy technologies fail to scale not because of the technology, but because of the financing. Buyers don't understand residual values. Lenders won't take the asset risk. The ecosystem is fragmented. Sound familiar?\n\nWhen Jayant Gupta moved into EV manufacturing around 2020, the team immediately recognised the pattern. "We all realised EVs faced the same challenges as solar in its early days," Arora says. "Lack of resale market, unclear residual values, and technology risks." The solution was the same one that had worked for solar: remove the upfront cost entirely. Offer a lease.`
+    h: "The Financing Wall India's EVs Kept Hitting",
+    b: `Before electric vehicles could conquer India's streets, they had to conquer India's balance sheets. For fleet operators — the aggregators, logistics companies, and gig workers who drive commercial transport — buying an EV outright was impossible. Banks offered no financing for depreciating electric assets they didn't understand. OEM warranties were untested. And resale value was a question mark.\n\nDev Arora had seen this story before. When he built 8Minute, his rooftop solar venture, the technology worked. The financing didn't. Solar panels sat in warehouses while willing adopters couldn't find a lender. By 2020, watching the exact same wall emerge in the EV sector, Arora and his team of co-founders — Anuj Gupta, Harsh Dev Goyal, Manas Arora, and Jayant Gupta — decided not to fight it from the outside. They would become the financing infrastructure.`
   },
   {
-    h: "The Full-Stack Leasing Bet",
-    b: `Alt Mobility launched leasing operations in March 2022 with 82 two-wheelers and 10 three-wheelers for Lightning Logistics in Delhi. The model was deceptively simple from the outside — but radically different from anything else in the market.\n\nWhile banks demanded 20–25% down payments, Alt took only a three-month deposit. While NBFCs just disbursed loans, Alt bundled the vehicle with insurance, road tax, maintenance, 24/7 roadside support, and IoT telematics under one all-inclusive contract. Fleet operators didn't just get a vehicle. They got a running cost they could predict — and a single number to call when anything went wrong.\n\n"Traditional financiers just provide loans," Arora explains. "We go beyond financing to ensure vehicle uptime, lower costs, and complete lifecycle management. That's our differentiation." By 2023, the fleet had crossed 6,500 EVs. Revenues were doubling every year.`
+    h: "Full-Stack: When Leasing Is Only the Beginning",
+    b: `Most leasing companies hand over a vehicle and issue an invoice. Alt Mobility engineered the entire operational layer around the vehicle's life. A fleet operator on Alt's platform gets not just the EV, but insurance, maintenance contracts, 24x7 roadside assistance, access to charging and parking hubs, and real-time fleet intelligence from FleetOS — all bundled into a single monthly payment.\n\nFleetOS is the hidden engine of Alt's moat. Powered by AI and IoT, it provides live telematics, battery health monitoring, predictive maintenance alerts, and driver behavior analytics. The latest iteration includes Fleet GPT, an AI assistant that answers natural language queries about fleet data — from a vehicle's daily mileage to predicted payment defaults based on usage patterns. "EVs are essentially batteries on wheels," Arora has said. "Once you solve for financing and uptime, the economics take care of the rest."`
   },
   {
-    h: "FleetOS, Drive-to-Own & What's Next",
-    b: `At the core of every Alt Mobility lease is FleetOS — the company's proprietary AI and IoT platform. Every leased vehicle carries an IoT device. The data it streams — location, battery health, usage patterns, driver behaviour — feeds into predictive algorithms that can flag a breakdown or payment default before it happens.\n\n"We deploy IoT devices in every vehicle," Arora says. "They send data to our servers, allowing us to monitor asset health in real time." The team is now building Fleet GPT — a conversational AI layer on top of FleetOS that lets fleet managers ask plain-language questions about their entire fleet.\n\nThe Drive-to-Own model takes the social mission further: structured pathways for gig economy drivers to graduate from leasing to full ownership, with no credit history required. By early 2026, Alt Mobility manages 16,000+ vehicles, ₹350 crore+ in AUM, across 37+ cities — and is preparing to expand into buses and trucks.`
+    h: "Drive-to-Own: Leasing as a Path to Liberation",
+    b: `Alt Mobility's most consequential innovation is not a technology — it is a financial structure. The Drive-to-Own (DTO) model allows gig economy drivers who lack credit history or collateral to begin with a standard lease and progressively transition to full vehicle ownership. For a delivery rider in Delhi, this can reduce total cost of ownership by 30–40% while building an asset that outlasts any single platform.\n\nBacked by Shell Ventures, Eurazeo, and Australia's Twynam Earth Fund — investors spanning four continents — Alt Mobility is not just the largest EV fleet lessor in India by proprietary ownership. It is building the social infrastructure of the electric transition. With ₹200Cr in cumulative fuel savings delivered, 25,000 metric tonnes of CO₂ offset annually, and a fleet that owns roughly 12.6% of Delhi's three-wheeler EV market, the Delhi NCR startup is quietly writing the rules of India's green mobility economy.`
   }
 ]
 
 const PULL_QUOTE = {
-  text: "Traditional financiers just provide loans. We go beyond financing to ensure vehicle uptime, lower costs, and complete lifecycle management. That's our differentiation.",
+  text: "Traditional lenders were not built for the EV revolution. We needed to develop a new model — one that caters to both businesses and everyday drivers, and removes every barrier between them and the vehicle.",
   by: "Dev Arora, Co-Founder & CEO, Alt Mobility"
 }
 
-const LESSON = "The best infrastructure businesses solve the same problem twice. Alt Mobility's founders broke the solar adoption barrier in 2014, then applied the same playbook to EVs in 2022 — proving that understanding a financing gap is worth more than any single technology."
+const LESSON = "Alt Mobility proves that the biggest opportunities in emerging markets are not in building the technology — they are in building the financial infrastructure that makes the technology accessible. By becoming the trust layer between EVs and India's fleet economy, Arora and his team created a moat no OEM or bank can easily replicate."
 
 const INVESTORS = [
-  { name: "Eurazeo (Paris)", type: "PE Lead" },
-  { name: "Shell Ventures", type: "CVC" },
-  { name: "Twynam Earth Fund", type: "VC" },
-  { name: "EV2 Ventures", type: "VC" },
-  { name: "UC Inclusive Credit", type: "Debt" },
-  { name: "Piper Serica", type: "VC" },
-  { name: "PitchRight Ventures", type: "Angel" },
-  { name: "LetsVenture", type: "Platform" },
+  "Eurazeo (Paris, France)",
+  "Shell Ventures (Global)",
+  "Twynam Earth Fund (Australia)",
+  "EV2 Ventures",
+  "UC Inclusive Credit",
+  "Piper Serica",
+  "Pitchright Ventures",
+  "LetsVenture",
+  "Beyond Capital Ventures",
 ]
 
 const FAQS = [
-  { q: "Who are the founders of Alt Mobility?", a: "Alt Mobility was co-founded in 2020 by Dev Arora (CEO), Anuj Gupta (CBO), Harsh Dev Goyal (CPO), Manas Arora (CFO), and Jayant Gupta (CCO) — born out of IIT Delhi's incubator. Four are second-time entrepreneurs who previously deployed 100MW+ of rooftop solar across India." },
-  { q: "What does Alt Mobility's all-inclusive lease include?", a: "Alt Mobility's wet lease bundles the vehicle with registration, insurance, maintenance, 24/7 roadside assistance, IoT telematics via FleetOS, and access to 7,000+ charging stations — all under one contract. The model saves fleet operators up to 62% compared to traditional financing." },
-  { q: "How does Alt Mobility compare to Zypp Electric and MoEving?", a: "All three offer EV leasing for commercial fleets in India, but Alt Mobility differentiates through its full-stack FleetOS technology platform, Drive-to-Own model for driver ownership, and multi-category fleet spanning 2W, 3W, and 4W vehicles. Alt is also the only player backed by Shell Ventures and Twynam Earth Fund globally." },
-  { q: "Is Alt Mobility profitable?", a: "Alt Mobility reported annual revenue of ₹63.4 crore as of March 2025 and has doubled revenues every year since launch. The company is focused on scaling toward profitability as AUM grows toward the ₹500 crore target." },
+  {
+    q: "How does Alt Mobility make money?",
+    a: "Alt Mobility earns revenue through monthly operating lease payments from fleet operators and individual drivers. Additional revenue streams include FleetOS SaaS fees, parametric insurance commissions, battery refurbishment services, fleet depot (charging and parking hub) operations, and its Battery-as-a-Service (BaaS) model for second-life vehicle batteries."
+  },
+  {
+    q: "What types of vehicles does Alt Mobility lease?",
+    a: "Alt Mobility primarily leases electric two-wheelers (E2W) and three-wheelers (E3W) for last-mile delivery and gig economy use. It has expanded into light commercial vehicles (LCVs), electric cars for employee transport and ride-hailing, and is preparing to launch bus and truck leasing for intercity and corporate fleets."
+  },
+  {
+    q: "How is Alt Mobility different from other EV leasing companies in India?",
+    a: "Unlike competitors who lease vehicles and stop there, Alt Mobility manages the full asset lifecycle — from financing and registration to insurance, maintenance, charging infrastructure, telematics (FleetOS), and end-of-life battery refurbishment. This integrated model gives fleet operators a single accountability partner and keeps operational costs 30–40% below traditional approaches."
+  },
+  {
+    q: "Is Alt Mobility profitable?",
+    a: "Alt Mobility states it has been profitable from inception at the unit economics level, doubling revenue each year. FY2025 revenues reached ₹63.4 crore. The company is focused on scaling AUM toward ₹800Cr while maintaining a lean cost structure to reach full-company profitability as fleet size grows."
+  },
+  {
+    q: "What is the EV leasing market size in India?",
+    a: "According to Mordor Intelligence, India's EV leasing market was valued at approximately $1.19 billion in 2025 and is projected to reach $5.33 billion by 2030, growing at a CAGR of roughly 35%. Alt Mobility is positioned as the infrastructure layer of this expansion."
+  },
 ]
 
 const RELATED = [
-  { name: "Ather Energy", slug: "ather-energy-ev", cat: "Electric Vehicles", val: "$1.3B" },
-  { name: "Sarvam AI", slug: "sarvam-ai", cat: "Artificial Intelligence", val: "$1B+" },
-  { name: "Agnikul Cosmos", slug: "agnikul-cosmos", cat: "Spacetech", val: "$500M" },
+  { name: "Ather Energy", slug: "ather-energy", cat: "EV Manufacturing", val: "₹5,500Cr" },
+  { name: "BluSmart Mobility", slug: "blusmart-mobility", cat: "EV Ride-Hailing", val: "$250M+" },
+  { name: "Ola Electric", slug: "ola-electric", cat: "EV Two-Wheelers", val: "$4B+" },
 ]
 
-const accent = "#16a34a"
-const accentDark = "#15803d"
-const accentBg = "#f0fdf4"
-const accentBorder = "#bbf7d0"
-
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  a { text-decoration: none !important; color: inherit; }
-  img { display: block; max-width: 100%; }
-
-  /* Typography utilities */
-  .uf-serif { font-family: 'Playfair Display', Georgia, serif !important; }
-  .uf-sans  { font-family: 'DM Sans', system-ui, sans-serif !important; }
-
-  /* Drop cap */
-  .uf-dropcap::first-letter {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 3.8em; font-weight: 900; line-height: .82;
-    float: left; margin-right: .1em; margin-top: .06em; margin-bottom: -.04em;
-    color: #1A1208;
-  }
-
-  /* Fade-up animation */
-  @keyframes uf-fu { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-  .uf-fade-up { animation: uf-fu .45s cubic-bezier(.22,1,.36,1) both; }
-
-  /* Outer container */
-  .uf-outer { max-width: 1280px; margin: 0 auto; padding: 0 16px 64px; }
-  @media (min-width:640px)  { .uf-outer { padding-left: 24px; padding-right: 24px; } }
-  @media (min-width:1024px) { .uf-outer { padding-left: 32px; padding-right: 32px; } }
-
-  /* Main 2-col grid */
-  .uf-main-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    border-bottom: 2px solid #1A1208;
-  }
-  @media (min-width:1024px) { .uf-main-grid { grid-template-columns: 1fr 380px; } }
-  @media (min-width:1280px) { .uf-main-grid { grid-template-columns: 1fr 420px; } }
-
-  /* Article */
-  .uf-article { padding: 32px 0; }
-  @media (min-width:1024px) { .uf-article { border-right: 1px solid #C8C2B4; padding-right: 32px; } }
-
-  /* Sidebar */
-  .uf-sidebar { display: none; }
-  @media (min-width:1024px) { .uf-sidebar { display: block; padding: 32px 0 32px 32px; } }
-
-  /* Mobile hero */
-  .uf-mobile-hero { display: block; margin-bottom: 28px; }
-  @media (min-width:1024px) { .uf-mobile-hero { display: none; } }
-
-  /* 3-column newspaper grid */
-  .uf-ncols { display: flex; flex-direction: column; gap: 24px; }
-  @media (min-width:768px) {
-    .uf-ncols { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; }
-    .uf-ncols > div { padding: 0 20px; border-right: 1px solid #C8C2B4; }
-    .uf-ncols > div:first-child { padding-left: 0; }
-    .uf-ncols > div:last-child { border-right: none; padding-right: 0; }
-  }
-
-  /* Stats grid — 2 cols, borders between cells */
-  .uf-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .uf-stats-grid > div {
-    padding: 12px 16px;
-    border-right: 1px solid #D8D2C4;
-    border-bottom: 1px solid #D8D2C4;
-  }
-  .uf-stats-grid > div:nth-child(even)  { border-right: none; }
-  .uf-stats-grid > div:nth-last-child(1),
-  .uf-stats-grid > div:nth-last-child(2) { border-bottom: none; }
-
-  /* SEO link grid */
-  .uf-seo-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
-  @media (min-width:640px) { .uf-seo-grid { grid-template-columns: repeat(4,1fr); } }
-
-  /* Footer grid */
-  .uf-footer-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-  @media (min-width:640px) { .uf-footer-grid { grid-template-columns: 1fr auto; align-items: center; } }
-
-  /* Pull-quote top border */
-  .uf-pq-top { border-top: 3px double ${accent}; }
-
-  /* Timeline dot & line */
-  .uf-tl-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${accent}; }
-  .uf-tl-line { width:1px; flex:1; margin-top:4px; background:${accentBorder}; min-height:18px; }
-
-  /* Shared link styles */
-  .uf-ext-link {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; border: 1.5px solid ${accent};
-    transition: opacity .2s;
-  }
-  .uf-ext-link:hover { opacity: .72; }
-  .uf-li-link {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; border: 1.5px solid #0077b5;
-    transition: opacity .2s;
-  }
-  .uf-li-link:hover { opacity: .72; }
-  .uf-seo-link {
-    display: flex; align-items: center; gap: 4px; padding: 10px 12px;
-    border: 1px solid #D8D2C4; background: white; transition: border-color .2s;
-  }
-  .uf-seo-link:hover { border-color: #1A1208; }
-  .uf-rel-link {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 0; border-bottom: 1px solid #EDE9DF; transition: opacity .2s;
-  }
-  .uf-rel-link:last-child { border-bottom: none; }
-  .uf-rel-link:hover { opacity: .65; }
-
-  /* Misc */
-  .uf-dot  { display:inline-block; width:6px; height:6px; border-radius:1px; flex-shrink:0; background:${accent}; }
-  .uf-faq  { margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid #D8D2C4; }
-  .uf-faq:last-child { border-bottom:none; }
-  .uf-badge {
-    display:inline-block; font-family:'DM Sans',system-ui,sans-serif;
-    font-size:8.5px; font-weight:800; letter-spacing:.28em;
-    text-transform:uppercase; padding:5px 10px; color:white; background:${accent};
-  }
-
-  ::-webkit-scrollbar { width:3px; }
-  ::-webkit-scrollbar-thumb { background:#C8C2B4; border-radius:2px; }
-`
-
+// ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function AltMobilityPage() {
+  const accent = "#1a6b3a"         // Deep EV Green
+  const accentLight = "#2d9e58"    // Mid Green for hover/accents
+  const accentBg = "#f0f7f2"
+  const accentBorder = "#b8dfc6"
+
   useEffect(() => {
     const existing = document.getElementById("page-jsonld")
     if (!existing) {
@@ -257,131 +250,265 @@ export default function AltMobilityPage() {
     return () => { document.getElementById("page-jsonld")?.remove() }
   }, [])
 
-  const globeSvg = (color: string) => (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
-      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-    </svg>
-  )
-  const liSvg = (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-      <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
-    </svg>
-  )
-
   return (
-    <div style={{ minHeight: "100vh", background: "#F3EFE5" }}>
-      <style>{CSS}</style>
-      <h1 className="sr-only">Alt Mobility Founder Story — Dev Arora | India's Full-Stack EV Leasing Platform | FleetOS | UpForge</h1>
+    <div style={{ minHeight: "100vh", background: "#F3EFE5", fontFamily: "'Georgia','Times New Roman',serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+        .pf { font-family: 'Playfair Display', Georgia, serif !important; }
+        .dropcap::first-letter {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 4em; font-weight: 900; line-height: 0.82;
+          float: left; margin-right: 0.08em; margin-top: 0.06em; color: #1A1208;
+        }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .fade-up { animation: fadeUp .4s ease both; }
+        @media (min-width:640px) {
+          .ncols { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; }
+          .ncols > div { padding:0 1.5rem; border-right:1px solid #C8C2B4; }
+          .ncols > div:first-child { padding-left:0; }
+          .ncols > div:last-child { border-right:none; padding-right:0; }
+        }
+        ::-webkit-scrollbar { width:3px; }
+        ::-webkit-scrollbar-thumb { background:#C8C2B4; }
+      `}</style>
 
-      {/* BREADCRUMB */}
-      <nav aria-label="Breadcrumb" style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", padding: "8px 24px" }}>
-        <ol style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:"6px", listStyle:"none" }}>
-          {[{ n:"UpForge",h:"/" },{ n:"Startup Registry",h:"/startup" },{ n:"EV Startups India",h:"/ev-startups-india" },{ n:"Alt Mobility",h:"/startup/alt-mobility" }].map((b,i,arr)=>(
-            <li key={i} style={{ display:"flex", alignItems:"center", gap:"6px" }}>
-              {i<arr.length-1
-                ? <a href={b.h} className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>{b.n}</a>
-                : <span className="uf-sans" style={{ fontSize:9, color:"#1A1208", fontWeight:700, textTransform:"uppercase", letterSpacing:".14em" }}>{b.n}</span>}
-              {i<arr.length-1 && <ChevronRight style={{ width:10, height:10, color:"#C8C2B4" }}/>}
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">
+        Alt Mobility Founder Story — Dev Arora, Anuj Gupta & Team | India's Largest EV Leasing Platform | FleetOS | Drive-to-Own | UpForge
+      </h1>
+
+      {/* ── BREADCRUMB ── */}
+      <nav
+        aria-label="Breadcrumb"
+        className="px-4 sm:px-8 py-2"
+        style={{ background: "#EDE9DF", borderBottom: "1px solid #D8D2C4", fontFamily: "system-ui,sans-serif" }}
+      >
+        <ol className="flex flex-wrap items-center gap-1.5 text-[9px] text-[#AAA] uppercase tracking-widest">
+          {[
+            { n: "UpForge", h: "/" },
+            { n: "Startup Registry", h: "/startup" },
+            { n: "EV Startups", h: "/ev-startups" },
+            { n: "Alt Mobility", h: "/startup/alt-mobility" },
+          ].map((b, i, arr) => (
+            <li key={i} className="flex items-center gap-1.5">
+              {i < arr.length - 1 ? (
+                <a href={b.h} className="hover:text-[#1A1208] transition-colors">{b.n}</a>
+              ) : (
+                <span className="text-[#1A1208] font-semibold">{b.n}</span>
+              )}
+              {i < arr.length - 1 && <ChevronRight className="w-2.5 h-2.5 text-[#C8C2B4]" />}
             </li>
           ))}
         </ol>
       </nav>
 
-      {/* MASTHEAD */}
-      <header style={{ background:"#F3EFE5", borderBottom:"3px solid #1A1208" }}>
-        <div style={{ textAlign:"center", padding:"16px 16px 28px", borderBottom:"1px solid #C8C2B4" }}>
-          <p className="uf-sans" style={{ fontSize:8, letterSpacing:".44em", color:"#AAA", textTransform:"uppercase", marginBottom:10 }}>UpForge · Startup Registry · Electric Vehicles</p>
-          <p className="uf-serif" style={{ fontSize:"clamp(2rem,5.5vw,4.2rem)", fontWeight:900, lineHeight:1, color:"#1A1208" }}>The Founder Chronicle</p>
-          <p className="uf-serif" style={{ fontStyle:"italic", marginTop:10, color:"#6B5C40", fontSize:"clamp(12px,1.8vw,15px)" }}>India's independent startup registry — verified, editorial, March 2026</p>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:14, marginTop:18 }}>
-            <div style={{ height:1, width:"clamp(60px,10vw,140px)", background:"#C8C2B4" }}/>
-            <span style={{ color:"#C8C2B4", fontSize:13 }}>✦</span>
-            <div style={{ height:1, width:"clamp(60px,10vw,140px)", background:"#C8C2B4" }}/>
+      {/* ── MASTHEAD ── */}
+      <header style={{ background: "#F3EFE5", borderBottom: "3px solid #1A1208" }}>
+        <div className="text-center px-4 pt-3 pb-6" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p
+            className="text-[8px] tracking-[0.44em] text-[#AAA] uppercase mb-2"
+            style={{ fontFamily: "system-ui,sans-serif" }}
+          >
+            UpForge · Global Startup Registry · Electric Mobility · India
+          </p>
+          <p
+            className="pf font-black leading-none text-[#1A1208]"
+            style={{ fontSize: "clamp(2rem,5.5vw,4.2rem)" }}
+          >
+            The Founder Chronicle
+          </p>
+          <p className="italic mt-2 text-[#6B5C40]" style={{ fontSize: "clamp(12px,1.8vw,15px)" }}>
+            Documenting the architects of India's Electric Fleet Economy — April 2026
+          </p>
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <div className="h-px w-20 sm:w-36" style={{ background: "#C8C2B4" }} />
+            <span style={{ color: "#C8C2B4", fontSize: 12 }}>✦</span>
+            <div className="h-px w-20 sm:w-36" style={{ background: "#C8C2B4" }} />
           </div>
         </div>
-        <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", padding:"8px 24px", gap:16, borderBottom:"1px solid #C8C2B4" }}>
-          <span className="uf-sans" style={{ fontSize:8, color:"#AAA", textTransform:"uppercase", letterSpacing:".16em" }}>Edition · EV</span>
-          <div style={{ width:1, height:12, background:"#C8C2B4" }}/>
-          <span className="uf-sans" style={{ fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:".14em", color:accent }}>EV Leasing · March 2026</span>
-          <div style={{ width:1, height:12, background:"#C8C2B4" }}/>
-          <span className="uf-sans" style={{ fontSize:9, color:"#AAA" }}>New Delhi, India</span>
+        <div
+          className="flex items-center px-4 sm:px-8 py-2 gap-4"
+          style={{ fontFamily: "system-ui,sans-serif", borderBottom: "1px solid #C8C2B4" }}
+        >
+          <span className="text-[8px] text-[#AAA] uppercase tracking-widest flex-shrink-0">Edition · Green Fleet 2026</span>
+          <div className="h-3 w-px bg-[#C8C2B4]" />
+          <span className="text-[9px] font-black uppercase tracking-wider" style={{ color: accent }}>
+            EV Leasing & Fleet OS · April 2026
+          </span>
+          <div className="h-3 w-px bg-[#C8C2B4]" />
+          <span className="text-[9px] text-[#AAA]">New Delhi, India</span>
         </div>
       </header>
 
-      {/* MAIN */}
-      <main className="uf-outer uf-fade-up">
-        <div className="uf-main-grid">
+      {/* ── MAIN ── */}
+      <main className="fade-up max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div
+          className="grid lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]"
+          style={{ borderBottom: "2px solid #1A1208" }}
+        >
 
-          {/* ARTICLE */}
-          <article className="uf-article">
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
-              <span className="uf-badge">CLEANTECH / EV</span>
-              <span className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>March 2026</span>
+          {/* ────── LEFT: EDITORIAL ────── */}
+          <article className="py-8 lg:pr-8" style={{ borderRight: "1px solid #C8C2B4" }}>
+
+            {/* Category tag */}
+            <div className="flex items-center gap-3 mb-5" style={{ fontFamily: "system-ui,sans-serif" }}>
+              <span
+                className="text-[8.5px] font-black tracking-[0.28em] uppercase px-3 py-1.5 text-white"
+                style={{ background: accent }}
+              >
+                EV / FLEET LEASING
+              </span>
+              <span className="text-[9px] text-[#AAA] uppercase tracking-wider">April 2026</span>
             </div>
 
-            <h2 className="uf-serif" style={{ fontSize:"clamp(1.75rem,4vw,3.1rem)", fontWeight:900, lineHeight:1.07, color:"#1A1208", marginBottom:18 }}>
-              They fixed India's solar financing problem in 2014.{" "}
-              <em style={{ color:accent }}>Then they did it again — for electric vehicles.</em>
+            {/* Headline */}
+            <h2
+              className="pf font-black leading-[1.05] text-[#1A1208] mb-5"
+              style={{ fontSize: "clamp(1.8rem,4vw,3.2rem)" }}
+            >
+              The Infrastructure Play: How Alt Mobility 
+              Built India's <em style={{ color: accent }}>Full-Stack EV Fleet Economy.</em>
             </h2>
 
-            <p className="uf-serif" style={{ fontStyle:"italic", lineHeight:1.75, marginBottom:24, paddingBottom:24, color:"#5A4A30", fontSize:"clamp(14px,1.9vw,17px)", borderBottom:"1px solid #C8C2B4" }}>
-              Alt Mobility's founders didn't discover EVs on a whiteboard. They spent six years removing the financing barrier for rooftop solar — then watched the exact same problem kill EV adoption in India. Dev Arora and his team built the solution they already knew worked: a full-stack lease. $17.3M raised. 16,000+ vehicles. ₹350 crore in assets. 37 cities.
+            {/* Deck */}
+            <p
+              className="italic leading-[1.75] mb-6 pb-6 text-[#5A4A30]"
+              style={{ fontSize: "clamp(14px,1.9vw,17px)", borderBottom: "1px solid #C8C2B4" }}
+            >
+              India's electric vehicle revolution had a technology problem that turned out to be 
+              a financing problem. Dev Arora and his four co-founders knew this — they had fought 
+              the same battle in rooftop solar. This time, they didn't just remove the barrier. 
+              They became the infrastructure. $17.3M raised. 16,000+ vehicles on the road across 
+              37 cities. ₹350Cr+ in assets under management. And a proprietary Fleet OS platform 
+              that may be the most valuable piece of data infrastructure in India's EV ecosystem.
             </p>
 
-            <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:"6px 8px", marginBottom:32 }}>
-              {["By UpForge Editorial","New Delhi","Est. 2020","India's EV Fleet OS"].map((t,i,a)=>(
-                <span key={i} style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>{t}</span>
-                  {i<a.length-1 && <span style={{ color:"#C8C2B4", fontSize:10 }}>·</span>}
+            {/* Byline */}
+            <div
+              className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-8"
+              style={{ fontFamily: "system-ui,sans-serif" }}
+            >
+              {[
+                "By UpForge Editorial",
+                "New Delhi",
+                "Est. 2020",
+                "India's EV Fleet OS",
+              ].map((t, i, a) => (
+                <span key={i} className="flex items-center gap-2">
+                  <span className="text-[9px] text-[#AAA] uppercase tracking-wider">{t}</span>
+                  {i < a.length - 1 && <span className="text-[#C8C2B4] text-[10px]">·</span>}
                 </span>
               ))}
             </div>
 
-            {/* Mobile hero */}
-            <div className="uf-mobile-hero">
-              <img src="/Upforge-alt-mobility.webp" alt="Dev Arora, Co-Founder & CEO of Alt Mobility"
-                style={{ width:"100%", height:"min(300px,60vw)", objectFit:"cover", objectPosition:"top" }} loading="eager"
-                onError={e=>{ (e.currentTarget as HTMLImageElement).src='https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }}/>
-              <div style={{ padding:"12px 16px", background:"#1A1208" }}>
-                <p className="uf-serif" style={{ color:"white", fontWeight:700, fontSize:13 }}>Dev Arora</p>
-                <p className="uf-sans" style={{ color:"rgba(255,255,255,.4)", fontSize:9, textTransform:"uppercase", letterSpacing:".14em", marginTop:3 }}>Co-Founder & CEO · Alt Mobility</p>
+            {/* Mobile hero image */}
+            <div className="lg:hidden mb-8">
+              <img
+                src="/alt-mobility.jpg"
+                alt="Dev Arora, Co-Founder & CEO of Alt Mobility — UpForge Founder Chronicle"
+                className="w-full object-cover object-top"
+                style={{ height: "min(300px,60vw)", display: "block" }}
+                loading="eager"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src =
+                    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=800';
+                }}
+              />
+              <div className="px-4 py-3" style={{ background: "#1A1208" }}>
+                <p className="pf text-white font-bold" style={{ fontSize: 13 }}>Dev Arora</p>
+                <p
+                  className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
+                  style={{ fontFamily: "system-ui,sans-serif" }}
+                >
+                  Co-Founder & CEO · Alt Mobility
+                </p>
               </div>
             </div>
 
-            {/* 3-col body */}
-            <div className="uf-ncols">
-              {COLS.map((col,ci)=>(
-                <div key={ci}>
-                  <h3 className="uf-sans" style={{ fontSize:10, fontWeight:800, textTransform:"uppercase", letterSpacing:".14em", color:"#1A1208", borderBottom:`1.5px solid ${accent}`, paddingBottom:6, marginBottom:12 }}>{col.h}</h3>
-                  {col.b.split("\n\n").map((p,pi)=>(
-                    <p key={pi} className={ci===0&&pi===0?"uf-serif uf-dropcap":"uf-serif"} style={{ lineHeight:1.88, marginBottom:12, color:"#2C2010", fontSize:"clamp(12.5px,1.3vw,13.5px)" }}>{p}</p>
+            {/* 3-col newspaper body */}
+            <div className="ncols">
+              {COLS.map((col, ci) => (
+                <div key={ci} className="mb-6 sm:mb-0">
+                  <h3
+                    className="font-black uppercase tracking-[0.13em] mb-3 pb-1.5"
+                    style={{
+                      fontSize: 11,
+                      color: "#1A1208",
+                      borderBottom: `1.5px solid ${accent}`,
+                      fontFamily: "system-ui,sans-serif",
+                    }}
+                  >
+                    {col.h}
+                  </h3>
+                  {col.b.split("\n\n").map((p, pi) => (
+                    <p
+                      key={pi}
+                      className={`leading-[1.9] mb-3 text-[#2C2010] ${ci === 0 && pi === 0 ? "dropcap" : ""}`}
+                      style={{ fontSize: "clamp(12.5px,1.3vw,13.5px)" }}
+                    >
+                      {p}
+                    </p>
                   ))}
                 </div>
               ))}
             </div>
 
             {/* Pull quote */}
-            <div className="uf-pq-top" style={{ marginTop:40, paddingTop:24, paddingBottom:24, textAlign:"center", borderBottom:"1px solid #C8C2B4" }}>
-              <span style={{ display:"block", color:accentDark, fontSize:26, marginBottom:10 }}>❝</span>
-              <blockquote className="uf-serif" style={{ fontStyle:"italic", color:"#1A1208", lineHeight:1.7, maxWidth:640, margin:"0 auto", padding:"0 16px", fontSize:"clamp(15px,2.2vw,21px)" }}>"{PULL_QUOTE.text}"</blockquote>
-              <p className="uf-sans" style={{ fontSize:9, textTransform:"uppercase", letterSpacing:".24em", color:"#AAA", marginTop:16 }}>— {PULL_QUOTE.by}</p>
+            <div
+              className="mt-10 pt-6 pb-6 text-center"
+              style={{ borderTop: `3px double ${accent}`, borderBottom: "1px solid #C8C2B4" }}
+            >
+              <span style={{ display: "block", color: accent, fontSize: 24, marginBottom: 10 }}>❝</span>
+              <blockquote
+                className="pf italic text-[#1A1208] leading-[1.7] max-w-2xl mx-auto px-4"
+                style={{ fontSize: "clamp(16px,2.2vw,22px)" }}
+              >
+                "{PULL_QUOTE.text}"
+              </blockquote>
+              <p
+                className="text-[9px] uppercase tracking-[0.24em] text-[#AAA] mt-4"
+                style={{ fontFamily: "system-ui,sans-serif" }}
+              >
+                — {PULL_QUOTE.by}
+              </p>
             </div>
 
-            {/* Timeline */}
-            <div style={{ marginTop:32 }}>
-              <p className="uf-sans" style={{ fontSize:8.5, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:accent, borderBottom:`1px solid ${accentBorder}`, paddingBottom:8, marginBottom:16 }}>Company Timeline</p>
-              <ol style={{ listStyle:"none" }}>
-                {TIMELINE.map((t,i)=>(
-                  <li key={i} style={{ display:"flex", gap:16, marginBottom:16 }}>
-                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0 }}>
-                      <div className="uf-tl-dot"/>
-                      {i<TIMELINE.length-1 && <div className="uf-tl-line"/>}
+            {/* Company Timeline */}
+            <div className="mt-8">
+              <p
+                className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
+                style={{
+                  color: accent,
+                  fontFamily: "system-ui,sans-serif",
+                  borderBottom: `1px solid ${accentBorder}`,
+                  paddingBottom: 8,
+                }}
+              >
+                Company Timeline
+              </p>
+              <ol style={{ fontFamily: "system-ui,sans-serif" }}>
+                {TIMELINE.map((t, i) => (
+                  <li key={i} className="flex gap-4 mb-4">
+                    <div className="flex flex-col items-center flex-shrink-0">
+                      <div
+                        className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
+                        style={{ background: accent }}
+                      />
+                      {i < TIMELINE.length - 1 && (
+                        <div
+                          className="w-px flex-1 mt-1"
+                          style={{ background: accentBorder, minHeight: 24 }}
+                        />
+                      )}
                     </div>
                     <div>
-                      <span className="uf-sans" style={{ fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:".14em", color:accent }}>{t.year}</span>
-                      <p className="uf-sans" style={{ fontSize:12, color:"#2C2010", marginTop:3, lineHeight:1.6 }}>{t.event}</p>
+                      <span
+                        className="text-[9px] font-black uppercase tracking-wider"
+                        style={{ color: accent }}
+                      >
+                        {t.year}
+                      </span>
+                      <p className="text-[12px] text-[#2C2010] mt-0.5 leading-relaxed">{t.event}</p>
                     </div>
                   </li>
                 ))}
@@ -389,139 +516,338 @@ export default function AltMobilityPage() {
             </div>
 
             {/* FAQ */}
-            <section style={{ marginTop:32 }}>
-              <p className="uf-sans" style={{ fontSize:8.5, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:accent, borderBottom:`1px solid ${accentBorder}`, paddingBottom:8, marginBottom:16 }}>Frequently Asked Questions</p>
-              {FAQS.map((faq,i)=>(
-                <div key={i} className="uf-faq">
-                  <h3 className="uf-sans" style={{ fontSize:13, fontWeight:700, color:"#1A1208", marginBottom:6 }}>{faq.q}</h3>
-                  <p className="uf-sans" style={{ fontSize:12.5, color:"#5A4A30", lineHeight:1.7 }}>{faq.a}</p>
+            <section className="mt-8">
+              <p
+                className="text-[8.5px] font-black uppercase tracking-[0.26em] mb-4"
+                style={{
+                  color: accent,
+                  fontFamily: "system-ui,sans-serif",
+                  borderBottom: `1px solid ${accentBorder}`,
+                  paddingBottom: 8,
+                }}
+              >
+                Frequently Asked Questions
+              </p>
+              {FAQS.map((faq, i) => (
+                <div
+                  key={i}
+                  className="mb-4 pb-4"
+                  style={{ borderBottom: "1px solid #D8D2C4" }}
+                >
+                  <h3
+                    className="font-bold text-[#1A1208] mb-1.5"
+                    style={{ fontSize: 13, fontFamily: "system-ui,sans-serif" }}
+                  >
+                    {faq.q}
+                  </h3>
+                  <p
+                    className="text-[12.5px] text-[#5A4A30] leading-relaxed"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    {faq.a}
+                  </p>
                 </div>
               ))}
             </section>
           </article>
 
-          {/* SIDEBAR */}
-          <aside className="uf-sidebar">
-            <div style={{ position:"sticky", top:16, display:"flex", flexDirection:"column", gap:20 }}>
+          {/* ────── RIGHT: SIDEBAR ────── */}
+          <aside className="hidden lg:block pl-8 pt-8 pb-8">
+            <div className="sticky top-4 flex flex-col gap-5">
 
-              <div style={{ position:"relative", overflow:"hidden", height:340 }}>
-                <img src="/Upforge-alt-mobility.webp" alt="Dev Arora, Co-Founder & CEO of Alt Mobility"
-                  style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"top" }} loading="eager"
-                  onError={e=>{ (e.currentTarget as HTMLImageElement).src='https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&q=80&w=800'; }}/>
-                <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"14px 16px", background:"linear-gradient(to top,rgba(12,7,2,.96) 60%,transparent)" }}>
-                  <p className="uf-serif" style={{ color:"white", fontWeight:700, fontSize:14 }}>Dev Arora</p>
-                  <p className="uf-sans" style={{ color:"rgba(255,255,255,.4)", fontSize:9, textTransform:"uppercase", letterSpacing:".14em", marginTop:2 }}>Co-Founder & CEO · Alt Mobility</p>
+              {/* Founder image */}
+              <div className="relative w-full overflow-hidden" style={{ height: 340 }}>
+                <img
+                  src="/alt-mobility.jpg"
+                  alt="Dev Arora, Co-Founder & CEO of Alt Mobility — UpForge Founder Chronicle"
+                  className="w-full h-full object-cover object-top"
+                  loading="eager"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src =
+                      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=800';
+                  }}
+                />
+                <div
+                  className="absolute bottom-0 left-0 right-0 px-4 py-3.5"
+                  style={{ background: "linear-gradient(to top, rgba(12,7,2,0.96) 60%, transparent)" }}
+                >
+                  <p className="pf text-white font-bold" style={{ fontSize: 14 }}>Dev Arora</p>
+                  <p
+                    className="text-white/40 text-[9px] uppercase tracking-wide mt-0.5"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    Co-Founder & CEO · Alt Mobility
+                  </p>
                 </div>
               </div>
 
-              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                <a href="https://alt-mobility.com/" target="_blank" rel="noopener noreferrer" className="uf-ext-link" aria-label="Visit Alt Mobility official website">
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>{globeSvg(accent)}<span className="uf-sans" style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:".12em", color:accent }}>alt-mobility.com</span></div>
-                  <ArrowUpRight style={{ width:14, height:14, color:accent }}/>
+              {/* Website + LinkedIn links */}
+              <div className="flex flex-col gap-2">
+                <a
+                  href="https://www.altmobility.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-4 py-2.5 transition-all hover:opacity-80"
+                  style={{ border: `1.5px solid ${accent}`, textDecoration: "none" }}
+                  aria-label="Visit Alt Mobility official website"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider"
+                      style={{ color: accent, fontFamily: "system-ui,sans-serif" }}
+                    >
+                      altmobility.in — Official Website
+                    </span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5" style={{ color: accent }} />
                 </a>
-                <a href="https://www.linkedin.com/company/altmobility/" target="_blank" rel="noopener noreferrer" className="uf-li-link" aria-label="View Alt Mobility on LinkedIn">
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>{liSvg}<span className="uf-sans" style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:".12em", color:"#0077b5" }}>LinkedIn — Alt Mobility</span></div>
-                  <ArrowUpRight style={{ width:14, height:14, color:"#0077b5" }}/>
+                <a
+                  href="https://www.linkedin.com/company/alt-mobility/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between px-4 py-2.5 transition-all hover:opacity-80"
+                  style={{ border: "1.5px solid #0077b5", textDecoration: "none" }}
+                  aria-label="View Alt Mobility on LinkedIn"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5">
+                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                      <rect x="2" y="9" width="4" height="12" />
+                      <circle cx="4" cy="4" r="2" />
+                    </svg>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider"
+                      style={{ color: "#0077b5", fontFamily: "system-ui,sans-serif" }}
+                    >
+                      LinkedIn — Alt Mobility
+                    </span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5" style={{ color: "#0077b5" }} />
                 </a>
               </div>
 
-              {/* Stats */}
-              <div style={{ border:"2px solid #1A1208" }}>
-                <div style={{ padding:"10px 16px", background:"#1A1208" }}>
-                  <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".3em", color:"white" }}>By the Numbers</p>
+              {/* By the Numbers */}
+              <div style={{ border: "2px solid #1A1208" }}>
+                <div className="px-4 py-2.5" style={{ background: "#1A1208" }}>
+                  <p
+                    className="text-[8px] font-black uppercase tracking-[0.3em] text-white"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    Alt Mobility Scale
+                  </p>
                 </div>
-                <div className="uf-stats-grid">
-                  {STATS.map((s,i)=>(
-                    <div key={i}>
-                      <p className="uf-sans" style={{ fontSize:7.5, color:"#AAA", textTransform:"uppercase", letterSpacing:".16em", marginBottom:4 }}>{s.l}</p>
-                      <p className="uf-serif" style={{ fontSize:"1.2rem", fontWeight:900, color:"#1A1208", lineHeight:1 }}>{s.v}</p>
+                <dl className="grid grid-cols-2 divide-x divide-y" style={{ borderColor: "#D8D2C4" }}>
+                  {STATS.map((s, i) => (
+                    <div key={i} className="px-4 py-3" style={{ borderColor: "#D8D2C4" }}>
+                      <dt
+                        className="text-[7.5px] text-[#AAA] uppercase tracking-[0.16em] mb-1"
+                        style={{ fontFamily: "system-ui,sans-serif" }}
+                      >
+                        {s.l}
+                      </dt>
+                      <dd
+                        className="pf font-black text-[#1A1208] leading-none"
+                        style={{ fontSize: "1.25rem" }}
+                      >
+                        {s.v}
+                      </dd>
                     </div>
                   ))}
-                </div>
+                </dl>
               </div>
 
-              {/* Lesson */}
-              <div style={{ padding:16, background:accentBg, border:`1px solid ${accentBorder}` }}>
-                <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:accent, marginBottom:8 }}>The Lesson</p>
-                <p className="uf-serif" style={{ fontStyle:"italic", color:"#1A1208", lineHeight:1.72, fontSize:13 }}>{LESSON}</p>
+              {/* The Lesson */}
+              <div
+                className="px-4 py-4"
+                style={{ background: accentBg, border: `1px solid ${accentBorder}` }}
+              >
+                <p
+                  className="text-[8px] font-black uppercase tracking-[0.26em] mb-2"
+                  style={{ color: accent, fontFamily: "system-ui,sans-serif" }}
+                >
+                  The Lesson
+                </p>
+                <p className="italic text-[#1A1208] leading-[1.72]" style={{ fontSize: 13 }}>
+                  {LESSON}
+                </p>
               </div>
 
-              {/* Investors */}
-              <div style={{ border:"1px solid #D8D2C4" }}>
-                <div style={{ padding:"8px 16px", background:"#F9F7F2", borderBottom:"1px solid #D8D2C4" }}>
-                  <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".24em", color:"#1A1208" }}>Key Investors</p>
+              {/* Key Investors */}
+              <div style={{ border: "1px solid #D8D2C4" }}>
+                <div
+                  className="px-4 py-2"
+                  style={{ background: "#F9F7F2", borderBottom: "1px solid #D8D2C4" }}
+                >
+                  <p
+                    className="text-[8px] font-black uppercase tracking-[0.24em] text-[#1A1208]"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    Key Investors
+                  </p>
                 </div>
-                <div style={{ padding:"12px 16px", display:"flex", flexDirection:"column", gap:7 }}>
-                  {INVESTORS.map((inv,i)=>(
-                    <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                        <span className="uf-dot"/>
-                        <span className="uf-sans" style={{ fontSize:11, color:"#2C2010", fontWeight:500 }}>{inv.name}</span>
-                      </div>
-                      <span className="uf-sans" style={{ fontSize:8, color:"#AAA", textTransform:"uppercase", letterSpacing:".1em" }}>{inv.type}</span>
-                    </div>
+                <div className="px-4 py-3 space-y-1.5">
+                  {INVESTORS.map((inv, i) => (
+                    <p
+                      key={i}
+                      className="flex items-center gap-2 text-[11px] text-[#2C2010]"
+                      style={{ fontFamily: "system-ui,sans-serif" }}
+                    >
+                      <span
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: 1,
+                          background: accent,
+                          display: "inline-block",
+                          flexShrink: 0,
+                        }}
+                      />
+                      {inv}
+                    </p>
                   ))}
                 </div>
               </div>
 
               {/* Also Read */}
               <div>
-                <p className="uf-sans" style={{ fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:".26em", color:"#AAA", marginBottom:12 }}>Also Read on UpForge</p>
-                {RELATED.map(r=>(
-                  <a key={r.slug} href={`/startup/${r.slug}`} className="uf-rel-link">
+                <p
+                  className="text-[8px] font-black uppercase tracking-[0.26em] mb-3"
+                  style={{ color: "#AAA", fontFamily: "system-ui,sans-serif" }}
+                >
+                  Also Read on UpForge
+                </p>
+                {RELATED.map((r) => (
+                  <a
+                    key={r.slug}
+                    href={`/startup/${r.slug}`}
+                    className="flex items-center justify-between py-2.5 hover:opacity-70 transition-opacity"
+                    style={{ borderBottom: "1px solid #EDE9DF", textDecoration: "none" }}
+                  >
                     <div>
-                      <p className="uf-sans" style={{ fontSize:11, fontWeight:700, color:"#1A1208" }}>{r.name}</p>
-                      <p className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".12em", marginTop:2 }}>{r.cat} · {r.val}</p>
+                      <p
+                        className="text-[11px] font-bold text-[#1A1208]"
+                        style={{ fontFamily: "system-ui,sans-serif" }}
+                      >
+                        {r.name}
+                      </p>
+                      <p className="text-[9px] text-[#AAA] uppercase tracking-wider">
+                        {r.cat} · {r.val}
+                      </p>
                     </div>
-                    <ArrowUpRight style={{ width:14, height:14, color:"#AAA", flexShrink:0 }}/>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#AAA]" />
                   </a>
                 ))}
               </div>
+
             </div>
           </aside>
         </div>
 
-        {/* SEO LINKS */}
-        <section style={{ padding:"32px 0", borderBottom:"1px solid #C8C2B4" }}>
-          <p className="uf-sans" style={{ fontSize:9, letterSpacing:".3em", textTransform:"uppercase", color:"#AAA", marginBottom:16 }}>Explore More EV Startups on UpForge</p>
-          <div className="uf-seo-grid">
+        {/* ── SEO INTERNAL LINKS ── */}
+        <section className="py-8" style={{ borderBottom: "1px solid #C8C2B4" }}>
+          <p
+            className="text-[9px] tracking-[0.3em] uppercase text-[#AAA] mb-4"
+            style={{ fontFamily: "system-ui,sans-serif" }}
+          >
+            Explore the EV & Clean Mobility Ecosystem
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { l:"EV Startups India 2026", h:"/ev-startups-india" },
-              { l:"Indian Unicorns Full List", h:"/indian-unicorns" },
-              { l:"Alt Mobility vs Zypp", h:"/ev-startups/alt-mobility-vs-zypp" },
-              { l:"CleanTech Startups India", h:"/cleantech-startups" },
-              { l:"Ather Energy Profile", h:"/startup/ather-energy-ev" },
-              { l:"EV Leasing India Guide", h:"/ev-leasing-india" },
-              { l:"Startup Registry India", h:"/startup" },
-              { l:"Submit Your Startup", h:"/submit" },
-            ].map(lnk=>(
-              <a key={lnk.h} href={lnk.h} className="uf-seo-link">
-                <span className="uf-sans" style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:".1em", color:"#1A1208" }}>{lnk.l}</span>
-                <ChevronRight style={{ width:10, height:10, color:"#AAA", flexShrink:0, marginLeft:"auto" }}/>
+              { l: "India EV Startups 2026", h: "/ev-startups" },
+              { l: "EV Leasing vs Buying", h: "/vs/ev-lease-vs-buy" },
+              { l: "Shell Ventures Portfolio", h: "/shell-ventures-investments" },
+              { l: "Eurazeo India Bets", h: "/eurazeo-india-portfolio" },
+              { l: "FleetOS vs Competitors", h: "/vs/fleet-management-software" },
+              { l: "India Green Economy", h: "/green-economy-india" },
+              { l: "Startup Registry", h: "/startup" },
+              { l: "Submit Profile", h: "/submit" },
+            ].map((lnk) => (
+              <a
+                key={lnk.h}
+                href={lnk.h}
+                className="flex items-center gap-1 p-3 hover:border-[#1A1208] transition-all"
+                style={{ border: "1px solid #D8D2C4", background: "white", textDecoration: "none" }}
+              >
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#1A1208]"
+                  style={{ fontFamily: "system-ui,sans-serif" }}
+                >
+                  {lnk.l}
+                </span>
+                <ChevronRight className="w-2.5 h-2.5 text-[#AAA] flex-shrink-0 ml-auto" />
               </a>
             ))}
           </div>
         </section>
 
-        {/* FOOTER */}
-        <footer style={{ paddingTop:32, paddingBottom:8 }}>
-          <div className="uf-footer-grid" style={{ paddingBottom:32, borderBottom:"1px solid #D8D2C4" }}>
+        {/* ── FOOTER ── */}
+        <footer className="pt-8 pb-2">
+          <div
+            className="grid sm:grid-cols-2 gap-6 items-center pb-8"
+            style={{ borderBottom: "1px solid #D8D2C4" }}
+          >
             <div>
-              <p className="uf-serif" style={{ fontWeight:700, color:"#1A1208", marginBottom:8, fontSize:"1.2rem" }}>Building India's next unicorn? Get verified on UpForge.</p>
-              <p className="uf-sans" style={{ fontSize:12, color:"#6B5C40" }}>Free startup profiles. Independent verification. Indexed by Google.</p>
+              <p className="pf font-bold text-[#1A1208] mb-2" style={{ fontSize: "1.2rem" }}>
+                Building India's clean mobility future? Get verified on UpForge.
+              </p>
+              <p
+                className="text-[12px] text-[#6B5C40]"
+                style={{ fontFamily: "system-ui,sans-serif" }}
+              >
+                Independent verification. Global search authority. Google Indexed.
+              </p>
             </div>
-            <a href="/submit" style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"14px 24px", background:"#1A1208", color:"white" }} className="uf-sans" aria-label="List your startup">
-              <span style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:".12em" }}>List Your Startup — Free</span>
-              <ArrowRight style={{ width:14, height:14 }}/>
-            </a>
+            <div className="flex sm:justify-end">
+              <a
+                href="/submit"
+                className="inline-flex items-center gap-2 px-6 py-3.5 text-white font-bold uppercase tracking-wider hover:opacity-90"
+                style={{
+                  background: "#1A1208",
+                  fontSize: 11,
+                  fontFamily: "system-ui,sans-serif",
+                  textDecoration: "none",
+                }}
+              >
+                List Your Startup — Free <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
-          <p className="uf-sans" style={{ fontSize:9, lineHeight:1.7, marginTop:16, color:"#BBB0A0" }}>
-            * Data sourced from Tracxn, Inc42, YourStory, and Alt Mobility press releases as of March 2026. UpForge is an independent registry — no paid placements, no sponsored rankings.
+
+          <p
+            className="text-[9px] leading-relaxed mt-4"
+            style={{ color: "#BBB0A0", fontFamily: "system-ui,sans-serif" }}
+          >
+            * Data sourced from public filings, Tracxn, Inc42, Crunchbase, YourStory, Autocar Professional,
+            and Alt Mobility official announcements as of April 2026. UpForge is an independent registry.
+            No paid placements or sponsored rankings. Valuations are estimates based on latest available
+            funding data and market cycles. AUM and fleet figures as reported by Alt Mobility.
           </p>
-          <nav aria-label="Footer navigation" style={{ marginTop:12 }}>
-            <ul style={{ display:"flex", flexWrap:"wrap", gap:"8px 16px", listStyle:"none" }}>
-              {[{ l:"EV Startups India",h:"/ev-startups-india" },{ l:"Startup Registry",h:"/startup" },{ l:"Indian Unicorns",h:"/indian-unicorns" },{ l:"Ather Energy",h:"/startup/ather-energy-ev" },{ l:"CleanTech Startups",h:"/cleantech-startups" },{ l:"Submit Startup",h:"/submit" }].map(lnk=>(
-                <li key={lnk.h}><a href={lnk.h} className="uf-sans" style={{ fontSize:9, color:"#AAA", textTransform:"uppercase", letterSpacing:".14em" }}>{lnk.l}</a></li>
+
+          <nav aria-label="Footer navigation" className="mt-3">
+            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+              {[
+                { l: "EV Startup List", h: "/ev-startups" },
+                { l: "Registry Home", h: "/startup" },
+                { l: "India Unicorns", h: "/unicorns" },
+                { l: "Ather Energy", h: "/startup/ather-energy" },
+                { l: "BluSmart Profile", h: "/startup/blusmart-mobility" },
+                { l: "Green Economy", h: "/green-economy-india" },
+                { l: "Submit Profile", h: "/submit" },
+              ].map((lnk) => (
+                <li key={lnk.h}>
+                  <a
+                    href={lnk.h}
+                    className="text-[9px] text-[#AAA] hover:text-[#1A1208] uppercase tracking-wider transition-colors"
+                    style={{ fontFamily: "system-ui,sans-serif" }}
+                  >
+                    {lnk.l}
+                  </a>
+                </li>
               ))}
             </ul>
           </nav>
