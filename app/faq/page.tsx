@@ -256,38 +256,40 @@ export default function FAQPage() {
           {/* ══════════════════════════════════════
               HEADER — mirrors registry masthead
           ══════════════════════════════════════ */}
-          <section className="border-b-[2px] border-foreground max-w-[1300px] mx-auto px-4 md:px-8 w-full mt-5 pb-6 flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted border border-[#C59A2E]/40 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C59A2E]" />
-              <span className="text-[10px] font-mono font-bold text-[#C59A2E] uppercase tracking-widest">
-                INDEPENDENT STARTUP INTELLIGENCE
-              </span>
-            </div>
-            <h1
-              className="faq-h1 text-3xl md:text-[44px] lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl"
-              style={{ fontFamily: "'Georgia', serif" }}
-            >
-              Frequently Asked Questions
-            </h1>
-            <p className="faq-tagline font-serif italic text-base md:text-[17px] text-muted-foreground max-w-lg mb-5 leading-relaxed">
-              {totalQuestions} answers across {FAQ_CATEGORIES.length} topics — listing, verification, UFRN, valuation, and platform.
-            </p>
+          <section className="max-w-[1300px] mx-auto px-4 md:px-8 w-full pt-10 pb-8 flex flex-col items-center text-center">
+            <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md relative overflow-hidden flex flex-col items-center">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                  INDEPENDENT STARTUP INTELLIGENCE
+                </span>
+              </div>
+              <h1
+                className="faq-h1 text-3xl md:text-[44px] lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl"
+                style={{ fontFamily: "'Georgia', serif" }}
+              >
+                Frequently Asked Questions
+              </h1>
+              <p className="faq-tagline font-serif italic text-base md:text-[17px] text-muted-foreground max-w-lg mb-5 leading-relaxed">
+                {totalQuestions} answers across {FAQ_CATEGORIES.length} topics — listing, verification, UFRN, valuation, and platform.
+              </p>
 
-            {/* Stats pill */}
-            <div className="flex items-center gap-2 border border-border bg-muted px-4 py-2 w-fit">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
-              </span>
-              <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                {totalQuestions} Questions · {FAQ_CATEGORIES.length} Topics · Updated April 2026
-              </span>
+              {/* Stats pill */}
+              <div className="flex items-center gap-2 border border-border/60 bg-muted/60 px-4 py-2 rounded-2xl shadow-xs">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
+                </span>
+                <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                  {totalQuestions} Questions · {FAQ_CATEGORIES.length} Topics · Updated July 2026
+                </span>
+              </div>
             </div>
           </section>
 
           {/* ── Category strip — mirrors sector tabs ── */}
           <nav
-            className="flex overflow-x-auto border-b-[1.5px] border-foreground bg-muted/40 px-6 items-center max-w-[1300px] mx-auto w-full"
+            className="sticky top-0 z-20 flex overflow-x-auto border-b border-border/60 bg-background/95 backdrop-blur-xl px-6 items-center max-w-[1300px] mx-auto w-full shadow-sm"
             aria-label="FAQ categories"
             style={{ scrollbarWidth: "none" }}
           >
@@ -296,7 +298,7 @@ export default function FAQPage() {
               <a
                 key={cat.id}
                 href={`#${cat.id}`}
-                className="shrink-0 px-4 py-3 font-mono text-[9px] font-bold tracking-[0.15em] uppercase transition-colors whitespace-nowrap border-b-2 border-transparent text-muted-foreground hover:text-foreground"
+                className="shrink-0 px-4 py-3 font-mono text-[9px] font-bold tracking-[0.15em] uppercase transition-colors whitespace-nowrap border-b-2 border-transparent text-muted-foreground hover:text-amber-500"
               >
                 {cat.label}
               </a>
@@ -304,11 +306,11 @@ export default function FAQPage() {
           </nav>
 
           {/* ── Results bar — mirrors registry ── */}
-          <div className="bg-muted/50 px-6 py-3 flex items-center border-b border-border w-full">
+          <div className="bg-muted/40 px-6 py-3 flex items-center border-b border-border/60 w-full">
             <div className="max-w-[1300px] mx-auto w-full flex items-center gap-3">
               <span className="font-serif text-[14px] font-bold text-foreground italic">All Questions</span>
               <span className="text-xs text-muted-foreground">— {totalQuestions} answers</span>
-              <span className="flex-1 h-px bg-border hidden sm:block" />
+              <span className="flex-1 h-px bg-border/60 hidden sm:block" />
               <span className="font-mono text-[10px] text-muted-foreground tracking-widest uppercase">
                 {FAQ_CATEGORIES.length} Categories
               </span>
@@ -322,23 +324,23 @@ export default function FAQPage() {
               <div className="space-y-12">
 
                 {FAQ_CATEGORIES.map((cat, ci) => (
-                  <section key={cat.id} id={cat.id}>
+                  <section key={cat.id} id={cat.id} className="scroll-mt-20">
 
                     {/* ── Section header — Forbes "The Index" style ── */}
                     <div className="flex items-center gap-3 mb-6">
                       <span className="font-mono text-[10px] font-bold uppercase tracking-[0.3em] text-foreground">{cat.label}</span>
-                      <div className="flex-1 h-px bg-foreground" />
+                      <div className="flex-1 h-px bg-border/60" />
                       <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">
                         {cat.questions.length} Q
                       </span>
                     </div>
 
                     {/* ── Cover intro row — mirrors featured cover style ── */}
-                    <div className="border-b-[2px] border-foreground pb-6 mb-2 flex flex-col md:flex-row gap-0">
+                    <div className="border border-border/80 bg-card/90 rounded-2xl p-6 mb-6 flex flex-col md:flex-row gap-6 items-center shadow-sm">
                       {/* Text left */}
-                      <div className="flex-1 pr-0 md:pr-8">
+                      <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#C59A2E]">
+                          <span className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-500/20">
                             {cat.category}
                           </span>
                           <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">
@@ -356,55 +358,57 @@ export default function FAQPage() {
                         </p>
                       </div>
                       {/* Icon box right — mirrors image-right pattern */}
-                      <div className="w-full md:w-[120px] shrink-0 flex items-center justify-center bg-muted mt-4 md:mt-0" style={{ minHeight: "72px" }}>
-                        <cat.icon size={32} className="text-muted-foreground/30" />
+                      <div className="w-full md:w-[100px] shrink-0 h-[80px] rounded-xl flex items-center justify-center bg-muted/60 border border-border/60">
+                        <cat.icon size={32} className="text-amber-500/60" />
                       </div>
                     </div>
 
                     {/* ── Q&A rows — mirrors index card style ── */}
-                    <div className="divide-y divide-border">
+                    <div className="grid gap-4">
                       {cat.questions.map((item, idx) => (
                         <div
                           key={idx}
-                          className="flex flex-row items-start gap-4 py-5 -mx-2 px-2 group"
+                          className="border border-border/80 hover:border-amber-500/60 bg-card/90 dark:bg-card/70 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group"
                           itemScope
                           itemType="https://schema.org/Question"
                         >
-                          {/* Rank */}
-                          <div className="font-mono text-[11px] font-bold text-[#C59A2E]/50 pt-0.5 w-5 text-right shrink-0 select-none">
-                            {idx + 1}
-                          </div>
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <h3
-                              className="faq-q font-bold text-[18px] md:text-[20px] leading-tight text-foreground mb-2"
-                              style={{ fontFamily: "'Georgia', serif" }}
-                              itemProp="name"
-                            >
-                              {item.q}
-                            </h3>
-                            <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
-                              <p
-                                className="font-serif italic text-[13px] text-foreground/75 leading-relaxed"
-                                itemProp="text"
-                              >
-                                {item.a}
-                              </p>
+                          <div className="flex items-start gap-4">
+                            {/* Rank */}
+                            <div className="font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400 pt-0.5 w-6 text-right shrink-0 select-none">
+                              {String(idx + 1).padStart(2, '0')}
                             </div>
-                            {/* Footer meta — mirrors card meta */}
-                            <div className="flex items-center gap-3 pt-2 mt-2 border-t border-border/50">
-                              <span className="font-mono text-[8px] font-bold text-[#C59A2E] uppercase tracking-widest">
-                                {cat.category}
-                              </span>
-                              <span className="w-px h-2.5 bg-border" />
-                              <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-widest">
-                                UpForge Registry
-                              </span>
-                              <span className="w-px h-2.5 bg-border" />
-                              <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-widest">
-                                Updated Apr 2026
-                              </span>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <h3
+                                className="faq-q font-bold text-lg md:text-xl leading-tight text-foreground mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors"
+                                style={{ fontFamily: "'Georgia', serif" }}
+                                itemProp="name"
+                              >
+                                {item.q}
+                              </h3>
+                              <div itemScope itemType="https://schema.org/Answer" itemProp="acceptedAnswer">
+                                <p
+                                  className="font-serif italic text-xs md:text-sm text-muted-foreground leading-relaxed"
+                                  itemProp="text"
+                                >
+                                  {item.a}
+                                </p>
+                              </div>
+                              {/* Footer meta — mirrors card meta */}
+                              <div className="flex items-center gap-3 pt-3 mt-3 border-t border-border/50">
+                                <span className="font-mono text-[8px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                                  {cat.category}
+                                </span>
+                                <span className="w-px h-2.5 bg-border" />
+                                <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-widest">
+                                  UpForge Registry
+                                </span>
+                                <span className="w-px h-2.5 bg-border" />
+                                <span className="font-mono text-[8px] text-muted-foreground uppercase tracking-widest">
+                                  Updated July 2026
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -416,7 +420,7 @@ export default function FAQPage() {
                       <div className="pt-4 flex justify-end">
                         <a
                           href={`#${FAQ_CATEGORIES[ci + 1].id}`}
-                          className="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-[#C59A2E] hover:underline flex items-center gap-1"
+                          className="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
                         >
                           Next: {FAQ_CATEGORIES[ci + 1].label} <ArrowRight size={9} />
                         </a>
@@ -431,11 +435,11 @@ export default function FAQPage() {
               {/* ══════════════════════════════════════
                   SIDEBAR — mirrors registry sidebar
               ══════════════════════════════════════ */}
-              <aside className="sticky top-[90px] flex flex-col gap-8">
+              <aside className="sticky top-[90px] flex flex-col gap-6">
 
                 {/* Submit CTA */}
-                <div className="border-t-[2px] border-foreground pt-6 text-center">
-                  <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#C59A2E] mb-3">Get Your UFRN</p>
+                <div className="border border-border/80 rounded-2xl p-6 bg-card/90 shadow-sm text-center">
+                  <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 mb-3">Get Your UFRN</p>
                   <p className="font-bold text-xl text-foreground mb-2" style={{ fontFamily: "'Georgia', serif" }}>
                     List your startup free
                   </p>
@@ -444,36 +448,36 @@ export default function FAQPage() {
                   </p>
                   <a
                     href="/submit"
-                    className="inline-flex items-center justify-center w-full h-11 bg-foreground hover:bg-[#C59A2E] text-background transition-colors font-mono text-[10px] font-bold uppercase tracking-[0.15em] gap-2"
+                    className="inline-flex items-center justify-center w-full h-11 bg-foreground hover:bg-amber-500 text-background hover:text-black rounded-xl transition-all font-mono text-[10px] font-bold uppercase tracking-[0.15em] gap-2 shadow-xs"
                   >
                     Submit Startup <ArrowRight size={12} />
                   </a>
                 </div>
 
                 {/* UFRN explainer */}
-                <div className="border-t-[2px] border-foreground border-l-[3px] border-l-[#C59A2E] pl-4 pt-4">
-                  <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#C59A2E] mb-2">What is a UFRN?</p>
+                <div className="border border-border/80 rounded-2xl p-6 bg-card/90 shadow-sm">
+                  <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 mb-2">What is a UFRN?</p>
                   <p className="font-bold text-[15px] text-foreground mb-2" style={{ fontFamily: "'Georgia', serif" }}>Your startup's global ID</p>
                   <p className="text-xs text-muted-foreground font-serif italic leading-relaxed mb-4">
                     A unique permanent identifier assigned to every approved startup. Shareable on LinkedIn, investor decks, and press kits.
                   </p>
-                  <div className="font-mono text-[11px] font-bold text-foreground bg-muted py-2 px-3 text-center">
+                  <div className="font-mono text-[11px] font-bold text-foreground bg-muted/60 border border-border/60 rounded-xl py-2 px-3 text-center">
                     UF-2026-IND-00001
                   </div>
                 </div>
 
                 {/* Browse topics — mirrors "Browse by Sector" */}
-                <div className="border-t-[2px] border-foreground pt-5">
+                <div className="border border-border/80 rounded-2xl p-6 bg-card/90 shadow-sm">
                   <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-foreground mb-4">Browse Topics</p>
-                  <ul className="flex flex-col gap-0 m-0 p-0 list-none divide-y divide-border">
+                  <ul className="flex flex-col gap-0 m-0 p-0 list-none divide-y divide-border/60">
                     {FAQ_CATEGORIES.map(cat => (
                       <li key={cat.id}>
                         <a
                           href={`#${cat.id}`}
-                          className="flex items-center justify-between py-2.5 text-sm text-foreground font-serif italic hover:text-[#C59A2E] transition-colors"
+                          className="flex items-center justify-between py-2.5 text-sm text-foreground font-serif italic hover:text-amber-500 transition-colors"
                         >
                           <span>{cat.label}</span>
-                          <span className="font-mono text-[9px] font-bold text-[#C59A2E]">{cat.questions.length}</span>
+                          <span className="font-mono text-[9px] font-bold text-amber-600 dark:text-amber-400">{cat.questions.length}</span>
                         </a>
                       </li>
                     ))}
@@ -481,21 +485,21 @@ export default function FAQPage() {
                 </div>
 
                 {/* Contact CTA */}
-                <div className="border-t-[2px] border-foreground pt-5">
+                <div className="border border-border/80 rounded-2xl p-6 bg-card/90 shadow-sm">
                   <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-foreground mb-3">Still Have Questions?</p>
                   <p className="text-xs text-muted-foreground font-serif italic mb-4 leading-relaxed">
                     Our editorial team reads every message. Responses within 24–48 hours on business days.
                   </p>
                   <Link
                     href="/contact"
-                    className="inline-flex items-center justify-center w-full h-10 border-[1.5px] border-foreground hover:border-[#C59A2E] text-foreground hover:text-[#C59A2E] transition-colors font-mono text-[10px] font-bold uppercase tracking-[0.15em] gap-2"
+                    className="inline-flex items-center justify-center w-full h-10 border border-border/80 hover:border-amber-500/60 bg-muted/50 rounded-xl text-foreground hover:text-amber-500 transition-all font-mono text-[10px] font-bold uppercase tracking-[0.15em] gap-2"
                   >
                     Contact Us <ArrowRight size={12} />
                   </Link>
                 </div>
 
                 {/* Trust signals */}
-                <div className="border-t-[2px] border-foreground pt-5">
+                <div className="border border-border/80 rounded-2xl p-6 bg-card/90 shadow-sm">
                   <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-foreground mb-4">Why UpForge</p>
                   <div className="flex flex-col gap-3">
                     {[
@@ -504,7 +508,7 @@ export default function FAQPage() {
                       { Icon: Globe,    text: "Free, publicly indexed, forever" },
                     ].map(({ Icon, text }) => (
                       <div key={text} className="flex items-start gap-3">
-                        <Icon size={12} className="text-[#C59A2E] mt-0.5 shrink-0" />
+                        <Icon size={12} className="text-amber-500 mt-0.5 shrink-0" />
                         <p className="font-serif italic text-[11px] text-muted-foreground leading-snug">{text}</p>
                       </div>
                     ))}
@@ -515,9 +519,9 @@ export default function FAQPage() {
             </div>
 
             {/* ── Bottom CTA ── */}
-            <div className="mt-12 border-t-[2px] border-foreground pt-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+            <div className="mt-12 border border-border/80 rounded-3xl p-8 md:p-10 bg-gradient-to-r from-amber-500/10 via-card to-card shadow-lg flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
               <div className="max-w-xl">
-                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.25em] text-[#C59A2E] mb-3">UpForge Global Registry</p>
+                <p className="font-mono text-[9px] font-bold uppercase tracking-[0.25em] text-amber-600 dark:text-amber-400 mb-3">UpForge Global Registry</p>
                 <h2 className="text-2xl sm:text-3xl font-black text-foreground mb-3" style={{ fontFamily: "'Georgia', serif" }}>
                   Your founder story starts with a verified profile.
                 </h2>
@@ -527,22 +531,22 @@ export default function FAQPage() {
               </div>
               <a
                 href="/submit"
-                className="shrink-0 inline-flex items-center gap-3 border-[1.5px] border-foreground bg-foreground hover:bg-[#C59A2E] text-background py-3.5 px-7 font-bold uppercase tracking-[0.15em] font-mono transition-colors whitespace-nowrap"
+                className="shrink-0 inline-flex items-center gap-3 bg-foreground hover:bg-amber-500 text-background hover:text-black rounded-2xl py-3.5 px-7 font-bold uppercase tracking-[0.15em] font-mono transition-all whitespace-nowrap shadow-sm"
               >
                 List Free — Get UFRN <ArrowRight size={14} />
               </a>
             </div>
 
             {/* ── Footer links ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 mt-10 border-t-[1.5px] border-foreground divide-y lg:divide-y-0 lg:divide-x divide-foreground">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
               {[
                 { label: "Global Registry",        sub: "Full verified database",   href: "/registry" },
                 { label: "Indian Startup Founders", sub: "Founder Chronicle 2026", href: "/archive"  },
                 { label: "The Forge Blog",          sub: "Startup intelligence",    href: "/blog"     },
                 { label: "Submit Your Startup",     sub: "Get listed + UFRN free",  href: "/submit"   },
               ].map(lnk => (
-                <a key={lnk.href} href={lnk.href} className="p-5 hover:bg-muted transition-colors group flex flex-col justify-center h-full">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-foreground mb-1 group-hover:text-[#C59A2E] transition-colors">{lnk.label}</span>
+                <a key={lnk.href} href={lnk.href} className="p-5 border border-border/70 rounded-2xl bg-card/60 hover:bg-card hover:border-amber-500/50 transition-all group flex flex-col justify-center h-full shadow-xs">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-foreground mb-1 group-hover:text-amber-500 transition-colors">{lnk.label}</span>
                   <span className="text-[11px] text-muted-foreground font-serif italic">{lnk.sub}</span>
                 </a>
               ))}
