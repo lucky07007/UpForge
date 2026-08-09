@@ -8,6 +8,18 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "upforge-cache"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "upforge"
+    }
+  ],
   "routes": [
     { "pattern": "upforge.org", "custom_domain": true },
     { "pattern": "www.upforge.org", "custom_domain": true }
