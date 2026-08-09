@@ -150,6 +150,7 @@ export function Footer() {
           src="/footer.jpg"
           alt="UpForge global startup map"
           fill
+          unoptimized
           sizes="100vw"
           loading="lazy"
           className="object-cover"
@@ -192,11 +193,12 @@ export function Footer() {
             {/* BRAND / PITCH */}
             <div className="col-span-2 lg:col-span-2">
               <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="relative w-7 h-7 overflow-hidden rounded-sm border border-border bg-muted">
+                <div className="relative w-7 h-7 overflow-hidden rounded-md border border-border bg-amber-500/10">
                   <Image
                     src="/logo.jpg"
                     alt="UpForge"
                     fill
+                    unoptimized
                     className="object-cover"
                   />
                 </div>
