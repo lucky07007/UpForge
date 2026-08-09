@@ -148,24 +148,26 @@ The UpForge Team
       <div className="min-h-screen bg-background text-foreground font-serif selection:bg-[#C59A2E]/20">
         
         {/* MASTHEAD */}
-        <section className="border-b-[2px] border-foreground max-w-[1200px] mx-auto px-4 md:px-8 pt-8 pb-8 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-muted border border-[#C59A2E]/40 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C59A2E] animate-pulse" />
-            <span className="text-[10px] font-mono font-bold text-[#C59A2E] uppercase tracking-[0.2em]">
-              GLOBAL STARTUP REGISTRY
-            </span>
+        <section className="max-w-[1200px] mx-auto px-4 md:px-8 pt-8 pb-6 text-center flex flex-col items-center">
+          <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md relative overflow-hidden flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em]">
+                GLOBAL STARTUP REGISTRY
+              </span>
+            </div>
+
+            <h1
+              className="text-3xl md:text-[46px] lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl tracking-tight"
+              style={{ fontFamily: "'Georgia', serif" }}
+            >
+              List Your Startup on <span className="text-amber-500">UpForge</span>
+            </h1>
+
+            <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto font-serif italic leading-relaxed">
+              Obtain your official UFRN (UpForge Registry Number) and permanent public record. Reviewed by our editorial board across 150+ countries.
+            </p>
           </div>
-
-          <h1
-            className="text-3xl md:text-[46px] lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl tracking-tight"
-            style={{ fontFamily: "'Georgia', serif" }}
-          >
-            List Your Startup on <span className="text-[#C59A2E]">UpForge</span>
-          </h1>
-
-          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto font-serif italic leading-relaxed">
-            Obtain your official UFRN (UpForge Registry Number) and permanent public record. Reviewed by our editorial board across 150+ countries.
-          </p>
         </section>
 
         {/* FORM & SIDEBAR GRID */}
@@ -173,10 +175,10 @@ The UpForge Team
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start">
 
             {/* FORM CARD */}
-            <div className="border border-border bg-card p-6 md:p-10 shadow-sm relative">
+            <div className="border border-border/80 bg-card/90 rounded-3xl p-6 md:p-10 shadow-sm relative">
 
               {/* STEPPER BAR */}
-              <div className="flex items-center gap-4 mb-8 pb-6 border-b border-border">
+              <div className="flex items-center gap-4 mb-8 pb-6 border-b border-border/60">
                 {STEPS.map((s, i) => {
                   const Icon = s.icon;
                   const isActive = step === i;
@@ -188,8 +190,8 @@ The UpForge Team
                         isActive
                           ? "bg-foreground text-background shadow-sm"
                           : isDone
-                          ? "bg-[#C59A2E] text-white"
-                          : "bg-muted text-muted-foreground border border-border"
+                          ? "bg-amber-500 text-black font-bold"
+                          : "bg-muted text-muted-foreground border border-border/80"
                       }`}>
                         {isDone ? <Check className="w-4 h-4" /> : i + 1}
                       </div>
@@ -204,7 +206,7 @@ The UpForge Team
                       </div>
 
                       {i < STEPS.length - 1 && (
-                        <div className="flex-1 h-px bg-border mx-2 hidden sm:block" />
+                        <div className="flex-1 h-px bg-border/60 mx-2 hidden sm:block" />
                       )}
                     </div>
                   );
@@ -230,7 +232,7 @@ The UpForge Team
                             value={form.founder_name}
                             onChange={update("founder_name")}
                             placeholder="e.g. Sarah Jenkins"
-                            className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors"
+                            className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors"
                           />
                         </Field>
 
@@ -239,7 +241,7 @@ The UpForge Team
                             value={form.startup_name}
                             onChange={update("startup_name")}
                             placeholder="e.g. Acme AI Solutions"
-                            className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors"
+                            className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors"
                           />
                         </Field>
                       </div>
@@ -250,7 +252,7 @@ The UpForge Team
                           value={form.email}
                           onChange={update("email")}
                           placeholder="sarah@acme.ai"
-                          className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors"
+                          className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors"
                         />
                       </Field>
 
@@ -260,7 +262,7 @@ The UpForge Team
                           value={form.website}
                           onChange={update("website")}
                           placeholder="https://acme.ai"
-                          className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors"
+                          className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors"
                         />
                       </Field>
                     </motion.div>
@@ -280,7 +282,7 @@ The UpForge Team
                           <select
                             value={form.industry}
                             onChange={update("industry")}
-                            className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors cursor-pointer"
+                            className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors cursor-pointer"
                           >
                             <option value="">Select industry sector</option>
                             {["AI/ML","SaaS","FinTech","HealthTech","EdTech","D2C","Climate Tech","Enterprise","Web3 / Crypto","Robotics","Other"].map(opt => (
@@ -295,7 +297,7 @@ The UpForge Team
                             value={form.founded_year}
                             onChange={update("founded_year")}
                             placeholder="2026"
-                            className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors"
+                            className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors"
                           />
                         </Field>
                       </div>
@@ -306,7 +308,7 @@ The UpForge Team
                           onChange={update("description")}
                           placeholder="Briefly describe what your startup builds, who your customers are, and key traction..."
                           rows={4}
-                          className="w-full bg-background border border-border px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors resize-y font-serif"
+                          className="w-full bg-background border border-border/80 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors resize-y font-serif"
                         />
                       </Field>
                     </motion.div>
@@ -314,13 +316,13 @@ The UpForge Team
                 </AnimatePresence>
 
                 {error && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-mono">
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 text-xs font-mono">
                     ⚠️ {error}
                   </div>
                 )}
 
                 {/* ACTION BUTTONS */}
-                <div className="flex items-center justify-between pt-6 border-t border-border">
+                <div className="flex items-center justify-between pt-6 border-t border-border/60">
                   <button
                     type="button"
                     onClick={() => setStep(s => s - 1)}
@@ -336,7 +338,7 @@ The UpForge Team
                       type="button"
                       onClick={() => setStep(1)}
                       disabled={!stepValid[0]}
-                      className="inline-flex items-center gap-2 bg-foreground hover:bg-[#C59A2E] disabled:opacity-30 disabled:cursor-not-allowed text-background px-7 py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-colors"
+                      className="inline-flex items-center gap-2 bg-foreground hover:bg-amber-500 hover:text-black rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed text-background px-7 py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-all"
                     >
                       Continue <ChevronRight size={14}/>
                     </button>
@@ -345,7 +347,7 @@ The UpForge Team
                       type="button"
                       onClick={handleSubmit}
                       disabled={isLoading || !stepValid[1]}
-                      className="inline-flex items-center gap-2 bg-[#C59A2E] hover:bg-[#B8872A] disabled:opacity-30 disabled:cursor-not-allowed text-white px-8 py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
+                      className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-30 disabled:cursor-not-allowed text-black rounded-2xl px-8 py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
                     >
                       {isLoading ? (
                         <><Loader2 className="w-4 h-4 animate-spin"/> Submitting…</>
@@ -363,8 +365,8 @@ The UpForge Team
             <div className="space-y-6">
 
               {/* PROCESS TRACKER */}
-              <div className="border border-border bg-card p-6">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#C59A2E] block mb-4">
+              <div className="border border-border/80 bg-card/90 rounded-3xl p-6 shadow-sm">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 block mb-4">
                   Audit Protocol
                 </span>
 
@@ -376,8 +378,8 @@ The UpForge Team
                     { n: "04", title: "Public Ledger", desc: "Live listing on UpForge Global Index", gold: true },
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className={`w-6 h-6 rounded-none flex items-center justify-center font-mono text-[10px] font-bold shrink-0 ${
-                        item.gold ? "bg-[#C59A2E] text-white" : "bg-muted text-foreground border border-border"
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center font-mono text-[10px] font-bold shrink-0 ${
+                        item.gold ? "bg-amber-500 text-black font-bold" : "bg-muted text-foreground border border-border/80"
                       }`}>
                         {item.n}
                       </span>
@@ -391,16 +393,16 @@ The UpForge Team
               </div>
 
               {/* UFRN SPECIMEN BOX */}
-              <div className="border border-[#C59A2E]/40 bg-[#C59A2E]/5 p-6 relative overflow-hidden">
+              <div className="border border-amber-500/40 bg-amber-500/5 rounded-3xl p-6 relative overflow-hidden shadow-xs">
                 <div className="flex items-center gap-2 mb-3">
-                  <ShieldCheck className="w-4 h-4 text-[#C59A2E]" />
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#C59A2E]">
+                  <ShieldCheck className="w-4 h-4 text-amber-500" />
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">
                     Specimen Identifier
                   </span>
                 </div>
 
-                <div className="bg-background border border-[#C59A2E]/30 p-3 mb-3 text-center">
-                  <span className="font-mono text-xs font-bold text-[#C59A2E] tracking-wider">
+                <div className="bg-background border border-amber-500/30 rounded-xl p-3 mb-3 text-center">
+                  <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400 tracking-wider">
                     UF-2026-IND-00013
                   </span>
                 </div>
@@ -409,7 +411,7 @@ The UpForge Team
                   Every approved startup receives a permanent UFRN for due diligence, pitch decks, and partner verification.
                 </p>
 
-                <div className="mt-4 pt-3 border-t border-[#C59A2E]/20 text-[10px] text-muted-foreground italic font-serif">
+                <div className="mt-4 pt-3 border-t border-amber-500/20 text-[10px] text-muted-foreground italic font-serif">
                   Disclaimer: UFRN is an independent registry credential issued by UpForge and does not substitute for legal business incorporation.
                 </div>
               </div>
