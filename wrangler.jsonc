@@ -21,6 +21,7 @@
     }
   ],
   "routes": [
-    { "pattern": "upforge.org", "custom_domain": true }
+    { "pattern": "upforge.org", "custom_domain": true },
+    { "pattern": "www.upforge.org", "custom_domain": true }
   ]
 }
