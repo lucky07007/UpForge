@@ -1,4 +1,4 @@
-// app/registry/page.tsx — Google Sheets powered (no Supabase)
+// app/registry/page.tsx 
 import { cache } from "react"
 import { queryStartups, getSheetFilters } from "@/lib/google-sheets"
 import type { Startup } from "@/types/startup"
