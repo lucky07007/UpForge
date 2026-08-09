@@ -1,4 +1,5 @@
 // app/registry/page.tsx — Google Sheets powered (no Supabase)
+import { cache } from "react"
 import { queryStartups, getSheetFilters } from "@/lib/google-sheets"
 import type { Startup } from "@/types/startup"
 import type { Metadata } from "next"
@@ -21,17 +22,21 @@ interface PageProps {
 }
 
 // ─── DATA FETCHERS (Google Sheets) ───
+// Wrapped in React's cache() so generateMetadata() and the page component
+// share ONE result per request instead of each re-fetching + re-filtering
+// + re-sorting the whole sheet. This alone was doubling CPU time on every
+// /registry hit.
 
-async function getData(
+const getData = cache(async (
   q: string, year: string, sort: string,
   cat: string, country: string, page: number
-) {
+) => {
   return queryStartups({ q, year, sort, category: cat, country, page, pageSize: PAGE_SIZE })
-}
+})
 
-async function getFilters() {
+const getFilters = cache(async () => {
   return getSheetFilters()
-}
+})
 
 // ─── HELPERS ───
 
