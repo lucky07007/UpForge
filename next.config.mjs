@@ -43,6 +43,7 @@ const nextConfig = {
 
   // ─── IMAGE OPTIMIZATION ──────────────────────────────────────────────────
   images: {
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "images.inc42.com" },
       { protocol: "https", hostname: "assets.inc42.com" },
