@@ -218,30 +218,6 @@ export function Footer() {
                 ecosystem signals for teams worldwide.
               </p>
 
-              {/* Dual-domain callout */}
-              <div className="mt-5 flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground/70">
-                    India Hub
-                  </span>
-                  <span className="text-[10px] text-[var(--accent-gold)] font-mono">
-                    upforge.in
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground/70">
-                    Global Registry
-                  </span>
-                  <a
-                    href="https://www.upforge.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[10px] text-[var(--accent-gold)] font-mono hover:underline"
-                  >
-                    upforge.org
-                  </a>
-                </div>
-              </div>
 
               {/* Primary CTA */}
               <Link
