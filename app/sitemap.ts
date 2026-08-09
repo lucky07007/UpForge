@@ -1,0 +1,282 @@
+import { MetadataRoute } from "next"
+import { fetchAllStartups } from "@/lib/google-sheets"
+import { BLOG_CATEGORIES } from "@/data/blog-posts"
+
+const BASE = "https://www.upforge.org"
+// String fallback format directly use karenge taaki transform crash na ho
+const STATIC_DATE_STR = "2026-04-28"
+
+// All published blog slugs — updated July 2026
+const STARTUP_BLOG_SLUGS = [
+  // Core India startup content
+  "india-startup-ecosystem-2026",
+  "how-to-get-startup-funding-india-2026",
+  "top-indian-unicorns-2026",
+  "best-indian-startup-founders-to-follow-2026",
+  "top-ai-startups-india-2026",
+  "how-to-start-startup-india-2026",
+
+  // High-value content
+  "best-vc-firms-india-2026",
+  "startup-valuation-india-2026",
+  "startup-failure-reasons-india",
+  "fintech-startups-india-2026",
+  "women-founders-india-2026",
+  "bootstrapped-startups-india-success-stories",
+  "startup-legal-guide-india-2026",
+  "india-vs-silicon-valley-startups",
+
+  // Trend articles
+  "ai-startup-funding-exit-route-india-2026",
+  "investors-rejecting-generic-ai-pitches-2026",
+  "defense-tech-startups-india-2026",
+  "startup-verification-ufrn-credentials-guide",
+
+  // Specialized guides
+  "top-20-saas-startups-india-2026",
+  "ai-agents-for-startups-india-2026",
+  "top-startup-incubators-india-2026",
+  "gst-compliance-guide-startups-india-2026",
+  "healthtech-startups-india-2026",
+  "startup-pitch-deck-template-india-2026",
+  "d2c-startups-india-2026",
+  "esop-guide-for-startups-india-2026",
+  "climate-tech-startups-india-2026",
+  "startup-hiring-guide-india-2026",
+]
+
+const JUNE_2026_STR = "2026-06-26"
+const JULY_2026_STR = "2026-07-06"
+
+// Global founder pages - high priority
+const FEATURED_FOUNDER_SLUGS = [
+  "openai",
+  "perplexity-ai",
+  "revolut",
+  "canva",
+  "character-ai",
+  "anthropic",
+  "ramp",
+  "stripe",
+  "airbnb",
+  "notion",
+]
+
+// Static routes with proper priority weighting
+const STATIC_ROUTES = [
+  { path: "", priority: 1.0, changeFrequency: "daily" as const },
+  { path: "/registry", priority: 0.95, changeFrequency: "daily" as const },
+  { path: "/startup", priority: 0.9, changeFrequency: "daily" as const },
+  { path: "/startups", priority: 0.9, changeFrequency: "daily" as const },
+  { path: "/submit", priority: 0.85, changeFrequency: "monthly" as const },
+  { path: "/verify", priority: 0.85, changeFrequency: "monthly" as const },
+  { path: "/blog", priority: 0.8, changeFrequency: "weekly" as const },
+  { path: "/about", priority: 0.7, changeFrequency: "monthly" as const },
+  { path: "/contact", priority: 0.5, changeFrequency: "yearly" as const },
+  { path: "/founders", priority: 0.85, changeFrequency: "weekly" as const },
+  { path: "/founder-stories", priority: 0.85, changeFrequency: "weekly" as const },
+  { path: "/ufrn", priority: 0.8, changeFrequency: "daily" as const },
+  { path: "/methodology", priority: 0.75, changeFrequency: "monthly" as const },
+  { path: "/editorial-standards", priority: 0.7, changeFrequency: "monthly" as const },
+  { path: "/news-gallery", priority: 0.65, changeFrequency: "weekly" as const },
+]
+
+// Startup categories for global SEO
+const STARTUP_CATEGORIES = [
+  "artificial-intelligence",
+  "fintech",
+  "saas",
+  "healthtech",
+  "edtech",
+  "ecommerce",
+  "enterprise",
+  "climate-tech",
+  "blockchain",
+  "cybersecurity",
+]
+
+// Major cities for local SEO
+const STARTUP_CITIES = [
+  "san-francisco",
+  "new-york",
+  "london",
+  "berlin",
+  "singapore",
+  "dubai",
+  "bangalore",
+  "mumbai",
+  "delhi",
+  "hyderabad",
+]
+
+type StartupRow = {
+  slug: string
+  category?: string | null
+  updated_at?: string | null
+  created_at?: string | null
+  is_featured?: boolean | null
+  ufrn?: string | null
+}
+
+type BlogRow = {
+  slug: string
+  updated_at?: string | null
+  created_at?: string | null
+  is_featured?: boolean | null
+}
+
+// Helper: Returns valid YYYY-MM-DD ISO string
+function safeDateString(value?: string | null): string {
+  if (!value) return STATIC_DATE_STR
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return STATIC_DATE_STR
+  return d.toISOString().split('T')[0]
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  let startups: StartupRow[] = []
+  let blogs: BlogRow[] = []
+
+  try {
+    const all = await fetchAllStartups()
+    startups = all.map(s => ({
+      slug: s.slug,
+      category: s.category ?? null,
+      updated_at: s.updated_at ?? null,
+      created_at: s.created_at ?? null,
+      is_featured: s.is_featured ?? null,
+      ufrn: s.ufrn ?? null,
+    }))
+  } catch (error) {
+    console.error("Sitemap generation error:", error)
+    startups = []
+    blogs = []
+  }
+
+  // 1. Static pages
+  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map(route => ({
+    url: `${BASE}${route.path}`,
+    lastModified: safeDateString(STATIC_DATE_STR),
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
+  }))
+
+  // 2. Featured founder pages
+  const founderEntries: MetadataRoute.Sitemap = FEATURED_FOUNDER_SLUGS.map(slug => ({
+    url: `${BASE}/startup/${slug}`,
+    lastModified: safeDateString(STATIC_DATE_STR),
+    changeFrequency: "daily" as const,
+    priority: 0.95,
+  }))
+
+  // 3. Category pages
+  const categoryEntries: MetadataRoute.Sitemap = STARTUP_CATEGORIES.map(cat => ({
+    url: `${BASE}/startups/${cat}`,
+    lastModified: safeDateString(STATIC_DATE_STR),
+    changeFrequency: "daily" as const,
+    priority: 0.8,
+  }))
+
+  // 4. City-based pages
+  const cityEntries: MetadataRoute.Sitemap = STARTUP_CITIES.map(city => ({
+    url: `${BASE}/startups/${city}`,
+    lastModified: safeDateString(STATIC_DATE_STR),
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }))
+
+  // 5. Individual startup pages
+  const startupEntries: MetadataRoute.Sitemap = startups.map(s => ({
+    url: `${BASE}/startup/${s.slug}`,
+    lastModified: safeDateString(s.updated_at || s.created_at),
+    changeFrequency: "weekly" as const,
+    priority: s.is_featured ? 0.9 : 0.75,
+  }))
+
+  // Note: UFRN verification routes (/ufrn/[ufrn-id]) are excluded from sitemap
+  // because they have noindex tags, avoiding GSC "Excluded by noindex tag" errors.
+
+  // 6. Blog entries from database
+  const blogEntries: MetadataRoute.Sitemap = blogs.map(b => ({
+    url: `${BASE}/blog/${b.slug}`,
+    lastModified: safeDateString(b.updated_at || b.created_at),
+    changeFrequency: "monthly" as const,
+    priority: b.is_featured ? 0.8 : 0.65,
+  }))
+
+  const JULY_BLOG_SLUGS = [
+    "ai-startup-funding-exit-route-india-2026",
+    "investors-rejecting-generic-ai-pitches-2026",
+    "defense-tech-startups-india-2026",
+    "startup-verification-ufrn-credentials-guide",
+    "top-20-saas-startups-india-2026",
+    "ai-agents-for-startups-india-2026",
+    "top-startup-incubators-india-2026",
+    "gst-compliance-guide-startups-india-2026",
+    "healthtech-startups-india-2026",
+    "startup-pitch-deck-template-india-2026",
+    "d2c-startups-india-2026",
+    "esop-guide-for-startups-india-2026",
+    "climate-tech-startups-india-2026",
+    "startup-hiring-guide-india-2026",
+  ]
+  
+  const NEW_BLOG_SLUGS = [
+    "best-vc-firms-india-2026",
+    "startup-valuation-india-2026",
+    "startup-failure-reasons-india",
+    "fintech-startups-india-2026",
+    "women-founders-india-2026",
+    "bootstrapped-startups-india-success-stories",
+    "startup-legal-guide-india-2026",
+    "india-vs-silicon-valley-startups",
+  ]
+  
+  const curatedBlogEntries: MetadataRoute.Sitemap = STARTUP_BLOG_SLUGS.map(slug => ({
+    url: `${BASE}/blog/${slug}`,
+    lastModified: JULY_BLOG_SLUGS.includes(slug)
+      ? safeDateString(JULY_2026_STR)
+      : NEW_BLOG_SLUGS.includes(slug)
+      ? safeDateString(JUNE_2026_STR)
+      : safeDateString(STATIC_DATE_STR),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }))
+
+  const blogCategoryEntries: MetadataRoute.Sitemap = BLOG_CATEGORIES.map(category => ({
+    url: `${BASE}/blog/category/${category.slug}`,
+    lastModified: safeDateString(JULY_2026_STR),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }))
+
+  // Founder Stories dynamic entries
+  const { FOUNDERS, getAllCategories } = await import("@/lib/founders/data")
+  const founderStoryEntries: MetadataRoute.Sitemap = FOUNDERS.map(f => ({
+    url: `${BASE}/founder-stories/${f.slug}`,
+    lastModified: safeDateString(f.publishedAt || f.updatedAt || f.createdAt),
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  }))
+
+  const founderCategoryEntries: MetadataRoute.Sitemap = getAllCategories().map(cat => ({
+    url: `${BASE}/founder-stories/category/${cat.slug}`,
+    lastModified: safeDateString(JULY_2026_STR),
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  }))
+
+  return [
+    ...staticEntries,
+    ...founderEntries,
+    ...founderStoryEntries,
+    ...founderCategoryEntries,
+    ...categoryEntries,
+    ...cityEntries,
+    ...startupEntries,
+    ...blogEntries,
+    ...curatedBlogEntries,
+    ...blogCategoryEntries,
+  ]
+}
+
