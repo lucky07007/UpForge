@@ -22,7 +22,7 @@ export interface Startup {
   founded_year?: number | null;
   category?: string | null;
   city?: string | null;
-  status: "pending" | "approved" | "rejected";
+  status?: "pending" | "approved" | "rejected" | string | null;
   is_featured?: boolean;
   is_sponsored?: boolean;
   linkedin_url?: string | null;
