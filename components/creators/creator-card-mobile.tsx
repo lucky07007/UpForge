@@ -49,7 +49,7 @@ export function CreatorCardMobile({
   return (
     <div
       onClick={() => onViewProfile(creator)}
-      className="group relative bg-white dark:bg-[#0e0f14] border border-slate-200 dark:border-slate-800/90 rounded-xl p-3.5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:shadow-md select-none"
+      className="group relative bg-card/90 dark:bg-card/70 border border-border/80 hover:border-amber-500/60 rounded-2xl p-3.5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:shadow-md select-none"
     >
       <style jsx>{`
         @keyframes partnerRingGlowM {
