@@ -39,36 +39,38 @@ export default function NewsletterPage() {
       <div className="min-h-screen bg-background text-foreground font-serif selection:bg-[#C59A2E]/20">
         
         {/* MASTHEAD */}
-        <section className="border-b-[2px] border-foreground max-w-[1200px] mx-auto px-4 md:px-8 pt-10 pb-10 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-muted border border-[#C59A2E]/40 mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-[#C59A2E] animate-pulse" />
-            <span className="text-[10px] font-mono font-bold text-[#C59A2E] uppercase tracking-[0.2em]">
-              WEEKLY ECOSYSTEM BRIEFING
-            </span>
+        <section className="max-w-[1200px] mx-auto px-4 md:px-8 pt-10 pb-6 text-center flex flex-col items-center">
+          <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md relative overflow-hidden flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em]">
+                WEEKLY ECOSYSTEM BRIEFING
+              </span>
+            </div>
+
+            <h1
+              className="text-3xl md:text-5xl lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl tracking-tight"
+              style={{ fontFamily: "'Georgia', serif" }}
+            >
+              The Weekly Dispatch
+            </h1>
+
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto font-serif italic leading-relaxed">
+              The pulse of serious builders. Join 18,600+ founders and institutional investors receiving verified registry intel every Sunday.
+            </p>
           </div>
-
-          <h1
-            className="text-3xl md:text-5xl lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl tracking-tight"
-            style={{ fontFamily: "'Georgia', serif" }}
-          >
-            The Weekly Dispatch
-          </h1>
-
-          <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto font-serif italic leading-relaxed">
-            The pulse of serious builders. Join 18,600+ founders and institutional investors receiving verified registry intel every Sunday.
-          </p>
         </section>
 
         {/* MAIN SUBSCRIPTION CARD */}
-        <main className="max-w-[1000px] mx-auto px-4 md:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] border border-border bg-card shadow-sm overflow-hidden">
+        <main className="max-w-[1000px] mx-auto px-4 md:px-8 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] border border-border/80 bg-card/90 rounded-3xl shadow-sm overflow-hidden">
 
             {/* FORM SIDE */}
-            <div className="p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border flex flex-col justify-center">
+            <div className="p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-border/60 flex flex-col justify-center">
               {subscribed ? (
                 <div className="flex flex-col items-center text-center py-8 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-[#C59A2E]/10 border border-[#C59A2E]/30 flex items-center justify-center mb-2">
-                    <CheckCircle2 className="w-8 h-8 text-[#C59A2E]" />
+                  <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-2">
+                    <CheckCircle2 className="w-8 h-8 text-amber-500" />
                   </div>
 
                   <h2 className="text-2xl font-bold text-foreground font-serif" style={{ fontFamily: "'Georgia', serif" }}>
@@ -82,7 +84,7 @@ export default function NewsletterPage() {
                   <div className="pt-4">
                     <Link
                       href="/registry"
-                      className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider hover:bg-[#C59A2E] transition-colors"
+                      className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider rounded-full hover:bg-amber-500 hover:text-black transition-all"
                     >
                       Explore Global Registry <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -91,8 +93,8 @@ export default function NewsletterPage() {
               ) : (
                 <div className="space-y-6">
                   <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-[#C59A2E]" />
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#C59A2E]">
+                    <Mail className="w-4 h-4 text-amber-500" />
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">
                       SUBSCRIBE FOR INTEL
                     </span>
                   </div>
@@ -112,14 +114,14 @@ export default function NewsletterPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="founder@company.com"
-                        className="w-full bg-background border border-border px-4 py-3.5 text-sm text-foreground focus:outline-none focus:border-[#C59A2E] transition-colors font-sans"
+                        className="w-full bg-background border border-border/80 rounded-xl px-4 py-3.5 text-sm text-foreground focus:outline-none focus:border-amber-500 transition-colors font-sans"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={!email || loading}
-                      className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-foreground hover:bg-[#C59A2E] disabled:opacity-40 text-background text-xs font-mono font-bold uppercase tracking-[0.2em] transition-colors shadow-sm"
+                      className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-foreground hover:bg-amber-500 hover:text-black disabled:opacity-40 text-background rounded-2xl text-xs font-mono font-bold uppercase tracking-[0.2em] transition-all shadow-sm"
                     >
                       {loading ? "Verifying..." : "Join The Dispatch"}
                       {!loading && <ArrowRight className="w-4 h-4" />}
@@ -134,7 +136,7 @@ export default function NewsletterPage() {
             </div>
 
             {/* PERKS SIDE */}
-            <div className="bg-muted/40 p-8 md:p-12 flex flex-col justify-between gap-8 border-t lg:border-t-0 border-border">
+            <div className="bg-muted/40 p-8 md:p-12 flex flex-col justify-between gap-8 border-t lg:border-t-0 border-border/60">
               <div className="space-y-6">
                 <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground block">
                   Subscribers Receive
@@ -193,7 +195,7 @@ function Perk({
 }) {
   return (
     <div className="flex gap-4 items-start">
-      <div className="w-8 h-8 rounded-none border border-[#C59A2E]/40 bg-[#C59A2E]/10 flex items-center justify-center shrink-0 text-[#C59A2E] mt-0.5">
+      <div className="w-8 h-8 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center justify-center shrink-0 text-amber-500 mt-0.5">
         {icon}
       </div>
       <div>
