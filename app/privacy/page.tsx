@@ -226,32 +226,34 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-background text-foreground">
 
       {/* Header */}
-      <section className="border-b-2 border-foreground max-w-[1300px] mx-auto px-4 md:px-8 w-full mt-5 pb-6 flex flex-col items-center text-center">
-        <h1
-          className="text-3xl md:text-[44px] lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl"
-          style={{ fontFamily: "'Georgia', serif" }}
-        >
-          Privacy Policy
-        </h1>
-        <p className="font-serif italic text-base md:text-[17px] text-muted-foreground max-w-lg mb-2 leading-relaxed">
-          How UpForge collects, uses, and protects your data — including full Google AdSense advertising disclosure.
-        </p>
-        <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          Last Updated: May 2026 · Effective: January 2025
-        </p>
+      <section className="max-w-[1300px] mx-auto px-4 md:px-8 w-full mt-5 pb-6 flex flex-col items-center text-center">
+        <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md relative overflow-hidden flex flex-col items-center">
+          <h1
+            className="text-3xl md:text-[44px] lg:text-[54px] font-bold leading-[1.05] text-foreground mb-3 max-w-3xl"
+            style={{ fontFamily: "'Georgia', serif" }}
+          >
+            Privacy Policy
+          </h1>
+          <p className="font-serif italic text-base md:text-[17px] text-muted-foreground max-w-lg mb-2 leading-relaxed">
+            How UpForge collects, uses, and protects your data — including full Google AdSense advertising disclosure.
+          </p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
+            Last Updated: May 2026 · Effective: January 2025
+          </p>
+        </div>
       </section>
 
-      <main className="max-w-[1100px] mx-auto px-6 py-12">
+      <main className="max-w-[1100px] mx-auto px-6 py-10">
 
         {/* Quick Nav */}
-        <nav className="mb-12 p-6 bg-muted/40 border border-border" aria-label="Privacy policy sections">
-          <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Table of Contents</p>
-          <ol className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-8">
+        <nav className="mb-12 p-6 md:p-8 bg-card/90 border border-border/80 rounded-3xl shadow-xs" aria-label="Privacy policy sections">
+          <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 mb-4">Table of Contents</p>
+          <ol className="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-8">
             {SECTIONS.map((s) => (
               <li key={s.id}>
                 <a
                   href={`#${s.id}`}
-                  className="font-serif text-sm text-foreground hover:text-[#C59A2E] transition-colors underline underline-offset-2"
+                  className="font-serif text-sm text-foreground hover:text-amber-500 transition-colors underline underline-offset-2"
                 >
                   {s.title}
                 </a>
@@ -266,12 +268,12 @@ export default function PrivacyPage() {
             <section
               key={section.id}
               id={section.id}
-              className="pb-12 border-b border-border last:border-0"
+              className="p-6 md:p-8 border border-border/80 bg-card/90 rounded-3xl shadow-xs scroll-mt-6"
               aria-labelledby={`heading-${section.id}`}
             >
               <h2
                 id={`heading-${section.id}`}
-                className="text-xl md:text-2xl font-bold text-foreground mb-6 pb-2 border-b-2 border-foreground"
+                className="text-xl md:text-2xl font-bold text-foreground mb-4 pb-2 border-b border-border/60"
                 style={{ fontFamily: "'Georgia', serif" }}
               >
                 {section.title}
@@ -296,8 +298,8 @@ export default function PrivacyPage() {
         </div>
 
         {/* AdSense Compliance Callout */}
-        <div className="mt-12 border-2 border-[#C59A2E] p-8 bg-[#C59A2E]/5">
-          <h2 className="font-mono text-[10px] font-black uppercase tracking-[0.25em] text-[#C59A2E] mb-3">
+        <div className="mt-12 border border-amber-500/40 p-8 bg-amber-500/5 rounded-3xl shadow-xs">
+          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-amber-600 dark:text-amber-400 mb-3">
             Advertising Transparency
           </h2>
           <p className="font-serif text-base text-foreground leading-relaxed mb-4">
@@ -307,7 +309,7 @@ export default function PrivacyPage() {
               href="https://www.google.com/settings/ads"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-2 text-[#C59A2E] hover:opacity-80 transition-opacity"
+              className="underline underline-offset-2 text-amber-600 dark:text-amber-400 hover:opacity-80 transition-opacity"
             >
               Google&apos;s Ad Settings
             </a>
@@ -316,7 +318,7 @@ export default function PrivacyPage() {
               href="http://www.aboutads.info/choices/"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-2 text-[#C59A2E] hover:opacity-80 transition-opacity"
+              className="underline underline-offset-2 text-amber-600 dark:text-amber-400 hover:opacity-80 transition-opacity"
             >
               aboutads.info
             </a>.
@@ -327,7 +329,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Footer Nav */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-wrap gap-6">
+        <div className="mt-12 pt-8 border-t border-border/60 flex flex-wrap gap-6">
           <Link href="/terms" className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
             Terms of Service
           </Link>
