@@ -387,11 +387,13 @@ export function Navbar() {
               className="flex items-center gap-2.5 group touch-manipulation" 
               onClick={closeAll}
             >
-              <div className="relative w-8 h-8 overflow-hidden rounded-lg shadow-sm ring-1 ring-border/50 group-hover:ring-foreground/20 transition-all duration-300">
+              <div className="relative w-8 h-8 overflow-hidden rounded-lg shadow-sm ring-1 ring-border/50 group-hover:ring-foreground/20 transition-all duration-300 bg-amber-500/10">
                 <Image
                   src="/logo.jpg"
-                  alt=""
+                  alt="UpForge Logo"
                   fill
+                  priority
+                  unoptimized
                   className="object-cover"
                 />
               </div>
@@ -728,11 +730,12 @@ export function Navbar() {
             className="flex items-center gap-2" 
             onClick={closeAll}
           >
-            <div className="relative w-7 h-7 overflow-hidden rounded-lg">
+            <div className="relative w-7 h-7 overflow-hidden rounded-lg bg-amber-500/10">
               <Image
                 src="/logo.jpg"
-                alt=""
+                alt="UpForge Logo"
                 fill
+                unoptimized
                 className="object-cover"
               />
             </div>
