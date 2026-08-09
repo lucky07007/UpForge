@@ -253,77 +253,68 @@ export function CompareClient({ comparisons, categories }: CompareClientProps) {
           {/* CARDS LIST */}
           <div className="max-w-[1300px] mx-auto px-4 md:px-6 py-8 w-full flex-1">
             {paginatedComparisons.length > 0 ? (
-              <div className="divide-y divide-border border-b border-border">
-                {paginatedComparisons.map((comp, idx) => (
+              <div className="grid md:grid-cols-2 gap-6">
+                {paginatedComparisons.map((comp) => (
                   <Link
                     key={comp.slug}
                     href={comp.slug}
-                    className="group flex items-start gap-4 md:gap-6 py-6 hover:bg-muted/40 transition-colors px-3 -mx-3 rounded-sm"
+                    className="group border border-border/80 hover:border-amber-500/60 bg-card/90 dark:bg-card/70 backdrop-blur-xl rounded-2xl transition-all duration-300 transform-gpu p-6 flex flex-col justify-between relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1"
                   >
-                    {/* Number */}
-                    <span className="font-mono text-[11px] font-bold text-[#C59A2E]/60 pt-1 w-6 text-right shrink-0 select-none">
-                      {String(((currentPage - 1) * ITEMS_PER_PAGE) + idx + 1).padStart(2, '0')}
-                    </span>
+                    <div className="flex items-start gap-4">
+                      {/* Image with fallback */}
+                      <div className="w-16 h-16 shrink-0 bg-muted/50 border border-border/60 rounded-xl overflow-hidden flex items-center justify-center relative shadow-inner p-1">
+                        <CardImage 
+                          src={comp.image} 
+                          alt={`${comp.item1} vs ${comp.item2}`} 
+                          color={comp.color}
+                          item1={comp.item1}
+                          item2={comp.item2}
+                        />
+                      </div>
 
-                    {/* Image with fallback */}
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 bg-muted border border-border overflow-hidden flex items-center justify-center relative shadow-sm">
-                      <CardImage 
-                        src={comp.image} 
-                        alt={`${comp.item1} vs ${comp.item2}`} 
-                        color={comp.color}
-                        item1={comp.item1}
-                        item2={comp.item2}
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 flex flex-col gap-1.5 min-w-0 pt-0.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#C59A2E] bg-[#C59A2E]/10 px-2 py-0.5 border border-[#C59A2E]/20">
-                          {comp.category}
-                        </span>
-                        {comp.trending && (
-                          <span className="font-mono text-[8px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-1 bg-red-500/10 px-1.5 py-0.5 border border-red-500/20">
-                            <Flame className="w-2.5 h-2.5 fill-red-600" /> Trending
+                      {/* Content */}
+                      <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-[9px] font-black uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20">
+                            {comp.category}
                           </span>
-                        )}
-                      </div>
+                          {comp.trending && (
+                            <span className="font-mono text-[8px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest flex items-center gap-1 bg-red-500/10 px-2 py-0.5 rounded-lg border border-red-500/20">
+                              <Flame className="w-2.5 h-2.5 fill-red-600" /> Trending
+                            </span>
+                          )}
+                        </div>
 
-                      <h3
-                        className="font-bold text-[18px] sm:text-[21px] leading-tight text-foreground group-hover:text-[#C59A2E] transition-colors"
-                        style={{ fontFamily: "'Georgia', serif" }}
-                      >
-                        {comp.item1} vs {comp.item2}
-                      </h3>
+                        <h3
+                          className="font-bold text-lg sm:text-xl leading-tight text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors"
+                          style={{ fontFamily: "'Georgia', serif" }}
+                        >
+                          {comp.item1} vs {comp.item2}
+                        </h3>
 
-                      <p className="text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-2 font-serif">
-                        {comp.description}
-                      </p>
-
-                      <div className="flex items-center gap-3 pt-2 mt-1 border-t border-border/50">
-                        <span className="font-mono text-[9px] font-bold text-foreground uppercase tracking-wider">{comp.readTime} read</span>
-                        <span className="w-px h-2.5 bg-border" />
-                        <span className="font-mono text-[9px] text-[#C59A2E] uppercase font-bold tracking-wider">
-                          Verdict: {comp.verdict}
-                        </span>
+                        <p className="text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-2 font-serif">
+                          {comp.description}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Arrow */}
-                    <div className="shrink-0 w-8 h-8 flex items-center justify-center self-center text-[#C59A2E]/30 group-hover:text-[#C59A2E] group-hover:translate-x-1 transition-all">
-                      <ArrowRight size={20} />
+                    <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/50 text-xs">
+                      <span className="font-mono text-[9px] font-bold text-muted-foreground uppercase tracking-wider">{comp.readTime} read</span>
+                      <span className="font-mono text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold tracking-wider bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20">
+                        {comp.verdict}
+                      </span>
                     </div>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 border border-dashed border-border bg-muted/20">
+              <div className="text-center py-20 border border-dashed border-border/80 rounded-2xl bg-card/50">
                 <div className="text-4xl mb-3">🔍</div>
                 <h3 className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "'Georgia', serif" }}>No comparisons found</h3>
                 <p className="text-muted-foreground mb-6 text-sm">Try adjusting your search terms or selecting a different category.</p>
                 <button
                   onClick={() => { handleCategoryChange("All"); handleSearch("") }}
-                  className="px-6 py-2.5 bg-foreground hover:bg-[#C59A2E] text-background font-mono text-[10px] font-bold uppercase tracking-[0.15em] transition-colors"
+                  className="px-6 py-2.5 bg-foreground hover:bg-amber-500 text-background hover:text-black rounded-xl font-mono text-[10px] font-bold uppercase tracking-[0.15em] transition-colors"
                 >
                   Clear search filters
                 </button>
