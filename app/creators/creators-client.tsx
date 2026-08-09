@@ -244,83 +244,85 @@ export function CreatorsClient({ initialCreators = [] }: CreatorsClientProps) {
     <div className="bg-background text-foreground min-h-screen transition-colors duration-300">
       
       {/* HERO SECTION */}
-      <section className="relative border-b border-border bg-gradient-to-b from-accent/30 via-background to-background pt-14 pb-14 px-4 md:px-8">
+      <section className="relative pt-10 pb-12 px-4 md:px-8">
         <div className="max-w-[1200px] mx-auto text-center">
+          <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md relative overflow-hidden flex flex-col items-center">
 
-          {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted border border-[#C59A2E]/40 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C59A2E]" />
-            <span className="text-[10px] font-mono font-bold text-[#C59A2E] uppercase tracking-widest">
-              INDEPENDENT STARTUP INTELLIGENCE
-            </span>
-          </div>
-
-          {/* Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground tracking-tight mb-4 max-w-4xl mx-auto leading-tight"
-            style={{ fontFamily: "'Georgia', serif" }}
-          >
-            UpForge Creator Network
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-serif"
-          >
-            Distribution for startups, backed by India&apos;s startup registry. Promote product launches, hiring pushes, and feature updates through verified creators.
-          </motion.p>
-
-          {/* Actions */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="flex items-center justify-center gap-3 flex-wrap mb-10"
-          >
-            <button
-              onClick={() => setIsCampaignModalOpen(true)}
-              className="px-7 py-3 text-xs font-bold uppercase tracking-wider bg-foreground text-background hover:bg-foreground/90 rounded-full transition-all shadow-md active:scale-95 flex items-center gap-2"
-            >
-              <Rocket className="w-4 h-4 text-[var(--accent-gold)]" />
-              <span>Campaign Inquiry</span>
-            </button>
-
-            <button
-              onClick={() => setIsApplyModalOpen(true)}
-              className="px-7 py-3 text-xs font-bold uppercase tracking-wider border border-border bg-card hover:bg-accent text-foreground rounded-full transition-all shadow-sm active:scale-95 flex items-center gap-2"
-            >
-              <Users className="w-4 h-4 text-emerald-500" />
-              <span>Apply as a Creator</span>
-            </button>
-
-            <a
-              href={CREATOR_NETWORK_CONFIG.distribution.contactWhatsApp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-3 text-xs font-semibold border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full transition"
-            >
-              <MessageCircle className="w-4 h-4 inline mr-1.5" />
-              WhatsApp Desk
-            </a>
-          </motion.div>
-
-          {/* Clean Focused Stats Strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto text-left">
-            <div className="p-4 rounded-2xl border border-border bg-card shadow-sm">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-0.5">Active Creators</p>
-              <p className="text-xl font-bold font-mono text-foreground">{liveCreatorCount}</p>
-              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Verified handles</p>
+            {/* Top Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                INDEPENDENT STARTUP INTELLIGENCE
+              </span>
             </div>
 
-            <div className="p-4 rounded-2xl border border-border bg-card shadow-sm">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-0.5">Registry Scale</p>
-              <p className="text-xl font-bold font-mono text-foreground">{SITE_STATS.verifiedStartupsCount}+</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">Listed startups</p>
+            {/* Heading */}
+            <motion.h1
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground tracking-tight mb-4 max-w-4xl mx-auto leading-tight"
+              style={{ fontFamily: "'Georgia', serif" }}
+            >
+              UpForge Creator Network
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8 font-serif"
+            >
+              Distribution for startups, backed by India&apos;s startup registry. Promote product launches, hiring pushes, and feature updates through verified creators.
+            </motion.p>
+
+            {/* Actions */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="flex items-center justify-center gap-3 flex-wrap mb-10"
+            >
+              <button
+                onClick={() => setIsCampaignModalOpen(true)}
+                className="px-7 py-3 text-xs font-bold uppercase tracking-wider bg-foreground text-background hover:bg-amber-500 hover:text-black rounded-full transition-all shadow-md active:scale-95 flex items-center gap-2"
+              >
+                <Rocket className="w-4 h-4 text-amber-500" />
+                <span>Campaign Inquiry</span>
+              </button>
+
+              <button
+                onClick={() => setIsApplyModalOpen(true)}
+                className="px-7 py-3 text-xs font-bold uppercase tracking-wider border border-border/80 bg-card hover:bg-accent text-foreground rounded-full transition-all shadow-sm active:scale-95 flex items-center gap-2"
+              >
+                <Users className="w-4 h-4 text-emerald-500" />
+                <span>Apply as a Creator</span>
+              </button>
+
+              <a
+                href={CREATOR_NETWORK_CONFIG.distribution.contactWhatsApp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 text-xs font-semibold border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full transition"
+              >
+                <MessageCircle className="w-4 h-4 inline mr-1.5" />
+                WhatsApp Desk
+              </a>
+            </motion.div>
+
+            {/* Clean Focused Stats Strip */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto text-left w-full">
+              <div className="p-4 rounded-2xl border border-border/70 bg-card/80 shadow-xs">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-0.5">Active Creators</p>
+                <p className="text-xl font-bold font-mono text-foreground">{liveCreatorCount}</p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Verified handles</p>
+              </div>
+
+              <div className="p-4 rounded-2xl border border-border/70 bg-card/80 shadow-xs">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-0.5">Registry Scale</p>
+                <p className="text-xl font-bold font-mono text-foreground">{SITE_STATS.verifiedStartupsCount}+</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Listed startups</p>
+              </div>
             </div>
           </div>
 
@@ -328,12 +330,12 @@ export function CreatorsClient({ initialCreators = [] }: CreatorsClientProps) {
       </section>
 
       {/* DUAL OVERVIEW: STARTUPS & CREATORS */}
-      <section className="py-12 border-b border-border bg-card/40">
+      <section className="py-12 border-y border-border/60 bg-muted/20">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Startups Card */}
-            <div className="p-6 md:p-8 rounded-3xl border border-border bg-card hover:border-[var(--accent-gold)] transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm">
+            <div className="p-6 md:p-8 rounded-3xl border border-border/80 bg-card/90 hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm">
               <div className="space-y-3">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold uppercase tracking-wider">
                   <Rocket className="w-3.5 h-3.5 text-amber-500" />
@@ -358,10 +360,10 @@ export function CreatorsClient({ initialCreators = [] }: CreatorsClientProps) {
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center justify-between border-t border-border">
+              <div className="pt-2 flex items-center justify-between border-t border-border/60">
                 <button
                   onClick={() => setIsCampaignModalOpen(true)}
-                  className="px-5 py-2.5 rounded-full bg-foreground text-background text-xs font-bold hover:bg-foreground/90 transition flex items-center gap-1.5 shadow-sm"
+                  className="px-5 py-2.5 rounded-full bg-foreground text-background text-xs font-bold hover:bg-amber-500 hover:text-black transition flex items-center gap-1.5 shadow-sm"
                 >
                   <span>Submit Campaign Brief</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -371,7 +373,7 @@ export function CreatorsClient({ initialCreators = [] }: CreatorsClientProps) {
             </div>
 
             {/* Creators Card */}
-            <div className="p-6 md:p-8 rounded-3xl border border-border bg-card hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm">
+            <div className="p-6 md:p-8 rounded-3xl border border-border/80 bg-card/90 hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm">
               <div className="space-y-3">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold uppercase tracking-wider">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
@@ -396,7 +398,7 @@ export function CreatorsClient({ initialCreators = [] }: CreatorsClientProps) {
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center justify-between border-t border-border">
+              <div className="pt-2 flex items-center justify-between border-t border-border/60">
                 <button
                   onClick={() => setIsApplyModalOpen(true)}
                   className="px-5 py-2.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-500/20 transition flex items-center gap-1.5 shadow-sm"
