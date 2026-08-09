@@ -108,13 +108,15 @@ export default async function ResearchPage() {
         <div className="max-w-[1300px] mx-auto px-4 md:px-8">
           
           {/* 1. MASTHEAD - Refined typography */}
-          <section className="border-b-2 border-foreground pb-8 pt-10 flex flex-col items-center text-center w-full">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-4 h-4 text-[#C59A2E]" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C59A2E] font-mono">Research & Intelligence</span>
+          <section className="pt-8 pb-6 flex flex-col items-center text-center w-full">
+            <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md relative overflow-hidden flex flex-col items-center">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-mono">Research & Intelligence</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-[58px] font-bold leading-[1.08] text-foreground mb-5 max-w-4xl tracking-tight" style={{ fontFamily: "'Georgia', serif" }}>Startup Research & Intelligence</h1>
+              <p className="font-serif text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">Access verified data on <span className="text-foreground font-semibold">{totalStartups.toLocaleString()}+ startups</span> across <span className="text-foreground font-semibold">{totalCountries}+ countries</span>. Compare tools, AI models, and SaaS platforms with confidence.</p>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-[58px] font-bold leading-[1.08] text-foreground mb-5 max-w-4xl tracking-tight" style={{ fontFamily: "'Georgia', serif" }}>Startup Research & Intelligence</h1>
-            <p className="font-serif text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">Access verified data on <span className="text-foreground font-semibold">{totalStartups.toLocaleString()}+ startups</span> across <span className="text-foreground font-semibold">{totalCountries}+ countries</span>. Compare tools, AI models, and SaaS platforms with confidence.</p>
           </section>
 
           {/* 2. STATS BAR - Cleaner metrics display */}
@@ -126,8 +128,8 @@ export default async function ResearchPage() {
                 { label: "Industry Sectors", value: topCategories.length.toString(), icon: Layers },
                 { label: "Free Access", value: "Forever", icon: Zap }
               ].map((stat, i) => (
-                <div key={i} className="flex flex-col items-center gap-2 p-4 border border-border/40 bg-background hover:border-[#C59A2E]/40 transition-all duration-300 group">
-                  <stat.icon className="w-4 h-4 text-[#C59A2E] group-hover:scale-110 transition-transform" />
+                <div key={i} className="flex flex-col items-center gap-2 p-5 border border-border/80 bg-card/90 rounded-2xl shadow-xs hover:border-amber-500/60 transition-all duration-300 group">
+                  <stat.icon className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
                   <span className="font-serif text-2xl font-bold text-foreground tracking-tight">{stat.value}</span>
                   <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono font-medium">{stat.label}</span>
                 </div>
@@ -139,7 +141,7 @@ export default async function ResearchPage() {
           <section className="py-10 border-b border-border/60">
             <div className="max-w-2xl mx-auto">
               <div className="text-center mb-5">
-                <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-[#C59A2E] font-black">Instant Lookup</span>
+                <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-bold">Instant Lookup</span>
                 <p className="text-xs text-muted-foreground font-serif mt-1">Search by startup name, UFRN, or keyword</p>
               </div>
               <ResearchSearch />
@@ -150,7 +152,7 @@ export default async function ResearchPage() {
           <section className="py-10 border-b border-border/60">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border/40" />
-              <h2 className="font-sans font-black text-[11px] uppercase tracking-[0.2em] text-[#C59A2E] flex items-center gap-2">
+              <h2 className="font-sans font-bold text-[11px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 flex items-center gap-2">
                 <GitCompare className="w-3.5 h-3.5" />
                 Intelligence Reports
               </h2>
@@ -159,11 +161,13 @@ export default async function ResearchPage() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {displayedComparisons.map((comp, i) => (
-                <Link key={i} href={comp.slug} className="group relative p-5 border border-border/40 bg-background hover:border-[#C59A2E] transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex flex-col">
-                  <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#C59A2E] font-mono mb-2">{comp.category}</span>
-                  <h4 className="font-serif text-base font-bold text-foreground group-hover:text-[#C59A2E] transition-colors leading-snug tracking-tight">{comp.name}</h4>
-                  <p className="text-[11px] text-muted-foreground mt-1.5 font-serif italic leading-relaxed line-clamp-2">{comp.description}</p>
-                  <div className="flex items-center gap-1.5 mt-4 pt-2 text-[#C59A2E] text-[8px] font-black uppercase tracking-[0.15em] font-mono opacity-0 group-hover:opacity-100 transition-all duration-200">
+                <Link key={i} href={comp.slug} className="group relative p-5 border border-border/80 bg-card/90 rounded-2xl hover:border-amber-500/60 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex flex-col justify-between">
+                  <div>
+                    <span className="text-[8px] font-mono font-bold uppercase tracking-[0.15em] text-amber-600 dark:text-amber-400 mb-2 block">{comp.category}</span>
+                    <h4 className="font-serif text-base font-bold text-foreground group-hover:text-amber-500 transition-colors leading-snug tracking-tight">{comp.name}</h4>
+                    <p className="text-[11px] text-muted-foreground mt-1.5 font-serif italic leading-relaxed line-clamp-2">{comp.description}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-4 pt-2 text-amber-600 dark:text-amber-400 text-[8px] font-mono font-bold uppercase tracking-[0.15em] opacity-0 group-hover:opacity-100 transition-all duration-200">
                     Full Analysis <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
@@ -175,7 +179,7 @@ export default async function ResearchPage() {
               <div className="flex justify-center mt-10">
                 <Link
                   href="/compare"
-                  className="group relative inline-flex items-center gap-2.5 px-10 py-3.5 bg-transparent text-foreground font-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 border-2 border-foreground hover:bg-foreground hover:text-background overflow-hidden"
+                  className="group relative inline-flex items-center gap-2.5 px-8 py-3.5 bg-foreground text-background font-mono text-[10px] font-bold uppercase tracking-[0.2em] rounded-full transition-all duration-300 hover:bg-amber-500 hover:text-black shadow-sm"
                 >
                   <span className="relative z-10 flex items-center gap-2.5">
                     View All {ALL_COMPARISONS.length} Comparisons
@@ -195,20 +199,20 @@ export default async function ResearchPage() {
         </div>
 
         {/* 6. BOTTOM CTA - World-class finish */}
-        <section className="bg-gradient-to-b from-background via-muted/20 to-muted/40 border-t border-border/60 py-16 mt-8">
+        <section className="bg-muted/20 border-t border-border/60 py-16 mt-8">
           <div className="max-w-[1300px] mx-auto px-4 md:px-8 text-center">
-            <div className="max-w-2xl mx-auto">
-              <div className="inline-flex items-center gap-2 bg-[#C59A2E]/10 px-4 py-1.5 rounded-full mb-6">
-                <Shield className="w-3 h-3 text-[#C59A2E]" />
-                <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-[#C59A2E] font-black">UFRN Verified</span>
+            <div className="glass-panel w-full rounded-3xl p-8 md:p-12 border border-border/80 shadow-md max-w-3xl mx-auto flex flex-col items-center">
+              <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full mb-6">
+                <Shield className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-amber-600 dark:text-amber-400 font-bold">UFRN Verified</span>
               </div>
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-tight">Get Your Startup Verified</h2>
               <p className="font-serif italic text-muted-foreground text-base mb-8 leading-relaxed">Join <span className="text-foreground font-semibold not-italic">{totalStartups.toLocaleString()}+ verified companies</span> and secure your UFRN credential today.</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/submit" className="group font-sans font-black text-[10px] text-white bg-[#C59A2E] px-8 py-3.5 uppercase tracking-[0.2em] transition-all duration-300 hover:bg-[#A8821E] hover:scale-[1.02] active:scale-[0.98] shadow-sm">
+                <Link href="/submit" className="group font-mono font-bold text-[10px] text-black bg-amber-500 rounded-full px-8 py-3.5 uppercase tracking-[0.2em] transition-all duration-300 hover:bg-amber-400 shadow-sm">
                   Submit Your Startup
                 </Link>
-                <Link href="/registry" className="group font-sans font-black text-[10px] text-foreground border-2 border-foreground px-8 py-3.5 uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+                <Link href="/registry" className="group font-mono font-bold text-[10px] text-foreground border border-border/80 bg-card/80 rounded-full px-8 py-3.5 uppercase tracking-[0.2em] hover:bg-accent transition-all duration-300">
                   Explore Registry
                 </Link>
               </div>
