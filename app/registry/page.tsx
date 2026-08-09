@@ -5,6 +5,7 @@ import type { Startup } from "@/types/startup"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
+import { StartupCard } from "@/components/startup-card"
 import { ArrowRight, ArrowUpRight, Search, ShieldCheck, Filter, X } from "lucide-react"
 
 export const revalidate = 300
@@ -511,62 +512,11 @@ export default async function RegistryPage({ searchParams }: PageProps) {
             </div>
           )}
 
-          {/* Directory Grid (Separated Floating Cards) */}
+          {/* Directory Grid (Separated Floating Cut-Edge Cards) */}
           {grid.length > 0 ? (
-            <div className="space-y-4">
-              {grid.map((s, idx) => (
-                <Link
-                  key={s.id}
-                  href={`/startup/${s.slug}`}
-                  className="glass-card group flex flex-col sm:flex-row items-start sm:items-center p-5 gap-6 rounded-2xl border border-[var(--glass-border)] bg-card shadow-sm hover:shadow-md transition-all hover:border-accent-primary/50"
-                >
-                  <div className="w-16 h-16 rounded-xl bg-muted/40 border border-[var(--glass-border)] flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:border-accent-primary/50 transition-colors">
-                    {s.logo_url ? (
-                      <img
-                        src={s.logo_url}
-                        alt={s.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <span className="font-bold text-xl text-muted-foreground">{s.name.charAt(0)}</span>
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0 flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      <h3 className="text-lg font-bold text-foreground group-hover:text-accent-primary transition-colors truncate">{s.name}</h3>
-                      {s.is_featured && (
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-accent-gold border border-accent-gold/20 px-2.5 py-0.5 rounded-full bg-accent-gold/10">Featured</span>
-                      )}
-                      {s.category && (
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-accent-primary border border-accent-primary/20 px-2.5 py-0.5 rounded-full bg-accent-primary/10">
-                          {s.category}
-                        </span>
-                      )}
-                      {s.ufrn && (
-                        <span className="text-[10px] font-mono font-bold text-muted-foreground border border-border px-2 py-0.5 rounded-full bg-muted">
-                          {s.ufrn}
-                        </span>
-                      )}
-                    </div>
-
-                    <p className="text-sm text-muted-foreground line-clamp-2">{s.description || "Verified entity on the UpForge Global Startup Registry."}</p>
-                    
-                    <div className="flex flex-wrap items-center gap-4 mt-1 text-xs font-medium text-muted-foreground">
-                      {s.city && (
-                        <span className="flex items-center gap-1.5">
-                          <ShieldCheck className="w-3.5 h-3.5 text-accent-secondary" /> {s.city}{s.country_code ? `, ${s.country_code}` : ''}
-                        </span>
-                      )}
-                      {s.founded_year && <span>Est. {s.founded_year}</span>}
-                    </div>
-                  </div>
-                  
-                  <div className="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full border border-[var(--glass-border)] items-center justify-center group-hover:bg-accent-primary group-hover:text-white text-muted-foreground transition-all">
-                    <ArrowRight className="w-5 h-5 -rotate-45" />
-                  </div>
-                </Link>
+            <div className="grid md:grid-cols-2 gap-6">
+              {grid.map((s) => (
+                <StartupCard key={s.id} startup={s} featured={s.is_featured} />
               ))}
             </div>
           ) : (
