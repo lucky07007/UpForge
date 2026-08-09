@@ -33,6 +33,7 @@ import {
   ChevronDown,
   ShieldCheck,
 } from "lucide-react"
+import { StartupCard } from "@/components/startup-card"
 
 // ---------------------------------------------------------------------------
 // TYPES
@@ -544,54 +545,9 @@ export default function StartupRegistry({
             )}
 
             {/* Desktop grid */}
-            <div className="reg-grid reg-hide-mob">
-              {gridList.map((s, idx) => (
-                <Link
-                  key={s.id}
-                  href={`/startup/${s.slug}`}
-                  className="reg-card"
-                  style={{ animationDelay: `${Math.min(idx, 11) * 0.035}s` }}
-                >
-                  <div className="reg-card-head">
-                    <div className="reg-logo" aria-hidden="true">
-                      <StartupLogo name={s.name} logo_url={s.logo_url} size={40} />
-                    </div>
-                    <div className="reg-card-titles">
-                      <h3 className="pf reg-card-name">{s.name}</h3>
-                      <span className="reg-card-cat">{(s.category || "Startup").slice(0, 24)}</span>
-                    </div>
-                    <BadgeCheck className="reg-card-badge" aria-label="Verified startup" />
-                  </div>
-                  <div className="reg-card-body">
-                    <p className="rp reg-card-desc">{s.description || "Building for India's next decade."}</p>
-                    {s.founders && <p className="reg-card-founders">↳ {s.founders}</p>}
-                    <div className="reg-card-footer">
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        {s.founded_year && (
-                          <span className="reg-chip">
-                            <Calendar style={{ width: 7, height: 7 }} aria-hidden="true" />
-                            <span>{s.founded_year}</span>
-                          </span>
-                        )}
-                        {/* ── UFRN chip — links to /ufrn/[id] ── */}
-                        {s.ufrn && (
-                          <a
-                            href={`/ufrn/${s.ufrn}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="reg-chip"
-                            style={{ color: "#A89060", textDecoration: "none", fontSize: 9, fontFamily: "monospace" }}
-                            aria-label={`UFRN: ${s.ufrn} - Verified Startup Profile`}
-                            title={s.ufrn}
-                          >
-                            <ShieldCheck style={{ width: 7, height: 7, color: "#A89060" }} />
-                            <span>{s.ufrn.split("-").slice(-2).join("-")}</span>
-                          </a>
-                        )}
-                      </div>
-                      <ArrowUpRight className="reg-card-arrow" aria-hidden="true" />
-                    </div>
-                  </div>
-                </Link>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {gridList.map((s) => (
+                <StartupCard key={s.id} startup={s} featured={s.is_featured} />
               ))}
             </div>
 
