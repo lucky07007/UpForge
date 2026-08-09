@@ -211,37 +211,42 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
         /* Search bar */
         .vf-search {
           display: flex; max-width: 640px; margin: 0 auto;
-          border: 1.5px solid var(--vf-fg);
+          border: 1.5px solid var(--vf-border);
+          border-radius: 9999px;
           background: var(--vf-bg);
-          transition: box-shadow .22s, transform .22s;
+          overflow: hidden;
+          transition: box-shadow .22s, transform .22s, border-color .22s;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .vf-search:focus-within {
           transform: translateY(-2px);
-          box-shadow: 4px 4px 0 var(--vf-gold);
+          border-color: var(--vf-gold);
+          box-shadow: 0 8px 24px rgba(197,154,46,0.15);
         }
         .vf-input {
-          flex: 1; padding: 17px 22px; border: none; outline: none;
+          flex: 1; padding: 17px 24px; border: none; outline: none;
           font-family: 'Space Mono', monospace; font-size: .88rem;
           background: transparent; color: var(--vf-fg); letter-spacing: .04em;
         }
         .vf-input::placeholder { color: var(--vf-fg3); }
         .vf-btn {
           background: var(--vf-invert-bg); color: var(--vf-invert-fg);
-          border: none; padding: 0 28px;
+          border: none; padding: 0 28px; border-radius: 9999px; margin: 4px;
           font-size: 9px; font-weight: 700; letter-spacing: .22em;
           text-transform: uppercase; cursor: pointer; white-space: nowrap;
-          transition: background .18s;
+          transition: background .18s, color .18s;
         }
-        .vf-btn:hover:not(:disabled) { background: var(--vf-gold-dark); }
+        .vf-btn:hover:not(:disabled) { background: var(--vf-gold); color: #000; }
         .vf-btn:disabled { opacity: .35; cursor: not-allowed; }
 
         /* Map */
         .vf-map-wrap {
-          position: relative; width: 100%; overflow: hidden;
+          position: relative; width: 100%; max-width: 1240px; margin: 0 auto; overflow: hidden;
           background: var(--vf-bg3);
-          border-top: 1px solid var(--vf-border);
-          border-bottom: 1px solid var(--vf-border);
+          border: 1px solid var(--vf-border);
+          border-radius: 1.5rem;
           line-height: 0; user-select: none;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
         .vf-map-img {
           display: block; width: 100%; height: auto;
@@ -253,7 +258,6 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
           opacity: .5;
           filter: saturate(.12) brightness(.82) contrast(1.1);
         }
-        /* In dark mode the map needs slightly more brightness */
         :is(.dark, [data-theme="dark"]) .vf-map-img {
           filter: saturate(.18) brightness(1.15) contrast(1.08);
         }
