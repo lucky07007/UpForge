@@ -26,7 +26,7 @@ import {
 
 type RelatedStartup = Pick<
   Startup,
-  "name" | "slug" | "description" | "logo_url" | "category"
+  "name" | "slug" | "description" | "logo_url" | "category" | "website"
 >
 
 interface StartupDetailProps {
@@ -69,9 +69,34 @@ function getVerificationCode(name: string, id: string): string {
   return "UPF-" + prefix + "-" + suffix
 }
 
-function StartupLogo({ name, logo_url, size, className = "" }: { name: string; logo_url?: string | null; size?: number; className?: string }) {
-  if (logo_url) {
-    return <img src={logo_url} alt={name + " logo"} loading="lazy" className={`object-cover w-full h-full ${className}`} />
+function getFaviconFallback(website?: string | null): string | null {
+  if (!website) return null
+  try {
+    const hostname = new URL(website.startsWith("http") ? website : `https://${website}`).hostname
+    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`
+  } catch {
+    return null
+  }
+}
+
+function StartupLogo({ name, logo_url, website, size, className = "" }: { name: string; logo_url?: string | null; website?: string | null; size?: number; className?: string }) {
+  // Primary source: logo_url from the registry data.
+  // Fallback: derive a favicon from the startup's website domain when no logo_url is set.
+  const [failed, setFailed] = useState(false)
+  const primarySrc = logo_url && logo_url.trim() ? logo_url : null
+  const fallbackSrc = getFaviconFallback(website)
+  const src = primarySrc || fallbackSrc
+
+  if (src && !failed) {
+    return (
+      <img
+        src={src}
+        alt={name + " logo"}
+        loading="lazy"
+        className={`object-cover w-full h-full ${className}`}
+        onError={() => setFailed(true)}
+      />
+    )
   }
   return (
     <span className="text-3xl font-serif font-black text-foreground" aria-hidden="true">
@@ -85,7 +110,7 @@ function RelatedStartupCard({ startup }: { startup: RelatedStartup }) {
   return (
     <Link href={href} className="group flex items-start gap-4 p-4 border border-border hover:bg-muted/30 transition-colors">
       <div className="h-14 w-14 flex items-center justify-center flex-shrink-0 bg-muted border border-border">
-        <StartupLogo name={startup.name} logo_url={startup.logo_url} size={56} className="p-0.5" />
+        <StartupLogo name={startup.name} logo_url={startup.logo_url} website={startup.website} size={56} className="p-0.5" />
       </div>
       <div className="min-w-0 flex-1 py-0.5">
         <h4 className="font-serif font-bold text-foreground text-sm group-hover:text-amber-500 transition-colors truncate">{startup.name}</h4>
@@ -307,7 +332,7 @@ export function StartupDetail({ startup, relatedStartups }: StartupDetailProps) 
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <div className="w-20 h-20 sm:w-28 sm:h-28 bg-card/90 border border-accent-gold/30 rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden shadow-lg p-2 group">
-                  <StartupLogo name={startup.name} logo_url={startup.logo_url} size={112} className="rounded-xl object-contain" />
+                  <StartupLogo name={startup.name} logo_url={startup.logo_url} website={startup.website} size={112} className="rounded-xl object-contain" />
                 </div>
                 
                 <div>
