@@ -217,3 +217,4 @@ export default async function StartupPage({ params }: PageProps) {
     </div>
   );
 }
+
