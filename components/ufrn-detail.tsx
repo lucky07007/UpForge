@@ -18,6 +18,7 @@ import React, { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import type { Startup } from "@/types/startup"
+import { formatFounders } from "@/types/startup"
 import {
   ShieldCheck,
   ArrowLeft,
@@ -322,11 +323,11 @@ export function UFRNDetailView({ startup, canonicalUrl }: Props) {
                     value={`${startup.founded_year}`}
                   />
                 )}
-                {startup.founders && (
+                {formatFounders(startup.founders) && (
                   <DataRow
                     icon={Building2}
                     label="Founders"
-                    value={startup.founders}
+                    value={formatFounders(startup.founders)}
                   />
                 )}
                 {startup.website && (
