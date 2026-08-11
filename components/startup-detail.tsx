@@ -69,9 +69,9 @@ function getVerificationCode(name: string, id: string): string {
   return "UPF-" + prefix + "-" + suffix
 }
 
-function StartupLogo({ name, logo_url, size, className = "" }: { name: string; logo_url?: string | null; size: number; className?: string }) {
+function StartupLogo({ name, logo_url, size, className = "" }: { name: string; logo_url?: string | null; size?: number; className?: string }) {
   if (logo_url) {
-    return <Image src={logo_url} alt={name + " logo"} width={size} height={size} className={`object-cover w-full h-full ${className}`} loading="lazy" />
+    return <img src={logo_url} alt={name + " logo"} loading="lazy" className={`object-cover w-full h-full ${className}`} />
   }
   return (
     <span className="text-3xl font-serif font-black text-foreground" aria-hidden="true">
