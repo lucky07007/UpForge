@@ -5,7 +5,6 @@ import { ClientLayout } from "../components/client-layout"
 import { CookieBanner } from "../components/cookie-banner"
 import Script from "next/script"
 import { getDomainContext } from "@/lib/domain.server"
-import { fetchAllStartups } from "@/lib/google-sheets"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,24 +24,6 @@ export const viewport: Viewport = {
 }
 
 async function getLatestStartupDate(): Promise<string> {
-  try {
-    const startups = await fetchAllStartups()
-    let maxTime = 0
-    let maxDateStr = ""
-    startups.forEach((s) => {
-      const dateStr = s.updated_at || s.created_at
-      if (dateStr) {
-        const time = new Date(dateStr).getTime()
-        if (time > maxTime) {
-          maxTime = time
-          maxDateStr = dateStr
-        }
-      }
-    })
-    if (maxDateStr) {
-      return new Date(maxDateStr).toISOString()
-    }
-  } catch {}
   return new Date().toISOString()
 }
 
