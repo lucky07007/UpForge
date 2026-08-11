@@ -8,11 +8,11 @@ import statsData from "../public/data/stats.json"
  */
 
 export const SITE_STATS = {
-  verifiedStartupsCount: statsData.verifiedStartupsCount || 115,
-  trackedStartupsCount: statsData.trackedStartupsCount || 115,
+  verifiedStartupsCount: statsData.verifiedStartupsCount || 1050,
+  trackedStartupsCount: statsData.trackedStartupsCount || 1050,
   sectorCount: statsData.sectorCount || 17,
-  countryCount: statsData.countryCount || 11,
-  verifiedCreatorsCount: statsData.verifiedCreatorsCount || 17,
+  countryCount: statsData.countryCount || 70,
+  verifiedCreatorsCount: statsData.verifiedCreatorsCount || 100,
   
   // Formatted string helpers
   get verifiedStartupsText() {
