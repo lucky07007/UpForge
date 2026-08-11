@@ -2,12 +2,12 @@
 
 import { fetchAllStartups } from "@/lib/google-sheets"
 import { formatFounders } from "@/types/startup"
-import { getSectorHero }    from "@/lib/sector-heroes"
-import { notFound }         from "next/navigation"
-import type { Metadata }    from "next"
-import Link                 from "next/link"
-import Image                from "next/image"
-import { Navbar }           from "@/components/navbar"
+import { getSectorHero } from "@/lib/sector-heroes"
+import { notFound } from "next/navigation"
+import type { Metadata } from "next"
+import Link from "next/link"
+import Image from "next/image"
+import { Navbar } from "@/components/navbar"
 import { ArrowRight, ArrowUpRight, Search, ShieldCheck } from "lucide-react"
 import {
   categoryToSlug, getDisplayName, slugToDbCategory,
@@ -19,7 +19,7 @@ const PAGE_SIZE = 24
 const BASE_URL = "https://www.upforge.org"
 
 interface PageProps {
-  params:       Promise<{ category: string }>
+  params: Promise<{ category: string }>
   searchParams?: Promise<{ page?: string; q?: string }>
 }
 
@@ -73,26 +73,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { category: slug } = await params
   const all = await getAllDbCategories()
   const dbCat = slugToDbCategory(slug, all)
-  
+
   if (!dbCat) return { title: "Not Found | UpForge Registry", robots: { index: false, follow: false } }
-  
+
   const startups = await fetchAllStartups()
   const count = startups.filter(s => s.category?.toLowerCase() === dbCat.toLowerCase()).length
-  
+
   const displayName = getDisplayName(dbCat)
   const n = count.toLocaleString()
   const title = `${displayName} Startups Global Registry: Top Companies & Innovators | UpForge`
   const description = `Discover ${n}+ verified ${displayName} startups globally. View founding teams, cities, valuations, and registry IDs on the UpForge Global Startup Registry.`
-  
+
   const keywords = generateCategoryKeywords(displayName, count)
   const url = `${BASE_URL}/startups/${slug}`
-  
+
   return {
     title, description, keywords,
     alternates: { canonical: url },
-    openGraph: { title, description, url, siteName: "UpForge Global Registry",
+    openGraph: {
+      title, description, url, siteName: "UpForge Global Registry",
       images: [{ url: `${BASE_URL}/og/registry.png`, width: 1200, height: 630 }],
-      locale: "en_US", type: "website" },
+      locale: "en_US", type: "website"
+    },
     twitter: { card: "summary_large_image", title, description, images: [`${BASE_URL}/og/registry.png`] },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
   }
@@ -100,53 +102,59 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   const { category: slug } = await params
-  const sp   = await searchParams
+  const sp = await searchParams
   const page = Math.max(1, Number(sp?.page ?? 1))
-  const q    = sp?.q?.trim() ?? ""
+  const q = sp?.q?.trim() ?? ""
 
-  const all   = await getAllDbCategories()
+  const all = await getAllDbCategories()
   const dbCat = slugToDbCategory(slug, all)
   if (!dbCat) notFound()
 
   const [{ startups, total }, related] = await Promise.all([
     getCategoryStartups(dbCat, page, q),
-    Promise.resolve(all.filter(c => categoryToSlug(c) !== slug).sort((a,b) => a.localeCompare(b)).slice(0, 12)),
+    Promise.resolve(all.filter(c => categoryToSlug(c) !== slug).sort((a, b) => a.localeCompare(b)).slice(0, 12)),
   ])
   if (total === 0 && !q) notFound()
 
-  const totalPages  = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const displayName = getDisplayName(dbCat)
   const description = generateCategoryDescription(dbCat, total)
-  const url         = `${BASE_URL}/startups/${slug}`
-  const catSlug     = (c: string) => categoryToSlug(c)
+  const url = `${BASE_URL}/startups/${slug}`
+  const catSlug = (c: string) => categoryToSlug(c)
 
   const pgHref = (p: number) => {
     const params = new URLSearchParams()
-    if (q)   params.set("q", q)
+    if (q) params.set("q", q)
     if (p > 1) params.set("page", String(p))
     const s = params.toString()
     return `/startups/${slug}${s ? `?${s}` : ""}`
   }
-  const winSize  = Math.min(5, totalPages)
+  const winSize = Math.min(5, totalPages)
   const winStart = page <= 3 || totalPages <= 5 ? 1 : page >= totalPages - 2 ? totalPages - 4 : page - 2
-  const pgNums   = Array.from({ length: winSize }, (_, i) => winStart + i)
+  const pgNums = Array.from({ length: winSize }, (_, i) => winStart + i)
 
   const schemas = [
-    { "@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
-      { "@type":"ListItem","position":1,"name":"UpForge","item":BASE_URL },
-      { "@type":"ListItem","position":2,"name":"Registry","item":`${BASE_URL}/registry` },
-      { "@type":"ListItem","position":3,"name":"Sectors","item":`${BASE_URL}/registry/sectors` },
-      { "@type":"ListItem","position":4,"name":`${displayName} Startups`, item: url },
-    ]},
-    { "@context":"https://schema.org","@type":"CollectionPage","@id":`${url}#cp`,
-      "name":`Top ${displayName} Startups Database`,"description":description,
-      "url":url,"inLanguage":"en-US","numberOfItems":total },
-    { "@context":"https://schema.org","@type":"ItemList",
-      "name":`Top ${displayName} Startups Directory`,
-      "itemListElement": startups.slice(0,10).map((s,i) => ({
-        "@type":"ListItem","position":i+1,"name":s.name,
-        "url":`${BASE_URL}/startup/${s.slug}`,
-      })) },
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "UpForge", "item": BASE_URL },
+        { "@type": "ListItem", "position": 2, "name": "Registry", "item": `${BASE_URL}/registry` },
+        { "@type": "ListItem", "position": 3, "name": "Sectors", "item": `${BASE_URL}/registry/sectors` },
+        { "@type": "ListItem", "position": 4, "name": `${displayName} Startups`, item: url },
+      ]
+    },
+    {
+      "@context": "https://schema.org", "@type": "CollectionPage", "@id": `${url}#cp`,
+      "name": `Top ${displayName} Startups Database`, "description": description,
+      "url": url, "inLanguage": "en-US", "numberOfItems": total
+    },
+    {
+      "@context": "https://schema.org", "@type": "ItemList",
+      "name": `Top ${displayName} Startups Directory`,
+      "itemListElement": startups.slice(0, 10).map((s, i) => ({
+        "@type": "ListItem", "position": i + 1, "name": s.name,
+        "url": `${BASE_URL}/startup/${s.slug}`,
+      }))
+    },
   ]
 
   return (
@@ -163,7 +171,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           <div className="absolute top-0 right-0 w-96 h-96 bg-accent-primary/10 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-secondary/10 rounded-full blur-[100px]" />
         </div>
-        
+
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
             <div className="flex items-center gap-3 mb-6">
@@ -179,10 +187,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               {description}
             </p>
           </div>
-          
+
           <div className="glass-panel p-6 rounded-2xl border border-[var(--glass-border)] flex flex-col gap-2 min-w-[200px]">
-             <span className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Total Verified Listings</span>
-             <span className="text-4xl font-mono font-bold text-accent-gold text-glow">{total.toLocaleString()}</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Total Verified Listings</span>
+            <span className="text-4xl font-mono font-bold text-accent-gold text-glow">{total.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -208,14 +216,14 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
       {/* MAIN CONTENT AREA */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid lg:grid-cols-12 gap-12">
-        
+
         {/* Results Stream */}
         <div className="lg:col-span-8">
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--glass-border)]">
-             <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-               {q ? `Search Results for "${q}"` : "Verified Directory"}
-             </h2>
-             {q && <Link href={`/startups/${slug}`} className="text-xs text-accent-primary hover:text-white transition-colors">Clear Search ✕</Link>}
+            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              {q ? `Search Results for "${q}"` : "Verified Directory"}
+            </h2>
+            {q && <Link href={`/startups/${slug}`} className="text-xs text-accent-primary hover:text-white transition-colors">Clear Search ✕</Link>}
           </div>
 
           {startups.length > 0 ? (
@@ -223,25 +231,25 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               {startups.map((s, idx) => (
                 <Link key={s.id} href={`/startup/${s.slug}`} className="glass-card group flex flex-col sm:flex-row items-start sm:items-center p-5 gap-6">
                   <div className="w-16 h-16 rounded-xl bg-muted/40 border border-[var(--glass-border)] flex items-center justify-center overflow-hidden flex-shrink-0 group-hover:border-accent-primary/50 transition-colors">
-                     {s.logo_url 
-                       ? <Image src={s.logo_url} alt={s.name} width={64} height={64} className="object-contain" />
-                       : <span className="font-bold text-xl text-muted-foreground">{s.name.charAt(0)}</span>
-                     }
+                    {s.logo_url
+                      ? <Image src={s.logo_url} alt={s.name} width={64} height={64} className="object-contain" />
+                      : <span className="font-bold text-xl text-muted-foreground">{s.name.charAt(0)}</span>
+                    }
                   </div>
-                  
+
                   <div className="flex-1 min-w-0 flex flex-col gap-1">
                     <div className="flex items-center gap-3">
                       <h3 className="text-lg font-bold text-foreground group-hover:text-accent-primary transition-colors truncate">{s.name}</h3>
                       {s.is_featured && <span className="text-[10px] uppercase tracking-widest font-bold text-accent-gold border border-accent-gold/20 px-2 py-0.5 rounded-full bg-accent-gold/10">Featured</span>}
                     </div>
                     <p className="text-sm text-muted-foreground line-clamp-2 md:line-clamp-1">{s.description}</p>
-                    
+
                     <div className="flex flex-wrap items-center gap-4 mt-2 text-xs font-medium text-muted-foreground">
                       {s.city && <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-accent-secondary" /> {s.city}</span>}
                       {s.founded_year && <span>Est. {s.founded_year}</span>}
                     </div>
                   </div>
-                  
+
                   <div className="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full border border-[var(--glass-border)] items-center justify-center group-hover:bg-accent-primary group-hover:text-white text-muted-foreground transition-all">
                     <ArrowRight className="w-5 h-5 -rotate-45" />
                   </div>
@@ -250,9 +258,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
             </div>
           ) : (
             <div className="glass-panel rounded-2xl p-16 text-center border-dashed border-[var(--glass-border)]">
-               <span className="text-4xl text-muted-foreground mb-4 block">∅</span>
-               <h3 className="text-xl font-bold text-foreground mb-2">No profiles found</h3>
-               <p className="text-muted-foreground">Try adjusting your search criteria or clear the filters to see all registry records.</p>
+              <span className="text-4xl text-muted-foreground mb-4 block">∅</span>
+              <h3 className="text-xl font-bold text-foreground mb-2">No profiles found</h3>
+              <p className="text-muted-foreground">Try adjusting your search criteria or clear the filters to see all registry records.</p>
             </div>
           )}
 
@@ -270,7 +278,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
-          
+
           <div className="glass-panel p-8 rounded-3xl relative overflow-hidden text-center bg-[var(--glass-bg)]">
             <div className="absolute inset-0 bg-gradient-neon opacity-10 blur-2xl pointer-events-none" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-accent-gold mb-2 relative z-10">Free Listing</h3>
@@ -281,40 +289,39 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </div>
 
           <div className="border border-[var(--glass-border)] p-6 rounded-3xl bg-muted/40">
-             <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Registry Intelligence</h3>
-             <ul className="space-y-4">
-               <li className="flex justify-between items-center pb-4 border-b border-border">
-                 <span className="text-sm text-foreground">Verified Coverage</span>
-                 <span className="text-sm font-bold text-accent-primary">100%</span>
-               </li>
-               <li className="flex justify-between items-center pb-4 border-b border-border">
-                 <span className="text-sm text-foreground">Pricing</span>
-                 <span className="text-sm font-bold text-accent-primary">Free forever</span>
-               </li>
-               <li className="flex justify-between items-center">
-                 <span className="text-sm text-foreground">Authority Trust</span>
-                 <span className="text-sm font-bold text-accent-gold">UpForge Certified</span>
-               </li>
-             </ul>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Registry Intelligence</h3>
+            <ul className="space-y-4">
+              <li className="flex justify-between items-center pb-4 border-b border-border">
+                <span className="text-sm text-foreground">Verified Coverage</span>
+                <span className="text-sm font-bold text-accent-primary">100%</span>
+              </li>
+              <li className="flex justify-between items-center pb-4 border-b border-border">
+                <span className="text-sm text-foreground">Pricing</span>
+                <span className="text-sm font-bold text-accent-primary">Free forever</span>
+              </li>
+              <li className="flex justify-between items-center">
+                <span className="text-sm text-foreground">Authority Trust</span>
+                <span className="text-sm font-bold text-accent-gold">UpForge Certified</span>
+              </li>
+            </ul>
           </div>
 
           {related.length > 0 && (
             <div className="border border-[var(--glass-border)] p-6 rounded-3xl bg-muted/40">
-               <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Related Sectors</h3>
-               <div className="flex flex-col gap-2">
-                 {related.map(c => (
-                   <Link key={c} href={`/startups/${catSlug(c)}`} className="text-sm text-foreground hover:text-accent-secondary py-2 border-b border-border last:border-0 flex items-center justify-between group transition-colors">
-                     <span>{getDisplayName(c)}</span>
-                     <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                   </Link>
-                 ))}
-               </div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Related Sectors</h3>
+              <div className="flex flex-col gap-2">
+                {related.map(c => (
+                  <Link key={c} href={`/startups/${catSlug(c)}`} className="text-sm text-foreground hover:text-accent-secondary py-2 border-b border-border last:border-0 flex items-center justify-between group transition-colors">
+                    <span>{getDisplayName(c)}</span>
+                    <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
-          
+
         </div>
       </div>
     </>
   )
 }
-
