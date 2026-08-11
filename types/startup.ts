@@ -139,3 +139,4 @@ export function formatFounders(founders?: string | FounderRecord[] | null): stri
   }
   return "";
 }
+
