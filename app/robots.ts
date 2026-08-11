@@ -5,11 +5,15 @@ export default function robots(): MetadataRoute.Robots {
 
   const commonAllows = [
     "/",
+    "/data/",
+    "/llms.txt",
+    "/llms-full.txt",
     "/startup/",
     "/startups/",
     "/blog/",
     "/ufrn/",
     "/registry/",
+    "/compare",
     "/about",
     "/submit",
     "/contact",
