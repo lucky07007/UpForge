@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react"
 import type { Startup } from "@/types/startup"
+import { formatFounders } from "@/types/startup"
 import { getStartupUrl } from "@/lib/domain"
 
 interface StartupCardProps {
@@ -13,10 +14,11 @@ interface StartupCardProps {
 
 export function StartupCard({ startup, featured = false }: StartupCardProps) {
   const getDisplayFounder = () => {
-    if (!startup.founders || startup.founders.trim() === "") {
+    const founderStr = formatFounders(startup.founders)
+    if (!founderStr || founderStr.trim() === "") {
       return { name: "Institutional Lead", hasMore: false }
     }
-    const parts = startup.founders.split(",")
+    const parts = founderStr.split(",")
     return {
       name: parts[0].trim(),
       hasMore: parts.length > 1,
