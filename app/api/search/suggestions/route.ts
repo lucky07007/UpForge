@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchAllStartups } from '@/lib/google-sheets';
+import { formatFounders } from '@/types/startup';
 
 
 const ALL_BLOG_POSTS = [
@@ -67,7 +68,7 @@ export async function GET(request: NextRequest) {
         const city = (s.city || '').toLowerCase();
         const country = (s.country_name || '').toLowerCase();
         const ufrn = (s.ufrn || '').toLowerCase();
-        const founders = (s.founders || '').toLowerCase();
+        const founders = formatFounders(s.founders).toLowerCase();
         return (
           name.includes(searchTerm) ||
           category.includes(searchTerm) ||
