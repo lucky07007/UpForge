@@ -77,6 +77,30 @@ export default function SubmitPage() {
   const handleSubmit = async () => {
     setIsLoading(true); setError("");
     try {
+      // POST to Google Apps Script Web App (Staging Submissions tab)
+      const APPS_SCRIPT_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL;
+      if (APPS_SCRIPT_URL) {
+        try {
+          await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              timestamp: new Date().toISOString(),
+              founder_name: form.founder_name,
+              startup_name: form.startup_name,
+              email: form.email,
+              website: form.website,
+              description: form.description,
+              industry: form.industry,
+              founded_year: form.founded_year,
+            }),
+          });
+        } catch (postErr) {
+          console.warn("Apps Script submission warning:", postErr);
+        }
+      }
+
       // EMAIL 1: Admin notification
       await emailjs.send(
         WORKING_SERVICE_ID,
