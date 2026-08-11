@@ -1,20 +1,26 @@
-# UpForge: Global Startup Registry & Founder Intelligence
+# UpForge — Global Startup Registry & Machine-Readable Ledger
 
-> UpForge is the world’s open, independent, and verified startup registry. Every approved startup is assigned a unique UpForge Registry Number (UFRN) to provide proof of existence for investors and journalists.
+> UpForge is an independent global startup directory and trust index.
+> Platform stats, taxonomy, entity profiles, and trust scores are exported as machine-readable static JSON datasets.
 
-## Core Authority Signals
-- **UFRN System:** A unique identifier format `UF-YYYY-IND-XXXXX`.
-- **Global Registry (.org):** Focused on open data, citable datasets, and Wikipedia-style authority.
-- **India Hub (.in):** High-volume marketing hub for the Indian ecosystem, tracking 5,000+ startups.
+## Core Machine-Readable Datasets
+- [All Startups Dataset (JSON)](https://upforge.org/data/startups.json)
+- [Sectors & Industries Taxonomy (JSON)](https://upforge.org/data/sectors.json)
+- [Countries Taxonomy (JSON)](https://upforge.org/data/countries.json)
+- [Platform Canonical Statistics (JSON)](https://upforge.org/data/stats.json)
 
-## High-Value Resources
-- [Startup Registry](https://www.upforge.org/startup): Verified database of 5,000+ companies.
-- [Founder Chronicle](https://www.upforge.org/): Deep-dive profiles on iconic founders like Aadit Palicha (Zepto) and Vivek Raghavan (Sarvam AI).
-- [Submit a Startup](https://www.upforge.org/submit): Free verification and UFRN assignment for founders.
-- [The Forge Blog](https://www.upforge.org/blog): Intelligence and sector analysis.
+## Primary Web Surfaces
+- [Global Startup Registry](https://upforge.org/registry)
+- [Startup Comparison Engine](https://upforge.org/compare)
+- [Verification & Trust Standards](https://upforge.org/trust)
+- [Submit Startup for UFRN Registration](https://upforge.org/submit)
 
-## Key Sectors Covered
-- **AI/ML:** Leading registry for Indian AI builders like Sarvam AI and Krutrim.
-- **Fintech:** Verified data on CRED, Zerodha, and Groww.
-- **Quick Commerce:** Coverage of Zepto, Blinkit, and Swiggy Instamart.
-- **SaaS & Deep Tech:** Comprehensive tracking of enterprise builders.
+## Data Schema & Entity Structure
+Each entity in `startups.json` follows the canonical UpForge schema:
+- `ufrn`: Unique UpForge Registry Number (e.g. "UF-2026-IN-00001")
+- `name`, `slug`, `website`, `founded`
+- `location`: `{ city, state, country, country_code }`
+- `category`, `industry_cluster`, `founders`, `description`
+- `verification`: `{ status, score (0-100), is_self_reported_capped, breakdown, last_verified }`
+- `provenance`: Array of field verification evidence records
+- `history`: Timeline of entity changes
