@@ -715,7 +715,7 @@ export default async function StartupPage({ searchParams }: PageProps) {
                             <div className="s-body">
                               <div className="s-logo-wrap">
                                 {s.logo_url
-                                  ? <Image src={s.logo_url} alt={s.name} width={52} height={52} loading="lazy" style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+                                  ? <img src={s.logo_url} alt={s.name} loading="lazy" style={{ objectFit: "cover", width: "100%", height: "100%" }} />
                                   : <span className="s-logo-initial">{s.name.charAt(0)}</span>
                                 }
                               </div>
@@ -902,4 +902,3 @@ export default async function StartupPage({ searchParams }: PageProps) {
     </>
   )
 }
-
