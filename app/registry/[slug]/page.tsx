@@ -364,3 +364,4 @@ export default async function RegistryPage({ params }: PageProps) {
     </div>
   )
 }
+
