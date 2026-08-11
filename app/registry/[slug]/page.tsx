@@ -11,6 +11,7 @@ import { fetchAllStartups } from "@/lib/google-sheets"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import type { Startup } from "@/types/startup"
+import { formatFounders } from "@/types/startup"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -181,10 +182,10 @@ export default async function RegistryPage({ params }: PageProps) {
             )}
 
             {/* Founders */}
-            {startup.founders && (
+            {formatFounders(startup.founders) && (
               <section>
                 <h2 className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#888] mb-2">Founders</h2>
-                <p className="text-[14px] text-[#333]">{startup.founders}</p>
+                <p className="text-[14px] text-[#333]">{formatFounders(startup.founders)}</p>
               </section>
             )}
 
