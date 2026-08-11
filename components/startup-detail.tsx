@@ -295,58 +295,81 @@ export function StartupDetail({ startup, relatedStartups }: StartupDetailProps) 
         </div>
       </div>
 
-      <div className="max-w-[1300px] mx-auto px-4 md:px-8">
-        {/* Breadcrumb / Top Bar */}
-        <div className="sticky top-14 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-          <div className="h-12 flex items-center justify-between">
-            <Link href="/registry" className="flex items-center gap-2 font-sans font-bold text-[9px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-3 w-3" />
-              <span>Back to Global Index</span>
-            </Link>
-            <button onClick={handleDownload} disabled={isGenerating} className="flex items-center gap-2 font-sans font-bold text-[9px] uppercase tracking-widest px-4 py-1.5 border border-border rounded-xl hover:bg-muted transition-colors cursor-pointer">
-              <Download className="h-3 w-3" />
-              {isGenerating ? "Exporting..." : "Export Official Record"}
-            </button>
-          </div>
-        </div>
-
-        <main className="py-8 md:py-12">
-          {/* Header Block */}
-          <div className="flex flex-col md:flex-row items-start gap-8 mb-8 pb-8 border-b border-border">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-card border border-border/80 rounded-3xl flex-shrink-0 flex items-center justify-center overflow-hidden shadow-sm">
-              <StartupLogo name={startup.name} logo_url={startup.logo_url} size={128} />
+      <div className="max-w-[1300px] mx-auto px-4 md:px-8 pt-6">
+        <main className="py-4 md:py-8">
+          {/* Header Hero Block */}
+          <div className="relative glass-panel rounded-3xl p-6 sm:p-8 md:p-10 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-2xl shadow-xl overflow-hidden mb-10">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute -top-24 -right-24 w-80 h-80 bg-accent-gold/10 rounded-full blur-[100px]" />
+              <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-accent-primary/10 rounded-full blur-[100px]" />
             </div>
-            
-            <div className="flex-1">
-              <div className="flex items-center gap-3 flex-wrap mb-4">
-                <TrustScoreBadge verification={startup.verification} />
-                <span className="font-mono text-xs text-muted-foreground">
-                  {isPending ? "Review Pending" : "Reviewed 2026 • Verified Registry Ledger"}
-                </span>
+
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div className="w-20 h-20 sm:w-28 sm:h-28 bg-card/90 border border-accent-gold/30 rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden shadow-lg p-2 group">
+                  <StartupLogo name={startup.name} logo_url={startup.logo_url} size={112} className="rounded-xl object-contain" />
+                </div>
+                
+                <div>
+                  <div className="flex items-center gap-3 flex-wrap mb-3">
+                    <TrustScoreBadge verification={startup.verification} />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-accent-gold/10 border border-accent-gold/30 text-accent-gold">
+                      {isPending ? "Review Pending" : "Verified Registry Ledger"}
+                    </span>
+                    {startup.ufrn && (
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-muted border border-border text-foreground">
+                        {startup.ufrn}
+                      </span>
+                    )}
+                  </div>
+
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]" style={{ fontFamily: "'Georgia', serif" }}>
+                    {startup.name}
+                  </h1>
+                  
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-xs font-medium text-muted-foreground">
+                    {startup.category && (
+                      <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-accent-gold">
+                        <Tag className="h-3.5 w-3.5" />
+                        {categorySlug ? (
+                          <Link href={"/registry?sector=" + encodeURIComponent(startup.category)} className="hover:underline">
+                            {startup.category}
+                          </Link>
+                        ) : (
+                          <span>{startup.category}</span>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-muted-foreground">
+                      <MapPin className="h-3.5 w-3.5 text-accent-secondary" />
+                      {startup.city ? (
+                        <Link href={"/registry?country=" + encodeURIComponent(startup.country_code || "")} className="hover:underline">
+                          {startup.city + ", " + (startup.country_name ?? "Global")}
+                        </Link>
+                      ) : (
+                        <span>{startup.country_name ?? "Global"}</span>
+                      )}
+                    </div>
+                    {startup.founded_year && (
+                      <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-muted-foreground">
+                        <Calendar className="h-3.5 w-3.5" />
+                        <span>Est. {startup.founded_year}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-[56px] font-bold tracking-tight text-foreground leading-[1]" style={{ fontFamily: "'Georgia', serif" }}>
-                {startup.name}
-              </h1>
-              
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-6">
-                {startup.category && (
-                  <div className="flex items-center gap-2 font-sans font-bold text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-400">
-                    <Tag className="h-3 w-3" />
-                    {categorySlug ? <Link href={"/registry?sector=" + encodeURIComponent(startup.category)} className="hover:underline underline-offset-2">{startup.category}</Link> : <span>{startup.category}</span>}
-                  </div>
-                )}
-                <div className="flex items-center gap-2 font-sans font-bold text-[10px] uppercase tracking-widest text-muted-foreground">
-                  <MapPin className="h-3 w-3" />
-                  {citySlug && startup.city ? <Link href={"/registry?country=" + encodeURIComponent(startup.country_code || "")} className="hover:underline underline-offset-2">{startup.city + ", " + (startup.country_name ?? "Global")}</Link> : <span>{startup.country_name ?? "Global"}</span>}
-                </div>
-                {startup.founded_year && (
-                  <div className="flex items-center gap-2 font-sans font-bold text-[10px] uppercase tracking-widest text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    <span>Est. {startup.founded_year}</span>
-                  </div>
-                )}
-              </div>
+              {websiteUrl && (
+                <a
+                  href={websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-accent-gold text-black hover:bg-amber-400 font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full transition-all shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:scale-105 cursor-pointer flex-shrink-0"
+                >
+                  Visit Official Site <ArrowUpRight className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </div>
 
