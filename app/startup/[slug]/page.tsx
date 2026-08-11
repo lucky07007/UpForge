@@ -42,6 +42,7 @@ function getRelatedStartups(category: string, currentSlug: string) {
       description: s.description,
       logo_url: s.logo_url,
       category: s.category,
+      website: s.website,
     }));
 }
 
@@ -217,4 +218,3 @@ export default async function StartupPage({ params }: PageProps) {
     </div>
   );
 }
-
