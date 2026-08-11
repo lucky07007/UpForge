@@ -1,16 +1,18 @@
-// lib/site-stats.ts
+import statsData from "../public/data/stats.json"
+
 /**
  * Single source of truth for platform-wide statistics.
  * Any numeric claim regarding startup counts, verified profile counts,
  * country reach, sectors, and verified creators MUST reference this file.
+ * Automatically hydrated from build-time generated /public/data/stats.json
  */
 
 export const SITE_STATS = {
-  verifiedStartupsCount: 1050,
-  trackedStartupsCount: 47000,
-  sectorCount: 30,
-  countryCount: 190,
-  verifiedCreatorsCount: 17,
+  verifiedStartupsCount: statsData.verifiedStartupsCount || 115,
+  trackedStartupsCount: statsData.trackedStartupsCount || 115,
+  sectorCount: statsData.sectorCount || 17,
+  countryCount: statsData.countryCount || 11,
+  verifiedCreatorsCount: statsData.verifiedCreatorsCount || 17,
   
   // Formatted string helpers
   get verifiedStartupsText() {
@@ -29,3 +31,4 @@ export const SITE_STATS = {
     return `${this.verifiedCreatorsCount}`
   }
 } as const
+
