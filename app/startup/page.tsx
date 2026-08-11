@@ -1,6 +1,7 @@
 // app/startup/page.tsx — Google Sheets powered (no Supabase)
 import { queryStartups, getSheetFilters } from "@/lib/google-sheets"
 import type { Startup } from "@/types/startup"
+import { formatFounders } from "@/types/startup"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
@@ -733,8 +734,8 @@ export default async function StartupPage({ searchParams }: PageProps) {
                                 </div>
                                 {s.description && <p className="s-desc">{s.description.slice(0, 130)}</p>}
                                 <div className="s-meta-row">
-                                  {s.founders && (
-                                    <div className="s-meta-item"><Users size={11} /><span>{s.founders}</span></div>
+                                  {formatFounders(s.founders) && (
+                                    <div className="s-meta-item"><Users size={11} /><span>{formatFounders(s.founders)}</span></div>
                                   )}
                                   {s.founded_year && (
                                     <div className="s-meta-item"><Calendar size={11} /><span>{s.founded_year}</span></div>
