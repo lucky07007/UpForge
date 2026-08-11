@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Startup } from "@/types/startup"
+import { formatFounders } from "@/types/startup"
 import { unstable_cache } from "next/cache"
 
 
@@ -181,6 +182,20 @@ const fetchRawStartups = unstable_cache(
   { revalidate: 300, tags: ["startups"] }
 )
 
+function loadLocalStaticStartups(): Startup[] {
+  try {
+    const fs = require("fs")
+    const path = require("path")
+    const filePath = path.join(process.cwd(), "public", "data", "startups.json")
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, "utf-8"))
+    }
+  } catch {
+    // ignore
+  }
+  return []
+}
+
 // ── Main fetcher ──────────────────────────────────────────────────────────────
 export async function fetchAllStartups(): Promise<Startup[]> {
   const now = Date.now()
@@ -197,13 +212,20 @@ export async function fetchAllStartups(): Promise<Startup[]> {
     if (startups.length > 0) {
       _cachedStartups = startups
       _cacheTime = now
+      return startups
     }
-
-    return startups
-  } catch (err) {
-    console.error("[google-sheets] Error:", err)
-    return _cachedStartups // return stale on error
+  } catch {
+    // fallback to static pre-generated JSON
   }
+
+  const local = loadLocalStaticStartups()
+  if (local.length > 0) {
+    _cachedStartups = local
+    _cacheTime = now
+    return local
+  }
+
+  return _cachedStartups
 }
 
 
@@ -354,7 +376,7 @@ export async function queryStartups(opts: QueryOptions): Promise<QueryResult> {
       (s) =>
         s.name.toLowerCase().includes(q) ||
         (s.description?.toLowerCase() ?? "").includes(q) ||
-        (s.founders?.toLowerCase() ?? "").includes(q) ||
+        formatFounders(s.founders).toLowerCase().includes(q) ||
         (s.category?.toLowerCase() ?? "").includes(q) ||
         (s.city?.toLowerCase() ?? "").includes(q) ||
         (s.country_name?.toLowerCase() ?? "").includes(q)
