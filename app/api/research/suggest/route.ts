@@ -1,6 +1,7 @@
 // app/api/research/suggest/route.ts
 
 import { fetchAllStartups } from "@/lib/google-sheets"
+import { formatFounders } from "@/types/startup"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
@@ -25,8 +26,9 @@ export async function GET(request: NextRequest) {
       if (item.category?.toLowerCase().includes(lowerQuery)) {
         suggestions.add(item.category)
       }
-      if (item.founders?.toLowerCase().includes(lowerQuery)) {
-        suggestions.add(item.founders)
+      const f = formatFounders(item.founders)
+      if (f.toLowerCase().includes(lowerQuery)) {
+        suggestions.add(f)
       }
     })
 
