@@ -56,12 +56,9 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
           <div className="mb-5 flex items-start justify-between">
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/50 shadow-inner group-hover:border-amber-500/50 transition-colors">
               {startup.logo_url ? (
-                <Image
+                <img
                   src={startup.logo_url}
                   alt={`${startup.name} logo`}
-                  width={56}
-                  height={56}
-                  unoptimized
                   className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                 />
