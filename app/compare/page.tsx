@@ -6,6 +6,7 @@ import { Navbar } from "@/components/navbar";
 import { StartupCompareMatrix } from "@/components/startup-compare-matrix";
 import type { Startup } from "@/types/startup";
 import { WebSiteJsonLd } from "@/components/json-ld";
+import { fetchAllStartups } from "@/lib/google-sheets";
 
 const BASE_URL = "https://upforge.org";
 
@@ -53,7 +54,10 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 export default async function ComparePage({ searchParams }: PageProps) {
   const sp = await searchParams;
   const initialSlugs = sp?.slugs ? sp.slugs.split(",").map(s => s.trim()).filter(Boolean) : [];
-  const allStartups = loadStaticStartups();
+  let allStartups = loadStaticStartups();
+  if (allStartups.length === 0) {
+    allStartups = await fetchAllStartups();
+  }
 
   return (
     <>
