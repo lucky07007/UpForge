@@ -1,6 +1,7 @@
 // app/startups/[category]/page.tsx — Google Sheets powered (no Supabase)
 
 import { fetchAllStartups } from "@/lib/google-sheets"
+import { formatFounders } from "@/types/startup"
 import { getSectorHero }    from "@/lib/sector-heroes"
 import { notFound }         from "next/navigation"
 import type { Metadata }    from "next"
@@ -42,7 +43,7 @@ async function getCategoryStartups(dbCat: string, page: number, q: string) {
     filtered = filtered.filter(s =>
       s.name.toLowerCase().includes(lq) ||
       (s.description?.toLowerCase() ?? "").includes(lq) ||
-      (s.founders?.toLowerCase() ?? "").includes(lq)
+      formatFounders(s.founders).toLowerCase().includes(lq)
     )
   }
   filtered.sort((a, b) => {
