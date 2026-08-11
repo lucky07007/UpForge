@@ -428,3 +428,4 @@ export async function queryStartups(opts: QueryOptions): Promise<QueryResult> {
 
   return { startups, total }
 }
+
