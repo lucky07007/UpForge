@@ -133,20 +133,27 @@ function safeDateString(value?: string | null): string {
   return d.toISOString().split('T')[0]
 }
 
+import fs from "fs"
+import path from "path"
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let startups: StartupRow[] = []
   let blogs: BlogRow[] = []
 
   try {
-    const all = await fetchAllStartups()
-    startups = all.map(s => ({
-      slug: s.slug,
-      category: s.category ?? null,
-      updated_at: s.updated_at ?? null,
-      created_at: s.created_at ?? null,
-      is_featured: s.is_featured ?? null,
-      ufrn: s.ufrn ?? null,
-    }))
+    const jsonPath = path.join(process.cwd(), "public", "data", "startups.json")
+    if (fs.existsSync(jsonPath)) {
+      const fileContent = fs.readFileSync(jsonPath, "utf-8")
+      const all = JSON.parse(fileContent)
+      startups = all.map((s: any) => ({
+        slug: s.slug,
+        category: s.category ?? null,
+        updated_at: s.updated_at ?? null,
+        created_at: s.created_at ?? null,
+        is_featured: s.is_featured ?? null,
+        ufrn: s.ufrn ?? null,
+      }))
+    }
   } catch (error) {
     console.error("Sitemap generation error:", error)
     startups = []
