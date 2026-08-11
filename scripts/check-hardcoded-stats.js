@@ -2,12 +2,16 @@
 const fs = require('fs');
 const path = require('path');
 
+// Target platform stat claims (e.g. "47,000+ startups", "1,050+ cities", "50,000+ monthly visits")
 const STAT_PATTERNS = [
-  /\b47,?000\+?\b/gi,
+  /\b47,?000\+?\s+(startups|entities|records|companies)\b/gi,
+  /\b1,?050\+?\s+(cities|locations|hubs)\b/gi,
+  /\b50,?000\+?\s+(visits|visitors|monthly)\b/gi,
 ];
 
 const IGNORED_PATHS = [
   'lib/site-stats.ts',
+  'public/data',
   'scripts',
   'node_modules',
   '.next',
