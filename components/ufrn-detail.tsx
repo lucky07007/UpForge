@@ -546,3 +546,4 @@ function UFRNBreakdown({ ufrn }: { ufrn: string }) {
     </div>
   )
 }
+
