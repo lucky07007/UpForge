@@ -22,13 +22,13 @@ export const metadata: Metadata = {
     url: "https://www.upforge.org/blog/top-20-saas-startups-india-2026",
     siteName: "UpForge",
     type: "article",
-    images: [{ url: "https://www.upforge.org/top-20-saas-startups-india-2026.jpg", width: 1200, height: 630 }],
+    images: [{ url: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Top 20 SaaS Startups in India 2026: Ranked & Profiled",
     description: "India's SaaS sector is on track to hit $37 billion in annual recurring revenue by the end of 2026, driven by a new wave of vertical AI-native platforms.",
-    images: ["/top-20-saas-startups-india-2026.jpg"],
+    images: ["https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp"],
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
 }
