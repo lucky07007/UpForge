@@ -91,6 +91,25 @@ const nextConfig = {
           },
         ],
       },
+      // Blog pages edge cache - 1 day s-maxage, 7 days SWR
+      {
+        source: "/blog",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/blog/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
       // OG images - cache 1 day
       {
         source: "/og/(.*)",
