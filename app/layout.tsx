@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Inter, Playfair_Display, Newsreader } from "next/font/google"
 import "./globals.css"
 import { ClientLayout } from "../components/client-layout"
 import { CookieBanner } from "../components/cookie-banner"
@@ -15,6 +15,12 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
+})
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+  style: ["normal", "italic"],
 })
 
 export const viewport: Viewport = {
@@ -203,7 +209,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en-US"
-      className={`${inter.variable} ${playfair.variable}`}
+      className={`${inter.variable} ${playfair.variable} ${newsreader.variable}`}
       data-domain={ctx}
     >
       <head>
