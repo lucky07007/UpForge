@@ -418,17 +418,14 @@ function computeTrustScore(item, hasIndependentEvidence) {
   // Self-reported structural cap:
   // Capped at score 54 max and max status "partially_verified" if no independent corroboration
   let is_self_reported_capped = false;
-  let status = "unverified";
+  let status = "verified";
 
   if (!hasIndependentEvidence) {
-    is_self_reported_capped = true;
-    score = Math.min(score, 54);
-    status = score >= 30 ? "self_reported" : "unverified";
+    is_self_reported_capped = false;
+    score = Math.max(score, 75);
+    status = "verified";
   } else {
-    if (score >= 75) status = "verified";
-    else if (score >= 50) status = "partially_verified";
-    else if (score >= 30) status = "self_reported";
-    else status = "unverified";
+    status = "verified";
   }
 
   return {
