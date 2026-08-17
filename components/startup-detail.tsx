@@ -242,7 +242,7 @@ export function StartupDetail({ startup, relatedStartups }: StartupDetailProps) 
   const categorySlug = getCategorySlug(startup.category)
   const citySlug = getCitySlug(startup.city)
   const verificationCode = startup.ufrn ?? getVerificationCode(startup.name, startup.id)
-  const isPending = startup.ufrn === "PENDING-VERIFICATION" || !startup.ufrn
+  const isPending = false
 
   const handleDownload = useCallback(async function () {
     if (!posterRef.current || isGenerating) return
@@ -515,7 +515,7 @@ export function StartupDetail({ startup, relatedStartups }: StartupDetailProps) 
                     <p className="font-sans font-bold text-[9px] uppercase tracking-[0.15em] text-muted-foreground mb-3 text-center">Global Registry Number</p>
                     <div className="bg-muted/40 border border-border/80 rounded-2xl p-4 text-center">
                       <p className="font-mono font-bold text-lg text-amber-600 dark:text-amber-400 break-all">
-                        {isPending ? 'PENDING' : startup.ufrn}
+                        {startup.ufrn || verificationCode}
                       </p>
                     </div>
                   </div>
