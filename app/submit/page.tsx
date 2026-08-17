@@ -454,11 +454,35 @@ The UpForge Team
 function SuccessScreen({
   startupName, founderName, email,
 }: { startupName: string; founderName: string; email: string }) {
+  const [latestStartup, setLatestStartup] = useState<any>(null);
+  const [isLoadingLatest, setIsLoadingLatest] = useState(true);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    async function fetchLatest() {
+      try {
+        const res = await fetch("/api/latest-startup");
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data?.startup) {
+            setLatestStartup(data.startup);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch latest startup for social proof:", err);
+      } finally {
+        if (isMounted) setIsLoadingLatest(false);
+      }
+    }
+    fetchLatest();
+    return () => { isMounted = false; };
+  }, []);
+
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4 md:p-8 font-serif">
-        <div className="bg-background border-2 border-foreground max-w-lg w-full p-8 md:p-12 text-center shadow-md relative">
+      <div className="min-h-screen bg-muted/30 flex flex-col items-center justify-center p-4 md:p-8 font-serif">
+        <div className="bg-background border-2 border-foreground max-w-lg w-full p-8 md:p-12 text-center shadow-md relative rounded-3xl">
           
           <div className="w-16 h-16 rounded-full bg-[#22C55E]/10 border border-[#22C55E]/30 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-8 h-8 text-[#22C55E]" />
@@ -477,7 +501,7 @@ function SuccessScreen({
             <strong className="text-foreground">{startupName}</strong> has been logged in our editorial queue.
           </p>
 
-          <div className="bg-muted border border-[#C59A2E]/30 p-5 mb-8 text-left space-y-2">
+          <div className="bg-muted border border-[#C59A2E]/30 p-5 mb-6 text-left space-y-2 rounded-2xl">
             <div className="flex items-center gap-2 text-[#C59A2E]">
               <ShieldCheck className="w-4 h-4" />
               <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Audit Protocol</span>
@@ -487,9 +511,39 @@ function SuccessScreen({
             </p>
           </div>
 
+          {/* Social Proof — Latest Approved Startup Card */}
+          {latestStartup && (
+            <div className="mb-6 p-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 text-left transition-all hover:border-amber-500/50">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  Latest Approved Startup
+                </span>
+                {latestStartup.ufrn && (
+                  <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    {latestStartup.ufrn}
+                  </span>
+                )}
+              </div>
+              <h3 className="font-bold text-base text-foreground mb-1">
+                {latestStartup.name}
+              </h3>
+              {latestStartup.description && (
+                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-3">
+                  {latestStartup.description}
+                </p>
+              )}
+              <a
+                href={`/startup/${latestStartup.slug}`}
+                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:underline uppercase tracking-wider"
+              >
+                View Approved Profile <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          )}
+
           <a
             href="/registry"
-            className="inline-flex items-center justify-center gap-2 bg-foreground hover:bg-[#C59A2E] text-background px-8 py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-colors w-full"
+            className="inline-flex items-center justify-center gap-2 bg-foreground hover:bg-[#C59A2E] text-background px-8 py-3.5 font-mono text-xs font-bold uppercase tracking-wider transition-colors w-full rounded-2xl"
           >
             Explore Global Registry <ArrowRight className="w-4 h-4" />
           </a>
