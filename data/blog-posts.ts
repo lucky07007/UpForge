@@ -16,6 +16,7 @@ export interface BlogPost {
   updated?: string
   readTime: string
   featured?: boolean
+  image: string
 }
 
 export const BLOG_CATEGORIES: BlogCategory[] = [
@@ -56,6 +57,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "July 2026",
     readTime: "15 min",
     featured: true,
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top 20 SaaS Startups in India 2026: Ranked & Profiled"
   },
   {
     title: "How Indian Startups Are Using AI Agents to Cut Operating Costs by 40% in 2026",
@@ -65,6 +67,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "In 2026, Indian early-stage companies are integrating autonomous AI agents to automate customer support, lead sourcing, and data processing, achieving up to 40% savings in overhead.",
     date: "July 2026",
     readTime: "14 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "How Indian Startups Are Using AI Agents to Cut Operating Costs by 40% in 2026"
   },
   {
     title: "Best Startup Incubators & Accelerators in India 2026: Complete List",
@@ -74,6 +77,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Navigating the startup ecosystem in 2026 requires more than capital. Here is the ranked list of the top 15 Indian incubators offering mentorship and grants.",
     date: "July 2026",
     readTime: "15 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Best Startup Incubators & Accelerators in India 2026: Complete List"
   },
   {
     title: "GST & Tax Compliance Guide for Indian Startups 2026",
@@ -83,6 +87,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Failing to file monthly returns can result in severe penalties. This guide provides a detailed operational compliance roadmap for Indian startups in 2026.",
     date: "July 2026",
     readTime: "16 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "GST & Tax Compliance Guide for Indian Startups 2026"
   },
   {
     title: "Top HealthTech Startups in India 2026: The Digital Health Boom",
@@ -92,6 +97,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Driven by AI diagnostics and telehealth expansion, India's digital health sector is projected to reach $18 billion by the end of 2026.",
     date: "July 2026",
     readTime: "15 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top HealthTech Startups in India 2026: The Digital Health Boom"
   },
   {
     title: "How to Build a Pitch Deck That Gets Funded in 2026 (Slide-by-Slide)",
@@ -101,6 +107,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Raising capital in 2026 demands proof of capital efficiency. Here is the exact slide-by-slide template that secured over $80 million for seed-stage startups.",
     date: "July 2026",
     readTime: "15 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "How to Build a Pitch Deck That Gets Funded in 2026 (Slide-by-Slide)"
   },
   {
     title: "D2C Brands in India 2026: Winners, Funding & Growth Playbook",
@@ -110,6 +117,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "India's direct-to-consumer (D2C) market is set to touch $100 billion by December 2026, driven by omnichannel expansion and quick commerce partnerships.",
     date: "July 2026",
     readTime: "14 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "D2C Brands in India 2026: Winners, Funding & Growth Playbook"
   },
   {
     title: "ESOPs Explained: A Founder's Guide to Employee Stock Options in 2026",
@@ -119,6 +127,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Attracting premium talent in 2026 requires more than cash. Here is the structural guide to designing an ESOP pool that retains key contributors.",
     date: "July 2026",
     readTime: "15 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "ESOPs Explained: A Founder's Guide to Employee Stock Options in 2026"
   },
   {
     title: "Climate Tech & GreenTech Startups in India 2026: The Next Big Wave",
@@ -128,6 +137,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Venture funding for Indian climate tech startups surged to $1.4 billion in Q1 2026, driven by advancements in battery chemistry and grid storage solutions.",
     date: "July 2026",
     readTime: "14 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Climate Tech & GreenTech Startups in India 2026: The Next Big Wave"
   },
   {
     title: "Startup Hiring Trends 2026: How to Build Your First 10-Person Team",
@@ -137,6 +147,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Building a startup team in 2026 requires balancing cost and execution speed. Here is the operational hiring guide to securing your first 10 core contributors.",
     date: "July 2026",
     readTime: "16 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Startup Hiring Trends 2026: How to Build Your First 10-Person Team"
   },
   {
     title: "AI Startup Funding & Exit Routes in India 2026: The Consolidation Wave",
@@ -147,6 +158,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "July 2026",
     readTime: "12 min",
     featured: true,
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "AI Startup Funding & Exit Routes in India 2026: The Consolidation Wave"
   },
   {
     title: "Why Investors Are Rejecting Generic AI Pitches in 2026: The Moat Requirement",
@@ -156,6 +168,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Simple API wrappers are getting rejected. Discover the deep proprietary tech and data pipelines VCs now demand.",
     date: "July 2026",
     readTime: "12 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Why Investors Are Rejecting Generic AI Pitches in 2026: The Moat Requirement"
   },
   {
     title: "How Indian Space & Defense Tech Startups Are Winning Government Contracts in 2026",
@@ -165,6 +178,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "National defense is no longer the exclusive domain of state-run enterprises. Startups are securing major contracts under iDEX and space reforms.",
     date: "July 2026",
     readTime: "12 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "How Indian Space & Defense Tech Startups Are Winning Government Contracts in 2026"
   },
   {
     title: "Why Tier-2 & Tier-3 Indian Cities Are Producing 50% of New Startups in 2026",
@@ -174,6 +188,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Non-metro cities like Jaipur, Indore, Kochi and others now account for 50% of registrations. Examine the cost advantages and talent pools.",
     date: "July 2026",
     readTime: "12 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Why Tier-2 & Tier-3 Indian Cities Are Producing 50% of New Startups in 2026"
   },
   {
     title: "The Founder's Guide to UFRN Verification & Registry Credentials",
@@ -183,6 +198,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Learn how the UpForge Registry Number (UFRN) system validates startup legitimacy and provides verified operational metrics for VCs.",
     date: "July 2026",
     readTime: "12 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "The Founder's Guide to UFRN Verification & Registry Credentials"
   },
   {
     title: "India Startup Ecosystem 2026: Complete State of the Nation Report",
@@ -194,6 +210,7 @@ export const BLOG_POSTS: BlogPost[] = [
     updated: "June 2026",
     readTime: "20 min",
     featured: true,
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "India Startup Ecosystem 2026: Complete State of the Nation Report"
   },
   {
     title: "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled",
@@ -205,6 +222,7 @@ export const BLOG_POSTS: BlogPost[] = [
     updated: "June 2026",
     readTime: "15 min",
     featured: true,
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled"
   },
   {
     title: "Top 30 Venture Capital Firms in India 2026: Complete Rankings & Profiles",
@@ -215,6 +233,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "June 2026",
     readTime: "15 min",
     featured: true,
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top 30 Venture Capital Firms in India 2026: Complete Rankings & Profiles"
   },
   {
     title: "India vs Silicon Valley: Why Indian Startups Are Winning Globally",
@@ -225,6 +244,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "June 2026",
     readTime: "11 min",
     featured: true,
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "India vs Silicon Valley: Why Indian Startups Are Winning Globally"
   },
   {
     title: "How to Get Startup Funding in India 2026: Complete Founder's Guide",
@@ -235,6 +255,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "March 2026",
     updated: "June 2026",
     readTime: "12 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "How to Get Startup Funding in India 2026: Complete Founder's Guide"
   },
   {
     title: "Top AI Startups in India (2026 Updated List)",
@@ -245,6 +266,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "March 2026",
     updated: "June 2026",
     readTime: "11 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top AI Startups in India (2026 Updated List)"
   },
   {
     title: "How Startup Valuation Works in India 2026: Complete Founder's Guide",
@@ -254,6 +276,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "How VCs value your startup at every stage — Berkus method, ARR multiples, benchmarks, and negotiation tips.",
     date: "June 2026",
     readTime: "13 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "How Startup Valuation Works in India 2026: Complete Founder's Guide"
   },
   {
     title: "Top Fintech Startups in India 2026: Complete Ranked List",
@@ -263,6 +286,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "The definitive guide to India's top fintechs across payments, lending, insurtech, wealthtech, and neobanks.",
     date: "June 2026",
     readTime: "16 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top Fintech Startups in India 2026: Complete Ranked List"
   },
   {
     title: "25 Best Indian Startup Founders to Follow in 2026",
@@ -273,6 +297,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "March 2026",
     updated: "June 2026",
     readTime: "18 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "25 Best Indian Startup Founders to Follow in 2026"
   },
   {
     title: "Top 25 Women Founders in India Building Billion-Dollar Companies 2026",
@@ -282,6 +307,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "From unicorn builders to category creators — India's most inspiring women startup founders and their strategies.",
     date: "June 2026",
     readTime: "14 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top 25 Women Founders in India Building Billion-Dollar Companies 2026"
   },
   {
     title: "Why 90% of Indian Startups Fail: The Data, Reasons & How to Survive",
@@ -291,6 +317,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Data from 500+ post-mortems — the 12 real reasons Indian startups fail and actionable strategies to beat the odds.",
     date: "June 2026",
     readTime: "12 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Why 90% of Indian Startups Fail: The Data, Reasons & How to Survive"
   },
   {
     title: "20 Bootstrapped Indian Startups That Beat Funded Rivals",
@@ -300,6 +327,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Zerodha. Zoho. Freshworks in early days. How Indian founders built profitable empires without VC money.",
     date: "June 2026",
     readTime: "14 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "20 Bootstrapped Indian Startups That Beat Funded Rivals"
   },
   {
     title: "The Ultimate Legal Guide for Indian Startups 2026",
@@ -309,6 +337,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: "Company registration, DPIIT recognition, ESOPs, FEMA compliance, IP protection — every legal milestone from founding to Series A.",
     date: "June 2026",
     readTime: "13 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "The Ultimate Legal Guide for Indian Startups 2026"
   },
   {
     title: "How to Start a Startup in India (Step-by-Step Guide 2026)",
@@ -319,5 +348,6 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "March 2026",
     updated: "June 2026",
     readTime: "14 min",
+    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "How to Start a Startup in India (Step-by-Step Guide 2026)"
   },
 ]
