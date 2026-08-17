@@ -57,7 +57,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "July 2026",
     readTime: "15 min",
     featured: true,
-    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top 20 SaaS Startups in India 2026: Ranked & Profiled"
+    image: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp", // 🖼️ REPLACE ME — cover image for "Top 20 SaaS Startups in India 2026: Ranked & Profiled"
   },
   {
     title: "How Indian Startups Are Using AI Agents to Cut Operating Costs by 40% in 2026",
@@ -158,7 +158,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "July 2026",
     readTime: "12 min",
     featured: true,
-    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "AI Startup Funding & Exit Routes in India 2026: The Consolidation Wave"
+    image: "https://images.upforge.org/blog/ai-startup-funding-exit-routes-india-2026-consolidation.webp", // 🖼️ REPLACE ME — cover image for "AI Startup Funding & Exit Routes in India 2026: The Consolidation Wave"
   },
   {
     title: "Why Investors Are Rejecting Generic AI Pitches in 2026: The Moat Requirement",
@@ -210,7 +210,7 @@ export const BLOG_POSTS: BlogPost[] = [
     updated: "June 2026",
     readTime: "20 min",
     featured: true,
-    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "India Startup Ecosystem 2026: Complete State of the Nation Report"
+    image: "https://images.upforge.org/blog/india-startup-ecosystem-2026-state-of-nation-report.webp", // 🖼️ REPLACE ME — cover image for "India Startup Ecosystem 2026: Complete State of the Nation Report"
   },
   {
     title: "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled",
@@ -222,7 +222,7 @@ export const BLOG_POSTS: BlogPost[] = [
     updated: "June 2026",
     readTime: "15 min",
     featured: true,
-    image: "https://www.sample.jpg", // 🖼️ REPLACE ME — cover image for "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled"
+    image: "https://images.upforge.org/blog/top-indian-unicorns-2026-ranked-profiled.webp", // 🖼️ REPLACE ME — cover image for "Top Indian Unicorns 2026: Every ₹1B+ Startup Ranked & Profiled"
   },
   {
     title: "Top 30 Venture Capital Firms in India 2026: Complete Rankings & Profiles",
