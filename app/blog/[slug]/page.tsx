@@ -3,6 +3,10 @@ import { notFound } from "next/navigation"
 import { ArticleLayout } from "@/components/blog/ArticleLayout"
 import { BLOG_POSTS, BlogPost } from "@/data/blog-posts"
 
+// 🖼️ COVER IMAGE — replace this single URL to update every use of this
+// blog post's image (OG tag, Twitter card, and in-article hero image).
+const COVER_IMAGE = "https://www.sample.jpg"
+
 export const dynamic = "force-static"
 
 export async function generateStaticParams() {
@@ -27,8 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const canonicalUrl = `https://www.upforge.org/blog/${post.slug}`
-  const imageUrl = `https://www.upforge.org/${post.slug}.jpg`
+  const canonicalUrl = `https://upforge.org/blog/${post.slug}`
+  const imageUrl = post.image || COVER_IMAGE
 
   return {
     title: `${post.title} | UpForge`,
@@ -40,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: canonicalUrl,
       siteName: "UpForge",
       type: "article",
-      images: [{ url: imageUrl, width: 1200, height: 630 }],
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }],
     },
     twitter: {
       card: "summary_large_image",
@@ -76,6 +80,7 @@ export default async function DynamicBlogArticlePage({ params }: PageProps) {
   return (
     <ArticleLayout
       post={post}
+      heroImage={{ src: post.image || COVER_IMAGE, alt: post.title }}
       headings={headings}
       topics={topics}
       relatedSlugs={[
