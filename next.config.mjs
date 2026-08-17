@@ -130,6 +130,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/:path*.(png|jpg|jpeg|webp|avif|svg|ico|gif)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       // Static assets (JS, CSS, fonts) - cache 1 year
       {
         source: "/_next/static/(.*)",
