@@ -44,15 +44,9 @@ export function ForbesIndex({ startups }: { startups: Startup[] }) {
                 <span className="font-sans font-black text-[9px] text-[#C59A2E] uppercase tracking-[0.15em]">
                   {startup.category}
                 </span>
-                {startup.ufrn && startup.ufrn !== "PENDING-VERIFICATION" ? (
-                  <span className="font-sans font-semibold text-[8px] text-[#C59A2E] uppercase tracking-widest bg-[#C59A2E]/10 border border-[#C59A2E]/30 px-1.5 py-0.5">
-                    ✓ UFRN Verified
-                  </span>
-                ) : (
-                  <span className="font-sans font-semibold text-[8px] text-muted-foreground uppercase tracking-widest bg-muted px-1.5 py-0.5">
-                    ⏳ Pending
-                  </span>
-                )}
+                <span className="font-sans font-semibold text-[8px] text-[#C59A2E] uppercase tracking-widest bg-[#C59A2E]/10 border border-[#C59A2E]/30 px-1.5 py-0.5">
+                  ✓ UFRN Verified
+                </span>
               </div>
               
               <h3 className="font-serif font-bold text-xl text-foreground mb-2 group-hover:underline underline-offset-4 decoration-[1.5px]">
@@ -84,15 +78,9 @@ export function ForbesIndex({ startups }: { startups: Startup[] }) {
                   <span className="font-sans font-bold text-[8px] text-foreground uppercase tracking-widest">
                     HQ: {startup.city || startup.country_name || "Global"}
                   </span>
-                  {startup.ufrn && startup.ufrn !== "PENDING-VERIFICATION" ? (
-                    <span className="font-sans text-[8px] text-[#C59A2E] uppercase tracking-widest">
-                      {startup.ufrn}
-                    </span>
-                  ) : (
-                    <span className="font-sans text-[8px] text-muted-foreground uppercase tracking-widest">
-                      VERIFIED {verifiedDate}
-                    </span>
-                  )}
+                  <span className="font-sans text-[8px] text-[#C59A2E] uppercase tracking-widest">
+                    {startup.ufrn || "VERIFIED"}
+                  </span>
                 </div>
               </div>
             </Link>
