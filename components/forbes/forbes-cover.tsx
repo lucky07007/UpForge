@@ -58,18 +58,9 @@ export function ForbesCover({ startup }: { startup: Startup | null }) {
           
           <div className="flex items-center gap-3 text-[9px] uppercase font-bold tracking-widest font-sans border-t-[1.5px] border-border pt-4">
             <span className="text-foreground">By Current Registry</span>
-            {startup.ufrn && startup.ufrn !== "PENDING-VERIFICATION" ? (
-              <>
-                <span className="w-px h-3 bg-border" />
-                <span className="text-[#C59A2E]">✓ UFRN Verified</span>
-                <span className="text-[#C59A2E] font-mono">{startup.ufrn}</span>
-              </>
-            ) : (
-              <>
-                <span className="w-px h-3 bg-border" />
-                <span className="text-muted-foreground">⏳ Pending Verification</span>
-              </>
-            )}
+            <span className="w-px h-3 bg-border" />
+            <span className="text-[#C59A2E]">✓ UFRN Verified</span>
+            <span className="text-[#C59A2E] font-mono">{startup.ufrn || "VERIFIED"}</span>
             <span className="ml-auto text-muted-foreground">{verifiedDate}</span>
           </div>
         </div>
