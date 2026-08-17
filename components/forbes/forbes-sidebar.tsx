@@ -33,15 +33,9 @@ export function ForbesSidebar({ startups }: { startups: Startup[] }) {
                   {startup.category || "Startup"}
                 </span>
                 <div className="flex-1" />
-                {startup.ufrn && startup.ufrn !== "PENDING-VERIFICATION" ? (
-                  <span className="font-sans font-bold text-[8px] text-[#C59A2E] uppercase tracking-widest">
-                    ✓ Verified
-                  </span>
-                ) : (
-                  <span className="font-sans text-[8px] text-muted-foreground uppercase tracking-widest">
-                    ⏳ Pending
-                  </span>
-                )}
+                <span className="font-sans font-bold text-[8px] text-[#C59A2E] uppercase tracking-widest">
+                  ✓ Verified
+                </span>
                 <span className="font-serif italic text-muted-foreground/60 text-xs">
                   No. {i + 2}
                 </span>
