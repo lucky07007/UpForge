@@ -5,6 +5,7 @@ import { ClientLayout } from "../components/client-layout"
 import { CookieBanner } from "../components/cookie-banner"
 import Script from "next/script"
 import { getDomainContext } from "@/lib/domain.server"
+import { AdScriptLoader } from "@/components/AdScriptLoader"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,7 +35,7 @@ async function getLatestStartupDate(): Promise<string> {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   return {
     metadataBase: new URL(baseUrl),
     title: {
@@ -150,8 +151,8 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "UpForge",
-    url: "https://www.upforge.org",
-    logo: "https://www.upforge.org/logo.jpg",
+    url: "https://upforge.org",
+    logo: "https://upforge.org/logo.jpg",
     description:
       "Global startup registry with verified founder database and UFRN credentials",
     foundingDate: "2024",
@@ -171,11 +172,11 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "UpForge",
-    url: "https://www.upforge.org",
+    url: "https://upforge.org",
     description: "Global startup registry with verified founder database",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://www.upforge.org/startups?q={search_term_string}",
+      target: "https://upforge.org/startups?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   }
@@ -189,19 +190,19 @@ export default async function RootLayout({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://www.upforge.org",
+        item: "https://upforge.org",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Registry",
-        item: "https://www.upforge.org/registry",
+        item: "https://upforge.org/registry",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: "Submit Startup",
-        item: "https://www.upforge.org/submit",
+        item: "https://upforge.org/submit",
       },
     ],
   }
@@ -213,35 +214,7 @@ export default async function RootLayout({
       data-domain={ctx}
     >
       <head>
-        {/* Ezoic: Privacy Scripts */}
-        <Script
-          data-cfasync="false"
-          src="https://cmp.gatekeeperconsent.com/min.js"
-          strategy="lazyOnload"
-        />
-        <Script
-          data-cfasync="false"
-          src="https://the.gatekeeperconsent.com/cmp.min.js"
-          strategy="lazyOnload"
-        />
-
-        {/* Ezoic: Header Script */}
-        <Script
-          src="//www.ezojs.com/ezoic/sa.min.js"
-          strategy="lazyOnload"
-        />
-        <Script id="ezstandalone-init" strategy="lazyOnload">
-          {`
-            window.ezstandalone = window.ezstandalone || {};
-            ezstandalone.cmd = ezstandalone.cmd || [];
-          `}
-        </Script>
-        <Script
-          src="//ezoicanalytics.com/analytics.js"
-          strategy="lazyOnload"
-        />
-
-        {/* Performance: Preconnect to critical origins */}
+        {/* Performance: Preconnect to critical origins (max 4 origins) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -273,6 +246,9 @@ export default async function RootLayout({
       </head>
 
       <body className="bg-background text-foreground flex flex-col min-h-screen antialiased font-sans">
+        {/* Conditional Ad & Monetization Scripts (Skips non-monetized utility routes) */}
+        <AdScriptLoader />
+
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-3J7Y3695TK"
@@ -286,14 +262,6 @@ export default async function RootLayout({
             gtag('config', 'G-3J7Y3695TK');
           `}
         </Script>
-
-        {/* Google AdSense Auto Ads */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5377045438787332"
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-        />
 
         <ClientLayout domainContext={ctx}>{children}</ClientLayout>
 
