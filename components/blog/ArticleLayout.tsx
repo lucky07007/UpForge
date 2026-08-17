@@ -7,6 +7,7 @@ import { SocialShareRow } from "./SocialShareRow"
 import { TableOfContents, HeadingItem } from "./TableOfContents"
 import { BLOG_POSTS, BlogPost } from "@/data/blog-posts"
 import { Clock, Calendar, ChevronRight, Sparkles, ShieldCheck, ArrowRight, Mail } from "lucide-react"
+import { FeaturedHeroImage } from "./featured-hero-image"
 
 export interface AuthorInfo {
   name: string
@@ -87,20 +88,20 @@ export function ArticleLayout({
     author: {
       "@type": "Person",
       name: author.name,
-      url: `https://www.upforge.org${author.profileUrl}`,
+      url: `https://upforge.org${author.profileUrl}`,
     },
     publisher: {
       "@type": "Organization",
       name: "UpForge",
-      url: "https://www.upforge.org",
+      url: "https://upforge.org",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.upforge.org/logo.jpg",
+        url: "https://upforge.org/logo.jpg",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://www.upforge.org/blog/${post.slug}`,
+      "@id": `https://upforge.org/blog/${post.slug}`,
     },
     articleSection: post.category,
     inLanguage: "en-US",
@@ -115,25 +116,25 @@ export function ArticleLayout({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://www.upforge.org",
+        item: "https://upforge.org",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Journal",
-        item: "https://www.upforge.org/blog",
+        item: "https://upforge.org/blog",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: post.category,
-        item: `https://www.upforge.org/blog?category=${post.categorySlug}`,
+        item: `https://upforge.org/blog?category=${post.categorySlug}`,
       },
       {
         "@type": "ListItem",
         position: 4,
         name: post.title,
-        item: `https://www.upforge.org/blog/${post.slug}`,
+        item: `https://upforge.org/blog/${post.slug}`,
       },
     ],
   }
@@ -228,17 +229,12 @@ export function ArticleLayout({
             </div>
 
             {/* HERO FEATURED BANNER IMAGE */}
-            <div className="mt-8 relative w-full aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden border border-border/80 shadow-lg bg-card">
-              <Image
-                src={bannerImageSrc}
-                alt={bannerImageAlt}
-                fill
-                priority={true}
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 1200px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
-            </div>
+            <FeaturedHeroImage
+              src={bannerImageSrc}
+              alt={bannerImageAlt}
+              priority={true}
+              className="mt-8"
+            />
 
           </div>
         </header>
