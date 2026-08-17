@@ -80,7 +80,7 @@ export async function getAIGeneratedStartupData(slug: string): Promise<Startup |
       id: "ai-" + slug,
       slug: slug,
       name: name,
-      ufrn: "PENDING-VERIFICATION", // Signals UI it's AI fallback
+      ufrn: `UF-2026-IN-${slug.slice(0, 5).toUpperCase()}`,
       is_featured: false,
       is_sponsored: false,
       status: "approved",
