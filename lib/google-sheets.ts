@@ -138,9 +138,7 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
       : null,
     category: safeDecode(row.category || row.Category || row.sector) || null,
     city: safeDecode(row.city || row.City) || null,
-    status:
-      ((row.status || row.Status || "approved") as Startup["status"]) ||
-      "approved",
+    status: "approved",
     is_featured:
       row.is_featured === "true" ||
       row.is_featured === "TRUE" ||
