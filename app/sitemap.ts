@@ -32,7 +32,7 @@ const STARTUP_BLOG_SLUGS = [
   "defense-tech-startups-india-2026",
   "startup-verification-ufrn-credentials-guide",
 
-  // Specialized guides
+  // Specialized guides & Master Upgrade Editorial Reports
   "top-20-saas-startups-india-2026",
   "ai-agents-for-startups-india-2026",
   "top-startup-incubators-india-2026",
@@ -43,6 +43,13 @@ const STARTUP_BLOG_SLUGS = [
   "esop-guide-for-startups-india-2026",
   "climate-tech-startups-india-2026",
   "startup-hiring-guide-india-2026",
+
+  // Master Upgrade Discover Articles
+  "regional-social-network-comeback",
+  "ai-native-dating-local-community-platforms",
+  "fintech-credit-scoring-insurance-comparison",
+  "b2b-contact-sales-intelligence-tools",
+  "ai-chat-productivity-tools-business-workflows",
 ]
 
 const JUNE_2026_STR = "2026-06-26"
