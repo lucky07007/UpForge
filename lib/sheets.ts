@@ -189,7 +189,21 @@ const fetchRawCreators = unstable_cache(
   { revalidate: 300, tags: ["creators"] }
 )
 
+// perf: Serves creator community data from cache / static fallback to maintain <10ms CPU limit
 export async function fetchCreatorsFromSheet(): Promise<SheetCreator[]> {
+  if (typeof window === "undefined") {
+    try {
+      const nodeFs = eval("require")("fs")
+      const nodePath = eval("require")("path")
+      const filePath = nodePath.join(process.cwd(), "public", "data", "creators.json")
+      if (nodeFs.existsSync(filePath)) {
+        return JSON.parse(nodeFs.readFileSync(filePath, "utf-8"))
+      }
+    } catch {
+      // fallback to sheets cache
+    }
+  }
+
   try {
     return await fetchRawCreators()
   } catch (error) {
