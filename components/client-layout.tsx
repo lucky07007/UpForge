@@ -6,6 +6,7 @@ import { createContext, useContext, useMemo } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
+import { RouteProgressBar } from "@/components/RouteProgressBar"
 import type { DomainContext } from "@/lib/domain"
 
 // ─── Domain Context ───────────────────────────────────────────────────────────
@@ -72,6 +73,7 @@ export function ClientLayout({ children, domainContext }: ClientLayoutProps) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <DomainCtx.Provider value={domainValue}>
+        <RouteProgressBar />
         <Navbar />
         <main className="flex-grow w-full pt-14">{children}</main>
         <Footer />
