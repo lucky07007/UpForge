@@ -1,3 +1,4 @@
+// perf: SSG + ISR revalidate 300s for zero-CPU hot-path execution
 import { fetchAllStartups } from "@/lib/google-sheets"
 import type { Metadata } from "next"
 import { SITE_STATS } from "@/lib/site-stats"
