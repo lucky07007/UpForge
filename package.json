@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node scripts/etl-build.js && next dev",
     "etl": "node scripts/etl-build.js",
-    "build": "node scripts/etl-build.js && node scripts/check-hardcoded-stats.js && npx next build && mkdir -p .next/standalone/.next/static/css && cp -r .next/static/* .next/standalone/.next/static/",
+    "build": "node scripts/etl-build.js && node scripts/check-hardcoded-stats.js && next build && mkdir -p .next/standalone/.next/static/css && cp -r .next/static/* .next/standalone/.next/static/",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
