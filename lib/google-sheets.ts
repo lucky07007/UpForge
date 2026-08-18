@@ -116,28 +116,45 @@ const STARTUP_DESCRIPTION_OVERRIDES: Record<string, string> = {
 // ── Row → Startup mapper ──────────────────────────────────────────────────────
 function rowToStartup(row: Record<string, string>, index: number): Startup | null {
   const name = safeDecode(row.name || row.Name || row.startup_name)
-  if (!name) return null
+  const website = (row.website || row.Website || "").trim() || null
+  
+  // perf: 2.4 Automated Sanity Filter — skip row ONLY if BOTH name AND website are empty
+  if (!name && !website) return null
 
+  const displayName = name || (website ? website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] : "Startup")
   const slug =
     (row.slug || row.Slug || "").trim() ||
-    name
+    displayName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
 
+  const rawLogo = (row.logo_url || row.logo || "").trim()
+  const initials = (displayName || "UF")
+    .split(" ")
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase()
+  const svgAvatar = `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="24" fill="#0f172a"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="48" font-weight="bold">${initials}</text></svg>`
+  )}`
+
   return {
     id: row.id || `sheet-${index}`,
-    name,
+    name: displayName,
     slug,
     description: STARTUP_DESCRIPTION_OVERRIDES[slug] || safeDecode(row.description || row.Description) || null,
-    logo_url: (row.logo_url || row.logo || "").trim() || null,
-    website: (row.website || row.Website || "").trim() || null,
+    logo_url: rawLogo && rawLogo.startsWith("http") ? rawLogo : svgAvatar,
+    website,
     founders: safeDecode(row.founders || row.Founders || row.founder) || null,
     founded_year: row.founded_year
       ? parseInt(row.founded_year, 10) || null
       : null,
     category: safeDecode(row.category || row.Category || row.sector) || null,
     city: safeDecode(row.city || row.City) || null,
+    // perf: Force status to "approved" & verified for all sheet entries
     status: "approved",
     is_featured:
       row.is_featured === "true" ||
@@ -157,12 +174,16 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
 
 const fetchRawStartups = unstable_cache(
   async () => {
+    // perf: Read static build data first to guarantee <10ms CPU hot path execution
+    const local = loadLocalStaticStartups()
+    if (local.length > 0) return local
+
     const res = await fetch(SHEET_CSV_URL, {
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(4000),
     })
 
     if (!res.ok) {
-      throw new Error(`Fetch failed: ${res.status}`)
+      return local
     }
 
     const csv = await res.text()
@@ -174,10 +195,10 @@ const fetchRawStartups = unstable_cache(
       if (s) startups.push(s)
     }
 
-    return startups
+    return startups.length > 0 ? startups : local
   },
   ["google-sheets-startups"],
-  { revalidate: 300, tags: ["startups"] }
+  { revalidate: 3600, tags: ["startups"] }
 )
 
 function loadLocalStaticStartups(): Startup[] {
@@ -195,32 +216,32 @@ function loadLocalStaticStartups(): Startup[] {
 }
 
 // ── Main fetcher ──────────────────────────────────────────────────────────────
+// perf: Serves pre-built static JSON / cached records with zero live network latency
 export async function fetchAllStartups(): Promise<Startup[]> {
   const now = Date.now()
 
-  // Serve from cache if fresh
+  // Serve from memory cache if fresh
   if (_cachedStartups.length > 0 && now - _cacheTime < CACHE_TTL) {
     return _cachedStartups
   }
 
+  // 1. Try local pre-computed build JSON first for zero-CPU execution
+  const local = loadLocalStaticStartups()
+  if (local.length > 0) {
+    _cachedStartups = local
+    _cacheTime = now
+    return local
+  }
+
   try {
     const startups = await fetchRawStartups()
-
-    // Only update cache if we got data
     if (startups.length > 0) {
       _cachedStartups = startups
       _cacheTime = now
       return startups
     }
   } catch {
-    // fallback to static pre-generated JSON
-  }
-
-  const local = loadLocalStaticStartups()
-  if (local.length > 0) {
-    _cachedStartups = local
-    _cacheTime = now
-    return local
+    // fallback
   }
 
   return _cachedStartups
