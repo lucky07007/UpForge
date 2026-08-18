@@ -14,12 +14,7 @@
       "bucket_name": "upforge-cache"
     }
   ],
-  "kv_namespaces": [
-    {
-      "binding": "UPFORGE_KV",
-      "id": "upforge-kv"
-    }
-  ],
+
   "triggers": {
     "crons": ["*/10 * * * *"]
   },
