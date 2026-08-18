@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { ArticleLayout } from "@/components/blog/ArticleLayout"
 
 export const dynamic = "force-static"
+export const revalidate = 86400 // Cache for 24 hours
 
 export const metadata: Metadata = {
   title: "Top 20 SaaS Startups in India 2026: Ranked & Profiled | UpForge",
@@ -22,7 +23,12 @@ export const metadata: Metadata = {
     url: "https://www.upforge.org/blog/top-20-saas-startups-india-2026",
     siteName: "UpForge",
     type: "article",
-    images: [{ url: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp", width: 1200, height: 630 }],
+    images: [{ 
+      url: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp", 
+      width: 1200, 
+      height: 630,
+      alt: "Top 20 SaaS Startups in India 2026 - Growth Cover"
+    }],
   },
   twitter: {
     card: "summary_large_image",
@@ -30,7 +36,24 @@ export const metadata: Metadata = {
     description: "India's SaaS sector is on track to hit $37 billion in annual recurring revenue by the end of 2026, driven by a new wave of vertical AI-native platforms.",
     images: ["https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp"],
   },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
+  robots: { 
+    index: true, 
+    follow: true, 
+    googleBot: { 
+      index: true, 
+      follow: true, 
+      "max-snippet": -1, 
+      "max-image-preview": "large",
+      "max-video-preview": -1
+    } 
+  },
+  other: {
+    "google-site-verification": "YOUR_VERIFICATION_CODE_HERE",
+    "article:published_time": "2026-07-01T08:00:00+05:30",
+    "article:modified_time": "2026-07-01T08:00:00+05:30",
+    "article:author": "https://www.upforge.org/editors/lucky-tiwari",
+    "article:section": "SaaS Rankings",
+  }
 }
 
 const postMeta = {
@@ -42,6 +65,14 @@ const postMeta = {
   date: "July 2026",
   readTime: "15 min",
   featured: true,
+  coverImage: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp",
+  coverImageAlt: "Growth chart showing India's SaaS sector expansion to $37 billion ARR in 2026",
+  editor: {
+    name: "Lucky Tiwari",
+    image: "https://images.upforge.org/Editors/lucky.webp",
+    role: "Editor-in-Chief",
+    url: "https://www.upforge.org/editors/lucky-tiwari"
+  }
 }
 
 const headings = [
@@ -92,12 +123,12 @@ export default function Top20SaaSStartupsIndia2026() {
         <table className="w-full text-left text-sm border-collapse">
           <thead>
             <tr className="bg-muted/80 border-b border-border/70 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              <th className="p-4">Rank</th>
-              <th className="p-4">Company Name</th>
-              <th className="p-4">ARR Tier (2026)</th>
-              <th className="p-4">Core Vertical</th>
-              <th className="p-4">Headquarters</th>
-              <th className="p-4">Key Metric</th>
+              <th className="p-4" scope="col">Rank</th>
+              <th className="p-4" scope="col">Company Name</th>
+              <th className="p-4" scope="col">ARR Tier (2026)</th>
+              <th className="p-4" scope="col">Core Vertical</th>
+              <th className="p-4" scope="col">Headquarters</th>
+              <th className="p-4" scope="col">Key Metric</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50">
