@@ -54,6 +54,13 @@ function isRateLimited(ip: string, limit: number, windowMs: number): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // perf: Fast-path return for API and static assets to minimize edge CPU execution time (<10ms target)
+  if (pathname.startsWith('/_next') || pathname.match(/\.(png|jpg|jpeg|gif|webp|svg|css|js|ico|woff2?|xml|txt)$/)) {
+    return NextResponse.next()
+  }
+
   const host = request.headers.get("host") || ""
   if (host.startsWith("www.") || host.includes("upforge.in")) {
     const url = request.nextUrl.clone()
@@ -63,7 +70,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, { status: 301 })
   }
 
-  const pathname = request.nextUrl.pathname
   const userAgent = request.headers.get("user-agent") || ""
   const uaLower = userAgent.toLowerCase().trim()
   
