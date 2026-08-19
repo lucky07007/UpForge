@@ -428,7 +428,7 @@ export const BLOG_POSTS: BlogPost[] = [
     image: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp",
     coverImageUrl: "https://images.upforge.org/blog/top-20-saas-startups-india-2026-growth-cover.webp",
     authorName: "Lucky Tiwari",
-    authorImageUrl: "/lucky-tiwari.png",
+    authorImageUrl: "https://images.upforge.org/Editors/lucky.webp",
     authorTitle: "Founder & Editor-in-Chief",
   },
   {
@@ -798,3 +798,20 @@ export const BLOG_POSTS: BlogPost[] = [
     authorTitle: "Founder & Editor-in-Chief",
   },
 ]
+
+export function getBlogPostBySlug(slug: string): BlogPost | undefined {
+  return BLOG_POSTS.find((p) => p.slug === slug)
+}
+
+export function getBlogPostMetadata(slug: string) {
+  const post = getBlogPostBySlug(slug)
+  const title = post ? `${post.title} | UpForge` : "UpForge Startup Journal"
+  const description = post?.metaDescription || post?.excerpt || "Independent data-driven research and deep-dives into Indian tech ecosystems."
+  const canonicalUrl = `https://www.upforge.org/blog/${slug}`
+  const imageUrl = post?.coverImageUrl || post?.image || "https://images.upforge.org/blog/default-cover.webp"
+  const authorName = post?.authorName || "Lucky Tiwari"
+  const authorImageUrl = post?.authorImageUrl || "/lucky-tiwari.png"
+  const authorTitle = post?.authorTitle || "Founder & Editor-in-Chief"
+
+  return { title, description, canonicalUrl, imageUrl, authorName, authorImageUrl, authorTitle, post }
+}
