@@ -323,7 +323,7 @@ export function StartupCompareMatrix({
                 </td>
                 {selectedStartups.map((s) => (
                   <td key={s.id} className="p-4 border-l border-[var(--glass-border)] font-mono text-xs font-bold text-accent-gold">
-                    {s.ufrn || "PENDING"}
+                    {s.ufrn || `UF-2026-${(s.country_code || "IN").slice(0, 2)}-${s.slug.slice(0, 5).toUpperCase()}`}
                   </td>
                 ))}
                 {selectedStartups.length < 4 && <td className="p-4 border-l border-[var(--glass-border)] bg-muted/10" />}
