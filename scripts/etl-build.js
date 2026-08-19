@@ -467,44 +467,102 @@ function convertGoogleDriveUrl(url) {
   return `https://lh3.googleusercontent.com/d/${fileId}=w400`;
 }
 
+  function getVal(row, ...keys) {
+    const normMap = {};
+    for (const [k, v] of Object.entries(row)) {
+      const normKey = k.toLowerCase().replace(/[^a-z0-9]/g, "");
+      normMap[normKey] = v ? v.trim() : "";
+    }
+    for (const key of keys) {
+      const searchKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (normMap[searchKey]) return normMap[searchKey];
+    }
+    return "";
+  }
+
+  const MAP_CODE_TO_NAME = {
+    IND: "India", IN: "India",
+    USA: "United States", US: "United States",
+    GBR: "United Kingdom", UK: "United Kingdom", GB: "United Kingdom",
+    CAN: "Canada", CA: "Canada",
+    DEU: "Germany", DE: "Germany",
+    FRA: "France", FR: "France",
+    AUS: "Australia", AU: "Australia",
+    SGP: "Singapore", SG: "Singapore",
+    ARE: "United Arab Emirates", AE: "United Arab Emirates", UAE: "United Arab Emirates",
+    NLD: "Netherlands", NL: "Netherlands",
+    JPN: "Japan", JP: "Japan",
+    CHN: "China", CN: "China",
+    BRA: "Brazil", BR: "Brazil",
+  };
+
+  const MAP_NAME_TO_CODE = {
+    "india": "IND",
+    "united states": "USA", "us": "USA", "usa": "USA",
+    "united kingdom": "GBR", "uk": "GBR", "great britain": "GBR",
+    "canada": "CAN",
+    "germany": "DEU",
+    "france": "FRA",
+    "australia": "AUS",
+    "singapore": "SGP",
+    "united arab emirates": "ARE", "uae": "ARE",
+    "netherlands": "NLD",
+    "japan": "JPN",
+    "china": "CHN",
+    "brazil": "BRA",
+  };
+
   let rawStartups = [];
 
   if (rawRows.length > 0) {
     rawStartups = rawRows.map((row, idx) => {
-      const name = (row.name || row.Name || row.startup_name || "").trim();
-      const website = (row.website || row.Website || "").trim();
-      const rawSlug = (row.slug || row.Slug || "").trim() || slugify(name || website);
-      const rawLogo = (row.logo_url || row.logo || "").trim();
+      const name = getVal(row, "name", "startupname", "startup", "company");
+      const website = getVal(row, "website", "url", "domain");
+      const rawSlug = getVal(row, "slug") || slugify(name || website);
+      const rawLogo = getVal(row, "logo_url", "logourl", "logo", "image");
       const convertedLogo = convertGoogleDriveUrl(rawLogo);
       const logo_url = convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : generateInitialsAvatar(name || website));
+
+      const rawCountryName = getVal(row, "country_name", "countryname", "country");
+      const rawCountryCode = getVal(row, "country_code", "countrycode", "iso");
+
+      let countryName = rawCountryName;
+      let countryCode = rawCountryCode ? rawCountryCode.toUpperCase() : "";
+
+      if (countryName && !countryCode) {
+        countryCode = MAP_NAME_TO_CODE[countryName.toLowerCase()] || countryName.slice(0, 3).toUpperCase();
+      } else if (countryCode && !countryName) {
+        countryName = MAP_CODE_TO_NAME[countryCode] || countryCode;
+      }
+
+      if (!countryName) countryName = getVal(row, "city", "location") || "Global";
+      if (!countryCode) countryCode = "GLB";
 
       return {
         name: name || website.replace(/^https?:\/\/(www\.)?/, "").split('/')[0] || "Startup",
         slug: slugify(rawSlug),
-        ufrn: (row.ufrn || row.UFRN || `UF-2026-IN-${String(idx + 1).padStart(5, '0')}`).trim(),
-        category: (row.category || row.Category || row.sector || "AI & Technology").trim(),
-        city: (row.city || row.City || "").trim(),
-        state: (row.state || row.State || "").trim(),
-        country_name: (row.country_name || row.Country || "India").trim(),
-        country_code: (row.country_code || row.country || "IND").trim(),
-        founded_year: parseInt(row.founded_year || row.founded || "2022", 10) || 2022,
+        ufrn: getVal(row, "ufrn", "registryid") || `UF-2026-${countryCode.slice(0, 3)}-${slugify(rawSlug).replace(/[^a-z0-9]/gi, '').slice(0, 5).toUpperCase()}`,
+        category: getVal(row, "category", "sector", "industry") || "AI & Technology",
+        city: getVal(row, "city", "location", "headquarters"),
+        state: getVal(row, "state"),
+        country_name: countryName,
+        country_code: countryCode,
+        founded_year: parseInt(getVal(row, "founded_year", "founded", "established") || "2022", 10) || 2022,
         website: website || null,
         logo_url,
-        description: (row.description || row.Description || "").trim(),
-        founders: (row.founders || row.Founders || "").trim(),
-        linkedin_url: (row.linkedin_url || row.linkedin || "").trim(),
-        twitter_url: (row.twitter_url || row.twitter || "").trim(),
-        instagram_url: (row.instagram_url || row.instagram || "").trim(),
-        is_featured: row.is_featured === "true" || row.is_featured === "1",
+        description: getVal(row, "description", "about", "summary"),
+        founders: getVal(row, "founders", "founder", "foundingteam"),
+        linkedin_url: getVal(row, "linkedin_url", "linkedin"),
+        twitter_url: getVal(row, "twitter_url", "twitter"),
+        instagram_url: getVal(row, "instagram_url", "instagram"),
+        is_featured: getVal(row, "is_featured", "featured") === "true" || getVal(row, "is_featured", "featured") === "1",
         verification_evidence: true
       };
     }).filter(s => s.name || s.website); // 2.4 Automated Sanity Filter: Skip row ONLY if BOTH name AND website are empty
-  }
-
-  // If fetched startups is small, merge fallback startups to ensure full coverage
-  const existingSlugs = new Set(rawStartups.map(s => s.slug));
-  for (const fallback of FALLBACK_STARTUPS) {
-    if (!existingSlugs.has(fallback.slug)) {
+  } else {
+    // ONLY use fallback startups if Google Sheets fetch returned 0 rows
+    console.warn("⚠️ Google Sheets fetch returned 0 rows. Using fallback dataset.");
+    for (const fallback of FALLBACK_STARTUPS) {
       rawStartups.push(fallback);
     }
   }
@@ -524,13 +582,12 @@ function convertGoogleDriveUrl(url) {
     const rawCat = (item.category || "AI & Technology").toLowerCase().trim();
     const normalizedSector = TAXONOMY_SECTOR_MAP[rawCat] || item.category || "AI & Technology";
 
-    // Normalize Taxonomy (Country)
-    const rawCountry = (item.country_name || item.country_code || "India").toLowerCase().trim();
-    const normalizedCountryName = COUNTRY_NAME_MAP[rawCountry] || item.country_name || "India";
-    const normalizedCountryCode = COUNTRY_CODE_MAP[normalizedCountryName] || "IND";
+    // Country name and code are already accurately resolved from row
+    const normalizedCountryName = item.country_name || "Global";
+    const normalizedCountryCode = item.country_code || "GLB";
 
     // Sanitize UFRN
-    const cleanUfrn = item.ufrn || `UF-2026-${normalizedCountryCode.slice(0, 2)}-${String(index).padStart(5, '0')}`;
+    const cleanUfrn = item.ufrn || `UF-2026-${normalizedCountryCode.slice(0, 3)}-${cleanSlug.replace(/[^a-z0-9]/gi, '').slice(0, 5).toUpperCase()}`;
 
     // Verification & Trust Score
     const hasEvidence = item.verification_evidence !== false;
