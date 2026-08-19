@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { ShieldCheck, Info, X, AlertTriangle, CheckCircle2 } from "lucide-react";
-import type { VerificationDetails } from "@/types/startup";
+import type { VerificationDetails, VerificationTier } from "@/types/startup";
 
 interface TrustScoreBadgeProps {
   verification?: VerificationDetails;
@@ -61,7 +61,7 @@ export function TrustScoreBadge({ verification }: TrustScoreBadgeProps) {
     gaugeColor = "text-blue-500 border-blue-500/40 bg-blue-500/10";
   }
 
-  const breakdownLabels: Record<keyof typeof verification.breakdown, string> = {
+  const breakdownLabels: Record<keyof typeof activeVerification.breakdown, string> = {
     website_reachable: "Website Active & SSL Valid",
     domain_validity: "Domain Ownership & Registration",
     company_identity_signal: "Corporate Identity Corroboration",
