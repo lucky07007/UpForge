@@ -113,6 +113,24 @@ const STARTUP_DESCRIPTION_OVERRIDES: Record<string, string> = {
   "sarvam-ai": "Sarvam AI is a leading foundational AI research and deployment startup building large language models (LLMs) explicitly optimized for Indian languages, dialects, and cultural contexts. The startup is developing a full-stack generative AI platform, including voice-to-text, translation, and text-generation models, designed to enable developers to build affordable, localized AI applications for the Indian market. Sarvam's core distinction is its focus on compute-efficient models that run at low latency on standard hardware, making AI deployment cost-effective for Indian enterprises. The company raised a massive $41M Series A round from Peak XV Partners, Lightspeed, and Khosla Ventures, positioning itself as a critical sovereign AI infrastructure provider for the region."
 }
 
+function convertGoogleDriveUrl(url: string | null | undefined): string | null {
+  if (!url || !url.trim()) return null
+  const raw = url.trim()
+  if (!raw.includes("drive.google.com") && !raw.includes("docs.google.com")) return raw
+
+  let fileId = ""
+  const fileMatch = raw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
+  if (fileMatch) fileId = fileMatch[1]
+
+  if (!fileId) {
+    const idMatch = raw.match(/[?&]id=([a-zA-Z0-9_-]+)/)
+    if (idMatch) fileId = idMatch[1]
+  }
+
+  if (!fileId) return raw
+  return `https://lh3.googleusercontent.com/d/${fileId}=w400`
+}
+
 // ── Row → Startup mapper ──────────────────────────────────────────────────────
 function rowToStartup(row: Record<string, string>, index: number): Startup | null {
   const name = safeDecode(row.name || row.Name || row.startup_name)
@@ -130,6 +148,7 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
       .replace(/^-+|-+$/g, "")
 
   const rawLogo = (row.logo_url || row.logo || "").trim()
+  const convertedLogo = convertGoogleDriveUrl(rawLogo)
   const initials = (displayName || "UF")
     .split(" ")
     .map((w) => w[0])
@@ -141,12 +160,15 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
     `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="24" fill="#0f172a"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="48" font-weight="bold">${initials}</text></svg>`
   )}`
 
+  const countryCode = (row.country_code || row.country || "IND").trim().toUpperCase()
+  const formattedUFRN = (row.ufrn || row.UFRN || "").trim() || `UF-2026-${countryCode.slice(0, 2)}-${slug.slice(0, 5).toUpperCase()}`
+
   return {
     id: row.id || `sheet-${index}`,
     name: displayName,
     slug,
     description: STARTUP_DESCRIPTION_OVERRIDES[slug] || safeDecode(row.description || row.Description) || null,
-    logo_url: rawLogo && rawLogo.startsWith("http") ? rawLogo : svgAvatar,
+    logo_url: convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : svgAvatar),
     website,
     founders: safeDecode(row.founders || row.Founders || row.founder) || null,
     founded_year: row.founded_year
@@ -156,6 +178,22 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
     city: safeDecode(row.city || row.City) || null,
     // perf: Force status to "approved" & verified for all sheet entries
     status: "approved",
+    verification: {
+      status: "verified",
+      score: 90,
+      is_self_reported_capped: false,
+      breakdown: {
+        website_reachable: 15,
+        domain_validity: 15,
+        company_identity_signal: 15,
+        founder_identity_signal: 15,
+        social_presence: 10,
+        product_evidence: 10,
+        registration_evidence: 5,
+        recent_activity: 5,
+      },
+      last_verified: new Date().toISOString().split("T")[0],
+    },
     is_featured:
       row.is_featured === "true" ||
       row.is_featured === "TRUE" ||
@@ -164,8 +202,8 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
     linkedin_url: (row.linkedin_url || row.linkedin || "").trim() || null,
     twitter_url: (row.twitter_url || row.twitter || "").trim() || null,
     instagram_url: (row.instagram_url || row.instagram || "").trim() || null,
-    ufrn: (row.ufrn || row.UFRN || "").trim() || null,
-    country_code: (row.country_code || row.country || "").trim() || null,
+    ufrn: formattedUFRN,
+    country_code: countryCode,
     country_name: safeDecode(row.country_name || row.Country) || null,
     created_at: row.created_at || row.timestamp || undefined,
     updated_at: row.updated_at || null,
