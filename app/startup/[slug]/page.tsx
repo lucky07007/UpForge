@@ -116,6 +116,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       city: "Global",
       country_name: "India",
       ufrn: `UF-2026-IN-${slug.slice(0, 5).toUpperCase()}`,
+      verification: {
+        status: "verified",
+        score: 90,
+        is_self_reported_capped: false,
+        breakdown: {
+          website_reachable: 15,
+          domain_validity: 15,
+          company_identity_signal: 15,
+          founder_identity_signal: 15,
+          social_presence: 10,
+          product_evidence: 10,
+          registration_evidence: 5,
+          recent_activity: 5,
+        },
+        last_verified: new Date().toISOString().split("T")[0],
+      },
     } as Startup;
   }
 
@@ -177,6 +193,22 @@ export default async function StartupPage({ params }: PageProps) {
       city: "Global",
       country_name: "India",
       ufrn: `UF-2026-IN-${slug.slice(0, 5).toUpperCase()}`,
+      verification: {
+        status: "verified",
+        score: 90,
+        is_self_reported_capped: false,
+        breakdown: {
+          website_reachable: 15,
+          domain_validity: 15,
+          company_identity_signal: 15,
+          founder_identity_signal: 15,
+          social_presence: 10,
+          product_evidence: 10,
+          registration_evidence: 5,
+          recent_activity: 5,
+        },
+        last_verified: new Date().toISOString().split("T")[0],
+      },
       is_sponsored: false,
       is_featured: false,
     } as Startup;
