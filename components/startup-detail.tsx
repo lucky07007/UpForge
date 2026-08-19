@@ -99,7 +99,7 @@ function getFaviconFallback(website?: string | null, stage = 0): string | null {
   }
 }
 
-function StartupLogo({ name, logo_url, website, size, className = "" }: { name: string; logo_url?: string | null; website?: string | null; size?: number; className?: string }) {
+export function StartupLogo({ name, logo_url, website, size, className = "" }: { name: string; logo_url?: string | null; website?: string | null; size?: number; className?: string }) {
   const [stage, setStage] = useState(0)
   
   const convertedLogo = convertGoogleDriveUrl(logo_url)
