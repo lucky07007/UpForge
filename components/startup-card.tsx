@@ -7,6 +7,8 @@ import type { Startup } from "@/types/startup"
 import { formatFounders } from "@/types/startup"
 import { getStartupUrl } from "@/lib/domain"
 
+import { StartupLogo } from "@/components/startup-detail"
+
 interface StartupCardProps {
   startup: Startup
   featured?: boolean
@@ -54,19 +56,13 @@ export function StartupCard({ startup, featured = false }: StartupCardProps) {
 
         <div>
           <div className="mb-5 flex items-start justify-between">
-            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/50 shadow-inner group-hover:border-amber-500/50 transition-colors">
-              {startup.logo_url ? (
-                <img
-                  src={startup.logo_url}
-                  alt={`${startup.name} logo`}
-                  className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
-              ) : (
-                <span className="text-xl font-bold text-foreground">
-                  {startup.name?.charAt(0) || "?"}
-                </span>
-              )}
+            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-muted/50 shadow-inner group-hover:border-amber-500/50 transition-colors p-1.5">
+              <StartupLogo
+                name={startup.name}
+                logo_url={startup.logo_url}
+                website={startup.website}
+                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+              />
             </div>
 
             <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-muted/40 text-muted-foreground transition-all duration-300 group-hover:bg-foreground group-hover:text-background group-hover:border-foreground group-hover:scale-110">
