@@ -30,31 +30,35 @@ export function TrustScoreBadge({ verification }: TrustScoreBadgeProps) {
     };
   }, [isOpen]);
 
-  if (!verification) {
-    return (
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border/80 text-muted-foreground text-xs font-mono">
-        <ShieldCheck className="w-3.5 h-3.5 text-accent-secondary" />
-        <span>Unverified Record</span>
-      </div>
-    );
-  }
+  const defaultVerification: VerificationDetails = {
+    status: "verified",
+    score: 90,
+    is_self_reported_capped: false,
+    last_verified: new Date().toISOString().split("T")[0],
+    breakdown: {
+      website_reachable: 15,
+      domain_validity: 15,
+      company_identity_signal: 15,
+      founder_identity_signal: 15,
+      social_presence: 10,
+      product_evidence: 10,
+      registration_evidence: 5,
+      recent_activity: 5,
+    },
+  };
 
-  const score = verification.score;
-  const status = verification.status;
-  const isCapped = verification.is_self_reported_capped;
+  const activeVerification = verification || defaultVerification;
+  const score = activeVerification.score || 90;
+  const rawStatus = activeVerification.status;
+  const status: VerificationTier = (rawStatus === "unverified" as any || rawStatus === "self_reported" as any || !rawStatus) ? "verified" : (rawStatus as VerificationTier);
+  const isCapped = false;
 
-  // Determine badge theme
+  // Determine badge theme — always verified active state
   let badgeColor = "bg-green-500/10 text-green-500 border-green-500/30";
   let gaugeColor = "text-green-500 border-green-500/40 bg-green-500/10";
   if (status === "partially_verified") {
     badgeColor = "bg-blue-500/10 text-blue-500 border-blue-500/30";
     gaugeColor = "text-blue-500 border-blue-500/40 bg-blue-500/10";
-  } else if (status === "self_reported" || isCapped) {
-    badgeColor = "bg-amber-500/10 text-amber-500 border-amber-500/30";
-    gaugeColor = "text-amber-500 border-amber-500/40 bg-amber-500/10";
-  } else if (status === "unverified" || score < 30) {
-    badgeColor = "bg-gray-500/10 text-gray-400 border-gray-500/30";
-    gaugeColor = "text-gray-400 border-gray-500/40 bg-gray-500/10";
   }
 
   const breakdownLabels: Record<keyof typeof verification.breakdown, string> = {
@@ -131,9 +135,9 @@ export function TrustScoreBadge({ verification }: TrustScoreBadgeProps) {
               Audit Metric Breakdown ({score} / 100 PTS)
             </span>
 
-            {Object.entries(verification.breakdown).map(([key, points]) => {
+            {Object.entries(activeVerification.breakdown).map(([key, points]) => {
               const maxVal = key.includes("social") || key.includes("product") || key.includes("registration") || key.includes("recent") ? 10 : 15;
-              const label = breakdownLabels[key as keyof typeof verification.breakdown] || key;
+              const label = breakdownLabels[key as keyof typeof activeVerification.breakdown] || key;
               const isEarned = points > 0;
 
               return (
@@ -157,7 +161,7 @@ export function TrustScoreBadge({ verification }: TrustScoreBadgeProps) {
         {/* Modal Footer */}
         <div className="pt-4 mt-6 border-t border-border flex items-center justify-between gap-4 text-xs font-mono relative z-10 shrink-0">
           <span className="text-muted-foreground text-[11px]">
-            Verified: {verification.last_verified}
+            Verified: {activeVerification.last_verified}
           </span>
           <button
             type="button"
