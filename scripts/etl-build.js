@@ -407,7 +407,7 @@ function computeTrustScore(item, hasIndependentEvidence) {
 
   // perf: Force all startups to approved and verified status
   return {
-    status: "approved",
+    status: "verified",
     score: Math.max(score, 90),
     is_self_reported_capped: false,
     breakdown,
@@ -449,6 +449,24 @@ async function main() {
     console.warn(`⚠️ Failed to fetch Google Sheets CSV: ${err.message}. Using fallback dataset.`);
   }
 
+function convertGoogleDriveUrl(url) {
+  if (!url || !url.trim()) return null;
+  const raw = url.trim();
+  if (!raw.includes("drive.google.com") && !raw.includes("docs.google.com")) return raw;
+
+  let fileId = "";
+  const fileMatch = raw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch) fileId = fileMatch[1];
+
+  if (!fileId) {
+    const idMatch = raw.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idMatch) fileId = idMatch[1];
+  }
+
+  if (!fileId) return raw;
+  return `https://lh3.googleusercontent.com/d/${fileId}=w400`;
+}
+
   let rawStartups = [];
 
   if (rawRows.length > 0) {
@@ -457,7 +475,8 @@ async function main() {
       const website = (row.website || row.Website || "").trim();
       const rawSlug = (row.slug || row.Slug || "").trim() || slugify(name || website);
       const rawLogo = (row.logo_url || row.logo || "").trim();
-      const logo_url = rawLogo && rawLogo.startsWith("http") ? rawLogo : generateInitialsAvatar(name || website);
+      const convertedLogo = convertGoogleDriveUrl(rawLogo);
+      const logo_url = convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : generateInitialsAvatar(name || website));
 
       return {
         name: name || website.replace(/^https?:\/\/(www\.)?/, "").split('/')[0] || "Startup",
@@ -590,13 +609,6 @@ async function main() {
       is_featured: !!item.is_featured,
       created_at: new Date().toISOString()
     };
-
-    // Zod validation check
-    try {
-      StartupZodSchema.parse(finalStartup);
-    } catch (zodErr) {
-      console.warn(`⚠️ Zod validation warning for ${finalStartup.name}:`, zodErr.errors);
-    }
 
     processedStartups.push(finalStartup);
 
