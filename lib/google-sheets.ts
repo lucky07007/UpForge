@@ -131,51 +131,107 @@ function convertGoogleDriveUrl(url: string | null | undefined): string | null {
   return `https://lh3.googleusercontent.com/d/${fileId}=w400`
 }
 
+function getRowVal(row: Record<string, string>, ...keys: string[]): string {
+  const normMap: Record<string, string> = {}
+  for (const [k, v] of Object.entries(row)) {
+    const normKey = k.toLowerCase().replace(/[^a-z0-9]/g, "")
+    normMap[normKey] = v ? v.trim() : ""
+  }
+  for (const key of keys) {
+    const searchKey = key.toLowerCase().replace(/[^a-z0-9]/g, "")
+    if (normMap[searchKey]) return normMap[searchKey]
+  }
+  return ""
+}
+
+const MAP_CODE_TO_NAME: Record<string, string> = {
+  IND: "India", IN: "India",
+  USA: "United States", US: "United States",
+  GBR: "United Kingdom", UK: "United Kingdom", GB: "United Kingdom",
+  CAN: "Canada", CA: "Canada",
+  DEU: "Germany", DE: "Germany",
+  FRA: "France", FR: "France",
+  AUS: "Australia", AU: "Australia",
+  SGP: "Singapore", SG: "Singapore",
+  ARE: "United Arab Emirates", AE: "United Arab Emirates", UAE: "United Arab Emirates",
+  NLD: "Netherlands", NL: "Netherlands",
+  JPN: "Japan", JP: "Japan",
+  CHN: "China", CN: "China",
+  BRA: "Brazil", BR: "Brazil",
+}
+
+const MAP_NAME_TO_CODE: Record<string, string> = {
+  "india": "IND",
+  "united states": "USA", "us": "USA", "usa": "USA",
+  "united kingdom": "GBR", "uk": "GBR", "great britain": "GBR",
+  "canada": "CAN",
+  "germany": "DEU",
+  "france": "FRA",
+  "australia": "AUS",
+  "singapore": "SGP",
+  "united arab emirates": "ARE", "uae": "ARE",
+  "netherlands": "NLD",
+  "japan": "JPN",
+  "china": "CHN",
+  "brazil": "BRA",
+}
+
 // ── Row → Startup mapper ──────────────────────────────────────────────────────
 function rowToStartup(row: Record<string, string>, index: number): Startup | null {
-  const name = safeDecode(row.name || row.Name || row.startup_name)
-  const website = (row.website || row.Website || "").trim() || null
+  const name = safeDecode(getRowVal(row, "name", "startupname", "startup", "company"))
+  const website = getRowVal(row, "website", "url", "domain") || null
   
   // perf: 2.4 Automated Sanity Filter — skip row ONLY if BOTH name AND website are empty
   if (!name && !website) return null
 
   const displayName = name || (website ? website.replace(/^https?:\/\/(www\.)?/, "").split("/")[0] : "Startup")
-  const slug =
-    (row.slug || row.Slug || "").trim() ||
-    displayName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
+  const rawSlug = getRowVal(row, "slug")
+  const slug = rawSlug
+    ? rawSlug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+    : displayName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
 
-  const rawLogo = (row.logo_url || row.logo || "").trim()
+  const rawLogo = getRowVal(row, "logo_url", "logourl", "logo", "image")
   const convertedLogo = convertGoogleDriveUrl(rawLogo)
-  const initials = (displayName || "UF")
-    .split(" ")
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
-  const svgAvatar = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect width="128" height="128" rx="24" fill="#0f172a"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="48" font-weight="bold">${initials}</text></svg>`
-  )}`
 
-  const countryCode = (row.country_code || row.country || "IND").trim().toUpperCase()
-  const formattedUFRN = (row.ufrn || row.UFRN || "").trim() || `UF-2026-${countryCode.slice(0, 2)}-${slug.slice(0, 5).toUpperCase()}`
+  const rawDesc = safeDecode(getRowVal(row, "description", "about", "summary"))
+  const description = rawDesc || STARTUP_DESCRIPTION_OVERRIDES[slug] || null
+
+  const rawCountryName = safeDecode(getRowVal(row, "country_name", "countryname", "country"))
+  const rawCountryCode = getRowVal(row, "country_code", "countrycode", "iso")
+
+  let countryName = rawCountryName
+  let countryCode = rawCountryCode ? rawCountryCode.toUpperCase() : ""
+
+  if (countryName && !countryCode) {
+    countryCode = MAP_NAME_TO_CODE[countryName.toLowerCase()] || countryName.slice(0, 3).toUpperCase()
+  } else if (countryCode && !countryName) {
+    countryName = MAP_CODE_TO_NAME[countryCode] || countryCode
+  }
+
+  if (!countryName) countryName = safeDecode(getRowVal(row, "city", "location")) || "Global"
+  if (!countryCode) countryCode = "GLB"
+
+  const rawUfrn = getRowVal(row, "ufrn", "registryid")
+  const countrySub = countryCode.length >= 2 ? countryCode.slice(0, 3) : "IND"
+  const cleanSlugPart = slug.replace(/[^a-z0-9]/gi, "").slice(0, 5).toUpperCase() || String(index + 1).padStart(5, '0')
+  const formattedUFRN = rawUfrn || `UF-2026-${countrySub}-${cleanSlugPart}`
 
   return {
-    id: row.id || `sheet-${index}`,
+    id: getRowVal(row, "id") || `sheet-${index + 1}`,
     name: displayName,
     slug,
-    description: STARTUP_DESCRIPTION_OVERRIDES[slug] || safeDecode(row.description || row.Description) || null,
-    logo_url: convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : svgAvatar),
+    description,
+    logo_url: convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : null),
     website,
-    founders: safeDecode(row.founders || row.Founders || row.founder) || null,
-    founded_year: row.founded_year
-      ? parseInt(row.founded_year, 10) || null
+    founders: safeDecode(getRowVal(row, "founders", "founder", "foundingteam")) || null,
+    founded_year: getRowVal(row, "founded_year", "founded", "established")
+      ? parseInt(getRowVal(row, "founded_year", "founded", "established"), 10) || null
       : null,
-    category: safeDecode(row.category || row.Category || row.sector) || null,
-    city: safeDecode(row.city || row.City) || null,
+    category: safeDecode(getRowVal(row, "category", "sector", "industry")) || "AI & Technology",
+    city: safeDecode(getRowVal(row, "city", "location", "headquarters")) || null,
     // perf: Force status to "approved" & verified for all sheet entries
     status: "approved",
     verification: {
@@ -195,18 +251,18 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
       last_verified: new Date().toISOString().split("T")[0],
     },
     is_featured:
-      row.is_featured === "true" ||
-      row.is_featured === "TRUE" ||
-      row.is_featured === "1",
+      getRowVal(row, "is_featured", "featured") === "true" ||
+      getRowVal(row, "is_featured", "featured") === "TRUE" ||
+      getRowVal(row, "is_featured", "featured") === "1",
     is_sponsored: false,
-    linkedin_url: (row.linkedin_url || row.linkedin || "").trim() || null,
-    twitter_url: (row.twitter_url || row.twitter || "").trim() || null,
-    instagram_url: (row.instagram_url || row.instagram || "").trim() || null,
+    linkedin_url: getRowVal(row, "linkedin_url", "linkedin") || null,
+    twitter_url: getRowVal(row, "twitter_url", "twitter") || null,
+    instagram_url: getRowVal(row, "instagram_url", "instagram") || null,
     ufrn: formattedUFRN,
     country_code: countryCode,
-    country_name: safeDecode(row.country_name || row.Country) || null,
-    created_at: row.created_at || row.timestamp || undefined,
-    updated_at: row.updated_at || null,
+    country_name: countryName,
+    created_at: getRowVal(row, "created_at", "timestamp") || undefined,
+    updated_at: getRowVal(row, "updated_at") || null,
   }
 }
 
