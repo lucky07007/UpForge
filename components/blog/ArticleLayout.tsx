@@ -59,6 +59,17 @@ export function ArticleLayout({
   children,
 }: ArticleLayoutProps) {
 
+  // Lookup registered post in master data for single-source synchronization
+  const registeredPost = BLOG_POSTS.find((p) => p.slug === post.slug)
+
+  const resolvedAuthor: AuthorInfo = {
+    name: author?.name && author.name !== DEFAULT_AUTHOR.name ? author.name : (registeredPost?.authorName || author?.name || DEFAULT_AUTHOR.name),
+    role: author?.role && author.role !== DEFAULT_AUTHOR.role ? author.role : (registeredPost?.authorTitle || author?.role || DEFAULT_AUTHOR.role),
+    avatarUrl: author?.avatarUrl && author.avatarUrl !== DEFAULT_AUTHOR.avatarUrl ? author.avatarUrl : (registeredPost?.authorImageUrl || author?.avatarUrl || DEFAULT_AUTHOR.avatarUrl),
+    bio: author?.bio || DEFAULT_AUTHOR.bio,
+    profileUrl: author?.profileUrl || DEFAULT_AUTHOR.profileUrl,
+  }
+
   // Resolve related articles
   let relatedPosts: BlogPost[] = []
   if (relatedSlugs.length > 0) {
@@ -74,8 +85,8 @@ export function ArticleLayout({
   }
 
   // Generate fallback hero image path if not provided
-  const bannerImageSrc = heroImage?.src || `/${post.slug}.jpg`
-  const bannerImageAlt = heroImage?.alt || post.title
+  const bannerImageSrc = heroImage?.src || registeredPost?.coverImageUrl || registeredPost?.image || `/${post.slug}.jpg`
+  const bannerImageAlt = heroImage?.alt || registeredPost?.coverImageAlt || post.title
 
   // JSON-LD Structured Data
   const articleJsonLd = {
@@ -87,8 +98,8 @@ export function ArticleLayout({
     dateModified: post.updated || post.date,
     author: {
       "@type": "Person",
-      name: author.name,
-      url: `https://upforge.org${author.profileUrl}`,
+      name: resolvedAuthor.name,
+      url: `https://upforge.org${resolvedAuthor.profileUrl}`,
     },
     publisher: {
       "@type": "Organization",
@@ -196,8 +207,8 @@ export function ArticleLayout({
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-amber-500/40 shrink-0 relative bg-muted">
                   <Image
-                    src={author.avatarUrl}
-                    alt={author.name}
+                    src={resolvedAuthor.avatarUrl}
+                    alt={resolvedAuthor.name}
                     width={44}
                     height={44}
                     className="w-full h-full object-cover"
@@ -205,9 +216,9 @@ export function ArticleLayout({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-foreground">{author.name}</span>
+                    <span className="font-bold text-sm text-foreground">{resolvedAuthor.name}</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border/50">
-                      {author.role}
+                      {resolvedAuthor.role}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-mono mt-1">
@@ -311,8 +322,8 @@ export function ArticleLayout({
               <div className="my-12 p-6 md:p-8 rounded-3xl border border-border/80 bg-card/70 backdrop-blur-xl shadow-sm flex flex-col sm:flex-row items-start gap-6">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-500/40 shrink-0 bg-muted relative">
                   <Image
-                    src={author.avatarUrl}
-                    alt={author.name}
+                    src={resolvedAuthor.avatarUrl}
+                    alt={resolvedAuthor.name}
                     width={64}
                     height={64}
                     className="w-full h-full object-cover"
@@ -320,17 +331,17 @@ export function ArticleLayout({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-foreground text-base md:text-lg">{author.name}</h4>
+                    <h4 className="font-bold text-foreground text-base md:text-lg">{resolvedAuthor.name}</h4>
                     <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                       Author
                     </span>
                   </div>
-                  <p className="text-xs font-mono text-muted-foreground mt-0.5">{author.role}</p>
+                  <p className="text-xs font-mono text-muted-foreground mt-0.5">{resolvedAuthor.role}</p>
                   <p className="text-sm text-muted-foreground mt-3 leading-relaxed font-serif italic">
-                    {author.bio}
+                    {resolvedAuthor.bio}
                   </p>
                   <Link
-                    href={author.profileUrl}
+                    href={resolvedAuthor.profileUrl}
                     className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-amber-600 dark:text-amber-400 hover:underline mt-4 uppercase tracking-wider"
                   >
                     View Editorial Profile <ArrowRight className="w-3.5 h-3.5" />
