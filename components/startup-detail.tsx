@@ -69,39 +69,80 @@ function getVerificationCode(name: string, id: string): string {
   return "UPF-" + prefix + "-" + suffix
 }
 
-function getFaviconFallback(website?: string | null): string | null {
+function convertGoogleDriveUrl(url: string | null | undefined): string | null {
+  if (!url || !url.trim()) return null
+  const raw = url.trim()
+  if (!raw.includes("drive.google.com") && !raw.includes("docs.google.com")) return raw
+
+  let fileId = ""
+  const fileMatch = raw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
+  if (fileMatch) fileId = fileMatch[1]
+
+  if (!fileId) {
+    const idMatch = raw.match(/[?&]id=([a-zA-Z0-9_-]+)/)
+    if (idMatch) fileId = idMatch[1]
+  }
+
+  if (!fileId) return raw
+  return `https://lh3.googleusercontent.com/d/${fileId}=w400`
+}
+
+function getFaviconFallback(website?: string | null, stage = 0): string | null {
   if (!website) return null
   try {
     const hostname = new URL(website.startsWith("http") ? website : `https://${website}`).hostname
-    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`
+    if (stage === 0) return `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`
+    if (stage === 1) return `https://icons.duckduckgo.com/ip3/${hostname}.ico`
+    return null
   } catch {
     return null
   }
 }
 
 function StartupLogo({ name, logo_url, website, size, className = "" }: { name: string; logo_url?: string | null; website?: string | null; size?: number; className?: string }) {
-  // Primary source: logo_url from the registry data.
-  // Fallback: derive a favicon from the startup's website domain when no logo_url is set.
-  const [failed, setFailed] = useState(false)
-  const primarySrc = logo_url && logo_url.trim() ? logo_url : null
-  const fallbackSrc = getFaviconFallback(website)
-  const src = primarySrc || fallbackSrc
+  const [stage, setStage] = useState(0)
+  
+  const convertedLogo = convertGoogleDriveUrl(logo_url)
+  const sources = [
+    convertedLogo,
+    getFaviconFallback(website, 0),
+    getFaviconFallback(website, 1),
+  ].filter(Boolean) as string[]
 
-  if (src && !failed) {
+  const currentSrc = sources[stage]
+
+  if (currentSrc) {
     return (
       <img
-        src={src}
+        src={currentSrc}
         alt={name + " logo"}
         loading="lazy"
-        className={`object-cover w-full h-full ${className}`}
-        onError={() => setFailed(true)}
+        className={`object-contain w-full h-full ${className}`}
+        onError={() => {
+          if (stage < sources.length - 1) {
+            setStage(stage + 1)
+          } else {
+            setStage(99)
+          }
+        }}
       />
     )
   }
+
+  const initials = (name || "UF")
+    .split(" ")
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase()
+
   return (
-    <span className="text-3xl font-serif font-black text-foreground" aria-hidden="true">
-      {name.charAt(0).toUpperCase()}
-    </span>
+    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-500/20 via-background to-amber-500/10 border border-amber-500/30 rounded-xl shadow-inner">
+      <span className="text-xl font-mono font-black tracking-wider text-amber-600 dark:text-amber-400">
+        {initials}
+      </span>
+    </div>
   )
 }
 
