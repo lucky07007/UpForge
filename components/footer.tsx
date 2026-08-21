@@ -308,7 +308,7 @@ export function Footer() {
             <p className="text-[12px] text-muted-foreground">Follow UpForge</p>
             <div className="flex items-center gap-5">
               <a
-                href="https://www.linkedin.com/company/upforge-india"
+                href="https://www.linkedin.com/company/upforge-global"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-[var(--accent-gold)] transition-colors"
