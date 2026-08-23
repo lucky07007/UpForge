@@ -431,7 +431,6 @@ function commitAndPush(slug: string): void {
     console.log("✅ Successfully pushed to main!")
   } catch (err: any) {
     console.error(`⚠️ Git commit/push step failed: ${err.message}`)
-    // Note: If running locally without remote push permissions, script logs warning
   }
 }
 
