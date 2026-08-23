@@ -1,0 +1,518 @@
+import fs from "fs"
+import path from "path"
+import { execSync } from "child_process"
+
+// Environment Variables
+const GROQ_API_KEY = process.env.GROQ_API_KEY
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID
+const FORCED_TOPIC = process.env.FORCED_TOPIC
+
+// RSS Feed URLs
+const RSS_FEEDS = [
+  "https://trends.google.com/trending/rss?geo=IN",
+  "https://yourstory.com/feed",
+  "https://inc42.com/feed/",
+]
+
+// Fallback topics if RSS feeds fail or return no relevant topics
+const FALLBACK_TOPICS = [
+  "How Tier 2 & Tier 3 City Founders in India Are Building Profitable SaaS Companies in 2026",
+  "AI Workflow Automation: How Early-Stage Indian Startups Cut Overhead by 40%",
+  "The Indian Job Market Shift: High-Growth Startup Roles vs Legacy Corporate Careers",
+  "Navigating ESOPs, Offer Letters, and Equity Grants for Indian Tech Talent in 2026",
+  "Bootstrap vs VC Funding in India: What Every First-Time Founder Must Know",
+  "The Rise of Deep Tech & Climate Tech Capital in Bengaluru, Hyderabad, and Pune",
+]
+
+interface GeneratedBlogPayload {
+  title: string
+  metaDescription: string
+  keywords: string[]
+  excerpt: string
+  contentMarkdown: string
+}
+
+interface HeadingItem {
+  id: string
+  text: string
+  level: number
+}
+
+// Helper: Send Telegram notification
+async function sendTelegramMessage(message: string): Promise<void> {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    console.warn("⚠️ TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not provided. Skipping Telegram notification.")
+    return
+  }
+
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: "HTML",
+        disable_web_page_preview: false,
+      }),
+    })
+    if (!res.ok) {
+      const errText = await res.text()
+      console.error(`Telegram API error (${res.status}): ${errText}`)
+    }
+  } catch (err: any) {
+    console.error(`Failed to send Telegram message: ${err.message}`)
+  }
+}
+
+// Helper: Fetch RSS Feed titles
+async function fetchHeadlinesFromRSS(feedUrl: string): Promise<string[]> {
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 6000)
+
+    const res = await fetch(feedUrl, {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) UpForgeBot/1.0",
+      },
+    })
+    clearTimeout(timeoutId)
+
+    if (!res.ok) {
+      console.warn(`RSS feed ${feedUrl} returned status ${res.status}`)
+      return []
+    }
+
+    const xml = await res.text()
+    const matches = xml.match(/<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/gi) || []
+    const titles: string[] = []
+
+    for (const match of matches) {
+      const clean = match
+        .replace(/<\/?title>/gi, "")
+        .replace(/<!\[CDATA\[/gi, "")
+        .replace(/\]\]>/gi, "")
+        .trim()
+
+      if (clean && !clean.toLowerCase().includes("rss") && !clean.toLowerCase().includes("yourstory") && !clean.toLowerCase().includes("inc42")) {
+        titles.push(clean)
+      }
+    }
+
+    return titles
+  } catch (err: any) {
+    console.warn(`Skipping feed ${feedUrl}: ${err.message}`)
+    return []
+  }
+}
+
+// Select a trending topic
+async function selectTopic(): Promise<string> {
+  if (FORCED_TOPIC && FORCED_TOPIC.trim().length > 0) {
+    console.log(`📌 Using FORCED_TOPIC: "${FORCED_TOPIC}"`)
+    return FORCED_TOPIC.trim()
+  }
+
+  console.log("🔍 Harvesting trending headlines from RSS feeds...")
+  const headlines: string[] = []
+
+  for (const feed of RSS_FEEDS) {
+    const items = await fetchHeadlinesFromRSS(feed)
+    console.log(`  Fetched ${items.length} titles from ${feed}`)
+    headlines.push(...items)
+  }
+
+  if (headlines.length > 0) {
+    // Prefer multi-word headlines for richer LLM context
+    const multiWord = headlines.filter((h) => h.split(/\s+/).length >= 2)
+    const pool = multiWord.length > 0 ? multiWord : headlines
+    const randomIndex = Math.floor(Math.random() * pool.length)
+    let rawHeadline = pool[randomIndex]
+
+    if (rawHeadline.split(/\s+/).length === 1) {
+      rawHeadline = `${rawHeadline} Tech & Business Impact for Indian Founders and Job-Seekers`
+    }
+
+    console.log(`🎯 Selected RSS headline: "${rawHeadline}"`)
+    return rawHeadline
+  }
+
+  // Fallback if no feeds succeeded
+  const fallback = FALLBACK_TOPICS[Math.floor(Math.random() * FALLBACK_TOPICS.length)]
+  console.log(`ℹ️ No RSS headlines retrieved. Using curated fallback topic: "${fallback}"`)
+  return fallback
+}
+
+// Call Groq API with LLM prompt
+async function callGroqAPI(topic: string): Promise<GeneratedBlogPayload> {
+  if (!GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY environment variable is not defined.")
+  }
+
+  const systemPrompt = `You are a world-class Indian tech journal editor and senior analyst writing for UpForge (upforge.org).
+Your goal is to write a deeply engaging, 900-1200 word, SEO-optimized, highly actionable blog post tailored for Indian founders, startup teams, students, and job-seekers.
+
+CRITICAL WRITING REQUIREMENTS:
+1. FIRST 2 LINES: Must hook the reader with raw emotion, intense curiosity, or a bold surprising claim. NEVER start with generic openers like "In today's fast-paced world" or "In recent years".
+2. STORYTELLING & REALISM: Start with a relatable founder, student, or job-seeker scenario (e.g. late night coding in Koramangala, pitching in Gurgaon, salary negotiation in Pune) before diving into data and analysis.
+3. CONTEXT & TONE: Conversational, confident, authoritative, culturally resonant in India (mention specific cities like Bengaluru, Mumbai, Delhi-NCR, Hyderabad; rupee figures in Lakhs/Crores; real companies/case studies where relevant). Never robotic or preachy.
+4. STRUCTURE: Use clear H2 and H3 subheadings, short punchy paragraphs (2-4 sentences max), bullet points, bold key terms, and blockquotes for key takeaways.
+5. SEO OPTIMIZATION:
+   - Include the primary target keyword in the title, first 100 words, and 3-4 times naturally throughout the body.
+   - Write a compelling Meta Description between 150 and 160 characters.
+   - End with a dedicated "Frequently Asked Questions (FAQ)" section containing exactly 3 high-intent questions and clear answers (formatted with H3 for each question) for Google Discover & featured snippets.
+6. CALL TO ACTION: End with a genuine, inspiring final takeaway and a soft, non-salesy mention of UpForge (e.g. checking verified startup listings or registering on the UpForge Global Registry).
+
+STRICT OUTPUT FORMAT:
+You MUST output strictly valid JSON matching this exact structure with no extra text or markdown formatting outside the JSON object:
+{
+  "title": "Catchy, High-CTR Headline with Primary Keyword",
+  "metaDescription": "150-160 character meta description containing primary keyword.",
+  "keywords": ["Primary Keyword", "Secondary Keyword 1", "Secondary Keyword 2", "Indian Startups", "Founder Playbook"],
+  "excerpt": "A concise 2-sentence summary/dek for the article hero section.",
+  "contentMarkdown": "# Markdown content starting with body paragraphs, H2/H3 subheadings, bullet points, blockquotes, FAQ section, and UpForge conclusion."
+}`
+
+  const userPrompt = `Write an in-depth 900-1200 word blog post on this topic/headline: "${topic}". Make it relevant for Indian founders, tech workers, and job-seekers.`
+
+  const requestPayload = {
+    model: "llama-3.3-70b-versatile",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    response_format: { type: "json_object" },
+    temperature: 0.7,
+  }
+
+  const endpoint = "https://api.groq.com/openai/v1/chat/completions"
+
+  const executeRequest = async (): Promise<GeneratedBlogPayload> => {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestPayload),
+    })
+
+    if (!response.ok) {
+      const errBody = await response.text()
+      throw new Error(`Groq API returned HTTP ${response.status}: ${errBody}`)
+    }
+
+    const data = await response.json()
+    const rawContent = data.choices?.[0]?.message?.content
+    if (!rawContent) {
+      throw new Error("Groq API returned an empty choices content response.")
+    }
+
+    const parsed: GeneratedBlogPayload = JSON.parse(rawContent)
+    return parsed
+  }
+
+  // Validate payload
+  const isValid = (payload: any): payload is GeneratedBlogPayload => {
+    return (
+      typeof payload?.title === "string" && payload.title.length > 5 &&
+      typeof payload?.metaDescription === "string" && payload.metaDescription.length > 20 &&
+      Array.isArray(payload?.keywords) && payload.keywords.length > 0 &&
+      typeof payload?.excerpt === "string" && payload.excerpt.length > 10 &&
+      typeof payload?.contentMarkdown === "string" && payload.contentMarkdown.length > 300
+    )
+  }
+
+  try {
+    console.log("⚡ Calling Groq API (llama-3.3-70b-versatile)...")
+    const result = await executeRequest()
+    if (isValid(result)) return result
+    console.warn("⚠️ Initial Groq response failed validation. Retrying once...")
+  } catch (err: any) {
+    console.warn(`⚠️ Groq API first attempt failed (${err.message}). Retrying once...`)
+  }
+
+  // Single Retry
+  console.log("⚡ Retrying Groq API call...")
+  const retryResult = await executeRequest()
+  if (!isValid(retryResult)) {
+    throw new Error("Groq API response failed validation on retry.")
+  }
+  return retryResult
+}
+
+// Convert title to deterministic kebab-case slug
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+}
+
+// Helper: Slugify heading text for ID
+function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+}
+
+// Convert Markdown to HTML & Extract Headings
+function processMarkdown(markdown: string): { bodyHtml: string; headings: HeadingItem[] } {
+  const lines = markdown.split("\n")
+  const headings: HeadingItem[] = []
+  let htmlResult = ""
+
+  let inList = false
+  let listType: "ul" | "ol" | null = null
+  let inBlockquote = false
+
+  const closeList = () => {
+    if (inList) {
+      htmlResult += listType === "ul" ? "</ul>\n" : "</ol>\n"
+      inList = false
+      listType = null
+    }
+  }
+
+  const closeBlockquote = () => {
+    if (inBlockquote) {
+      htmlResult += "</blockquote>\n"
+      inBlockquote = false
+    }
+  }
+
+  const processInline = (text: string): string => {
+    return text
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/__(.*?)__/g, "<strong>$1</strong>")
+      // Italics
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")
+      .replace(/_(.*?)_/g, "<em>$1</em>")
+      // Links
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+  }
+
+  for (let line of lines) {
+    line = line.trim()
+
+    if (!line) {
+      closeList()
+      closeBlockquote()
+      continue
+    }
+
+    // Skip top level # H1 title if generated inside markdown
+    if (line.startsWith("# ")) {
+      continue
+    }
+
+    // H2 Headings
+    if (line.startsWith("## ")) {
+      closeList()
+      closeBlockquote()
+      const headingText = line.replace(/^##\s+/, "").replace(/\*\*/g, "").trim()
+      const id = slugifyHeading(headingText)
+      headings.push({ id, text: headingText, level: 2 })
+      htmlResult += `<h2 id="${id}">${processInline(headingText)}</h2>\n`
+      continue
+    }
+
+    // H3 Headings
+    if (line.startsWith("### ")) {
+      closeList()
+      closeBlockquote()
+      const headingText = line.replace(/^###\s+/, "").replace(/\*\*/g, "").trim()
+      const id = slugifyHeading(headingText)
+      headings.push({ id, text: headingText, level: 3 })
+      htmlResult += `<h3 id="${id}">${processInline(headingText)}</h3>\n`
+      continue
+    }
+
+    // Blockquote
+    if (line.startsWith("> ")) {
+      closeList()
+      const quoteText = line.replace(/^>\s+/, "").trim()
+      if (!inBlockquote) {
+        htmlResult += `<blockquote>&ldquo;${processInline(quoteText)}&rdquo;</blockquote>\n`
+      } else {
+        htmlResult += `<p>${processInline(quoteText)}</p>\n`
+      }
+      inBlockquote = true
+      continue
+    }
+
+    // Unordered list (* or -)
+    if (line.startsWith("* ") || line.startsWith("- ")) {
+      closeBlockquote()
+      const itemText = line.replace(/^[\*\-]\s+/, "").trim()
+      if (!inList || listType !== "ul") {
+        closeList()
+        htmlResult += "<ul>\n"
+        inList = true
+        listType = "ul"
+      }
+      htmlResult += `  <li>${processInline(itemText)}</li>\n`
+      continue
+    }
+
+    // Ordered list (1. 2. etc)
+    if (/^\d+\.\s+/.test(line)) {
+      closeBlockquote()
+      const itemText = line.replace(/^\d+\.\s+/, "").trim()
+      if (!inList || listType !== "ol") {
+        closeList()
+        htmlResult += "<ol>\n"
+        inList = true
+        listType = "ol"
+      }
+      htmlResult += `  <li>${processInline(itemText)}</li>\n`
+      continue
+    }
+
+    // Standard paragraph
+    closeList()
+    closeBlockquote()
+    htmlResult += `<p>${processInline(line)}</p>\n`
+  }
+
+  closeList()
+  closeBlockquote()
+
+  return { bodyHtml: htmlResult.trim(), headings }
+}
+
+// Append new post to data/blog-posts.ts
+function saveBlogPostToDataFile(blogPost: any): void {
+  const filePath = path.join(process.cwd(), "data", "blog-posts.ts")
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Target file ${filePath} does not exist.`)
+  }
+
+  const fileContent = fs.readFileSync(filePath, "utf-8")
+  const exportArrayMarker = "export const BLOG_POSTS: BlogPost[] = ["
+
+  const markerIndex = fileContent.indexOf(exportArrayMarker)
+  if (markerIndex === -1) {
+    throw new Error("Could not find export const BLOG_POSTS marker in data/blog-posts.ts")
+  }
+
+  const insertPosition = markerIndex + exportArrayMarker.length
+
+  const formattedPostString = `\n  ${JSON.stringify(blogPost, null, 4).replace(/"([^"]+)":/g, "$1:")},`
+
+  const updatedContent =
+    fileContent.slice(0, insertPosition) +
+    formattedPostString +
+    fileContent.slice(insertPosition)
+
+  fs.writeFileSync(filePath, updatedContent, "utf-8")
+  console.log(`✅ Successfully saved post "${blogPost.title}" to data/blog-posts.ts`)
+}
+
+// Git commit & push
+function commitAndPush(slug: string): void {
+  try {
+    console.log("⚙️ Configuring git user & committing changes...")
+    execSync('git config user.name "UpForge Auto Publisher"')
+    execSync('git config user.email "bot@upforge.org"')
+    execSync("git add data/blog-posts.ts")
+    execSync(`git commit -m "feat(blog): publish automated post - ${slug}"`)
+    console.log("🚀 Pushing commit to main branch...")
+    execSync("git push origin main")
+    console.log("✅ Successfully pushed to main!")
+  } catch (err: any) {
+    console.error(`⚠️ Git commit/push step failed: ${err.message}`)
+    // Note: If running locally without remote push permissions, script logs warning
+  }
+}
+
+// Main execution function
+async function main(): Promise<void> {
+  console.log("🚀 Starting Automated Blog Publisher...")
+
+  try {
+    // Step 1: Select Topic
+    const topic = await selectTopic()
+
+    // Step 2: Call Groq API
+    const payload = await callGroqAPI(topic)
+
+    // Step 3: Slug & Cover Image URL
+    let slug = generateSlug(payload.title)
+    if (!slug) {
+      slug = `post-${Date.now()}`
+    }
+
+    const coverImageUrl = `https://images.upforge.org/blog/${slug}.webp`
+
+    // Step 4: Process Markdown for bodyHtml & headings
+    const { bodyHtml, headings } = processMarkdown(payload.contentMarkdown)
+
+    // Calculate Read Time
+    const wordCount = payload.contentMarkdown.split(/\s+/).length
+    const readTimeMinutes = Math.max(4, Math.ceil(wordCount / 200))
+    const readTimeStr = `${readTimeMinutes} min`
+
+    // Current Date
+    const now = new Date()
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    const dateStr = `${monthNames[now.getMonth()]} ${now.getFullYear()}`
+    const publishedAtStr = now.toISOString().split("T")[0]
+
+    // Construct BlogPost object
+    const newPost = {
+      title: payload.title,
+      slug: slug,
+      category: "FOUNDER PLAYBOOK",
+      categorySlug: "playbook",
+      excerpt: payload.excerpt,
+      date: dateStr,
+      readTime: readTimeStr,
+      featured: false,
+      image: coverImageUrl,
+      coverImageUrl: coverImageUrl,
+      coverImageAlt: `${payload.title} Cover`,
+      authorName: "Lucky Tiwari",
+      authorImageUrl: "/lucky-tiwari.png",
+      authorTitle: "Founder & Editor-in-Chief",
+      publishedAt: publishedAtStr,
+      metaDescription: payload.metaDescription,
+      tags: payload.keywords || ["Startup Insights", "Founder Playbook", "India Tech"],
+      headings: headings,
+      bodyHtml: bodyHtml,
+    }
+
+    // Step 5: Save to data/blog-posts.ts
+    saveBlogPostToDataFile(newPost)
+
+    // Step 6: Git commit & push
+    commitAndPush(slug)
+
+    // Step 7: Telegram Success Notification
+    const liveUrl = `https://upforge.org/blog/${slug}`
+    const successMessage = `Boss, blog likh diya ✅\n\n<b>Title:</b> ${payload.title}\n<b>Cover Image:</b> ${coverImageUrl}\n<b>Live URL:</b> ${liveUrl}`
+    await sendTelegramMessage(successMessage)
+
+    console.log("🎉 Automated blog publishing completed successfully!")
+  } catch (error: any) {
+    const errorMsg = error?.message || String(error)
+    console.error(`❌ Blog Publisher Error: ${errorMsg}`)
+
+    // Telegram Failure Notification
+    const failureMessage = `❌ <b>Blog Auto-Publisher Failed</b>\n\n<b>Error:</b> ${errorMsg}`
+    await sendTelegramMessage(failureMessage)
+
+    process.exit(1)
+  }
+}
+
+main()
