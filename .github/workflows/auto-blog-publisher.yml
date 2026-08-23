@@ -58,3 +58,4 @@ jobs:
           FORCED_TOPIC: ${{ github.event.inputs.topic || github.event.client_payload.topic || '' }}
         run: |
           pnpm tsx scripts/publish-blog.ts
+          
