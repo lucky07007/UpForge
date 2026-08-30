@@ -375,6 +375,8 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
   let inList = false
   let listType: "ul" | "ol" | null = null
   let inBlockquote = false
+  let inFaqSection = false
+  let faqItemOpen = false
 
   // Detects a markdown pipe-table row like "| Cell A | Cell B |"
   const isTableRow = (l: string) => /^\|.*\|$/.test(l.trim())
@@ -401,6 +403,13 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
     if (inBlockquote) {
       htmlResult += "</blockquote>\n"
       inBlockquote = false
+    }
+  }
+
+  const closeFaqItem = () => {
+    if (faqItemOpen) {
+      htmlResult += "</div></details>\n"
+      faqItemOpen = false
     }
   }
 
@@ -462,10 +471,14 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
     if (line.startsWith("## ")) {
       closeList()
       closeBlockquote()
+      closeFaqItem()
       const headingText = line.replace(/^##\s+/, "").replace(/\*\*/g, "").trim()
       const id = slugifyHeading(headingText)
       headings.push({ id, text: headingText, level: 2 })
       htmlResult += `<h2 id="${id}">${processInline(headingText)}</h2>\n`
+      // Detect the FAQ section by heading text — everything under it renders
+      // as a native <details> accordion instead of plain h3/p pairs.
+      inFaqSection = /frequently asked questions|\bfaq\b/i.test(headingText)
       continue
     }
 
@@ -474,6 +487,16 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
       closeList()
       closeBlockquote()
       const headingText = line.replace(/^###\s+/, "").replace(/\*\*/g, "").trim()
+
+      if (inFaqSection) {
+        // FAQ question: open a native, JS-free collapsible accordion item.
+        closeFaqItem()
+        htmlResult += `<details class="faq-item"><summary>${processInline(headingText)}</summary><div class="faq-answer">`
+        faqItemOpen = true
+        continue
+      }
+
+      closeFaqItem()
       const id = slugifyHeading(headingText)
       headings.push({ id, text: headingText, level: 3 })
       htmlResult += `<h3 id="${id}">${processInline(headingText)}</h3>\n`
@@ -529,6 +552,7 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
 
   closeList()
   closeBlockquote()
+  closeFaqItem()
 
   return { bodyHtml: htmlResult.trim(), headings }
 }
