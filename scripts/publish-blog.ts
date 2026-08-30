@@ -258,6 +258,94 @@ You MUST output strictly valid JSON matching this exact structure with no extra 
   return retryResult
 }
 
+// ---------------------------------------------------------------------------
+// EDITORIAL INTERNAL-LINK GLOSSARY
+// A curated (not auto-guessed) list of {phrase -> existing UpForge article}.
+// This is how professional publications do internal linking: a maintained
+// dictionary, not fuzzy keyword matching — so links always feel natural and
+// never spammy. Add a line here whenever you publish a new evergreen post
+// you'd like future articles to be able to link to.
+// ---------------------------------------------------------------------------
+const INTERNAL_LINK_GLOSSARY: { phrase: string; slug: string }[] = [
+  { phrase: "UFRN credential", slug: "startup-verification-ufrn-credentials-guide" },
+  { phrase: "startup verification", slug: "startup-verification-ufrn-credentials-guide" },
+  { phrase: "seed funding", slug: "how-to-get-startup-funding-india-2026" },
+  { phrase: "startup funding", slug: "how-to-get-startup-funding-india-2026" },
+  { phrase: "venture capital firms", slug: "best-vc-firms-india-2026" },
+  { phrase: "VC firms", slug: "best-vc-firms-india-2026" },
+  { phrase: "pitch deck", slug: "startup-pitch-deck-template-india-2026" },
+  { phrase: "ESOP", slug: "esop-guide-for-startups-india-2026" },
+  { phrase: "GST compliance", slug: "gst-compliance-guide-startups-india-2026" },
+  { phrase: "startup valuation", slug: "startup-valuation-india-2026" },
+  { phrase: "hiring your first employees", slug: "startup-hiring-guide-india-2026" },
+  { phrase: "AI startups", slug: "top-ai-startups-india-2026" },
+  { phrase: "SaaS startups", slug: "top-20-saas-startups-india-2026" },
+  { phrase: "fintech startups", slug: "fintech-startups-india-2026" },
+  { phrase: "healthtech startups", slug: "healthtech-startups-india-2026" },
+  { phrase: "climate tech", slug: "climate-tech-startups-india-2026" },
+  { phrase: "D2C brands", slug: "d2c-startups-india-2026" },
+  { phrase: "no-code platforms", slug: "ai-powered-no-code-platforms-the-2026-playbook-for-indian-founders-tech-jobseekers" },
+  { phrase: "AI agents", slug: "ai-agents-for-startups-india-2026" },
+  { phrase: "startup incubators", slug: "top-startup-incubators-india-2026" },
+  { phrase: "bootstrapped startups", slug: "bootstrapped-startups-india-success-stories" },
+  { phrase: "Indian unicorns", slug: "top-indian-unicorns-2026" },
+  { phrase: "why startups fail", slug: "startup-failure-reasons-india" },
+  { phrase: "legal guide for startups", slug: "startup-legal-guide-india-2026" },
+  { phrase: "women founders", slug: "women-founders-india-2026" },
+]
+
+// Wikipedia-style internal linking: scans the markdown body for the FIRST
+// natural occurrence of each glossary phrase and turns it into a markdown
+// link to that article. Capped at maxLinks so it stays tasteful, not spammy.
+function injectInternalLinks(markdown: string, currentSlug: string, maxLinks = 4): string {
+  const lines = markdown.split("\n")
+  const usedPhrases = new Set<string>()
+  let linksAdded = 0
+
+  const candidates = INTERNAL_LINK_GLOSSARY.filter((g) => g.slug !== currentSlug)
+
+  for (let i = 0; i < lines.length && linksAdded < maxLinks; i++) {
+    const line = lines[i]
+    const trimmed = line.trim()
+
+    // Skip headings, blockquotes, table rows, and empty lines — only link
+    // inside normal flowing prose (paragraphs / list items).
+    if (!trimmed || /^#{1,6}\s/.test(trimmed) || trimmed.startsWith(">") || trimmed.startsWith("|")) {
+      continue
+    }
+
+    for (const { phrase, slug } of candidates) {
+      if (usedPhrases.has(phrase)) continue
+      if (linksAdded >= maxLinks) break
+
+      // Already a markdown link somewhere on this line? Don't double-wrap.
+      const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      const pattern = new RegExp(`\\b(${escaped})\\b(?!\\]\\()`, "i")
+      const match = line.match(pattern)
+
+      if (match && match.index !== undefined) {
+        const matchedText = match[0]
+        // Make sure we're not already inside an existing [..](..) link
+        const before = line.slice(0, match.index)
+        const openBrackets = (before.match(/\[/g) || []).length
+        const closeBrackets = (before.match(/\]/g) || []).length
+        if (openBrackets > closeBrackets) continue // inside an existing link's text
+
+        lines[i] =
+          line.slice(0, match.index) +
+          `[${matchedText}](/blog/${slug})` +
+          line.slice(match.index + matchedText.length)
+
+        usedPhrases.add(phrase)
+        linksAdded++
+        break // only one new link per line, keeps prose clean
+      }
+    }
+  }
+
+  return lines.join("\n")
+}
+
 // Convert title to deterministic kebab-case slug
 function generateSlug(title: string): string {
   return title
@@ -507,6 +595,9 @@ async function main(): Promise<void> {
     }
 
     const coverImageUrl = `https://images.upforge.org/blog/${slug}.webp`
+
+    // Step 3.5: Add tasteful, Wikipedia-style internal links to other UpForge articles
+    payload.contentMarkdown = injectInternalLinks(payload.contentMarkdown, slug)
 
     // Step 4: Process Markdown for bodyHtml & headings
     const { bodyHtml, headings } = processMarkdown(payload.contentMarkdown)
