@@ -50,39 +50,6 @@ function PinterestIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-// Lightweight monogram badge used for AI-assistant shortcuts.
-// Pure inline SVG (no image requests, no extra network/CPU cost).
-// Swap the `bg` values or replace with official brand SVGs any time —
-// paste the SVG markup for a given bot and it can drop straight in here.
-function MonogramIcon({
-  letters,
-  bg,
-  size = 16,
-}: {
-  letters: string;
-  bg: string;
-  size?: number;
-}) {
-  const fontSize = letters.length > 2 ? 7.5 : letters.length === 2 ? 9 : 11;
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="12" fill={bg} />
-      <text
-        x="12"
-        y="15.5"
-        textAnchor="middle"
-        fontSize={fontSize}
-        fontWeight={700}
-        fill="#fff"
-        fontFamily="Arial, Helvetica, sans-serif"
-        letterSpacing="0.2"
-      >
-        {letters}
-      </text>
-    </svg>
-  );
-}
-
 const FOOTER_COLUMNS = [
   {
     heading: "Platform",
@@ -202,8 +169,11 @@ type AiEngine = {
   id: string;
   name: string;
   buildHref: (prompt: string) => string;
-  letters: string;
-  bg: string;
+  // Official brand mark, Wikimedia Commons (public, freely-licensed assets).
+  // Requested at a small 96px thumbnail — NOT the full 960px source — so
+  // each icon is a few KB instead of a few hundred KB. Wikimedia's thumb
+  // service generates any {width}px- variant on the fly from the same file.
+  logoSrc: string;
 };
 
 // Prompt-prefill URL formats are documented/observed publisher patterns as of
@@ -212,43 +182,43 @@ const AI_ENGINES: AiEngine[] = [
   {
     id: "chatgpt",
     name: "ChatGPT",
-    letters: "GPT",
-    bg: "#10A37F",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/ChatGPT-Logo.svg/96px-ChatGPT-Logo.svg.png",
     buildHref: (p) => `https://chatgpt.com/?q=${encodeURIComponent(p)}&hints=search`,
   },
   {
     id: "claude",
     name: "Claude",
-    letters: "Cl",
-    bg: "#D97757",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/96px-Claude_AI_symbol.svg.png",
     buildHref: (p) => `https://claude.ai/new?q=${encodeURIComponent(p)}`,
   },
   {
     id: "gemini",
     name: "Gemini",
-    letters: "Ge",
-    bg: "#4285F4",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/96px-Google_Gemini_icon_2025.svg.png",
     buildHref: (p) => `https://gemini.google.com/app?q=${encodeURIComponent(p)}`,
   },
   {
     id: "perplexity",
     name: "Perplexity",
-    letters: "Px",
-    bg: "#20808D",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Perplexity_AI_logo.svg/96px-Perplexity_AI_logo.svg.png",
     buildHref: (p) => `https://www.perplexity.ai/search?q=${encodeURIComponent(p)}`,
   },
   {
     id: "copilot",
     name: "Copilot",
-    letters: "Co",
-    bg: "#0F6CBD",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Microsoft_365_Copilot_Icon_one-color.svg/96px-Microsoft_365_Copilot_Icon_one-color.svg.png",
     buildHref: (p) => `https://copilot.microsoft.com/?q=${encodeURIComponent(p)}`,
   },
   {
     id: "grok",
     name: "Grok",
-    letters: "Gr",
-    bg: "#111111",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Grok-feb-2025-logo.svg/96px-Grok-feb-2025-logo.svg.png",
     buildHref: (p) => `https://grok.com/?q=${encodeURIComponent(p)}`,
   },
 ];
@@ -260,7 +230,7 @@ function AiSummaryRow() {
         Request an AI summary of UpForge
       </p>
       <div className="flex items-center gap-2 flex-wrap">
-        {AI_ENGINES.map(({ id, name, letters, bg, buildHref }) => (
+        {AI_ENGINES.map(({ id, name, logoSrc, buildHref }) => (
           <a
             key={id}
             href={buildHref(AI_SUMMARY_PROMPT)}
@@ -268,15 +238,25 @@ function AiSummaryRow() {
             rel="noopener noreferrer nofollow"
             title={`Ask ${name} to summarize UpForge`}
             aria-label={`Ask ${name} to summarize UpForge`}
-            className="flex items-center justify-center w-8 h-8 rounded-full border border-border bg-background hover:border-[var(--accent-gold)] hover:-translate-y-0.5 transition-all"
+            // Fixed white chip (not bg-background) so monochrome brand marks
+            // like ChatGPT's stay legible in dark mode too.
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-white border border-border/70 p-[7px] shadow-sm hover:border-[var(--accent-gold)] hover:shadow-md hover:-translate-y-0.5 transition-all"
           >
-            <MonogramIcon letters={letters} bg={bg} size={16} />
+            <Image
+              src={logoSrc}
+              alt={`${name} logo`}
+              width={20}
+              height={20}
+              unoptimized
+              className="w-full h-full object-contain"
+            />
           </a>
         ))}
       </div>
     </div>
   );
 }
+
 
 export function Footer() {
   const year = new Date().getFullYear();
