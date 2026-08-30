@@ -234,8 +234,8 @@ export default function BlogIndexPage() {
 
                 <div className="w-full md:w-[480px] aspect-[16/9] md:aspect-auto rounded-2xl overflow-hidden relative border border-border/60 bg-muted shrink-0">
                   <Image
-                    src={`/${featuredPost.slug}.jpg`}
-                    alt={featuredPost.title}
+                    src={featuredPost.coverImageUrl || featuredPost.image || `/${featuredPost.slug}.jpg`}
+                    alt={featuredPost.coverImageAlt || featuredPost.title}
                     fill
                     priority={true}
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
