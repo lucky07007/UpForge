@@ -10,6 +10,7 @@ import { getStartupUrl } from "@/lib/domain"
 import { TrustScoreBadge } from "@/components/trust-score-badge"
 import { ProvenanceList } from "@/components/provenance-list"
 import { HistoryTimeline } from "@/components/history-timeline"
+import { GooglePreferredSourceBadge } from "@/components/seo/google-preferred-source"
 import {
   ArrowLeft,
   Download,
@@ -387,6 +388,10 @@ export function StartupDetail({ startup, relatedStartups }: StartupDetailProps) 
                         {startup.ufrn}
                       </span>
                     )}
+                    <GooglePreferredSourceBadge
+                      variant="pill"
+                      className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-muted border border-border text-foreground hover:border-blue-400/50 hover:text-blue-500 transition-colors"
+                    />
                   </div>
 
                   <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-[1.1]" style={{ fontFamily: "'Georgia', serif" }}>
