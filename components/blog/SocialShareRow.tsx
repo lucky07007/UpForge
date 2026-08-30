@@ -1,6 +1,7 @@
 "use client" 
 import { useState } from "react"
 import { Share2, Copy, Check, MessageSquare } from "lucide-react"
+import { GooglePreferredSourceBadge } from "@/components/seo/google-preferred-source"
 
 interface SocialShareRowProps {
   title: string
@@ -58,7 +59,7 @@ export function SocialShareRow({ title, slug, className = "" }: SocialShareRowPr
   ]
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-2 flex-wrap ${className}`}>
       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mr-1">
         <Share2 className="w-3 h-3 text-amber-500" /> Share
       </span>
@@ -93,6 +94,15 @@ export function SocialShareRow({ title, slug, className = "" }: SocialShareRowPr
           </>
         )}
       </button>
+
+      {/* Divider before the Google badge so it reads as a distinct action, not a 7th share icon */}
+      <span className="w-px h-5 bg-border/70 mx-1" aria-hidden="true" />
+
+      <GooglePreferredSourceBadge
+        variant="icon-only"
+        iconSize={14}
+        className="w-8 h-8 rounded-xl bg-card border border-border/70 hover:border-blue-400/50 hover:bg-blue-400/10 text-muted-foreground flex items-center justify-center transition-all shadow-xs"
+      />
     </div>
   )
 }
