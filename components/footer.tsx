@@ -15,6 +15,10 @@ import {
 } from "lucide-react";
 
 import { FOUNDERS } from "@/lib/founders/data";
+import {
+  GoogleGIcon,
+  GOOGLE_PREFERRED_SOURCE_HREF,
+} from "@/components/seo/google-preferred-source";
 
 // Custom SVG for X (formerly Twitter)
 function XIcon({ size = 18 }: { size?: number }) {
@@ -42,31 +46,6 @@ function PinterestIcon({ size = 18 }: { size?: number }) {
       aria-hidden="true"
     >
       <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.065-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345c-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.224 7.462-1.215 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
-    </svg>
-  );
-}
-
-// Google "G" mark — used only for the official Preferred Sources feature,
-// per Google's own asset usage (developers.google.com/search/docs/appearance/preferred-sources)
-function GoogleGIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="#4285F4"
-        d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.29 5.38l3.98-3.09z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"
-      />
     </svg>
   );
 }
@@ -189,7 +168,6 @@ function NewsletterForm() {
 }
 
 const SITE_URL = "https://www.upforge.org";
-const SITE_DOMAIN = "upforge.org";
 
 const TRUST_ITEMS = [
   { icon: Shield, label: "Independent Registry" },
@@ -204,10 +182,10 @@ const TRUST_ITEMS = [
     // Google's official "Preferred Sources" feature — lets a reader mark
     // UpForge as a preferred source for Top Stories / AI Overviews / AI Mode.
     // Deeplink implementation: zero JS, zero extra requests until clicked.
-    // See: https://developers.google.com/search/docs/appearance/preferred-sources
+    // Shared component: components/seo/google-preferred-source.tsx
     icon: GoogleGIcon,
     label: "Add Us On Google",
-    href: `https://www.google.com/preferences/source?q=${SITE_DOMAIN}`,
+    href: GOOGLE_PREFERRED_SOURCE_HREF,
   },
 ];
 
