@@ -152,14 +152,28 @@ async function callGroqAPI(topic: string): Promise<GeneratedBlogPayload> {
     throw new Error("GROQ_API_KEY environment variable is not defined.")
   }
 
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentDateLabel = now.toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })
+
   const systemPrompt = `You are a world-class Indian tech journal editor and senior analyst writing for UpForge (upforge.org).
 Your goal is to write a deeply engaging, 900-1200 word, SEO-optimized, highly actionable blog post tailored for Indian founders, startup teams, students, and job-seekers.
+
+TODAY'S ACTUAL DATE IS: ${currentDateLabel} (year ${currentYear}). This is critical:
+- Never reference an old year like "2024" or "2025" as if it were current. All forward-looking claims, trend labels, and "as of" statements must use ${currentYear} (or later, if discussing the future).
+- If the title or headings reference a year, it must be ${currentYear} — do not default to an older year from memory.
 
 CRITICAL WRITING REQUIREMENTS:
 1. FIRST 2 LINES: Must hook the reader with raw emotion, intense curiosity, or a bold surprising claim. NEVER start with generic openers like "In today's fast-paced world" or "In recent years".
 2. STORYTELLING & REALISM: Start with a relatable founder, student, or job-seeker scenario (e.g. late night coding in Koramangala, pitching in Gurgaon, salary negotiation in Pune) before diving into data and analysis.
 3. CONTEXT & TONE: Conversational, confident, authoritative, culturally resonant in India (mention specific cities like Bengaluru, Mumbai, Delhi-NCR, Hyderabad; rupee figures in Lakhs/Crores; real companies/case studies where relevant). Never robotic or preachy.
 4. STRUCTURE: Use clear H2 and H3 subheadings, short punchy paragraphs (2-4 sentences max), bullet points, bold key terms, and blockquotes for key takeaways.
+   - When comparing multiple items (e.g. pitfalls vs fixes, options vs pros/cons), use a proper Markdown pipe table with a header row and a separator row, e.g.:
+     | Column A | Column B |
+     |---|---|
+     | Row text | Row text |
+     Keep table cells short (under ~12 words) since they render in a narrow column on mobile.
+   - Do not nest more than one level of bullet points, and avoid more than 5-6 bullets in a row — break long lists into shorter grouped sections with their own mini-heading instead.
 5. SEO OPTIMIZATION:
    - Include the primary target keyword in the title, first 100 words, and 3-4 times naturally throughout the body.
    - Write a compelling Meta Description between 150 and 160 characters.
@@ -274,6 +288,19 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
   let listType: "ul" | "ol" | null = null
   let inBlockquote = false
 
+  // Detects a markdown pipe-table row like "| Cell A | Cell B |"
+  const isTableRow = (l: string) => /^\|.*\|$/.test(l.trim())
+  // Detects the separator row like "|---|---|" or "| :--- | ---: |"
+  const isTableSeparator = (l: string) =>
+    /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$/.test(l.trim())
+  const splitTableRow = (l: string): string[] =>
+    l
+      .trim()
+      .replace(/^\|/, "")
+      .replace(/\|$/, "")
+      .split("|")
+      .map((cell) => cell.trim())
+
   const closeList = () => {
     if (inList) {
       htmlResult += listType === "ul" ? "</ul>\n" : "</ol>\n"
@@ -301,8 +328,8 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
       .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
   }
 
-  for (let line of lines) {
-    line = line.trim()
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i].trim()
 
     if (!line) {
       closeList()
@@ -312,6 +339,34 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
 
     // Skip top level # H1 title if generated inside markdown
     if (line.startsWith("# ")) {
+      continue
+    }
+
+    // Markdown table: a "| ... |" row immediately followed by a "|---|---|" separator row
+    if (isTableRow(line) && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+      closeList()
+      closeBlockquote()
+
+      const headerCells = splitTableRow(line)
+      htmlResult += `<table>\n  <thead>\n    <tr>\n`
+      headerCells.forEach((cell) => {
+        htmlResult += `      <th>${processInline(cell)}</th>\n`
+      })
+      htmlResult += `    </tr>\n  </thead>\n  <tbody>\n`
+
+      let j = i + 2 // skip header + separator
+      while (j < lines.length && isTableRow(lines[j].trim())) {
+        const rowCells = splitTableRow(lines[j].trim())
+        htmlResult += `    <tr>\n`
+        rowCells.forEach((cell) => {
+          htmlResult += `      <td>${processInline(cell)}</td>\n`
+        })
+        htmlResult += `    </tr>\n`
+        j++
+      }
+
+      htmlResult += `  </tbody>\n</table>\n`
+      i = j - 1 // advance the outer loop past the table
       continue
     }
 
