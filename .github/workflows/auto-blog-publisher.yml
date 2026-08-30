@@ -3,7 +3,64 @@ name: Automated Blog Publisher
 on:
   schedule:
     # 8:00 AM IST (2:30 AM UTC) & 7:00 PM IST (1:30 PM UTC)
+    - cron: '30 2 * * *'name: Automated Blog Publisher
+
+on:
+  schedule:
+    # 8:00 AM IST (2:30 AM UTC) & 7:00 PM IST (1:30 PM UTC)
     - cron: '30 2 * * *'
+    - cron: '30 13 * * *'
+
+  repository_dispatch:
+    types: [telegram-blog-request]
+
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Optional forced topic for blog generation'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish Automated Blog Post
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Execute Blog Publisher Script
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FORCED_TOPIC: ${{ github.event.inputs.topic || github.event.client_payload.topic || '' }}
+        run: |
+          pnpm tsx scripts/publish-blog.ts
     - cron: '30 13 * * *'
 
   repository_dispatch:
