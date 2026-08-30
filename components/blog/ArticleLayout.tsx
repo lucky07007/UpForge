@@ -258,7 +258,7 @@ export function ArticleLayout({
             <main className="w-full lg:max-w-[740px] shrink-0">
               
               {/* TABLE OF CONTENTS FOR MOBILE */}
-              {headings.length > 0 && <TableOfContents headings={headings} />}
+              {headings.length > 0 && <TableOfContents headings={headings} variant="mobile" />}
 
               {/* ARTICLE BODY PROSE */}
               <article className="prose prose-lg dark:prose-invert max-w-none
@@ -352,7 +352,7 @@ export function ArticleLayout({
             </main>
 
             {/* DESKTOP STICKY TABLE OF CONTENTS SIDEBAR */}
-            {headings.length > 0 && <TableOfContents headings={headings} />}
+            {headings.length > 0 && <TableOfContents headings={headings} variant="desktop" />}
 
           </div>
 
