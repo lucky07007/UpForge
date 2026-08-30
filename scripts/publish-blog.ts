@@ -177,7 +177,7 @@ CRITICAL WRITING REQUIREMENTS:
 5. SEO OPTIMIZATION:
    - Include the primary target keyword in the title, first 100 words, and 3-4 times naturally throughout the body.
    - Write a compelling Meta Description between 150 and 160 characters.
-   - End with a dedicated "Frequently Asked Questions (FAQ)" section containing exactly 3 high-intent questions and clear answers (formatted with H3 for each question) for Google Discover & featured snippets.
+   - End with a dedicated "## Frequently Asked Questions (FAQ)" section (H2) containing exactly 3 high-intent questions and clear answers. Each question MUST be its own "### " (H3, exactly three hashes) heading — never use "####" or any other heading level for FAQ questions — followed by a plain paragraph answer, for Google Discover & featured snippets.
 6. CALL TO ACTION: End with a genuine, inspiring final takeaway and a soft, non-salesy mention of UpForge (e.g. checking verified startup listings or registering on the UpForge Global Registry).
 
 STRICT OUTPUT FORMAT:
@@ -500,6 +500,27 @@ function processMarkdown(markdown: string): { bodyHtml: string; headings: Headin
       const id = slugifyHeading(headingText)
       headings.push({ id, text: headingText, level: 3 })
       htmlResult += `<h3 id="${id}">${processInline(headingText)}</h3>\n`
+      continue
+    }
+
+    // H4 Headings (AI sometimes emits #### for FAQ questions instead of ###)
+    if (line.startsWith("#### ")) {
+      closeList()
+      closeBlockquote()
+      const headingText = line.replace(/^####\s+/, "").replace(/\*\*/g, "").trim()
+
+      if (inFaqSection) {
+        // Treat exactly like an H3 FAQ question so it becomes a collapsible item.
+        closeFaqItem()
+        htmlResult += `<details class="faq-item"><summary>${processInline(headingText)}</summary><div class="faq-answer">`
+        faqItemOpen = true
+        continue
+      }
+
+      closeFaqItem()
+      const id = slugifyHeading(headingText)
+      headings.push({ id, text: headingText, level: 4 })
+      htmlResult += `<h4 id="${id}">${processInline(headingText)}</h4>\n`
       continue
     }
 
