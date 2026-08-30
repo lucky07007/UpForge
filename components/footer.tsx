@@ -183,42 +183,42 @@ const AI_ENGINES: AiEngine[] = [
     id: "chatgpt",
     name: "ChatGPT",
     logoSrc:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/ChatGPT-Logo.svg/96px-ChatGPT-Logo.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/ChatGPT-Logo.svg/960px-ChatGPT-Logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20240214002031",
     buildHref: (p) => `https://chatgpt.com/?q=${encodeURIComponent(p)}&hints=search`,
   },
   {
     id: "claude",
     name: "Claude",
     logoSrc:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/96px-Claude_AI_symbol.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/960px-Claude_AI_symbol.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20260428111349",
     buildHref: (p) => `https://claude.ai/new?q=${encodeURIComponent(p)}`,
   },
   {
     id: "gemini",
     name: "Gemini",
     logoSrc:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/96px-Google_Gemini_icon_2025.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Google_Gemini_icon_2025.svg/960px-Google_Gemini_icon_2025.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20250728014952",
     buildHref: (p) => `https://gemini.google.com/app?q=${encodeURIComponent(p)}`,
   },
   {
     id: "perplexity",
     name: "Perplexity",
     logoSrc:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Perplexity_AI_logo.svg/96px-Perplexity_AI_logo.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Perplexity_AI_logo.svg/960px-Perplexity_AI_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20230820074314",
     buildHref: (p) => `https://www.perplexity.ai/search?q=${encodeURIComponent(p)}`,
   },
   {
     id: "copilot",
     name: "Copilot",
     logoSrc:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Microsoft_365_Copilot_Icon_one-color.svg/96px-Microsoft_365_Copilot_Icon_one-color.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Microsoft_365_Copilot_Icon_one-color.svg/960px-Microsoft_365_Copilot_Icon_one-color.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20240425180137",
     buildHref: (p) => `https://copilot.microsoft.com/?q=${encodeURIComponent(p)}`,
   },
   {
     id: "grok",
     name: "Grok",
     logoSrc:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Grok-feb-2025-logo.svg/96px-Grok-feb-2025-logo.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Grok-feb-2025-logo.svg/960px-Grok-feb-2025-logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20250226183559",
     buildHref: (p) => `https://grok.com/?q=${encodeURIComponent(p)}`,
   },
 ];
