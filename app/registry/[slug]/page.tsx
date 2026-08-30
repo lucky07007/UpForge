@@ -14,6 +14,7 @@ import type { Startup } from "@/types/startup"
 import { formatFounders } from "@/types/startup"
 import Link from "next/link"
 import Image from "next/image"
+import { GooglePreferredSourceBadge } from "@/components/seo/google-preferred-source"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -312,6 +313,16 @@ export default async function RegistryPage({ params }: PageProps) {
                   <tr>
                     <td className="px-4 py-3 text-[#888] font-bold uppercase tracking-wider">Listed</td>
                     <td className="px-4 py-3 text-[#1C1C1C]">{registryDate}</td>
+                  </tr>
+
+                  <tr>
+                    <td className="px-4 py-3 text-[#888] font-bold uppercase tracking-wider">Google Source</td>
+                    <td className="px-4 py-3">
+                      <GooglePreferredSourceBadge
+                        variant="text-link"
+                        className="inline-flex items-center gap-1.5 text-[11px] text-[#1C1C1C] hover:text-[#A89060] transition-colors"
+                      />
+                    </td>
                   </tr>
 
                 </tbody>
