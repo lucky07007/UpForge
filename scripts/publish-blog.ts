@@ -179,7 +179,7 @@ You MUST output strictly valid JSON matching this exact structure with no extra 
   const userPrompt = `Write an in-depth 900-1200 word blog post on this topic/headline: "${topic}". Make it relevant for Indian founders, tech workers, and job-seekers.`
 
   const requestPayload = {
-    model: "llama-3.3-70b-versatile",
+    model: "openai/gpt-oss-120b",
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -227,7 +227,7 @@ You MUST output strictly valid JSON matching this exact structure with no extra 
   }
 
   try {
-    console.log("⚡ Calling Groq API (llama-3.3-70b-versatile)...")
+    console.log("⚡ Calling Groq API (openai/gpt-oss-120b)...")
     const result = await executeRequest()
     if (isValid(result)) return result
     console.warn("⚠️ Initial Groq response failed validation. Retrying once...")
