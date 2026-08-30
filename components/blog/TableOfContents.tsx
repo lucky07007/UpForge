@@ -10,9 +10,14 @@ export interface HeadingItem {
 
 interface TableOfContentsProps {
   headings: HeadingItem[]
+  // "mobile" renders only the collapsible drawer, "desktop" renders only the
+  // sticky sidebar, "both" (default) renders both — kept for backwards
+  // compatibility, but ArticleLayout should always pass an explicit variant
+  // so the two placements never both render on the same breakpoint.
+  variant?: "mobile" | "desktop" | "both"
 }
 
-export function TableOfContents({ headings }: TableOfContentsProps) {
+export function TableOfContents({ headings, variant = "both" }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("")
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false)
 
@@ -43,6 +48,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
   return (
     <>
       {/* MOBILE COLLAPSIBLE DRAWER */}
+      {(variant === "mobile" || variant === "both") && (
       <div className="lg:hidden my-6 border border-border/80 rounded-2xl bg-card/80 backdrop-blur-md overflow-hidden shadow-sm">
         <button
           onClick={() => setIsOpenMobile(!isOpenMobile)}
@@ -71,8 +77,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
           </nav>
         )}
       </div>
+      )}
 
       {/* DESKTOP STICKY SIDEBAR */}
+      {(variant === "desktop" || variant === "both") && (
       <aside className="hidden lg:block w-72 shrink-0">
         <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto p-5 rounded-2xl border border-border/70 bg-card/70 backdrop-blur-xl shadow-sm scrollbar-hide">
           <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border/60">
@@ -109,6 +117,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
           </nav>
         </div>
       </aside>
+      )}
     </>
   )
 }
