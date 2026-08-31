@@ -66,6 +66,89 @@ export const BLOG_CATEGORIES: BlogCategory[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "Startup news and updates: Daily roundup (August 31, 2026)",
+    slug: "startup-news-and-updates-daily-roundup-august-31-2026",
+    category: "FOUNDER PLAYBOOK",
+    categorySlug: "playbook",
+    excerpt: "A late‑night coding sprint in Koramangala turns into a sunrise of opportunities. Here’s the essential Startup news and updates you can act on right now.",
+    date: "August 2026",
+    readTime: "5 min",
+    featured: false,
+    image: "https://images.upforge.org/blog/startup-news-and-updates-daily-roundup-august-31-2026.webp",
+    coverImageUrl: "https://images.upforge.org/blog/startup-news-and-updates-daily-roundup-august-31-2026.webp",
+    coverImageAlt: "Startup news and updates: Daily roundup (August 31, 2026) Cover",
+    authorName: "Lucky Tiwari",
+    authorImageUrl: "/lucky-tiwari.png",
+    authorTitle: "Founder & Editor-in-Chief",
+    publishedAt: "2026-08-31",
+    metaDescription: "Get the hottest Startup news and updates for August 31, 2026—funding, M&A, talent trends, and actionable insights for Indian founders, tech workers, and job‑seekers.",
+    tags: [
+        "Startup news and updates",
+        "Indian startup funding 2026",
+        "Tech hiring trends India",
+        "Founder playbook",
+        "Indian Startups"
+    ],
+    headings: [
+        {
+            id: "morning-pulse-funding-frenzy",
+            text: "Morning Pulse: Funding Frenzy",
+            level: 2
+        },
+        {
+            id: "actionable-takeaways-for-founders",
+            text: "Actionable takeaways for founders",
+            level: 3
+        },
+        {
+            id: "midday-moves-ma-and-partnerships",
+            text: "Midday Moves: M&A and Partnerships",
+            level: 2
+        },
+        {
+            id: "quick-checklist-for-jobseekers",
+            text: "Quick checklist for job‑seekers",
+            level: 3
+        },
+        {
+            id: "evening-edge-talent-trends-salary-insights",
+            text: "Evening Edge: Talent Trends & Salary Insights",
+            level: 2
+        },
+        {
+            id: "how-to-negotiate-smarter",
+            text: "How to negotiate smarter",
+            level: 3
+        },
+        {
+            id: "what-this-means-for-indian-founders",
+            text: "What This Means for Indian Founders",
+            level: 2
+        },
+        {
+            id: "playbook-checklist",
+            text: "Playbook checklist",
+            level: 3
+        },
+        {
+            id: "key-takeaways",
+            text: "Key Takeaways",
+            level: 2
+        },
+        {
+            id: "frequently-asked-questions-faq",
+            text: "Frequently Asked Questions (FAQ)",
+            level: 2
+        },
+        {
+            id: "final-thought",
+            text: "Final Thought",
+            level: 2
+        }
+    ],
+    bodyHtml: "<p><strong>The night was electric—my laptop screen flickered, the city hummed, and a sudden ping announced a ₹250 crore Series C for a Bengaluru AI startup.</strong> That moment sparked a cascade of questions: What does this mean for my own product? Who’s hiring? Which deals will reshape the market?</p>\n<p>In the next few minutes, we’ll unpack the most relevant <strong>Startup news and updates</strong> for Indian founders, tech workers, and job‑seekers—all in one bite‑size, actionable roundup.</p>\n<p>---</p>\n<h2 id=\"morning-pulse-funding-frenzy\">Morning Pulse: Funding Frenzy</h2>\n<p>India’s venture engine roared awake at 9 AM IST. Here are the headline deals that will set the tone for the next 30 days.</p>\n<table>\n  <thead>\n    <tr>\n      <th>Company</th>\n      <th>Sector</th>\n      <th>Funding Round</th>\n      <th>Amount (₹ Crore)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td><strong>DeepSense AI</strong> (Bengaluru)</td>\n      <td>Generative AI</td>\n      <td>Series C</td>\n      <td>250</td>\n    </tr>\n    <tr>\n      <td><strong>EcoGrid Power</strong> (Hyderabad)</td>\n      <td>Renewable Energy</td>\n      <td>Series B</td>\n      <td>180</td>\n    </tr>\n    <tr>\n      <td><strong>FinBuddy</strong> (Mumbai)</td>\n      <td>Neobank for Gen‑Z</td>\n      <td>Series A</td>\n      <td>95</td>\n    </tr>\n    <tr>\n      <td><strong>HealthHive</strong> (Delhi‑NCR)</td>\n      <td>Tele‑health Platform</td>\n      <td>Seed</td>\n      <td>30</td>\n    </tr>\n  </tbody>\n</table>\n<p><strong>Why it matters:</strong></p>\n<ul>\n  <li><strong>AI is no longer a buzzword</strong>—DeepSense AI’s round validates enterprise‑grade generative models as a revenue driver.</li>\n  <li><strong>Clean tech is catching up</strong>—EcoGrid’s funding signals a policy‑friendly environment for carbon‑neutral projects.</li>\n  <li><strong>Bank‑less banking</strong> is still a hot ticket; FinBuddy’s valuation shows appetite for niche financial products.</li>\n</ul>\n<blockquote>&ldquo;<em>“If you’re building a B2B SaaS product, the AI funding wave means you need at least one AI‑enhanced feature by Q4 2026,”</em> notes venture partner Ananya Rao of Sequoia India.&rdquo;</blockquote>\n</blockquote>\n<h3 id=\"actionable-takeaways-for-founders\">Actionable takeaways for founders</h3>\n<ul>\n  <li><strong>Add AI proof‑of‑concepts</strong> to your roadmap now; investors will ask for demo data in the next demo‑day.</li>\n  <li><strong>Explore government incentives</strong> for renewable‑energy pilots—applications close on September 15.</li>\n  <li><strong>Pitch to niche funds</strong> that specialize in Gen‑Z finance; they are actively scouting for Series A opportunities.</li>\n</ul>\n<p>---</p>\n<h2 id=\"midday-moves-ma-and-partnerships\">Midday Moves: M&A and Partnerships</h2>\n<p>At 12 PM, the market shifted from cash to consolidation. Two deals stood out:</p>\n<ol>\n  <li><strong>Zoho Corp acquires Indian HR‑tech startup PeoplePulse for ₹120 crore.</strong> The move expands Zoho’s People Suite into Tier‑2 cities.</li>\n  <li><strong>Reliance Jio partners with </strong>Swiggy<em></em> to launch a hyper‑local logistics platform, leveraging Jio’s 5G network.</li>\n</ol>\n<p><strong>Implications for tech workers:</strong></p>\n<ul>\n  <li><strong>HR‑tech talent</strong> is now in high demand; expect a surge in senior product roles.</li>\n  <li><strong>Logistics engineers</strong> with 5G expertise can command salaries up to ₹45 LPA.</li>\n</ul>\n<h3 id=\"quick-checklist-for-jobseekers\">Quick checklist for job‑seekers</h3>\n<ul>\n  <li><strong>Refresh your LinkedIn headline</strong> with keywords like “5G logistics” or “HR‑tech product.”</li>\n  <li><strong>Target companies</strong> that announced partnerships—often they hire within 30 days of the press release.</li>\n  <li><strong>Prepare case studies</strong> showing how you reduced latency or improved user onboarding by >20%.</li>\n</ul>\n<p>---</p>\n<h2 id=\"evening-edge-talent-trends-salary-insights\">Evening Edge: Talent Trends & Salary Insights</h2>\n<p>By 6 PM, salary surveys from Naukri.com and LinkedIn revealed three clear trends:</p>\n<table>\n  <thead>\n    <tr>\n      <th>Role</th>\n      <th>Avg. Salary (₹ LPA)</th>\n      <th>Hot Cities</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Full‑stack Engineer</td>\n      <td>28</td>\n      <td>Bengaluru, Hyderabad</td>\n    </tr>\n    <tr>\n      <td>Data Scientist (Gen‑AI)</td>\n      <td>38</td>\n      <td>Bengaluru, Mumbai</td>\n    </tr>\n    <tr>\n      <td>Product Manager (FinTech)</td>\n      <td>34</td>\n      <td>Delhi‑NCR, Pune</td>\n    </tr>\n  </tbody>\n</table>\n<ul>\n  <li><strong>Remote‑first models</strong> are now standard for Series B+ startups; 68% of hires are from outside the office city.</li>\n  <li><strong>Equity‑only compensation</strong> is rising for early‑stage roles—average <a href=\"/blog/esop-guide-for-startups-india-2026\">ESOP</a> grant is 0.5% of post‑money valuation.</li>\n</ul>\n<blockquote>&ldquo;<em>“If you can negotiate a 6‑month vesting cliff, you’ll protect yourself while still aligning with founders,”</em> advises HR consultant Rohan Mehta.&rdquo;</blockquote>\n</blockquote>\n<h3 id=\"how-to-negotiate-smarter\">How to negotiate smarter</h3>\n<ul>\n  <li><strong>Ask for a salary‑plus‑equity split</strong> (e.g., 70/30) rather than a pure cash package.</li>\n  <li><strong>Benchmark against the table above</strong>—don’t accept below‑market offers.</li>\n  <li><strong>Leverage remote flexibility</strong> as a bargaining chip for higher equity.</li>\n</ul>\n<p>---</p>\n<h2 id=\"what-this-means-for-indian-founders\">What This Means for Indian Founders</h2>\n<p>The three pillars—funding, M&A, talent—are converging into a single strategic axis:</p>\n<ol>\n  <li><strong>Capital is flowing into AI and clean tech.</strong> If your product touches either domain, embed a clear value proposition now.</li>\n  <li><strong>Consolidation creates talent gaps.</strong> Acquire or partner with niche teams to stay ahead of the hiring curve.</li>\n  <li><strong>Compensation is shifting to equity.</strong> Be prepared to structure founder‑friendly ESOP pools (10‑12% for the first 24 months).</li>\n</ol>\n<h3 id=\"playbook-checklist\">Playbook checklist</h3>\n<ul>\n  <li><strong>Validate market fit</strong> with at least one AI‑driven feature before September 30.</li>\n  <li><strong>Map potential acquisition targets</strong>—especially HR‑tech firms that can boost your people operations.</li>\n  <li><strong>Design an ESOP calculator</strong> to model dilution for future hires; share it transparently with candidates.</li>\n</ul>\n<p>---</p>\n<h2 id=\"key-takeaways\">Key Takeaways</h2>\n<ul>\n  <li><strong>AI funding is now mainstream</strong>—don’t be the last founder to adopt.</li>\n  <li><strong>M&A activity is a hiring signal</strong>—track press releases for job openings.</li>\n  <li><strong>Salary benchmarks are rising</strong>—use data to negotiate equity‑rich offers.</li>\n  <li><strong>Action is urgent</strong>—most deals announced today will close within the next 45 days.</li>\n</ul>\n<p>---</p>\n<h2 id=\"frequently-asked-questions-faq\">Frequently Asked Questions (FAQ)</h2>\n<details class=\"faq-item\"><summary>How can early‑stage founders tap into the AI funding wave in 2026?</summary><div class=\"faq-answer\"><p>Founders should build a minimal viable AI feature, gather usage metrics, and approach sector‑focused funds like Accel AI or Sequoia India. A clear go‑to‑market plan and a data‑privacy compliance checklist are must‑haves.</p>\n</div></details>\n<details class=\"faq-item\"><summary>What skills are most in demand after today’s M&A announcements?</summary><div class=\"faq-answer\"><p>HR‑tech product management, 5G network engineering, and logistics platform architecture are top‑priority. Upskilling through short‑term certifications (e.g., Coursera’s 5G Fundamentals) can fast‑track hiring.</p>\n</div></details>\n<details class=\"faq-item\"><summary>Should I prioritize salary or equity when negotiating with a Series B startup?</summary><div class=\"faq-answer\"><p>Aim for a balanced split: <strong>70% cash, 30% equity</strong> is a good baseline. Adjust based on the startup’s runway—if they have >₹500 crore in the bank, you can push for higher cash; if cash is tight, negotiate a larger ESOP grant.</p>\n<p>---</p>\n</div></details>\n<h2 id=\"final-thought\">Final Thought</h2>\n<p>Today’s <strong>Startup news and updates</strong> aren’t just headlines—they’re a roadmap for anyone looking to build, join, or grow within India’s tech ecosystem. Grab the momentum, iterate fast, and remember that the right network can turn a news bite into a career breakthrough.</p>\n<p><em>Ready to explore verified Indian startup listings or list your own venture? Visit UpForge’s Global Registry and connect with the community that’s shaping tomorrow’s economy.</em></p>"
+},
+  {
     title: "From Third Wave Coffee to MATTER: How Indian Startups Raised Over $210 Mn This Week",
     slug: "from-third-wave-coffee-to-matter-how-indian-startups-raised-over-210-mn-this-week",
     category: "FOUNDER PLAYBOOK",
