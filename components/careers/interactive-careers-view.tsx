@@ -4,9 +4,7 @@ import { useState } from "react"
 import {
   Briefcase,
   CheckCircle2,
-  HelpCircle,
   ShieldCheck,
-  Sparkles,
   ArrowRight,
   Code2,
   Brain,
@@ -23,7 +21,9 @@ import {
   Award,
   ChevronDown,
   Lock,
-  ExternalLink,
+  BadgeCheck,
+  ReceiptText,
+  Building2,
 } from "lucide-react"
 import { HubSpotCareersForm } from "@/components/careers/hubspot-form"
 
@@ -33,60 +33,110 @@ const OPPORTUNITY_AREAS = [
     title: "AI & Machine Learning",
     desc: "Build intelligence pipelines, model evaluation workflows, and automated entity taxonomy.",
     icon: Brain,
+    responsibilities: [
+      "Design and evaluate entity-matching & classification models",
+      "Build automated taxonomy and enrichment pipelines",
+      "Benchmark model accuracy against real registry data",
+    ],
   },
   {
     id: "software-dev",
     title: "Software Development",
     desc: "Develop high-performance edge web applications, APIs, and scalable registry architecture.",
     icon: Code2,
+    responsibilities: [
+      "Ship features across our Next.js / edge-deployed platform",
+      "Design APIs that power the global startup registry",
+      "Own performance, reliability, and code quality end-to-end",
+    ],
   },
   {
     id: "data-bi",
     title: "Data Analytics & Business Intelligence",
     desc: "Analyze startup ecosystem datasets, funding trends, and market performance metrics.",
     icon: BarChart3,
+    responsibilities: [
+      "Turn raw ecosystem data into founder & investor insight",
+      "Build dashboards tracking funding and market trends",
+      "Validate and clean large-scale registry datasets",
+    ],
   },
   {
     id: "biz-analysis",
     title: "Business Analysis & Strategy",
     desc: "Research industry trends, founder models, and strategic growth positioning for registry entities.",
     icon: Compass,
+    responsibilities: [
+      "Research industry trends and competitive positioning",
+      "Model growth strategy for registry categories",
+      "Translate findings into product & business recommendations",
+    ],
   },
   {
     id: "product-mgmt",
     title: "Product Management",
     desc: "Define feature scope, streamline verification workflows, and enhance user experience.",
     icon: Layers,
+    responsibilities: [
+      "Own feature scoping from idea to shipped product",
+      "Streamline startup verification workflows",
+      "Partner with design & engineering on user experience",
+    ],
   },
   {
     id: "growth-marketing",
     title: "Digital Marketing & Growth",
     desc: "Drive organic search visibility, developer marketing, and ecosystem outreach.",
     icon: TrendingUp,
+    responsibilities: [
+      "Grow organic search visibility across key markets",
+      "Run developer & founder-focused marketing campaigns",
+      "Own outreach and ecosystem partnership content",
+    ],
   },
   {
     id: "biz-dev",
     title: "Business Development & Sales",
     desc: "Build institutional partnerships, founder networks, and ecosystem collaborations.",
     icon: Target,
+    responsibilities: [
+      "Build partnerships with institutions & accelerators",
+      "Grow the founder and investor network",
+      "Own outbound outreach and deal closure",
+    ],
   },
   {
     id: "design-uiux",
     title: "UI/UX & Product Design",
     desc: "Craft clean, accessible, and modern user interfaces across registry platforms.",
     icon: Palette,
+    responsibilities: [
+      "Design accessible, modern interfaces for the registry",
+      "Build and maintain a consistent design system",
+      "Prototype and test new product flows",
+    ],
   },
   {
     id: "content-media",
     title: "Content & Social Media",
     desc: "Produce editorial reports, founder chronicles, and industry insights.",
     icon: Share2,
+    responsibilities: [
+      "Write founder stories and editorial research reports",
+      "Plan and produce content across social channels",
+      "Maintain editorial quality and factual accuracy",
+    ],
   },
   {
     id: "hr-talent",
     title: "HR & Talent Acquisition",
     desc: "Coordinate recruitment pipelines, candidate communications, and onboarding operations.",
     icon: UserCheck,
+    responsibilities: [
+      "Coordinate candidate pipelines end-to-end",
+      "Own clear, timely candidate communication",
+      "Build onboarding operations as the team scales",
+    ],
   },
 ]
 
@@ -109,15 +159,15 @@ const FAQ_ITEMS = [
   },
   {
     q: "Is the AI assessment mandatory for every applicant?",
-    a: "No. Assessments are utilized only for candidates whose initial application progresses to the evaluation stage. You will be notified with full instructions if your profile is selected for an assessment.",
+    a: "No. Assessments are used only for candidates whose initial application progresses to the evaluation stage. You will be notified with full instructions if your profile is selected for an assessment.",
   },
   {
-    q: "Why is there a ₹199 assessment fee?",
-    a: "Where applicable, the assessment is hosted and administered by an independent third-party service provider [NEEDS CONFIRMATION]. The ₹199 fee is charged directly by the assessment provider to cover technology and evaluation costs. UpForge does not charge a recruitment fee for submitting an application.",
+    q: "Why is there a ₹29 assessment fee, and who receives it?",
+    a: "The assessment is hosted and administered by an independent, third-party candidate evaluation partner — not UpForge. That ₹29 covers the partner's assessment technology and evaluation cost directly; it is charged by and paid to the assessment provider, never to UpForge. UpForge does not charge any fee to submit an application, and no team member will ever ask you to pay them personally.",
   },
   {
     q: "Does paying the assessment fee guarantee selection?",
-    a: "No. Payment of the third-party assessment fee covers the cost of evaluation service only and does NOT guarantee selection, an interview with the UpForge team, employment, salary, or any specific outcome.",
+    a: "No. Payment of the third-party assessment fee covers the cost of the evaluation service only and does NOT guarantee selection, an interview with the UpForge team, employment, salary, or any specific outcome.",
   },
   {
     q: "How will UpForge contact selected candidates?",
@@ -129,16 +179,27 @@ const FAQ_ITEMS = [
   },
 ]
 
+const TRUST_BADGES = [
+  { icon: ShieldCheck, label: "Verified Process" },
+  { icon: Lock, label: "Secure Application" },
+  { icon: BadgeCheck, label: "No Recruiter Fees" },
+  { icon: Building2, label: "Official @upforge.org" },
+]
+
 export function InteractiveCareersView() {
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null)
+  const [expandedRoleId, setExpandedRoleId] = useState<string | null>(null)
   const [activeStep, setActiveStep] = useState<number>(1)
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(null)
 
   const selectedRole = OPPORTUNITY_AREAS.find((r) => r.id === selectedRoleId)
 
+  const handleRoleExpand = (roleId: string) => {
+    setExpandedRoleId((prev) => (prev === roleId ? null : roleId))
+  }
+
   const handleRoleSelect = (roleId: string) => {
     setSelectedRoleId(roleId)
-    // Smooth scroll to application form
     const applyEl = document.getElementById("apply")
     if (applyEl) {
       applyEl.scrollIntoView({ behavior: "smooth" })
@@ -169,7 +230,7 @@ export function InteractiveCareersView() {
             Join a growing startup where your ideas, skills, and initiative can create real impact.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4 mb-10">
             <a
               href="#apply"
               className="inline-flex items-center gap-2.5 bg-foreground hover:bg-amber-500 text-background hover:text-black py-3.5 px-8 rounded-2xl font-bold uppercase tracking-[0.15em] text-xs font-mono transition-all duration-200 shadow-sm hover:shadow-md"
@@ -184,8 +245,21 @@ export function InteractiveCareersView() {
             </a>
           </div>
 
+          {/* Trust Badge Strip */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 mb-10">
+            {TRUST_BADGES.map((badge, idx) => (
+              <div
+                key={idx}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/70 bg-muted/40 text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wide"
+              >
+                <badge.icon size={12} className="text-amber-500" />
+                {badge.label}
+              </div>
+            ))}
+          </div>
+
           {/* Clean Metric Chips */}
-          <div className="grid grid-cols-3 gap-3 md:gap-8 pt-10 mt-8 border-t border-border/50 w-full max-w-2xl text-center">
+          <div className="grid grid-cols-3 gap-3 md:gap-8 pt-10 border-t border-border/50 w-full max-w-2xl text-center">
             <div>
               <div className="font-mono text-base md:text-xl font-bold text-foreground">10 Areas</div>
               <div className="text-[10px] md:text-xs font-serif text-muted-foreground">Opportunities</div>
@@ -297,7 +371,7 @@ export function InteractiveCareersView() {
           </div>
         </section>
 
-        {/* 4. CLICKABLE AREAS OF OPPORTUNITY */}
+        {/* 4. EXPANDABLE AREAS OF OPPORTUNITY */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 flex-1">
@@ -310,56 +384,83 @@ export function InteractiveCareersView() {
           </div>
 
           <p className="text-xs md:text-sm text-muted-foreground font-serif italic">
-            Click any area below to highlight role details and pre-select it for your application:
+            Click a role to expand what you'll actually work on, then select it for your application.
           </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid sm:grid-cols-2 gap-4">
             {OPPORTUNITY_AREAS.map((area) => {
               const Icon = area.icon
               const isSelected = selectedRoleId === area.id
+              const isExpanded = expandedRoleId === area.id
 
               return (
-                <button
+                <div
                   key={area.id}
-                  type="button"
-                  onClick={() => handleRoleSelect(area.id)}
-                  className={`p-5 text-left border rounded-2xl transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+                  className={`border rounded-2xl transition-all duration-200 overflow-hidden ${
                     isSelected
-                      ? "border-amber-500 bg-amber-500/10 shadow-md ring-2 ring-amber-500/20"
-                      : "border-border/80 bg-card hover:border-amber-500/60 hover:shadow-sm"
+                      ? "border-amber-500 bg-amber-500/5 shadow-md ring-1 ring-amber-500/20"
+                      : "border-border/80 bg-card hover:border-amber-500/50"
                   }`}
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div
-                        className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
-                          isSelected
-                            ? "bg-amber-500 text-black border-amber-500"
-                            : "bg-muted text-foreground border-border group-hover:border-amber-500/40"
-                        }`}
-                      >
-                        <Icon size={18} />
-                      </div>
-                      {isSelected && (
-                        <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">
-                          SELECTED
-                        </span>
-                      )}
+                  <button
+                    type="button"
+                    onClick={() => handleRoleExpand(area.id)}
+                    className="w-full p-5 text-left flex items-start gap-4 cursor-pointer group"
+                  >
+                    <div
+                      className={`w-10 h-10 shrink-0 rounded-xl border flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? "bg-amber-500 text-black border-amber-500"
+                          : "bg-muted text-foreground border-border group-hover:border-amber-500/40"
+                      }`}
+                    >
+                      <Icon size={18} />
                     </div>
 
-                    <h3 className="text-xs font-mono font-bold text-foreground mb-1.5 uppercase tracking-wide group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                      {area.title}
-                    </h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed font-serif">
-                      {area.desc}
-                    </p>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-xs font-mono font-bold text-foreground uppercase tracking-wide group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                          {area.title}
+                        </h3>
+                        {isSelected && (
+                          <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                            SELECTED
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed font-serif mt-1.5">
+                        {area.desc}
+                      </p>
+                    </div>
 
-                  <div className="mt-4 pt-2 border-t border-border/40 text-[10px] font-mono text-muted-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 flex items-center justify-between">
-                    <span>Select Role</span>
-                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </button>
+                    <ChevronDown
+                      size={16}
+                      className={`shrink-0 mt-1 text-muted-foreground transition-transform duration-200 ${
+                        isExpanded ? "rotate-180 text-amber-500" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="px-5 pb-5 pt-0 border-t border-border/40">
+                      <div className="pt-4 space-y-2">
+                        {area.responsibilities.map((point, i) => (
+                          <div key={i} className="flex items-start gap-2 text-[11px] text-muted-foreground font-serif leading-relaxed">
+                            <CheckCircle2 size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                            <span>{point}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRoleSelect(area.id)}
+                        className="mt-4 inline-flex items-center gap-2 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 hover:text-amber-500 transition-colors cursor-pointer"
+                      >
+                        Select This Role & Apply <ArrowRight size={12} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -406,7 +507,7 @@ export function InteractiveCareersView() {
               </div>
             </div>
 
-            {/* STEP 2 */}
+            {/* STEP 2 — ASSESSMENT / TRUST-FOCUSED FEE CARD */}
             <div
               onClick={() => setActiveStep(2)}
               className={`p-6 border rounded-3xl transition-all duration-200 cursor-pointer ${
@@ -425,21 +526,39 @@ export function InteractiveCareersView() {
                 Assessment
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed font-serif mb-3">
-                Candidates whose applications progress to the assessment stage may be invited to complete an AI-powered interview/assessment.
+                Candidates whose applications progress to the assessment stage may be invited to complete an AI-powered interview/assessment via our independent evaluation partner.
               </p>
 
-              <div className="p-4 border border-amber-500/30 bg-amber-500/10 rounded-2xl space-y-2 text-[11px] text-foreground font-serif">
-                <div className="font-mono font-bold text-amber-600 dark:text-amber-400 uppercase text-[10px] tracking-wider">
-                  Assessment fee: ₹199
+              <div className="p-4 border border-amber-500/30 bg-amber-500/10 rounded-2xl space-y-3 text-[11px] text-foreground font-serif">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono font-bold text-amber-600 dark:text-amber-400 uppercase text-[10px] tracking-wider">
+                    Third-Party Assessment Cost
+                  </div>
+                  <div className="font-mono font-bold text-foreground text-base leading-none">
+                    ₹29
+                  </div>
                 </div>
-                <p className="leading-relaxed text-muted-foreground text-[10.5px]">
-                  Where applicable, the AI assessment is provided by an independent third-party assessment service [NEEDS CONFIRMATION]. The ₹199 fee is charged by the assessment provider to cover the assessment service and related technology costs. UpForge does not charge a recruitment fee for submitting an application.
-                </p>
-                <p className="font-semibold text-foreground/90 text-[10.5px]">
-                  Payment does not guarantee selection, an interview with the UpForge team, employment, salary, or any other outcome.
-                </p>
-                <p className="text-[10px] text-muted-foreground italic">
-                  Candidates should review the assessment provider's terms, privacy policy, and refund policy before making payment.
+
+                <div className="flex items-start gap-2">
+                  <ReceiptText size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="leading-relaxed text-muted-foreground text-[10.5px]">
+                    Charged directly by our independent third-party evaluation partner to cover their assessment technology — not a UpForge fee.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <ShieldCheck size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="leading-relaxed text-muted-foreground text-[10.5px]">
+                    UpForge never asks candidates to pay us directly at any stage of recruitment.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Lock size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="leading-relaxed text-muted-foreground text-[10.5px]">
+                    Paid via the partner's secure checkout. Payment does not guarantee selection, an interview, or employment.
+                  </p>
+                </div>
+                <p className="text-[10px] text-muted-foreground italic pt-1 border-t border-amber-500/20">
+                  Review the assessment provider's terms, privacy policy, and refund policy before paying.
                 </p>
               </div>
             </div>
@@ -522,7 +641,7 @@ export function InteractiveCareersView() {
               <li className="flex items-start gap-2">
                 <span className="text-amber-500 font-bold">•</span>
                 <span>
-                  Assessment/payment, where applicable, does not guarantee employment.
+                  The ₹29 assessment fee, where applicable, is charged by and paid to our independent third-party evaluation partner only — UpForge does not receive or request this payment.
                 </span>
               </li>
               <li className="flex items-start gap-2">
@@ -582,6 +701,6 @@ export function InteractiveCareersView() {
           </div>
         </section>
       </main>
-    </div>   
+    </div>
   )
 }
