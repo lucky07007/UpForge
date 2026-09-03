@@ -135,7 +135,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     tagline: "Think like a founder. Decide like a builder. Test your Startup IQ.",
     badge: "Official Benchmark",
     duration: "3–5 Minutes",
-    image: "https://images.upforge.org/quiz/UpForge Startup IQ Challenge 2026.webp",
+    image: "https://images.upforge.org/quiz/UpForge%2020Startup%2020IQ%2020Challenge%20202026.webp",
     baseParticipants: 18450,
     metrics: {
       scenariosCount: "10 MCQs",
@@ -228,7 +228,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     tagline: "Think like a marketer. Understand what makes people act.",
     badge: "Growth Benchmark",
     duration: "3–5 Minutes",
-    image: "https://images.upforge.org/quiz/UpForge Marketing IQ Challenge 2026.webp",
+    image: "https://images.upforge.org/quiz/UpForge%2020Marketing%2020IQ%2020Challenge%20202026.webp",
     baseParticipants: 14210,
     metrics: {
       scenariosCount: "10 MCQs",
