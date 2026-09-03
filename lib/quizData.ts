@@ -9,6 +9,7 @@ export interface CommentItem {
   id: string;
   name: string;
   avatar: string;
+  role: string;
   location: string;
   timeAgo: string;
   text: string;
@@ -20,18 +21,267 @@ export interface QuizItem {
   title: string;
   tagline: string;
   badge: string;
+  level: string;
+  duration: string;
   image: string;
   baseParticipants: number;
-  description: {
-    hero: string;
-    sub: string;
-    format: string[];
-    rewards: string[];
-    rules: string[];
-    footerNotice: string;
+  overview: {
+    heading: string;
+    subheading: string;
+    highlights: string[];
+    whatYouLearn: string[];
+    criteria: string[];
   };
   questions: Question[];
-  seedComments: CommentItem[];
+}
+
+// 20+ Realistic Global User Profiles (India, US, China, UK, Singapore)
+export const GLOBAL_SEED_USERS: Array<{
+  name: string;
+  avatar: string;
+  role: string;
+  location: string;
+  poolComments: string[];
+}> = [
+  {
+    name: "Arjun Nambiar",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=faces",
+    role: "Founder, Fintech Sandbox",
+    location: "Bengaluru, IN",
+    poolComments: [
+      "The runway and CAC calculations hit hard. Real world numbers instead of college theory.",
+      "Finished in 4 mins. Clean, no fluff, straight to the point.",
+      "Shared this with my incubator cohort. Essential check for any early stage founder."
+    ]
+  },
+  {
+    name: "Sarah Chen (陈思)",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&crop=faces",
+    role: "Growth Lead @ ScaleX",
+    location: "Singapore",
+    poolComments: [
+      "Scored 9/10! The distinction between vanity metrics and organic retention was spot on.",
+      "The certificate looks so premium on LinkedIn. Great initiative by UpForge.",
+      "Customer journey question was tricky but very well articulated."
+    ]
+  },
+  {
+    name: "David K. Miller",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=faces",
+    role: "Angel Investor & Ex-PM",
+    location: "San Francisco, US",
+    poolComments: [
+      "I evaluate pitch decks weekly. If founders can't answer these 10 questions, they shouldn't raise.",
+      "Extremely realistic scenarios. Loved how PMF was framed.",
+      "Solid benchmark test. Fast and insightful."
+    ]
+  },
+  {
+    name: "Priyanka Deshmukh",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=faces",
+    role: "Product Marketer",
+    location: "Pune, IN",
+    poolComments: [
+      "The conversion funnel scenario is literally what our marketing team debated yesterday.",
+      "Crisp user experience. Took less than 4 minutes.",
+      "Happy with my 'Founder Mindset' score! Keep bringing more niche quizzes."
+    ]
+  },
+  {
+    name: "Wei Zhang (张伟)",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=faces",
+    role: "E-Commerce Tech Lead",
+    location: "Shenzhen, CN",
+    poolComments: [
+      "Fast loading and responsive UI. CAC questions were very practical.",
+      "Validation before heavy engineering is rule #1. Glad to see it emphasized.",
+      "Clean evaluation. Downloaded the certificate smoothly."
+    ]
+  },
+  {
+    name: "Oliver Wright",
+    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&h=120&fit=crop&crop=faces",
+    role: "Venture Scout",
+    location: "London, UK",
+    poolComments: [
+      "Scenario-based testing beats traditional academic quizzes every day of the week.",
+      "Every accelerator program should use this as a preliminary baseline test.",
+      "Minimalist design, fast execution. 10/10 UX."
+    ]
+  },
+  {
+    name: "Kabir Mehta",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&h=120&fit=crop&crop=faces",
+    role: "Fullstack Builder",
+    location: "Gurugram, IN",
+    poolComments: [
+      "Machine learning vs traditional data question was crisp. Good scenarios.",
+      "Scored 8/10. Realized I need to tighten our product analytics.",
+      "Certificate looks very credible with the official seal and logo."
+    ]
+  },
+  {
+    name: "Jessica Taylor",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&crop=faces",
+    role: "Brand Strategist",
+    location: "Austin, US",
+    poolComments: [
+      "Target audience definition question was so refreshing. Most people still get that wrong.",
+      "Clean certification download. Added it directly to my professional credentials.",
+      "Simple, modern, and trustworthy."
+    ]
+  },
+  {
+    name: "Li Na (李娜)",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&h=120&fit=crop&crop=faces",
+    role: "Operations Director",
+    location: "Shanghai, CN",
+    poolComments: [
+      "The emphasis on customer demand over office expansion made me smile. Realistic!",
+      "Fast response time, zero page lag.",
+      "Comprehensive scenarios for new venture teams."
+    ]
+  },
+  {
+    name: "Aditya Roy",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&h=120&fit=crop&crop=faces",
+    role: "Pre-seed Founder",
+    location: "Hyderabad, IN",
+    poolComments: [
+      "Calculating runway correctly is the difference between life and death for startups.",
+      "Took the quiz on mobile. Touch targets and layout are effortless.",
+      "UpForge has built something really neat here."
+    ]
+  },
+  {
+    name: "Michael Chang",
+    avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&h=120&fit=crop&crop=faces",
+    role: "Performance Marketer",
+    location: "Seattle, US",
+    poolComments: [
+      "A/B testing and small budget experimentation is the holy grail of modern growth.",
+      "Loved the instant feedback without requiring 15 form fields upfront.",
+      "Well-structured questions."
+    ]
+  },
+  {
+    name: "Meera Sen",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&h=120&fit=crop&crop=faces",
+    role: "EdTech Researcher",
+    location: "Kolkata, IN",
+    poolComments: [
+      "The pedagogy here is high quality. Real decision-making frameworks tested.",
+      "Flawless score of 10/10. Proud of my certificate.",
+      "Will recommend to our student community."
+    ]
+  },
+  {
+    name: "Lucas Vance",
+    avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=120&h=120&fit=crop&crop=faces",
+    role: "SaaS Consultant",
+    location: "Toronto, CA",
+    poolComments: [
+      "The question on recurring subscription mechanics is essential reading.",
+      "Very neat typography and certificate design.",
+      "Took only 3 minutes."
+    ]
+  },
+  {
+    name: "Ananya Pillai",
+    avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=120&h=120&fit=crop&crop=faces",
+    role: "Content Marketing Lead",
+    location: "Chennai, IN",
+    poolComments: [
+      "Content marketing as a compounding asset was explained wonderfully in the scenario.",
+      "Good blend of strategic mindset questions.",
+      "Easy and seamless flow."
+    ]
+  },
+  {
+    name: "Hao Huang (黄浩)",
+    avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=120&h=120&fit=crop&crop=faces",
+    role: "Angel Syndicator",
+    location: "Beijing, CN",
+    poolComments: [
+      "Good evaluation of unit economics. Many founders miss CAC vs LTV parity.",
+      "Professional certificate design, worthy of being shared publicly.",
+      "Very high signal-to-noise ratio."
+    ]
+  },
+  {
+    name: "Rachel Greenburg",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=120&h=120&fit=crop&crop=faces",
+    role: "Product Designer & Co-founder",
+    location: "New York, US",
+    poolComments: [
+      "Solving recurring customer complaints rather than adding features is true PM thinking.",
+      "The UI looks just like Coursera / Reforge. Super clean.",
+      "Great experience overall."
+    ]
+  },
+  {
+    name: "Tanvi Kulkarni",
+    avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=120&h=120&fit=crop&crop=faces",
+    role: "Startup Community Manager",
+    location: "Mumbai, IN",
+    poolComments: [
+      "Our entire founder group took this quiz today. Generated great discussions on runway!",
+      "Super smooth on mobile browser.",
+      "Certificate verification ID adds high trust."
+    ]
+  },
+  {
+    name: "Marcus Aurelius Vance",
+    avatar: "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=120&h=120&fit=crop&crop=faces",
+    role: "GTM Consultant",
+    location: "Boston, US",
+    poolComments: [
+      "Conversion rate before burn rate when analyzing traffic drops is so fundamental.",
+      "Well-crafted questions with zero fluff.",
+      "High standard of questions."
+    ]
+  },
+  {
+    name: "Xin Yi (心怡)",
+    avatar: "https://images.unsplash.com/photo-1548142813-c348350df52b?w=120&h=120&fit=crop&crop=faces",
+    role: "Data Analyst",
+    location: "Guangzhou, CN",
+    poolComments: [
+      "Machine learning churn modeling question is aligned with real industry applications.",
+      "Quick assessment, verified score.",
+      "Certificate looks elegant with the gold seal."
+    ]
+  },
+  {
+    name: "Siddharth Jha",
+    avatar: "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?w=120&h=120&fit=crop&crop=faces",
+    role: "Venture Associate",
+    location: "Delhi NCR, IN",
+    poolComments: [
+      "A 3-minute quiz that actually teaches you how to think like an operator. Respect to UpForge.",
+      "Saved my certificate PNG. Crisp typography.",
+      "10/10 challenge."
+    ]
+  }
+];
+
+// Helper to generate dynamic authentic comments per quiz
+export function getSeededQuizComments(quizId: string, count: number = 8): CommentItem[] {
+  // Deterministic seed based on quiz ID so it stays consistent yet varied
+  const timeLabels = ["10 mins ago", "45 mins ago", "2 hours ago", "5 hours ago", "Yesterday", "2 days ago"];
+  
+  return GLOBAL_SEED_USERS.slice(0, count).map((user, idx) => {
+    const commentText = user.poolComments[(idx + (quizId.length % 3)) % user.poolComments.length];
+    return {
+      id: `comm_${quizId}_${idx}`,
+      name: user.name,
+      avatar: user.avatar,
+      role: user.role,
+      location: user.location,
+      timeAgo: timeLabels[idx % timeLabels.length],
+      text: commentText
+    };
+  });
 }
 
 export const QUIZ_REGISTRY: QuizItem[] = [
@@ -40,31 +290,31 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     slug: "startup-iq-challenge-2026",
     title: "How Startup-Smart Are You? | UpForge Startup IQ Challenge 2026",
     tagline: "Think like a founder. Decide like a builder. Test your Startup IQ.",
-    badge: "Founder Level",
+    badge: "Executive Assessment",
+    level: "All Founder Levels",
+    duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/UpForge Startup IQ Challenge 2026.webp",
-    baseParticipants: 14820,
-    description: {
-      hero: "🚀 Startup IQ Challenge 2026",
-      sub: "How well do you understand startups, business, marketing, technology and growth? Take this quick 10-question challenge and find out.",
-      format: [
-        "10 Scenario-Based MCQs",
-        "Online verified evaluation",
-        "3–5 minutes recommended pace",
-        "One correct answer per question",
-        "Open to students, professionals, founders & startup enthusiasts"
+    baseParticipants: 16840,
+    overview: {
+      heading: "🚀 Startup IQ Challenge 2026",
+      subheading: "Scenario-based problem solving for modern operators, tech builders and entrepreneurs.",
+      highlights: [
+        "10 Real-world founder dilemmas & calculations",
+        "Deterministic metric scoring (CAC, Runway, PMF)",
+        "Zero generic book definitions; 100% decision logic",
+        "Official UpForge Executive Certificate with gold verification seal"
       ],
-      rewards: [
-        "Instant Startup IQ Score & Accuracy Analysis",
-        "Personalized performance level (Founder Mindset / Builder)",
-        "Verified UpForge Certificate of Completion"
+      whatYouLearn: [
+        "How to accurately gauge runway and net burn rate without spreadsheet confusion",
+        "Diagnosing visitor drop-offs and prioritising PMF over superficial growth",
+        "Managing early customer feedback loops to accelerate iterations",
+        "Balancing unit economics before scaling paid customer acquisition"
       ],
-      rules: [
-        "Participate individually without multiple tabs",
-        "Select exactly one answer per scenario",
-        "Complete the assessment honestly",
-        "No prior startup exit or venture experience required"
-      ],
-      footerNotice: "Explore UpForge ecosystem tools at upforge.org"
+      criteria: [
+        "Open to students, professionals, founders & startup builders",
+        "10 Single-choice scenario questions",
+        "No prior venture funding experience required"
+      ]
     },
     questions: [
       {
@@ -142,40 +392,6 @@ export const QUIZ_REGISTRY: QuizItem[] = [
         ],
         correctIndex: 1
       }
-    ],
-    seedComments: [
-      {
-        id: "c1",
-        name: "Rohan Malhotra",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces",
-        location: "Bengaluru, IN",
-        timeAgo: "2 hours ago",
-        text: "The questions on retention and CAC are brutally accurate for early stage PMF. Took 4 minutes."
-      },
-      {
-        id: "c2",
-        name: "Sarah Chen",
-        avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop&crop=faces",
-        location: "Singapore",
-        timeAgo: "5 hours ago",
-        text: "Solid scenario-based questions instead of book definitions. Certificate rendered cleanly."
-      },
-      {
-        id: "c3",
-        name: "David Miller",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces",
-        location: "San Francisco, US",
-        timeAgo: "1 day ago",
-        text: "Runway calculation and feedback loops are foundational. Every pre-seed founder should take this."
-      },
-      {
-        id: "c4",
-        name: "Ananya Iyer",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces",
-        location: "Delhi, IN",
-        timeAgo: "1 day ago",
-        text: "Scored 9/10! Q8 on customer complaints is something most founders overlook."
-      }
     ]
   },
   {
@@ -184,30 +400,30 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     title: "UpForge Marketing IQ Challenge 2026",
     tagline: "Think like a marketer. Understand what makes people act.",
     badge: "Growth Sprint",
+    level: "Growth & Marketers",
+    duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/UpForge Marketing IQ Challenge 2026.webp",
-    baseParticipants: 11450,
-    description: {
-      hero: "🚀 Marketing IQ Challenge 2026",
-      sub: "How well do you understand customers, digital marketing, conversion, content and growth? Take this quick 10-question challenge and find out.",
-      format: [
-        "10 Strategic Marketing MCQs",
-        "Interactive scenario assessment",
-        "3–5 minutes duration",
-        "Single correct answer per question",
-        "Open to founders, marketers, creators & students"
+    baseParticipants: 12930,
+    overview: {
+      heading: "🚀 Marketing IQ Challenge 2026",
+      subheading: "Tactical and strategic evaluation of acquisition channels, conversion design, and audience psychology.",
+      highlights: [
+        "10 Customer behavioral scenarios & channel audits",
+        "Practical engagement vs conversion distinctions",
+        "Actionable CAC and customer journey frameworks",
+        "Official UpForge Executive Certificate with gold verification seal"
       ],
-      rewards: [
-        "Instant Marketing IQ Score & Metric Breakdown",
-        "Personalized growth performance level",
-        "Official UpForge Certificate of Completion"
+      whatYouLearn: [
+        "Diagnosing click-heavy yet low-conversion paid traffic campaigns",
+        "Conducting meaningful qualitative customer discovery interviews",
+        "Formulating sharp target personas that cut through ad noise",
+        "Executing micro-budget audience testing before full-scale launches"
       ],
-      rules: [
-        "Participate individually",
-        "Evaluate real customer and channel behaviors",
-        "Complete the quiz honestly",
-        "No prior professional agency experience required"
-      ],
-      footerNotice: "Explore UpForge ecosystem tools at upforge.org"
+      criteria: [
+        "Ideal for creators, marketers, founders and product teams",
+        "10 Real-world growth scenarios",
+        "No agency background or technical marketing stack needed"
+      ]
     },
     questions: [
       {
@@ -269,32 +485,6 @@ export const QUIZ_REGISTRY: QuizItem[] = [
         question: "You have ₹10,000 to promote a new product, but don't know which audience responds best. What's the smartest approach?",
         options: ["Spend everything immediately", "Test small campaigns with different audiences and measure results", "Target everyone", "Stop marketing"],
         correctIndex: 1
-      }
-    ],
-    seedComments: [
-      {
-        id: "m1",
-        name: "Vikram Singhania",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces",
-        location: "Mumbai, IN",
-        timeAgo: "3 hours ago",
-        text: "The distinction between engagement and customer journey funnels was crisp. Loved the UX."
-      },
-      {
-        id: "m2",
-        name: "Elena Rostova",
-        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces",
-        location: "London, UK",
-        timeAgo: "6 hours ago",
-        text: "Super clean interface. No bloat, instantly gives you the score and clean breakdown."
-      },
-      {
-        id: "m3",
-        name: "Rahul Verma",
-        avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&h=100&fit=crop&crop=faces",
-        location: "Hyderabad, IN",
-        timeAgo: "1 day ago",
-        text: "Question 10 on micro-budget testing is how every real growth team operates."
       }
     ]
   }
