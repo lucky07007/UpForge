@@ -315,8 +315,9 @@ export function Navbar() {
     { name: "Home", href: "/" },
     { name: "Global Registry", href: "/registry" },
     { name: "Founder Stories", href: "/founder-stories" },
-    { name: "Community", href: "/creators" },
+    { name: "Assessment", href: "/quiz" },
     { name: "Journal", href: "/blog" },
+    { name: "About", href: "/about" },
   ];
 
   // Close More dropdown on outside click
