@@ -55,8 +55,9 @@ const FOOTER_COLUMNS = [
     heading: "Platform",
     links: [
       { label: "Startup Registry", href: "/registry" },
-      { label: "Creator Community", href: "/creators" },
       { label: "Verify UFRN", href: "/verify" },
+      { label: "Creator Community", href: "/creators" },
+      { name: "Assessment", href: "/quiz" },
     ],
   },
   {
