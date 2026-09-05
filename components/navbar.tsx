@@ -313,11 +313,11 @@ export function Navbar() {
 
   const links: NavLink[] = [
     { name: "Home", href: "/" },
-    { name: "Global Registry", href: "/registry" },
-    { name: "Founder Stories", href: "/founder-stories" },
+    { name: "Registry", href: "/registry" },
+    { name: "Stories", href: "/founder-stories" },
     { name: "Assessment", href: "/quiz" },
     { name: "Journal", href: "/blog" },
-    { name: "About", href: "/about" },
+
   ];
 
   // Close More dropdown on outside click
