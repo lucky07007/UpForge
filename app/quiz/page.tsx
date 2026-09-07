@@ -1,87 +1,125 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  HelpCircle, 
-  TrendingUp, 
-  ShieldCheck, 
-  BrainCircuit, 
-  ArrowRight,
-  RotateCcw,
-  Sparkles,
+import {
   Award,
-  BookOpen,
-  Share2,
-  Download
+  CheckCircle2,
+  ChevronRight,
+  Download,
+  Loader2,
+  RefreshCcw,
+  ShieldCheck,
 } from "lucide-react";
-import { QUIZ_REGISTRY, QuizCategory, QuizQuestion } from "@/lib/quizData";
+import * as QuizModule from "@/lib/quizData";
 
-export default function QuizDashboard() {
-  const [selectedCategory, setSelectedCategory] = useState<QuizCategory>("technical-assessment");
+export default function QuizPage() {
+  const activeQuiz = useMemo(() => {
+    const reg = (QuizModule as Record<string, any>).QUIZ_REGISTRY;
+    if (reg) {
+      if (Array.isArray(reg)) return { questions: reg };
+      const firstKey = Object.keys(reg)[0];
+      if (firstKey && reg[firstKey]) {
+        return reg[firstKey].questions ? reg[firstKey] : { questions: reg[firstKey] };
+      }
+    }
+    return {
+      questions: [
+        {
+          question: "Which metric is most crucial for early-stage AI startup product-market fit?",
+          options: [
+            "Gross Margin",
+            "Net Retention Rate (NRR) & DAU/MAU",
+            "Total Vanity Impressions",
+            "Raw Seed Capital",
+          ],
+          correctAnswer: 1,
+        },
+        {
+          question: "Under standard ESOP vesting schedules in Indian startup ecosystems, what is the customary cliff period?",
+          options: ["6 Months", "1 Year (12 Months)", "2 Years", "No Cliff"],
+          correctAnswer: 1,
+        },
+        {
+          question: "What distinguishes a verified UFRN registry entry from self-reported startup claims?",
+          options: [
+            "Independent verification of MCA, GSTIN & domain provenance",
+            "Social media follower count",
+            "Paid advertisement badge",
+            "Office square footage",
+          ],
+          correctAnswer: 0,
+        },
+        {
+          question: "When deploying LLMs to edge or browser environments, which format optimizes memory footprint?",
+          options: [
+            "Unquantized FP32",
+            "GGUF / Int4 Quantization",
+            "Raw PyTorch Checkpoint",
+            "Uncompressed CSV",
+          ],
+          correctAnswer: 1,
+        },
+        {
+          question: "What is the primary role of the InternAdda technical assessment bridge for UpForge?",
+          options: [
+            "Selling generic test packs",
+            "Qualifying verified technical talent for top startup teams",
+            "Hosting casual games",
+            "Tracking social media metrics",
+          ],
+          correctAnswer: 1,
+        },
+      ],
+    };
+  }, []);
+
+  const questions = activeQuiz.questions || [];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
-  const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  
-  // Certificate Generation States
-  const [candidateName, setCandidateName] = useState("");
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [studentName, setStudentName] = useState("");
+  const [nameSubmitted, setNameSubmitted] = useState(false);
+  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
 
-  // Fallback if category not found
-  const activeQuiz = QUIZ_REGISTRY[selectedCategory] || QUIZ_REGISTRY["technical-assessment"];
-  const currentQuestion: QuizQuestion = activeQuiz.questions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
 
   const handleSelectOption = (index: number) => {
-    if (selectedAnswers[currentQuestionIndex] !== undefined) return; // Prevent changing answer
-    setSelectedAnswers(prev => ({ ...prev, [currentQuestionIndex]: index }));
-    setShowExplanation(true);
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [currentQuestionIndex]: index,
+    }));
   };
 
   const handleNext = () => {
-    setShowExplanation(false);
-    if (currentQuestionIndex < activeQuiz.questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setIsCompleted(true);
     }
   };
 
-  const handleReset = () => {
-    setCurrentQuestionIndex(0);
+  const handleRestart = () => {
     setSelectedAnswers({});
-    setShowExplanation(false);
+    setCurrentQuestionIndex(0);
     setIsCompleted(false);
-    setCandidateName("");
+    setNameSubmitted(false);
+    setStudentName("");
   };
 
-  const handleCategoryChange = (cat: QuizCategory) => {
-    setSelectedCategory(cat);
-    setCurrentQuestionIndex(0);
-    setSelectedAnswers({});
-    setShowExplanation(false);
-    setIsCompleted(false);
-    setCandidateName("");
-  };
-
-  // Calculate Results
-  const totalQuestions = activeQuiz.questions.length;
-  const answeredCount = Object.keys(selectedAnswers).length;
-  const correctCount = Object.entries(selectedAnswers).reduce((acc, [qIdx, aIdx]) => {
-    return acc + (activeQuiz.questions[Number(qIdx)].correctAnswer === aIdx ? 1 : 0);
+  const score = Object.entries(selectedAnswers).reduce((total, [qIdx, ansIdx]) => {
+    const q = questions[Number(qIdx)];
+    const correct = q?.correctAnswer ?? q?.answer ?? 0;
+    return total + (correct === ansIdx ? 1 : 0);
   }, 0);
-  const scorePercent = Math.round((correctCount / totalQuestions) * 100);
 
-  // New High-Quality Certificate Generation matching official reference
+  const totalQuestions = questions.length || 5;
+  const passed = score >= Math.ceil(totalQuestions * 0.6);
+
   const handleDownloadCertificate = async () => {
-    if (!candidateName.trim()) return;
-    setIsDownloading(true);
-
+    setIsGeneratingCert(true);
     try {
       const canvas = document.createElement("canvas");
-      // 2x Retina Resolution for Ultra Crisp Quality (A4 Landscape: 1123 x 794)
       const scale = 2;
       const width = 1123 * scale;
       const height = 794 * scale;
@@ -90,44 +128,37 @@ export default function QuizDashboard() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const certId = `UF-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      const candidate = candidateName.trim();
+      const certId = `UF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const candidate = studentName.trim() || "Candidate Name";
 
-      // 1. Premium Luxury Off-white Background
-      ctx.fillStyle = "#FAFBFD";
+      // 1. Clean White Minimal Background
+      ctx.fillStyle = "#FFFFFF";
       ctx.fillRect(0, 0, width, height);
 
-      const radialGrad = ctx.createRadialGradient(
-        width / 2, height / 2, 120 * scale,
-        width / 2, height / 2, 600 * scale
-      );
-      radialGrad.addColorStop(0, "rgba(240, 246, 255, 0.7)");
-      radialGrad.addColorStop(1, "#FAFBFD");
-      ctx.fillStyle = radialGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      // 2. Double Borders with Amber Gold
+      // 2. Pure Slate/Black Outer Border Matching Reference (No Gold)
       ctx.strokeStyle = "#0F172A";
-      ctx.lineWidth = 5 * scale;
-      ctx.strokeRect(32 * scale, 32 * scale, width - 64 * scale, height - 64 * scale);
+      ctx.lineWidth = 4 * scale;
+      ctx.strokeRect(36 * scale, 36 * scale, width - 72 * scale, height - 72 * scale);
 
-      ctx.strokeStyle = "#D97706";
-      ctx.lineWidth = 1.5 * scale;
-      ctx.strokeRect(40 * scale, 40 * scale, width - 80 * scale, height - 80 * scale);
+      // 3. Current Live Date (Top-Left 3-line Stack)
+      const now = new Date();
+      const monthNames = [
+        "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+        "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
+      ];
+      const liveMonth = monthNames[now.getMonth()];
+      const liveDay = `${String(now.getDate()).padStart(2, "0")},`;
+      const liveYear = `${now.getFullYear()}`;
 
-      // Corner Accents
-      const drawCorner = (x: number, y: number) => {
-        ctx.fillStyle = "#D97706";
-        ctx.beginPath();
-        ctx.arc(x, y, 4 * scale, 0, Math.PI * 2);
-        ctx.fill();
-      };
-      drawCorner(48 * scale, 48 * scale);
-      drawCorner(width - 48 * scale, 48 * scale);
-      drawCorner(48 * scale, height - 48 * scale);
-      drawCorner(width - 48 * scale, height - 48 * scale);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#0F172A";
+      ctx.font = `900 ${22 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.letterSpacing = `${2 * scale}px`;
+      ctx.fillText(liveMonth, 65 * scale, 90 * scale);
+      ctx.fillText(liveDay, 65 * scale, 118 * scale);
+      ctx.fillText(liveYear, 65 * scale, 146 * scale);
 
-      // 3. Logo (/logo.jpg)
+      // 4. Logo Header (/logo.jpg)
       try {
         const logo = new Image();
         logo.crossOrigin = "anonymous";
@@ -138,390 +169,327 @@ export default function QuizDashboard() {
         });
 
         if (logo.complete && logo.naturalWidth > 0) {
-          const logoW = 130 * scale;
+          const logoW = 110 * scale;
           const logoH = (logo.naturalHeight / logo.naturalWidth) * logoW;
-          ctx.drawImage(logo, width / 2 - logoW / 2, 58 * scale, logoW, logoH);
+          ctx.drawImage(logo, width / 2 - logoW / 2, 54 * scale, logoW, logoH);
         } else {
           ctx.fillStyle = "#0F172A";
-          ctx.font = `bold ${26 * scale}px system-ui, -apple-system, sans-serif`;
+          ctx.font = `bold ${24 * scale}px system-ui, -apple-system, sans-serif`;
           ctx.textAlign = "center";
-          ctx.fillText("UPFORGE", width / 2, 85 * scale);
+          ctx.fillText("UPFORGE", width / 2, 80 * scale);
         }
       } catch {
         ctx.fillStyle = "#0F172A";
-        ctx.font = `bold ${26 * scale}px system-ui, -apple-system, sans-serif`;
+        ctx.font = `bold ${24 * scale}px system-ui, -apple-system, sans-serif`;
         ctx.textAlign = "center";
-        ctx.fillText("UPFORGE", width / 2, 85 * scale);
+        ctx.fillText("UPFORGE", width / 2, 80 * scale);
       }
 
-      // 4. Header Titles
+      // 5. Titles (Matching Reference Document)
       ctx.textAlign = "center";
-      ctx.fillStyle = "#D97706";
-      ctx.font = `600 ${11 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.fillStyle = "#0F172A";
+      ctx.font = `900 ${32 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.letterSpacing = `${3 * scale}px`;
-      ctx.fillText("UPFORGE GLOBAL FOUNDERS NETWORK", width / 2, 145 * scale);
+      ctx.fillText("CERTIFICATE", width / 2, 160 * scale);
+
+      ctx.font = `800 ${20 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.letterSpacing = `${4 * scale}px`;
+      ctx.fillStyle = "#334155";
+      ctx.fillText("OF QUALIFICATION", width / 2, 194 * scale);
+
+      ctx.font = `700 ${11 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.letterSpacing = `${2 * scale}px`;
+      ctx.fillStyle = "#475569";
+      ctx.fillText("WE ARE PROUDLY PRESENT THIS TO", width / 2, 240 * scale);
+
+      // 6. Student Name
+      ctx.fillStyle = "#0F172A";
+      ctx.font = `bold ${40 * scale}px "Times New Roman", Times, serif`;
+      ctx.letterSpacing = "normal";
+      ctx.fillText(candidate, width / 2, 298 * scale);
+
+      // 7. Reference Body Paragraph
+      ctx.fillStyle = "#1E293B";
+      ctx.font = `700 ${11.5 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.letterSpacing = `${0.6 * scale}px`;
+      ctx.fillText(
+        "FOR SUCCESSFULLY QUALIFYING IN THE UPFORGE TECHNICAL",
+        width / 2,
+        352 * scale
+      );
+      ctx.fillText(
+        "ASSESSMENT, CONDUCTED THROUGH THE INTERNADDA ASSESSMENT",
+        width / 2,
+        372 * scale
+      );
+      ctx.fillText("PLATFORM.", width / 2, 392 * scale);
+
+      // 8. Bottom-Left Badge
+      const badgeX = 65 * scale;
+      const badgeY = height - 190 * scale;
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#10B981";
+      ctx.font = `800 ${15 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.fillText("Qualified ★", badgeX, badgeY);
 
       ctx.fillStyle = "#0F172A";
-      ctx.font = `bold ${28 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.font = `900 ${22 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.letterSpacing = `${1 * scale}px`;
-      ctx.fillText("CERTIFICATE OF QUALIFICATION", width / 2, 185 * scale);
+      ctx.fillText("UPFORGE", badgeX, badgeY + 28 * scale);
 
-      ctx.strokeStyle = "#E2E8F0";
+      ctx.font = `700 ${14 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.fillStyle = "#334155";
+      ctx.fillText("AI/ML Intern", badgeX, badgeY + 49 * scale);
+
+      ctx.font = `800 ${9.5 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.letterSpacing = `${2 * scale}px`;
+      ctx.fillStyle = "#64748B";
+      ctx.fillText("FOUNDERS NETWORK", badgeX, badgeY + 68 * scale);
+
+      // 9. Bottom-Right Signature Block
+      const signX = width - 65 * scale;
+      ctx.textAlign = "right";
+
+      ctx.fillStyle = "#0F172A";
+      ctx.font = `italic bold ${26 * scale}px "Brush Script MT", cursive, serif`;
+      ctx.fillText("Lucky", signX - 10 * scale, badgeY + 30 * scale);
+
+      ctx.strokeStyle = "#94A3B8";
       ctx.lineWidth = 1 * scale;
       ctx.beginPath();
-      ctx.moveTo(width / 2 - 180 * scale, 202 * scale);
-      ctx.lineTo(width / 2 + 180 * scale, 202 * scale);
+      ctx.moveTo(signX - 140 * scale, badgeY + 38 * scale);
+      ctx.lineTo(signX, badgeY + 38 * scale);
       ctx.stroke();
 
-      // 5. Presentational Subtitle
       ctx.fillStyle = "#475569";
-      ctx.font = `500 ${11 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.letterSpacing = `${2 * scale}px`;
-      ctx.fillText("WE PROUDLY PRESENT THIS TO", width / 2, 230 * scale);
+      ctx.font = `bold ${12 * scale}px system-ui, -apple-system, sans-serif`;
+      ctx.fillText("UpForge Global", signX, badgeY + 56 * scale);
 
-      // 6. Student Candidate Name
-      ctx.fillStyle = "#0F172A";
-      ctx.font = `bold ${36 * scale}px "Times New Roman", Times, serif`;
-      ctx.letterSpacing = "normal";
-      ctx.fillText(candidate, width / 2, 280 * scale);
-
-      ctx.strokeStyle = "#F59E0B";
-      ctx.lineWidth = 2 * scale;
-      ctx.beginPath();
-      ctx.moveTo(width / 2 - 140 * scale, 292 * scale);
-      ctx.lineTo(width / 2 + 140 * scale, 292 * scale);
-      ctx.stroke();
-
-      // 7. Assessment Body Text
-      ctx.fillStyle = "#334155";
-      ctx.font = `400 ${12 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.letterSpacing = "normal";
-      ctx.fillText(
-        "FOR SUCCESSFULLY QUALIFYING IN THE UPFORGE TECHNICAL ASSESSMENT,",
-        width / 2,
-        330 * scale
-      );
-      ctx.fillText(
-        "CONDUCTED THROUGH THE INTERNADDA ASSESSMENT PLATFORM.",
-        width / 2,
-        348 * scale
-      );
-
-      // 8. Qualified Badge Chip
-      const badgeW = 210 * scale;
-      const badgeH = 32 * scale;
-      const badgeX = width / 2 - badgeW / 2;
-      const badgeY = 375 * scale;
-
-      ctx.fillStyle = "#F0FDF4";
-      ctx.strokeStyle = "#86EFAC";
-      ctx.lineWidth = 1.2 * scale;
-      ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 16 * scale);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#15803D";
-      ctx.font = `bold ${11 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText("QUALIFIED ★ AI/ML Intern", width / 2, badgeY + 20 * scale);
-
-      // 9. Footer: Date, Verify URL & Lucky Tiwari Signature
-      const footerY = height - 100 * scale;
-      const now = new Date();
-      const monthNames = [
-        "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
-      ];
-      const formattedDate = `${monthNames[now.getMonth()]} ${String(now.getDate()).padStart(2, "0")}, ${now.getFullYear()}`;
-
-      // Left: Date
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#64748B";
-      ctx.font = `600 ${9 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText("DATE OF ISSUANCE", 70 * scale, footerY);
-      ctx.fillStyle = "#0F172A";
-      ctx.font = `bold ${13 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText(formattedDate, 70 * scale, footerY + 20 * scale);
-      ctx.fillStyle = "#94A3B8";
-      ctx.font = `400 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText("Certified Registry Record", 70 * scale, footerY + 34 * scale);
-
-      // Center: Credential Verification
+      // 10. Direct Verification Link
+      const verifyY = height - 55 * scale;
       ctx.textAlign = "center";
-      ctx.fillStyle = "#64748B";
-      ctx.font = `600 ${9 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText("CREDENTIAL VERIFICATION", width / 2, footerY);
-
-      const verifyUrl = `https://verify.upforge.org/${certId}`;
-      ctx.fillStyle = "#0284C7";
-      ctx.font = `bold ${10.5 * scale}px monospace`;
-      ctx.fillText(verifyUrl, width / 2, footerY + 20 * scale);
-
-      ctx.fillStyle = "#64748B";
-      ctx.font = `500 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText(`Verify at: ${verifyUrl}`, width / 2, footerY + 34 * scale);
-
-      // Right: Lucky Tiwari Signature
-      ctx.textAlign = "right";
       ctx.fillStyle = "#0F172A";
-      ctx.font = `italic bold ${18 * scale}px "Brush Script MT", cursive, serif`;
-      ctx.fillText("Lucky Tiwari", width - 70 * scale, footerY + 6 * scale);
+      ctx.font = `bold ${11 * scale}px system-ui, -apple-system, monospace`;
+      ctx.letterSpacing = `${0.5 * scale}px`;
+      ctx.fillText(`Verify at: https://verify.upforge.org/${certId}`, width / 2, verifyY);
 
-      ctx.strokeStyle = "#CBD5E1";
-      ctx.lineWidth = 1.2 * scale;
-      ctx.beginPath();
-      ctx.moveTo(width - 210 * scale, footerY + 12 * scale);
-      ctx.lineTo(width - 70 * scale, footerY + 12 * scale);
-      ctx.stroke();
-
-      ctx.fillStyle = "#0F172A";
-      ctx.font = `bold ${10.5 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText("Founder & Director", width - 70 * scale, footerY + 26 * scale);
-
-      ctx.fillStyle = "#64748B";
-      ctx.font = `400 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText("UpForge Global Ecosystem", width - 70 * scale, footerY + 38 * scale);
-
-      // 10. Download Output
+      // Download action
       const imgUri = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = imgUri;
-      a.download = `${candidate.replace(/\s+/g, "_")}_UpForge_Certificate.png`;
-      a.click();
-    } catch (e) {
-      console.error("Certificate download error:", e);
+      const anchor = document.createElement("a");
+      anchor.href = imgUri;
+      anchor.download = `${candidate.replace(/\s+/g, "_")}_UpForge_Certificate.png`;
+      anchor.click();
+    } catch (err) {
+      console.error("Certificate download error:", err);
     } finally {
-      setIsDownloading(false);
+      setIsGeneratingCert(false);
     }
   };
 
+  const currentDateDisplay = useMemo(() => {
+    const d = new Date();
+    const m = d.toLocaleString("en-US", { month: "short" }).toUpperCase();
+    return {
+      month: m,
+      day: `${String(d.getDate()).padStart(2, "0")},`,
+      year: `${d.getFullYear()}`,
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-50 border-t border-slate-100 dark:bg-slate-950 dark:border-slate-800 text-slate-900 dark:text-slate-100 transition-colors py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        
-        {/* Header Title & Intro */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-            <Sparkles className="w-3.5 h-3.5" />
-            UpForge Founder & Ecosystem Assessment
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-            Startup & Technical Aptitude Quiz
-          </h1>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Test your understanding of valuation, equity, AI models, and regulatory compliance. Earn verified founder qualifications and credentials.
-          </p>
-        </div>
-
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {Object.entries(QUIZ_REGISTRY).map(([catKey, quiz]) => {
-            const isSelected = selectedCategory === catKey;
-            return (
-              <button
-                key={catKey}
-                onClick={() => handleCategoryChange(catKey as QuizCategory)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm ${
-                  isSelected
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-                }`}
-              >
-                {quiz.title}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Quiz Flow Card */}
+    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 flex items-center justify-center">
+      <div className="max-w-2xl w-full">
         {!isCompleted ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
-            {/* Question Progress Bar */}
-            <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-6">
-              <div 
-                className="bg-emerald-500 h-full transition-all duration-300"
-                style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium mb-4">
-              <span>Question {currentQuestionIndex + 1} of {totalQuestions}</span>
-              <span className="capitalize px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {currentQuestion.difficulty}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-5 mb-8">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                  UpForge Technical Assessment
+                </span>
+              </div>
+              <span className="text-xs font-medium text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+                Question {currentQuestionIndex + 1} of {questions.length}
               </span>
             </div>
 
-            {/* Question Heading */}
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 leading-relaxed">
-              {currentQuestion.question}
-            </h2>
+            {currentQuestion ? (
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 leading-relaxed">
+                  {currentQuestion.question}
+                </h2>
 
-            {/* Options List */}
-            <div className="space-y-3 mb-8">
-              {currentQuestion.options.map((option, idx) => {
-                const isSelected = selectedAnswers[currentQuestionIndex] === idx;
-                const isAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
-                const isCorrect = currentQuestion.correctAnswer === idx;
-
-                let btnStyles = "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-700";
-                
-                if (isAnswered) {
-                  if (isCorrect) {
-                    btnStyles = "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300";
-                  } else if (isSelected) {
-                    btnStyles = "border-rose-500 bg-rose-50/70 dark:bg-rose-950/40 text-rose-900 dark:text-rose-300";
-                  } else {
-                    btnStyles = "border-slate-100 dark:border-slate-800 opacity-60";
-                  }
-                }
-
-                return (
-                  <button
-                    key={idx}
-                    disabled={isAnswered}
-                    onClick={() => handleSelectOption(idx)}
-                    className={`w-full text-left p-4 rounded-2xl border text-sm sm:text-base font-medium transition-all flex items-center justify-between group ${btnStyles}`}
-                  >
-                    <span>{option}</span>
-                    {isAnswered && (
-                      <span>
-                        {isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 ml-2" />}
-                        {isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 ml-2" />}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Contextual Answer Explanation Box */}
-            {showExplanation && (
-              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 mb-6 space-y-2 animate-fadeIn">
-                <div className="flex items-center gap-2 font-semibold text-xs text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                  <BrainCircuit className="w-4 h-4" />
-                  Ecosystem Intelligence Explanation
+                <div className="space-y-3 mb-8">
+                  {currentQuestion.options.map((option: string, idx: number) => {
+                    const isSelected = selectedAnswers[currentQuestionIndex] === idx;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectOption(idx)}
+                        className={`w-full text-left p-4 rounded-xl border transition-all text-sm sm:text-base flex items-center justify-between ${
+                          isSelected
+                            ? "bg-emerald-500/10 border-emerald-500/80 text-white shadow-lg shadow-emerald-500/5"
+                            : "bg-slate-800/40 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:border-slate-600"
+                        }`}
+                      >
+                        <span>{option}</span>
+                        <div
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
+                            isSelected
+                              ? "border-emerald-500 bg-emerald-500 text-slate-950"
+                              : "border-slate-600"
+                          }`}
+                        >
+                          {isSelected && <div className="w-2 h-2 bg-slate-950 rounded-full" />}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-                <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                  {currentQuestion.explanation}
-                </p>
-                {currentQuestion.readMoreLink && (
-                  <Link 
-                    href={currentQuestion.readMoreLink}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline pt-1"
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleNext}
+                    disabled={selectedAnswers[currentQuestionIndex] === undefined}
+                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold px-6 py-3 rounded-xl transition-all shadow-md active:scale-95"
                   >
-                    Read related dossier
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                )}
+                    {currentQuestionIndex === questions.length - 1
+                      ? "Submit Assessment"
+                      : "Next Question"}
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            )}
-
-            {/* Bottom Actions */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-              <button
-                onClick={handleReset}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                Restart Quiz
-              </button>
-
-              <button
-                disabled={selectedAnswers[currentQuestionIndex] === undefined}
-                onClick={handleNext}
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 font-bold px-5 py-2.5 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed text-sm shadow-sm"
-              >
-                {currentQuestionIndex === totalQuestions - 1 ? "View Result" : "Next Question"}
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+            ) : null}
           </div>
         ) : (
-          /* Completion & Qualified Certificate View */
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm text-center space-y-6">
-            <div className="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400 shadow-sm">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl text-center">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5 text-emerald-400 shadow-inner">
               <Award className="w-8 h-8" />
             </div>
 
-            <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                Assessment Completed!
-              </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                You correctly answered <span className="font-bold text-slate-900 dark:text-white">{correctCount}</span> out of <span className="font-bold text-slate-900 dark:text-white">{totalQuestions}</span> questions ({scorePercent}%).
-              </p>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
+              Assessment Completed
+            </h1>
+            <p className="text-sm text-slate-400 mb-6">
+              You scored <span className="text-white font-bold">{score}</span> out of{" "}
+              <span className="text-white font-bold">{totalQuestions}</span>
+            </p>
 
-            {/* Performance Verdict */}
-            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 max-w-md mx-auto text-left space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Credential Status:</span>
-                {scorePercent >= 60 ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
-                    Qualified ★
-                  </span>
+            {passed ? (
+              <div className="max-w-md mx-auto">
+                {!nameSubmitted ? (
+                  <div className="bg-slate-800/60 border border-slate-700/80 p-6 rounded-2xl mb-6 text-left">
+                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                      Enter Your Full Name for Certificate
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Ankit Kumar"
+                      value={studentName}
+                      onChange={(e) => setStudentName(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-all mb-4 text-sm"
+                    />
+                    <button
+                      onClick={() => {
+                        if (studentName.trim()) setNameSubmitted(true);
+                      }}
+                      disabled={!studentName.trim()}
+                      className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm transition-all"
+                    >
+                      Issue Official Credential
+                    </button>
+                  </div>
                 ) : (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-                    Review Required
-                  </span>
+                  <div className="space-y-4 mb-6">
+                    {/* Visual Card Preview Matching Reference */}
+                    <div className="bg-white text-slate-950 p-6 rounded-2xl border-2 border-slate-800 shadow-xl text-left relative overflow-hidden">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+                        <div className="text-[10px] font-black tracking-widest text-slate-900 leading-tight">
+                          {currentDateDisplay.month}<br />
+                          {currentDateDisplay.day}<br />
+                          {currentDateDisplay.year}
+                        </div>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">
+                          Qualified ★
+                        </span>
+                      </div>
+
+                      <div className="text-center my-3">
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                          CERTIFICATE OF QUALIFICATION
+                        </p>
+                        <h3 className="text-2xl font-serif font-bold text-slate-900 mt-1">
+                          {studentName}
+                        </h3>
+                        <p className="text-[11px] text-slate-600 mt-2 leading-relaxed px-2 font-medium">
+                          FOR SUCCESSFULLY QUALIFYING IN THE UPFORGE TECHNICAL ASSESSMENT, CONDUCTED THROUGH THE INTERNADDA ASSESSMENT PLATFORM.
+                        </p>
+                      </div>
+
+                      <div className="flex items-end justify-between text-[11px] text-slate-500 border-t border-slate-100 pt-3">
+                        <div>
+                          <div className="font-extrabold text-slate-900 text-xs">UPFORGE</div>
+                          <div className="text-[10px] text-slate-600">AI/ML Intern • Founders Network</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-serif italic font-bold text-slate-900">Lucky</div>
+                          <div className="text-[10px] text-slate-600">UpForge Global</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleDownloadCertificate}
+                      disabled={isGeneratingCert}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3.5 px-6 rounded-xl transition-all shadow-lg active:scale-[0.99] text-sm disabled:opacity-70"
+                    >
+                      {isGeneratingCert ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Rendering High-Res Certificate...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-4 h-4" />
+                          Download Official Certificate (PNG / Print-Ready)
+                        </>
+                      )}
+                    </button>
+
+                    <div className="flex items-center justify-center gap-2 text-xs text-emerald-400">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Ready to share on LinkedIn, Resume & Portfolio</span>
+                    </div>
+                  </div>
                 )}
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                {scorePercent >= 60 
-                  ? "Congratulations! You have met the benchmark standard required by the UpForge Ecosystem & InternAdda Technical Board."
-                  : "Keep honing your technical knowledge! You need 60% or higher to generate your verified certificate of qualification."}
-              </p>
-            </div>
-
-            {/* Name Input & Download Action if Qualified */}
-            {scorePercent >= 60 && (
-              <div className="max-w-md mx-auto space-y-3 pt-2">
-                <div className="text-left">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                    Candidate Full Name (For Certificate)
-                  </label>
-                  <input
-                    type="text"
-                    value={candidateName}
-                    onChange={(e) => setCandidateName(e.target.value)}
-                    placeholder="e.g. Ankit Kumar"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <button
-                  onClick={handleDownloadCertificate}
-                  disabled={isDownloading || !candidateName.trim()}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md active:scale-95 text-sm"
-                >
-                  <Download className="w-4 h-4" />
-                  {isDownloading ? "Generating High-Res Certificate..." : "Download Official Certificate"}
-                </button>
-                <p className="text-[11px] text-slate-400">
-                  Ready to share on LinkedIn, Resume, & Portfolios. Includes verification link.
+            ) : (
+              <div className="bg-red-500/10 border border-red-500/20 p-5 rounded-2xl mb-6 max-w-md mx-auto">
+                <p className="text-red-400 text-sm">
+                  You need at least 60% to qualify for the certificate. You can retry the assessment anytime.
                 </p>
               </div>
             )}
 
-            {/* Control Actions */}
-            <div className="flex items-center justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-center gap-3 pt-4 border-t border-slate-800">
               <button
-                onClick={handleReset}
-                className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors"
+                onClick={handleRestart}
+                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RefreshCcw className="w-3.5 h-3.5" />
                 Retake Quiz
               </button>
               <Link
                 href="/registry"
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors"
+                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all"
               >
                 Explore Directory
-                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
