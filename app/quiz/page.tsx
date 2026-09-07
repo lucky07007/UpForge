@@ -9,72 +9,58 @@ import {
   Download,
   Loader2,
   RefreshCcw,
-  ShieldCheck,
 } from "lucide-react";
-import * as QuizModule from "@/lib/quizData";
+
+// Self-contained questions to prevent any missing module / build export errors
+const QUIZ_QUESTIONS = [
+  {
+    question: "Which metric is most crucial for early-stage AI startup product-market fit?",
+    options: [
+      "Gross Margin",
+      "Net Retention Rate (NRR) & DAU/MAU",
+      "Total Vanity Impressions",
+      "Raw Seed Capital",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: "Under standard ESOP vesting schedules in Indian startup ecosystems, what is the customary cliff period?",
+    options: ["6 Months", "1 Year (12 Months)", "2 Years", "No Cliff"],
+    correctAnswer: 1,
+  },
+  {
+    question: "What distinguishes a verified UFRN registry entry from self-reported startup claims?",
+    options: [
+      "Independent verification of MCA, GSTIN & domain provenance",
+      "Social media follower count",
+      "Paid advertisement badge",
+      "Office square footage",
+    ],
+    correctAnswer: 0,
+  },
+  {
+    question: "When deploying LLMs to edge or browser environments, which format optimizes memory footprint?",
+    options: [
+      "Unquantized FP32",
+      "GGUF / Int4 Quantization",
+      "Raw PyTorch Checkpoint",
+      "Uncompressed CSV",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the primary role of the InternAdda technical assessment bridge for UpForge?",
+    options: [
+      "Selling generic test packs",
+      "Qualifying verified technical talent for top startup teams",
+      "Hosting casual games",
+      "Tracking social media metrics",
+    ],
+    correctAnswer: 1,
+  },
+];
 
 export default function QuizPage() {
-  const activeQuiz = useMemo(() => {
-    const reg = (QuizModule as Record<string, any>).QUIZ_REGISTRY;
-    if (reg) {
-      if (Array.isArray(reg)) return { questions: reg };
-      const firstKey = Object.keys(reg)[0];
-      if (firstKey && reg[firstKey]) {
-        return reg[firstKey].questions ? reg[firstKey] : { questions: reg[firstKey] };
-      }
-    }
-    return {
-      questions: [
-        {
-          question: "Which metric is most crucial for early-stage AI startup product-market fit?",
-          options: [
-            "Gross Margin",
-            "Net Retention Rate (NRR) & DAU/MAU",
-            "Total Vanity Impressions",
-            "Raw Seed Capital",
-          ],
-          correctAnswer: 1,
-        },
-        {
-          question: "Under standard ESOP vesting schedules in Indian startup ecosystems, what is the customary cliff period?",
-          options: ["6 Months", "1 Year (12 Months)", "2 Years", "No Cliff"],
-          correctAnswer: 1,
-        },
-        {
-          question: "What distinguishes a verified UFRN registry entry from self-reported startup claims?",
-          options: [
-            "Independent verification of MCA, GSTIN & domain provenance",
-            "Social media follower count",
-            "Paid advertisement badge",
-            "Office square footage",
-          ],
-          correctAnswer: 0,
-        },
-        {
-          question: "When deploying LLMs to edge or browser environments, which format optimizes memory footprint?",
-          options: [
-            "Unquantized FP32",
-            "GGUF / Int4 Quantization",
-            "Raw PyTorch Checkpoint",
-            "Uncompressed CSV",
-          ],
-          correctAnswer: 1,
-        },
-        {
-          question: "What is the primary role of the InternAdda technical assessment bridge for UpForge?",
-          options: [
-            "Selling generic test packs",
-            "Qualifying verified technical talent for top startup teams",
-            "Hosting casual games",
-            "Tracking social media metrics",
-          ],
-          correctAnswer: 1,
-        },
-      ],
-    };
-  }, []);
-
-  const questions = activeQuiz.questions || [];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isCompleted, setIsCompleted] = useState(false);
@@ -82,7 +68,7 @@ export default function QuizPage() {
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [isGeneratingCert, setIsGeneratingCert] = useState(false);
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
 
   const handleSelectOption = (index: number) => {
     setSelectedAnswers((prev) => ({
@@ -92,7 +78,7 @@ export default function QuizPage() {
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setIsCompleted(true);
@@ -108,19 +94,35 @@ export default function QuizPage() {
   };
 
   const score = Object.entries(selectedAnswers).reduce((total, [qIdx, ansIdx]) => {
-    const q = questions[Number(qIdx)];
-    const correct = q?.correctAnswer ?? q?.answer ?? 0;
-    return total + (correct === ansIdx ? 1 : 0);
+    const q = QUIZ_QUESTIONS[Number(qIdx)];
+    return total + (q && q.correctAnswer === ansIdx ? 1 : 0);
   }, 0);
 
-  const totalQuestions = questions.length || 5;
+  const totalQuestions = QUIZ_QUESTIONS.length;
   const passed = score >= Math.ceil(totalQuestions * 0.6);
 
+  // Live Current Date
+  const liveDate = useMemo(() => {
+    const d = new Date();
+    const months = [
+      "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+      "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
+    ];
+    return {
+      month: months[d.getMonth()],
+      day: `${String(d.getDate()).padStart(2, "0")},`,
+      year: `${d.getFullYear()}`,
+    };
+  }, []);
+
+  // Certificate Download function (Exact PDF Reference Match, 2x Print Res)
   const handleDownloadCertificate = async () => {
+    if (typeof window === "undefined") return;
     setIsGeneratingCert(true);
+
     try {
       const canvas = document.createElement("canvas");
-      const scale = 2;
+      const scale = 2; // Retina Crisp Scaling
       const width = 1123 * scale;
       const height = 794 * scale;
       canvas.width = width;
@@ -128,35 +130,30 @@ export default function QuizPage() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const certId = `UF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-      const candidate = studentName.trim() || "Candidate Name";
+      const certId = `UF-${liveDate.year}-0108`;
+      const candidate = studentName.trim() || "Ankit Kumar";
 
-      // 1. Clean White Minimal Background
+      // 1. Crisp White Background
       ctx.fillStyle = "#FFFFFF";
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Pure Slate/Black Outer Border Matching Reference (No Gold)
+      // 2. Reference Dark Slate Double Frame (No Gold)
       ctx.strokeStyle = "#0F172A";
       ctx.lineWidth = 4 * scale;
       ctx.strokeRect(36 * scale, 36 * scale, width - 72 * scale, height - 72 * scale);
 
-      // 3. Current Live Date (Top-Left 3-line Stack)
-      const now = new Date();
-      const monthNames = [
-        "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-        "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
-      ];
-      const liveMonth = monthNames[now.getMonth()];
-      const liveDay = `${String(now.getDate()).padStart(2, "0")},`;
-      const liveYear = `${now.getFullYear()}`;
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 1 * scale;
+      ctx.strokeRect(44 * scale, 44 * scale, width - 88 * scale, height - 88 * scale);
 
+      // 3. Top-Left Vertical Live Date Block
       ctx.textAlign = "left";
       ctx.fillStyle = "#0F172A";
       ctx.font = `900 ${22 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.letterSpacing = `${2 * scale}px`;
-      ctx.fillText(liveMonth, 65 * scale, 90 * scale);
-      ctx.fillText(liveDay, 65 * scale, 118 * scale);
-      ctx.fillText(liveYear, 65 * scale, 146 * scale);
+      ctx.fillText(liveDate.month, 65 * scale, 90 * scale);
+      ctx.fillText(liveDate.day, 65 * scale, 118 * scale);
+      ctx.fillText(liveDate.year, 65 * scale, 146 * scale);
 
       // 4. Logo Header (/logo.jpg)
       try {
@@ -174,18 +171,18 @@ export default function QuizPage() {
           ctx.drawImage(logo, width / 2 - logoW / 2, 54 * scale, logoW, logoH);
         } else {
           ctx.fillStyle = "#0F172A";
-          ctx.font = `bold ${24 * scale}px system-ui, -apple-system, sans-serif`;
+          ctx.font = `900 ${26 * scale}px system-ui, -apple-system, sans-serif`;
           ctx.textAlign = "center";
           ctx.fillText("UPFORGE", width / 2, 80 * scale);
         }
       } catch {
         ctx.fillStyle = "#0F172A";
-        ctx.font = `bold ${24 * scale}px system-ui, -apple-system, sans-serif`;
+        ctx.font = `900 ${26 * scale}px system-ui, -apple-system, sans-serif`;
         ctx.textAlign = "center";
         ctx.fillText("UPFORGE", width / 2, 80 * scale);
       }
 
-      // 5. Titles (Matching Reference Document)
+      // 5. Header Titles (Reference Match)
       ctx.textAlign = "center";
       ctx.fillStyle = "#0F172A";
       ctx.font = `900 ${32 * scale}px system-ui, -apple-system, sans-serif`;
@@ -199,16 +196,16 @@ export default function QuizPage() {
 
       ctx.font = `700 ${11 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.letterSpacing = `${2 * scale}px`;
-      ctx.fillStyle = "#475569";
+      ctx.fillStyle = "#64748B";
       ctx.fillText("WE ARE PROUDLY PRESENT THIS TO", width / 2, 240 * scale);
 
-      // 6. Student Name
+      // 6. Candidate Name
       ctx.fillStyle = "#0F172A";
       ctx.font = `bold ${40 * scale}px "Times New Roman", Times, serif`;
       ctx.letterSpacing = "normal";
       ctx.fillText(candidate, width / 2, 298 * scale);
 
-      // 7. Reference Body Paragraph
+      // 7. Citation Body Text
       ctx.fillStyle = "#1E293B";
       ctx.font = `700 ${11.5 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.letterSpacing = `${0.6 * scale}px`;
@@ -224,12 +221,12 @@ export default function QuizPage() {
       );
       ctx.fillText("PLATFORM.", width / 2, 392 * scale);
 
-      // 8. Bottom-Left Badge
+      // 8. Bottom-Left Badge (Qualified ★ UPFORGE AI/ML Intern)
       const badgeX = 65 * scale;
       const badgeY = height - 190 * scale;
 
       ctx.textAlign = "left";
-      ctx.fillStyle = "#10B981";
+      ctx.fillStyle = "#10B981"; // Emerald green
       ctx.font = `800 ${15 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText("Qualified ★", badgeX, badgeY);
 
@@ -266,7 +263,7 @@ export default function QuizPage() {
       ctx.font = `bold ${12 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText("UpForge Global", signX, badgeY + 56 * scale);
 
-      // 10. Direct Verification Link
+      // 10. Verification Link
       const verifyY = height - 55 * scale;
       ctx.textAlign = "center";
       ctx.fillStyle = "#0F172A";
@@ -274,7 +271,7 @@ export default function QuizPage() {
       ctx.letterSpacing = `${0.5 * scale}px`;
       ctx.fillText(`Verify at: https://verify.upforge.org/${certId}`, width / 2, verifyY);
 
-      // Download action
+      // Trigger File Download
       const imgUri = canvas.toDataURL("image/png");
       const anchor = document.createElement("a");
       anchor.href = imgUri;
@@ -286,16 +283,6 @@ export default function QuizPage() {
       setIsGeneratingCert(false);
     }
   };
-
-  const currentDateDisplay = useMemo(() => {
-    const d = new Date();
-    const m = d.toLocaleString("en-US", { month: "short" }).toUpperCase();
-    return {
-      month: m,
-      day: `${String(d.getDate()).padStart(2, "0")},`,
-      year: `${d.getFullYear()}`,
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 flex items-center justify-center">
@@ -310,7 +297,7 @@ export default function QuizPage() {
                 </span>
               </div>
               <span className="text-xs font-medium text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
-                Question {currentQuestionIndex + 1} of {questions.length}
+                Question {currentQuestionIndex + 1} of {QUIZ_QUESTIONS.length}
               </span>
             </div>
 
@@ -321,7 +308,7 @@ export default function QuizPage() {
                 </h2>
 
                 <div className="space-y-3 mb-8">
-                  {currentQuestion.options.map((option: string, idx: number) => {
+                  {currentQuestion.options.map((option, idx) => {
                     const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                     return (
                       <button
@@ -354,7 +341,7 @@ export default function QuizPage() {
                     disabled={selectedAnswers[currentQuestionIndex] === undefined}
                     className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold px-6 py-3 rounded-xl transition-all shadow-md active:scale-95"
                   >
-                    {currentQuestionIndex === questions.length - 1
+                    {currentQuestionIndex === QUIZ_QUESTIONS.length - 1
                       ? "Submit Assessment"
                       : "Next Question"}
                     <ChevronRight className="w-4 h-4" />
@@ -403,13 +390,13 @@ export default function QuizPage() {
                   </div>
                 ) : (
                   <div className="space-y-4 mb-6">
-                    {/* Visual Card Preview Matching Reference */}
+                    {/* Live Preview of Reference Certificate */}
                     <div className="bg-white text-slate-950 p-6 rounded-2xl border-2 border-slate-800 shadow-xl text-left relative overflow-hidden">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
                         <div className="text-[10px] font-black tracking-widest text-slate-900 leading-tight">
-                          {currentDateDisplay.month}<br />
-                          {currentDateDisplay.day}<br />
-                          {currentDateDisplay.year}
+                          {liveDate.month}<br />
+                          {liveDate.day}<br />
+                          {liveDate.year}
                         </div>
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">
                           Qualified ★
