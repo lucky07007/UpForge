@@ -5,6 +5,7 @@ import Link from "next/link";
 import { 
   CheckCircle2, 
   XCircle, 
+  HelpCircle, 
   TrendingUp, 
   ShieldCheck, 
   BrainCircuit, 
@@ -16,17 +17,30 @@ import {
   Share2, 
   Download 
 } from "lucide-react";
-import { QUIZ_REGISTRY, QuizCategory, QuizQuestion } from "@/lib/quizData";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
+
+// Local types to fix Cloudflare build error
+type QuizCategory = string;
+
+interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation?: string;
+  difficulty?: string;
+  readMoreLink?: string;
+}
 
 export default function QuizDashboard() {
-  const [selectedCategory, setSelectedCategory] = useState<QuizCategory>("technical-assessment");
+  const registry = QUIZ_REGISTRY as Record<string, { title: string; questions: QuizQuestion[] }>;
+  const defaultCategory = Object.keys(registry)[0] || "technical-assessment";
+
+  const [selectedCategory, setSelectedCategory] = useState<QuizCategory>(defaultCategory);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // Safe fallback if category key is slightly different
-  const registry = QUIZ_REGISTRY as Record<string, { title: string; questions: QuizQuestion[] }>;
   const activeQuiz = registry[selectedCategory] || Object.values(registry)[0];
   const currentQuestion: QuizQuestion = activeQuiz?.questions?.[currentQuestionIndex];
 
@@ -60,7 +74,6 @@ export default function QuizDashboard() {
     setIsCompleted(false);
   };
 
-  // Results calculation
   const totalQuestions = activeQuiz?.questions?.length || 0;
   const correctCount = Object.entries(selectedAnswers).reduce((acc, [qIdx, aIdx]) => {
     return acc + (activeQuiz?.questions?.[Number(qIdx)]?.correctAnswer === aIdx ? 1 : 0);
@@ -92,7 +105,7 @@ export default function QuizDashboard() {
             return (
               <button
                 key={catKey}
-                onClick={() => handleCategoryChange(catKey as QuizCategory)}
+                onClick={() => handleCategoryChange(catKey)}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm ${
                   isSelected
                     ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
@@ -119,7 +132,7 @@ export default function QuizDashboard() {
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium mb-4">
               <span>Question {currentQuestionIndex + 1} of {totalQuestions}</span>
               <span className="capitalize px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {currentQuestion.difficulty}
+                {currentQuestion.difficulty || "Intermediate"}
               </span>
             </div>
 
