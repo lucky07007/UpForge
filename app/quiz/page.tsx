@@ -1,84 +1,88 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import {
+import { 
+  CheckCircle2, 
+  XCircle, 
+  HelpCircle, 
+  TrendingUp, 
+  ShieldCheck, 
+  BrainCircuit, 
+  ArrowRight,
+  RotateCcw,
+  Sparkles,
   Award,
-  CheckCircle2,
-  ChevronRight,
-  Download,
-  Loader2,
-  RefreshCcw,
-  ShieldCheck,
+  BookOpen,
+  Share2,
+  Download
 } from "lucide-react";
-import { QUIZ_REGISTRY } from "@/lib/quizData";
+import { QUIZ_REGISTRY, QuizCategory, QuizQuestion } from "@/lib/quizData";
 
-export default function QuizPage() {
-  // Extract questions dynamically from QUIZ_REGISTRY
-  const defaultQuestions = useMemo(() => {
-    if (!QUIZ_REGISTRY) return [];
-    if (Array.isArray(QUIZ_REGISTRY)) return QUIZ_REGISTRY;
-    
-    // If QUIZ_REGISTRY is a category map (e.g. { ai: [...], frontend: [...] })
-    const registryObj = QUIZ_REGISTRY as Record<string, any>;
-    const keys = Object.keys(registryObj);
-    if (keys.length > 0) {
-      const firstVal = registryObj[keys[0]];
-      if (Array.isArray(firstVal)) return firstVal;
-      if (firstVal && Array.isArray(firstVal.questions)) return firstVal.questions;
-    }
-    return [];
-  }, []);
-
+export default function QuizDashboard() {
+  const [selectedCategory, setSelectedCategory] = useState<QuizCategory>("technical-assessment");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [studentName, setStudentName] = useState("");
-  const [nameSubmitted, setNameSubmitted] = useState(false);
-  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
+  
+  // Certificate Generation States
+  const [candidateName, setCandidateName] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const questions = defaultQuestions;
-  const currentQuestion = questions[currentQuestionIndex];
+  // Fallback if category not found
+  const activeQuiz = QUIZ_REGISTRY[selectedCategory] || QUIZ_REGISTRY["technical-assessment"];
+  const currentQuestion: QuizQuestion = activeQuiz.questions[currentQuestionIndex];
 
   const handleSelectOption = (index: number) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [currentQuestionIndex]: index,
-    }));
+    if (selectedAnswers[currentQuestionIndex] !== undefined) return; // Prevent changing answer
+    setSelectedAnswers(prev => ({ ...prev, [currentQuestionIndex]: index }));
+    setShowExplanation(true);
   };
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+    setShowExplanation(false);
+    if (currentQuestionIndex < activeQuiz.questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
     } else {
       setIsCompleted(true);
     }
   };
 
-  const handleRestart = () => {
-    setSelectedAnswers({});
+  const handleReset = () => {
     setCurrentQuestionIndex(0);
+    setSelectedAnswers({});
+    setShowExplanation(false);
     setIsCompleted(false);
-    setNameSubmitted(false);
-    setStudentName("");
+    setCandidateName("");
   };
 
-  // Score calculation
-  const score = Object.entries(selectedAnswers).reduce((total, [qIdx, ansIdx]) => {
-    const q = questions[Number(qIdx)];
-    const correct = q?.correctAnswer ?? q?.answer ?? 0;
-    return total + (correct === ansIdx ? 1 : 0);
+  const handleCategoryChange = (cat: QuizCategory) => {
+    setSelectedCategory(cat);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswers({});
+    setShowExplanation(false);
+    setIsCompleted(false);
+    setCandidateName("");
+  };
+
+  // Calculate Results
+  const totalQuestions = activeQuiz.questions.length;
+  const answeredCount = Object.keys(selectedAnswers).length;
+  const correctCount = Object.entries(selectedAnswers).reduce((acc, [qIdx, aIdx]) => {
+    return acc + (activeQuiz.questions[Number(qIdx)].correctAnswer === aIdx ? 1 : 0);
   }, 0);
+  const scorePercent = Math.round((correctCount / totalQuestions) * 100);
 
-  const totalQuestions = questions.length || 5;
-  const passed = score >= Math.ceil(totalQuestions * 0.6);
-
-  // Certificate Generator
+  // New High-Quality Certificate Generation matching official reference
   const handleDownloadCertificate = async () => {
-    setIsGeneratingCert(true);
+    if (!candidateName.trim()) return;
+    setIsDownloading(true);
+
     try {
       const canvas = document.createElement("canvas");
-      const scale = 2; // 2x Retina resolution
+      // 2x Retina Resolution for Ultra Crisp Quality (A4 Landscape: 1123 x 794)
+      const scale = 2;
       const width = 1123 * scale;
       const height = 794 * scale;
       canvas.width = width;
@@ -87,27 +91,22 @@ export default function QuizPage() {
       if (!ctx) return;
 
       const certId = `UF-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      const candidate = studentName.trim() || "Candidate";
-      const roleText = "AI/ML Intern";
+      const candidate = candidateName.trim();
 
-      // 1. Premium Background with Soft Radial Glow
+      // 1. Premium Luxury Off-white Background
       ctx.fillStyle = "#FAFBFD";
       ctx.fillRect(0, 0, width, height);
 
       const radialGrad = ctx.createRadialGradient(
-        width / 2,
-        height / 2,
-        120 * scale,
-        width / 2,
-        height / 2,
-        600 * scale
+        width / 2, height / 2, 120 * scale,
+        width / 2, height / 2, 600 * scale
       );
-      radialGrad.addColorStop(0, "rgba(238, 244, 255, 0.75)");
+      radialGrad.addColorStop(0, "rgba(240, 246, 255, 0.7)");
       radialGrad.addColorStop(1, "#FAFBFD");
       ctx.fillStyle = radialGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. High-End Frame & Gold Accents
+      // 2. Double Borders with Amber Gold
       ctx.strokeStyle = "#0F172A";
       ctx.lineWidth = 5 * scale;
       ctx.strokeRect(32 * scale, 32 * scale, width - 64 * scale, height - 64 * scale);
@@ -116,6 +115,7 @@ export default function QuizPage() {
       ctx.lineWidth = 1.5 * scale;
       ctx.strokeRect(40 * scale, 40 * scale, width - 80 * scale, height - 80 * scale);
 
+      // Corner Accents
       const drawCorner = (x: number, y: number) => {
         ctx.fillStyle = "#D97706";
         ctx.beginPath();
@@ -127,7 +127,7 @@ export default function QuizPage() {
       drawCorner(48 * scale, height - 48 * scale);
       drawCorner(width - 48 * scale, height - 48 * scale);
 
-      // 3. Official Logo (/logo.jpg)[cite: 2]
+      // 3. Logo (/logo.jpg)
       try {
         const logo = new Image();
         logo.crossOrigin = "anonymous";
@@ -179,7 +179,7 @@ export default function QuizPage() {
       ctx.letterSpacing = `${2 * scale}px`;
       ctx.fillText("WE PROUDLY PRESENT THIS TO", width / 2, 230 * scale);
 
-      // 6. Student Candidate Name (Luxury Serif Style)
+      // 6. Student Candidate Name
       ctx.fillStyle = "#0F172A";
       ctx.font = `bold ${36 * scale}px "Times New Roman", Times, serif`;
       ctx.letterSpacing = "normal";
@@ -223,9 +223,9 @@ export default function QuizPage() {
 
       ctx.fillStyle = "#15803D";
       ctx.font = `bold ${11 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText(`QUALIFIED ★ ${roleText.toUpperCase()}`, width / 2, badgeY + 20 * scale);
+      ctx.fillText("QUALIFIED ★ AI/ML Intern", width / 2, badgeY + 20 * scale);
 
-      // 9. Footer Details & Verification[cite: 1]
+      // 9. Footer: Date, Verify URL & Lucky Tiwari Signature
       const footerY = height - 100 * scale;
       const now = new Date();
       const monthNames = [
@@ -245,7 +245,7 @@ export default function QuizPage() {
       ctx.font = `400 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText("Certified Registry Record", 70 * scale, footerY + 34 * scale);
 
-      // Center: Verification Link & ID
+      // Center: Credential Verification
       ctx.textAlign = "center";
       ctx.fillStyle = "#64748B";
       ctx.font = `600 ${9 * scale}px system-ui, -apple-system, sans-serif`;
@@ -281,219 +281,247 @@ export default function QuizPage() {
       ctx.font = `400 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText("UpForge Global Ecosystem", width - 70 * scale, footerY + 38 * scale);
 
-      // 10. Download
+      // 10. Download Output
       const imgUri = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = imgUri;
       a.download = `${candidate.replace(/\s+/g, "_")}_UpForge_Certificate.png`;
       a.click();
     } catch (e) {
-      console.error("Certificate generation error:", e);
+      console.error("Certificate download error:", e);
     } finally {
-      setIsGeneratingCert(false);
+      setIsDownloading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 flex items-center justify-center">
-      <div className="max-w-2xl w-full">
+    <div className="min-h-screen bg-slate-50 border-t border-slate-100 dark:bg-slate-950 dark:border-slate-800 text-slate-900 dark:text-slate-100 transition-colors py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        
+        {/* Header Title & Intro */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <Sparkles className="w-3.5 h-3.5" />
+            UpForge Founder & Ecosystem Assessment
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+            Startup & Technical Aptitude Quiz
+          </h1>
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Test your understanding of valuation, equity, AI models, and regulatory compliance. Earn verified founder qualifications and credentials.
+          </p>
+        </div>
+
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {Object.entries(QUIZ_REGISTRY).map(([catKey, quiz]) => {
+            const isSelected = selectedCategory === catKey;
+            return (
+              <button
+                key={catKey}
+                onClick={() => handleCategoryChange(catKey as QuizCategory)}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm ${
+                  isSelected
+                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
+                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
+              >
+                {quiz.title}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Quiz Flow Card */}
         {!isCompleted ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
-            {/* Header / Tracker */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-5 mb-8">
-              <div className="flex items-center gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                  Technical Assessment
-                </span>
-              </div>
-              <span className="text-xs font-medium text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
-                Question {currentQuestionIndex + 1} of {questions.length || 1}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
+            {/* Question Progress Bar */}
+            <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-6">
+              <div 
+                className="bg-emerald-500 h-full transition-all duration-300"
+                style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium mb-4">
+              <span>Question {currentQuestionIndex + 1} of {totalQuestions}</span>
+              <span className="capitalize px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                {currentQuestion.difficulty}
               </span>
             </div>
 
-            {/* Question Body */}
-            {currentQuestion ? (
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 leading-relaxed">
-                  {currentQuestion.question || currentQuestion.title}
-                </h2>
+            {/* Question Heading */}
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 leading-relaxed">
+              {currentQuestion.question}
+            </h2>
 
-                <div className="space-y-3 mb-8">
-                  {(currentQuestion.options || []).map((option: string, idx: number) => {
-                    const isSelected = selectedAnswers[currentQuestionIndex] === idx;
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => handleSelectOption(idx)}
-                        className={`w-full text-left p-4 rounded-xl border transition-all text-sm sm:text-base flex items-center justify-between ${
-                          isSelected
-                            ? "bg-amber-500/10 border-amber-500/80 text-white shadow-lg shadow-amber-500/5"
-                            : "bg-slate-800/40 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:border-slate-600"
-                        }`}
-                      >
-                        <span>{option}</span>
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                            isSelected
-                              ? "border-amber-500 bg-amber-500 text-slate-950"
-                              : "border-slate-600"
-                          }`}
-                        >
-                          {isSelected && <div className="w-2 h-2 bg-slate-950 rounded-full" />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* Options List */}
+            <div className="space-y-3 mb-8">
+              {currentQuestion.options.map((option, idx) => {
+                const isSelected = selectedAnswers[currentQuestionIndex] === idx;
+                const isAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
+                const isCorrect = currentQuestion.correctAnswer === idx;
 
-                <div className="flex justify-end">
+                let btnStyles = "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-700";
+                
+                if (isAnswered) {
+                  if (isCorrect) {
+                    btnStyles = "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300";
+                  } else if (isSelected) {
+                    btnStyles = "border-rose-500 bg-rose-50/70 dark:bg-rose-950/40 text-rose-900 dark:text-rose-300";
+                  } else {
+                    btnStyles = "border-slate-100 dark:border-slate-800 opacity-60";
+                  }
+                }
+
+                return (
                   <button
-                    onClick={handleNext}
-                    disabled={selectedAnswers[currentQuestionIndex] === undefined}
-                    className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold px-6 py-3 rounded-xl transition-all shadow-md active:scale-95"
+                    key={idx}
+                    disabled={isAnswered}
+                    onClick={() => handleSelectOption(idx)}
+                    className={`w-full text-left p-4 rounded-2xl border text-sm sm:text-base font-medium transition-all flex items-center justify-between group ${btnStyles}`}
                   >
-                    {currentQuestionIndex === questions.length - 1
-                      ? "Submit Assessment"
-                      : "Next Question"}
-                    <ChevronRight className="w-4 h-4" />
+                    <span>{option}</span>
+                    {isAnswered && (
+                      <span>
+                        {isCorrect && <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 ml-2" />}
+                        {isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 ml-2" />}
+                      </span>
+                    )}
                   </button>
+                );
+              })}
+            </div>
+
+            {/* Contextual Answer Explanation Box */}
+            {showExplanation && (
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 mb-6 space-y-2 animate-fadeIn">
+                <div className="flex items-center gap-2 font-semibold text-xs text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                  <BrainCircuit className="w-4 h-4" />
+                  Ecosystem Intelligence Explanation
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-slate-400 mb-4">No questions available in this assessment.</p>
-                <button
-                  onClick={() => setIsCompleted(true)}
-                  className="bg-amber-500 text-slate-950 px-5 py-2.5 rounded-xl font-bold text-sm"
-                >
-                  View Result
-                </button>
+                <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  {currentQuestion.explanation}
+                </p>
+                {currentQuestion.readMoreLink && (
+                  <Link 
+                    href={currentQuestion.readMoreLink}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline pt-1"
+                  >
+                    Read related dossier
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                )}
               </div>
             )}
+
+            {/* Bottom Actions */}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Restart Quiz
+              </button>
+
+              <button
+                disabled={selectedAnswers[currentQuestionIndex] === undefined}
+                onClick={handleNext}
+                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 font-bold px-5 py-2.5 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed text-sm shadow-sm"
+              >
+                {currentQuestionIndex === totalQuestions - 1 ? "View Result" : "Next Question"}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         ) : (
-          /* Result & Certificate Section */
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl text-center">
-            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto mb-5 text-amber-400 shadow-inner">
+          /* Completion & Qualified Certificate View */
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm text-center space-y-6">
+            <div className="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400 shadow-sm">
               <Award className="w-8 h-8" />
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
-              Assessment Completed
-            </h1>
-            <p className="text-sm text-slate-400 mb-6">
-              You scored <span className="text-white font-bold">{score}</span> out of{" "}
-              <span className="text-white font-bold">{totalQuestions}</span>
-            </p>
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                Assessment Completed!
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                You correctly answered <span className="font-bold text-slate-900 dark:text-white">{correctCount}</span> out of <span className="font-bold text-slate-900 dark:text-white">{totalQuestions}</span> questions ({scorePercent}%).
+              </p>
+            </div>
 
-            {passed ? (
-              <div className="max-w-md mx-auto">
-                {!nameSubmitted ? (
-                  <div className="bg-slate-800/60 border border-slate-700/80 p-6 rounded-2xl mb-6 text-left">
-                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                      Enter Your Full Name for Certificate
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Ankit Kumar"
-                      value={studentName}
-                      onChange={(e) => setStudentName(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all mb-4 text-sm"
-                    />
-                    <button
-                      onClick={() => {
-                        if (studentName.trim()) setNameSubmitted(true);
-                      }}
-                      disabled={!studentName.trim()}
-                      className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm transition-all"
-                    >
-                      Generate Official Certificate
-                    </button>
-                  </div>
+            {/* Performance Verdict */}
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 max-w-md mx-auto text-left space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Credential Status:</span>
+                {scorePercent >= 60 ? (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                    Qualified ★
+                  </span>
                 ) : (
-                  <div className="space-y-4 mb-6">
-                    {/* Certificate Preview Card */}
-                    <div className="bg-white text-slate-950 p-6 rounded-2xl border-2 border-amber-500/50 shadow-xl text-left relative overflow-hidden">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
-                        <div className="flex items-center gap-2">
-                          <ShieldCheck className="w-5 h-5 text-amber-600" />
-                          <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                            UpForge Credential
-                          </span>
-                        </div>
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
-                          Qualified ★
-                        </span>
-                      </div>
-
-                      <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">
-                        This certifies that
-                      </p>
-                      <h3 className="text-2xl font-serif font-bold text-slate-900 mt-1 mb-2">
-                        {studentName}
-                      </h3>
-                      <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                        Has successfully qualified in the <strong>UpForge Technical Assessment</strong>,
-                        conducted through the InternAdda Assessment Platform.
-                      </p>
-
-                      <div className="flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100 pt-3">
-                        <span>Issued by: UpForge Global</span>
-                        <span className="font-mono text-slate-700">Signed: Lucky Tiwari</span>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={handleDownloadCertificate}
-                      disabled={isGeneratingCert}
-                      className="w-full inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-3.5 px-6 rounded-xl transition-all shadow-lg active:scale-[0.99] text-sm disabled:opacity-70"
-                    >
-                      {isGeneratingCert ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Rendering High-Res Certificate...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="w-4 h-4" />
-                          Download Official Certificate (PNG/Print Ready)
-                        </>
-                      )}
-                    </button>
-
-                    <div className="flex items-center justify-center gap-2 text-xs text-emerald-400">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Ready to share on LinkedIn, Resume & Portfolio</span>
-                    </div>
-                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                    Review Required
+                  </span>
                 )}
               </div>
-            ) : (
-              <div className="bg-red-500/10 border border-red-500/20 p-5 rounded-2xl mb-6 max-w-md mx-auto">
-                <p className="text-red-400 text-sm">
-                  You need at least 60% to qualify for the official certificate. You can retry the assessment anytime.
+              <p className="text-xs text-slate-600 dark:text-slate-400">
+                {scorePercent >= 60 
+                  ? "Congratulations! You have met the benchmark standard required by the UpForge Ecosystem & InternAdda Technical Board."
+                  : "Keep honing your technical knowledge! You need 60% or higher to generate your verified certificate of qualification."}
+              </p>
+            </div>
+
+            {/* Name Input & Download Action if Qualified */}
+            {scorePercent >= 60 && (
+              <div className="max-w-md mx-auto space-y-3 pt-2">
+                <div className="text-left">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                    Candidate Full Name (For Certificate)
+                  </label>
+                  <input
+                    type="text"
+                    value={candidateName}
+                    onChange={(e) => setCandidateName(e.target.value)}
+                    placeholder="e.g. Ankit Kumar"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <button
+                  onClick={handleDownloadCertificate}
+                  disabled={isDownloading || !candidateName.trim()}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md active:scale-95 text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  {isDownloading ? "Generating High-Res Certificate..." : "Download Official Certificate"}
+                </button>
+                <p className="text-[11px] text-slate-400">
+                  Ready to share on LinkedIn, Resume, & Portfolios. Includes verification link.
                 </p>
               </div>
             )}
 
-            <div className="flex items-center justify-center gap-3 pt-4 border-t border-slate-800">
+            {/* Control Actions */}
+            <div className="flex items-center justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <button
-                onClick={handleRestart}
-                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all"
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors"
               >
-                <RefreshCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-4 h-4" />
                 Retake Quiz
               </button>
               <Link
                 href="/registry"
-                className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-5 py-2.5 rounded-xl text-xs sm:text-sm transition-all"
+                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors"
               >
-                Explore Startups
+                Explore Directory
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
