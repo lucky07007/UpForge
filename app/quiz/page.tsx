@@ -19,41 +19,32 @@ import {
 } from "lucide-react";
 import { QUIZ_REGISTRY } from "@/lib/quizData";
 
-// Local types to fix Cloudflare build error
-type QuizCategory = string;
-
-interface QuizQuestion {
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation?: string;
-  difficulty?: string;
-  readMoreLink?: string;
-}
-
 export default function QuizDashboard() {
-  const registry = QUIZ_REGISTRY as Record<string, { title: string; questions: QuizQuestion[] }>;
-  const defaultCategory = Object.keys(registry)[0] || "technical-assessment";
+  // Safe extraction whether QUIZ_REGISTRY is Array (QuizItem[]) or Object
+  const rawData = QUIZ_REGISTRY as any;
+  const isArray = Array.isArray(rawData);
 
-  const [selectedCategory, setSelectedCategory] = useState<QuizCategory>(defaultCategory);
+  // Normalize questions
+  const allQuestions: any[] = isArray ? rawData : (rawData?.questions || Object.values(rawData || {})[0] || []);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  const activeQuiz = registry[selectedCategory] || Object.values(registry)[0];
-  const currentQuestion: QuizQuestion = activeQuiz?.questions?.[currentQuestionIndex];
+  const currentQuestion = allQuestions[currentQuestionIndex];
+  const totalQuestions = allQuestions.length || 0;
 
   const handleSelectOption = (index: number) => {
     if (selectedAnswers[currentQuestionIndex] !== undefined) return;
-    setSelectedAnswers(prev => ({ ...prev, [currentQuestionIndex]: index }));
+    setSelectedAnswers((prev) => ({ ...prev, [currentQuestionIndex]: index }));
     setShowExplanation(true);
   };
 
   const handleNext = () => {
     setShowExplanation(false);
-    if (currentQuestionIndex < (activeQuiz?.questions?.length || 0) - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+    if (currentQuestionIndex < totalQuestions - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setIsCompleted(true);
     }
@@ -66,18 +57,12 @@ export default function QuizDashboard() {
     setIsCompleted(false);
   };
 
-  const handleCategoryChange = (cat: QuizCategory) => {
-    setSelectedCategory(cat);
-    setCurrentQuestionIndex(0);
-    setSelectedAnswers({});
-    setShowExplanation(false);
-    setIsCompleted(false);
-  };
-
-  const totalQuestions = activeQuiz?.questions?.length || 0;
   const correctCount = Object.entries(selectedAnswers).reduce((acc, [qIdx, aIdx]) => {
-    return acc + (activeQuiz?.questions?.[Number(qIdx)]?.correctAnswer === aIdx ? 1 : 0);
+    const q = allQuestions[Number(qIdx)];
+    const correct = q?.correctAnswer ?? q?.answer ?? 0;
+    return acc + (correct === aIdx ? 1 : 0);
   }, 0);
+
   const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
   return (
@@ -98,26 +83,6 @@ export default function QuizDashboard() {
           </p>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {Object.entries(registry).map(([catKey, quiz]) => {
-            const isSelected = selectedCategory === catKey;
-            return (
-              <button
-                key={catKey}
-                onClick={() => handleCategoryChange(catKey)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm ${
-                  isSelected
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-                }`}
-              >
-                {quiz.title}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Quiz Flow Card */}
         {!isCompleted && currentQuestion ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
@@ -132,7 +97,7 @@ export default function QuizDashboard() {
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium mb-4">
               <span>Question {currentQuestionIndex + 1} of {totalQuestions}</span>
               <span className="capitalize px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                {currentQuestion.difficulty || "Intermediate"}
+                {currentQuestion.difficulty || "Technical"}
               </span>
             </div>
 
@@ -143,10 +108,11 @@ export default function QuizDashboard() {
 
             {/* Options List */}
             <div className="space-y-3 mb-8">
-              {currentQuestion.options.map((option, idx) => {
+              {(currentQuestion.options || []).map((option: string, idx: number) => {
                 const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                 const isAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
-                const isCorrect = currentQuestion.correctAnswer === idx;
+                const correct = currentQuestion.correctAnswer ?? currentQuestion.answer ?? 0;
+                const isCorrect = correct === idx;
 
                 let btnStyles = "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-700";
                 
@@ -253,7 +219,7 @@ export default function QuizDashboard() {
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 {scorePercent >= 60 
-                  ? `Congratulations! You qualified in the ${activeQuiz?.title || "Assessment"} benchmark.`
+                  ? "Congratulations! You qualified in the UpForge technical assessment benchmark."
                   : "Keep honing your technical knowledge! You need 60% or higher to generate your verified certificate of qualification."}
               </p>
             </div>
