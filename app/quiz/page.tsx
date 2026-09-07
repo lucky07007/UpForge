@@ -5,7 +5,6 @@ import Link from "next/link";
 import { 
   CheckCircle2, 
   XCircle, 
-  HelpCircle, 
   TrendingUp, 
   ShieldCheck, 
   BrainCircuit, 
@@ -26,9 +25,10 @@ export default function QuizDashboard() {
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // Fallback if category not found
-  const activeQuiz = QUIZ_REGISTRY[selectedCategory] || Object.values(QUIZ_REGISTRY)[0];
-  const currentQuestion: QuizQuestion = activeQuiz.questions[currentQuestionIndex];
+  // Safe fallback if category key is slightly different
+  const registry = QUIZ_REGISTRY as Record<string, { title: string; questions: QuizQuestion[] }>;
+  const activeQuiz = registry[selectedCategory] || Object.values(registry)[0];
+  const currentQuestion: QuizQuestion = activeQuiz?.questions?.[currentQuestionIndex];
 
   const handleSelectOption = (index: number) => {
     if (selectedAnswers[currentQuestionIndex] !== undefined) return;
@@ -38,7 +38,7 @@ export default function QuizDashboard() {
 
   const handleNext = () => {
     setShowExplanation(false);
-    if (currentQuestionIndex < activeQuiz.questions.length - 1) {
+    if (currentQuestionIndex < (activeQuiz?.questions?.length || 0) - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       setIsCompleted(true);
@@ -61,11 +61,11 @@ export default function QuizDashboard() {
   };
 
   // Results calculation
-  const totalQuestions = activeQuiz.questions.length;
+  const totalQuestions = activeQuiz?.questions?.length || 0;
   const correctCount = Object.entries(selectedAnswers).reduce((acc, [qIdx, aIdx]) => {
-    return acc + (activeQuiz.questions[Number(qIdx)].correctAnswer === aIdx ? 1 : 0);
+    return acc + (activeQuiz?.questions?.[Number(qIdx)]?.correctAnswer === aIdx ? 1 : 0);
   }, 0);
-  const scorePercent = Math.round((correctCount / totalQuestions) * 100);
+  const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-slate-50 border-t border-slate-100 dark:bg-slate-950 dark:border-slate-800 text-slate-900 dark:text-slate-100 transition-colors py-12 px-4 sm:px-6 lg:px-8">
@@ -87,7 +87,7 @@ export default function QuizDashboard() {
 
         {/* Category Filter Pills */}
         <div className="flex flex-wrap items-center justify-center gap-2">
-          {Object.entries(QUIZ_REGISTRY).map(([catKey, quiz]) => {
+          {Object.entries(registry).map(([catKey, quiz]) => {
             const isSelected = selectedCategory === catKey;
             return (
               <button
@@ -106,7 +106,7 @@ export default function QuizDashboard() {
         </div>
 
         {/* Quiz Flow Card */}
-        {!isCompleted ? (
+        {!isCompleted && currentQuestion ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
             {/* Question Progress Bar */}
             <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-6">
@@ -240,7 +240,7 @@ export default function QuizDashboard() {
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 {scorePercent >= 60 
-                  ? `Congratulations! You qualified in the ${activeQuiz.title} assessment benchmark.`
+                  ? `Congratulations! You qualified in the ${activeQuiz?.title || "Assessment"} benchmark.`
                   : "Keep honing your technical knowledge! You need 60% or higher to generate your verified certificate of qualification."}
               </p>
             </div>
@@ -251,7 +251,7 @@ export default function QuizDashboard() {
                 onClick={handleReset}
                 className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition-colors"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="w-3.5 h-3.5" />
                 Retake Quiz
               </button>
               <Link
