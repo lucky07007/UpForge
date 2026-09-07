@@ -178,7 +178,7 @@ export default function UpForgeQuizPage() {
     }
   };
 
-  // Executive LinkedIn-Ready Certificate Engine (1800 x 1200 High-Res Canvas)
+  // Professional LinkedIn-Ready Certificate Engine (1800 x 1200 High-Res Canvas)
   const handleDownloadExecutiveCert = () => {
     const canvas = certCanvasRef.current;
     if (!canvas) return;
@@ -188,173 +188,194 @@ export default function UpForgeQuizPage() {
     canvas.width = 1800;
     canvas.height = 1200;
 
-    // 1. Pure Crisp Ivory White Base
+    // 1. Clean White Base
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, 1800, 1200);
 
-    // 2. Subtle Warm Radial Lighting
-    const radial = ctx.createRadialGradient(900, 600, 100, 900, 600, 850);
-    radial.addColorStop(0, "#FFFFFF");
-    radial.addColorStop(1, "#FAF8F5");
-    ctx.fillStyle = radial;
-    ctx.fillRect(0, 0, 1800, 1200);
+    // 2. Professional Blue Header Bar
+    const headerGradient = ctx.createLinearGradient(0, 0, 1800, 0);
+    headerGradient.addColorStop(0, "#1E40AF");
+    headerGradient.addColorStop(0.5, "#2563EB");
+    headerGradient.addColorStop(1, "#1E40AF");
+    ctx.fillStyle = headerGradient;
+    ctx.fillRect(0, 0, 1800, 120);
 
-    // 3. Double Executive Slate & Gold Borders
-    ctx.strokeStyle = "#0F172A"; // Slate 900
-    ctx.lineWidth = 12;
-    ctx.strokeRect(36, 36, 1728, 1128);
+    // Header decorative line
+    ctx.fillStyle = "#60A5FA";
+    ctx.fillRect(0, 120, 1800, 4);
 
-    ctx.strokeStyle = "#D97706"; // Amber Gold
-    ctx.lineWidth = 2.5;
-    ctx.strokeRect(54, 54, 1692, 1092);
+    // 3. Institution Logo Area
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "800 36px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "1px";
+    ctx.fillText("UPFORGE", 80, 75);
+    
+    ctx.font = "500 16px system-ui, -apple-system, sans-serif";
+    ctx.fillText("NATIONAL STARTUP READINESS PLATFORM", 280, 75);
 
-    // Guilloche Corner Verification Marks
-    const drawMark = (x: number, y: number) => {
-      ctx.strokeStyle = "#D97706";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(x, y, 16, 0, 2 * Math.PI);
-      ctx.stroke();
-    };
-    drawMark(76, 76);
-    drawMark(1724, 76);
-    drawMark(76, 1124);
-    drawMark(1724, 1124);
+    // Right side - Certificate ID
+    ctx.textAlign = "right";
+    const certId = "UPF-" + Math.random().toString(36).substring(2, 9).toUpperCase();
+    ctx.font = "500 14px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`Certificate ID: ${certId}`, 1720, 60);
+    ctx.fillText("Verify at: upforge.org/verify", 1720, 90);
 
-    // 4. Header Institution & Benchmark Standards
+    // 4. Main Certificate Content
     ctx.textAlign = "center";
-    ctx.fillStyle = "#0F172A";
-    ctx.font = "800 42px system-ui, -apple-system, sans-serif";
-    ctx.letterSpacing = "2px";
-    ctx.fillText("UPFORGE", 900, 165);
-
-    ctx.fillStyle = "#D97706";
-    ctx.font = "700 18px system-ui, -apple-system, sans-serif";
-    ctx.letterSpacing = "5px";
-    ctx.fillText("NATIONAL STARTUP READINESS BENCHMARK", 900, 205);
+    
+    // "CERTIFICATE" Title
+    ctx.fillStyle = "#1E40AF";
+    ctx.font = "300 72px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "15px";
+    ctx.fillText("CERTIFICATE", 900, 260);
 
     ctx.fillStyle = "#64748B";
-    ctx.font = "italic 23px Georgia, serif";
-    ctx.letterSpacing = "0px";
-    ctx.fillText("This official credential recognizes that", 900, 320);
+    ctx.font = "400 20px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "3px";
+    ctx.fillText("OF COMPLETION", 900, 300);
 
-    // 5. Candidate Full Name
+    // 5. "This is proudly presented to"
+    ctx.fillStyle = "#64748B";
+    ctx.font = "400 18px Georgia, serif";
+    ctx.letterSpacing = "1px";
+    ctx.fillText("This certificate is proudly presented to", 900, 380);
+
+    // 6. Student Name
     ctx.fillStyle = "#0F172A";
-    ctx.font = "bold 58px system-ui, -apple-system, sans-serif";
-    ctx.fillText(fullName.trim() || "Distinguished Founder", 900, 405);
+    ctx.font = "700 52px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "0px";
+    ctx.fillText(fullName.trim() || "Distinguished Founder", 900, 470);
 
-    // Elegant separator
-    ctx.strokeStyle = "#E2E8F0";
-    ctx.lineWidth = 1.5;
+    // Decorative line under name
+    ctx.strokeStyle = "#CBD5E1";
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(520, 435);
-    ctx.lineTo(1280, 435);
+    ctx.moveTo(550, 500);
+    ctx.lineTo(1250, 500);
     ctx.stroke();
 
-    // 6. Statement & Assessment Name
+    // 7. Achievement Statement
     ctx.fillStyle = "#475569";
-    ctx.font = "22px system-ui, -apple-system, sans-serif";
-    ctx.fillText("has demonstrated strategic decision-making and operational acumen in the", 900, 500);
+    ctx.font = "400 20px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "0px";
+    ctx.fillText("for successfully completing and demonstrating proficiency in", 900, 560);
 
-    ctx.fillStyle = "#B45309";
-    ctx.font = "bold 34px system-ui, -apple-system, sans-serif";
-    ctx.fillText(activeQuiz.title.split("|")[0].trim(), 900, 555);
+    // 8. Course Name - Prominent
+    ctx.fillStyle = "#1E40AF";
+    ctx.font = "700 32px system-ui, -apple-system, sans-serif";
+    ctx.fillText(activeQuiz.title.split("|")[0].trim(), 900, 620);
 
-    // 7. Verified Metrics Score Box
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(520, 615, 760, 115);
+    // 9. Course Details Box
+    ctx.fillStyle = "#F8FAFC";
+    ctx.fillRect(350, 660, 1100, 140);
     ctx.strokeStyle = "#E2E8F0";
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(520, 615, 760, 115);
+    ctx.strokeRect(350, 660, 1100, 140);
 
     const accuracyPct = Math.round((score / activeQuiz.questions.length) * 100);
-    const tier = accuracyPct >= 80 ? "Founder Mindset" : accuracyPct >= 50 ? "Startup Builder" : "Startup Explorer";
+    
+    // Score and details in box
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "700 18px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`Final Score: ${score}/${activeQuiz.questions.length} (${accuracyPct}%)`, 900, 705);
+    
+    ctx.fillStyle = "#64748B";
+    ctx.font = "400 16px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`Assessment: ${activeQuiz.metrics.scenariosCount} • Duration: ${activeQuiz.duration} • Standard: ${activeQuiz.metrics.passingStandard}`, 900, 740);
 
     ctx.fillStyle = "#0F172A";
-    ctx.font = "700 26px system-ui, -apple-system, sans-serif";
-    ctx.fillText(`Verified Score: ${score} / ${activeQuiz.questions.length}  (${accuracyPct}%)`, 900, 665);
+    ctx.font = "600 16px system-ui, -apple-system, sans-serif";
+    ctx.fillText(`Benchmark Level: ${accuracyPct >= 80 ? "Distinguished Founder" : accuracyPct >= 50 ? "Startup Builder" : "Startup Explorer"}`, 900, 775);
 
-    ctx.fillStyle = "#64748B";
-    ctx.font = "600 18px system-ui, -apple-system, sans-serif";
-    ctx.fillText(`Status: Certified • Benchmark Standard: ${tier}`, 900, 702);
-
-    // 8. Verification Details & Signatures
-    const today = new Date().toLocaleDateString("en-US", {
+    // 10. Date and Signature Section
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric"
     });
-    const hash = "UPF-" + Math.random().toString(36).substring(2, 9).toUpperCase();
 
-    // Verification Hash (Left)
+    // Left - Date
     ctx.textAlign = "left";
     ctx.fillStyle = "#64748B";
-    ctx.font = "16px monospace";
-    ctx.fillText(`Credential ID: ${hash}`, 160, 945);
-    ctx.fillText(`Issue Date: ${today}`, 160, 975);
-    ctx.fillText("Registry: upforge.org/verify", 160, 1005);
+    ctx.font = "400 14px system-ui, -apple-system, sans-serif";
+    ctx.fillText("DATE OF ISSUE", 400, 900);
+    
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "600 18px system-ui, -apple-system, sans-serif";
+    ctx.fillText(formattedDate, 400, 935);
 
-    // Verification Board Signature (Right)
+    // Center - Platform Badge
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#1E40AF";
+    ctx.font = "700 14px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "2px";
+    ctx.fillText("UPFORGE NATIONAL BENCHMARK", 900, 920);
+    
+    ctx.fillStyle = "#64748B";
+    ctx.font = "400 13px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "0px";
+    ctx.fillText("Recognized Startup Assessment Platform", 900, 945);
+
+    // Right - Signature
     ctx.textAlign = "right";
     ctx.fillStyle = "#0F172A";
-    ctx.font = "italic 30px 'Brush Script MT', cursive, Georgia";
-    ctx.fillText("UpForge Committee", 1640, 945);
+    ctx.font = "italic 24px 'Brush Script MT', cursive, Georgia";
+    ctx.fillText("UpForge Committee", 1400, 915);
 
     ctx.strokeStyle = "#94A3B8";
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(1400, 968);
-    ctx.lineTo(1640, 968);
+    ctx.moveTo(1200, 935);
+    ctx.lineTo(1400, 935);
     ctx.stroke();
 
     ctx.fillStyle = "#64748B";
-    ctx.font = "600 15px system-ui, sans-serif";
-    ctx.fillText("Startup Verification & Registry Board", 1640, 995);
+    ctx.font = "400 14px system-ui, -apple-system, sans-serif";
+    ctx.fillText("Startup Verification & Registry Board", 1400, 960);
 
-    // 9. Render Official Logo and Gold Seal Images
+    // 11. Professional Blue Footer
+    ctx.fillStyle = "#1E40AF";
+    ctx.fillRect(0, 1120, 1800, 80);
+    
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "500 14px system-ui, -apple-system, sans-serif";
+    ctx.letterSpacing = "1px";
+    ctx.fillText("www.upforge.org  |  connect@upforge.org  |  Building India's Startup Ecosystem", 900, 1168);
+
+    // 12. Watermark
+    ctx.globalAlpha = 0.03;
+    ctx.fillStyle = "#1E40AF";
+    ctx.font = "900 200px system-ui, -apple-system, sans-serif";
+    ctx.fillText("UP", 900, 700);
+    ctx.globalAlpha = 1;
+
+    // 13. Render Logo
     const logoImg = new window.Image();
     logoImg.crossOrigin = "anonymous";
     logoImg.src = "https://images.upforge.org/logo.jpg";
 
-    const sealImg = new window.Image();
-    sealImg.crossOrigin = "anonymous";
-    sealImg.src = "https://images.upforge.org/seal.jpg";
+    logoImg.onload = () => {
+      try {
+        // Small logo in header
+        ctx.drawImage(logoImg, 180, 20, 80, 80);
+      } catch {
+        // Ignored if CORS restricted
+      }
+      triggerSave();
+    };
 
-    let loaded = 0;
+    logoImg.onerror = () => {
+      triggerSave();
+    };
+
     const triggerSave = () => {
       const link = document.createElement("a");
-      link.download = `UpForge_Credential_${fullName.replace(/\s+/g, "_") || "Founder"}.png`;
+      link.download = `UpForge_Certificate_${fullName.replace(/\s+/g, "_") || "Founder"}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-    };
-
-    const handleLoaded = () => {
-      loaded++;
-      if (loaded === 2) {
-        try {
-          ctx.drawImage(logoImg, 150, 115, 85, 85);
-        } catch {
-          // Ignored if CORS restricted
-        }
-        try {
-          ctx.drawImage(sealImg, 835, 860, 130, 130);
-        } catch {
-          // Ignored if CORS restricted
-        }
-        triggerSave();
-      }
-    };
-
-    logoImg.onload = handleLoaded;
-    logoImg.onerror = () => {
-      loaded++;
-      if (loaded === 2) triggerSave();
-    };
-
-    sealImg.onload = handleLoaded;
-    sealImg.onerror = () => {
-      loaded++;
-      if (loaded === 2) triggerSave();
     };
   };
 
@@ -677,7 +698,7 @@ export default function UpForgeQuizPage() {
                       Free Operator Evaluation
                     </h4>
                     <p className="text-xs text-slate-500 mt-1">
-                      Instant scoring & downloadable LinkedIn-ready credential with official Gold Seal.
+                      Instant scoring & downloadable LinkedIn-ready credential with official verification.
                     </p>
                   </div>
 
@@ -700,8 +721,8 @@ export default function UpForgeQuizPage() {
                       <span className="font-semibold">{activeQuiz.metrics.scenariosCount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Seal Verification</span>
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">Official Included</span>
+                      <span className="text-slate-500">Certificate</span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">Professional PDF</span>
                     </div>
                   </div>
                 </div>
@@ -844,13 +865,13 @@ export default function UpForgeQuizPage() {
                   disabled={isSubmitting}
                   className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-[0.98] disabled:opacity-50"
                 >
-                  {isSubmitting ? "Generating Official Credential..." : "Claim & Unlock Certificate →"}
+                  {isSubmitting ? "Generating Professional Certificate..." : "Claim & Unlock Certificate →"}
                 </button>
               </form>
             ) : (
               <div className="space-y-4 max-w-sm mx-auto">
                 <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                  ✓ Verified by UpForge Registry. Stamped with official Gold Seal & Verification ID.
+                  ✓ Verified by UpForge Registry. Professional certificate with unique verification ID.
                 </div>
 
                 <button
