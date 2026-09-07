@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Award,
@@ -9,13 +9,27 @@ import {
   Download,
   Loader2,
   RefreshCcw,
-  Sparkles,
-  Share2,
   ShieldCheck,
 } from "lucide-react";
-import { quizQuestions } from "@/lib/quizData";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 
 export default function QuizPage() {
+  // Extract questions dynamically from QUIZ_REGISTRY
+  const defaultQuestions = useMemo(() => {
+    if (!QUIZ_REGISTRY) return [];
+    if (Array.isArray(QUIZ_REGISTRY)) return QUIZ_REGISTRY;
+    
+    // If QUIZ_REGISTRY is a category map (e.g. { ai: [...], frontend: [...] })
+    const registryObj = QUIZ_REGISTRY as Record<string, any>;
+    const keys = Object.keys(registryObj);
+    if (keys.length > 0) {
+      const firstVal = registryObj[keys[0]];
+      if (Array.isArray(firstVal)) return firstVal;
+      if (firstVal && Array.isArray(firstVal.questions)) return firstVal.questions;
+    }
+    return [];
+  }, []);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isCompleted, setIsCompleted] = useState(false);
@@ -23,7 +37,7 @@ export default function QuizPage() {
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [isGeneratingCert, setIsGeneratingCert] = useState(false);
 
-  const questions = quizQuestions || [];
+  const questions = defaultQuestions;
   const currentQuestion = questions[currentQuestionIndex];
 
   const handleSelectOption = (index: number) => {
@@ -49,20 +63,22 @@ export default function QuizPage() {
     setStudentName("");
   };
 
-  // Calculate score
+  // Score calculation
   const score = Object.entries(selectedAnswers).reduce((total, [qIdx, ansIdx]) => {
     const q = questions[Number(qIdx)];
-    return total + (q && q.correctAnswer === ansIdx ? 1 : 0);
+    const correct = q?.correctAnswer ?? q?.answer ?? 0;
+    return total + (correct === ansIdx ? 1 : 0);
   }, 0);
 
-  const passed = score >= Math.ceil(questions.length * 0.6);
+  const totalQuestions = questions.length || 5;
+  const passed = score >= Math.ceil(totalQuestions * 0.6);
 
-  // Certificate Generator Function
+  // Certificate Generator
   const handleDownloadCertificate = async () => {
     setIsGeneratingCert(true);
     try {
       const canvas = document.createElement("canvas");
-      const scale = 2; // 2x Retina sharpness
+      const scale = 2; // 2x Retina resolution
       const width = 1123 * scale;
       const height = 794 * scale;
       canvas.width = width;
@@ -74,7 +90,7 @@ export default function QuizPage() {
       const candidate = studentName.trim() || "Candidate";
       const roleText = "AI/ML Intern";
 
-      // 1. Premium Background with subtle radial luxury glow
+      // 1. Premium Background with Soft Radial Glow
       ctx.fillStyle = "#FAFBFD";
       ctx.fillRect(0, 0, width, height);
 
@@ -91,16 +107,15 @@ export default function QuizPage() {
       ctx.fillStyle = radialGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. High-End Frame & Gold Border
+      // 2. High-End Frame & Gold Accents
       ctx.strokeStyle = "#0F172A";
       ctx.lineWidth = 5 * scale;
       ctx.strokeRect(32 * scale, 32 * scale, width - 64 * scale, height - 64 * scale);
 
-      ctx.strokeStyle = "#D97706"; // Amber 600 Gold
+      ctx.strokeStyle = "#D97706";
       ctx.lineWidth = 1.5 * scale;
       ctx.strokeRect(40 * scale, 40 * scale, width - 80 * scale, height - 80 * scale);
 
-      // Corner gold pins
       const drawCorner = (x: number, y: number) => {
         ctx.fillStyle = "#D97706";
         ctx.beginPath();
@@ -112,7 +127,7 @@ export default function QuizPage() {
       drawCorner(48 * scale, height - 48 * scale);
       drawCorner(width - 48 * scale, height - 48 * scale);
 
-      // 3. Logo (/logo.jpg)
+      // 3. Official Logo (/logo.jpg)[cite: 2]
       try {
         const logo = new Image();
         logo.crossOrigin = "anonymous";
@@ -151,7 +166,6 @@ export default function QuizPage() {
       ctx.letterSpacing = `${1 * scale}px`;
       ctx.fillText("CERTIFICATE OF QUALIFICATION", width / 2, 185 * scale);
 
-      // Decorative divider
       ctx.strokeStyle = "#E2E8F0";
       ctx.lineWidth = 1 * scale;
       ctx.beginPath();
@@ -165,13 +179,12 @@ export default function QuizPage() {
       ctx.letterSpacing = `${2 * scale}px`;
       ctx.fillText("WE PROUDLY PRESENT THIS TO", width / 2, 230 * scale);
 
-      // 6. Student Candidate Name (Luxury Headline Serif)
+      // 6. Student Candidate Name (Luxury Serif Style)
       ctx.fillStyle = "#0F172A";
       ctx.font = `bold ${36 * scale}px "Times New Roman", Times, serif`;
       ctx.letterSpacing = "normal";
       ctx.fillText(candidate, width / 2, 280 * scale);
 
-      // Name Underline Accent
       ctx.strokeStyle = "#F59E0B";
       ctx.lineWidth = 2 * scale;
       ctx.beginPath();
@@ -179,7 +192,7 @@ export default function QuizPage() {
       ctx.lineTo(width / 2 + 140 * scale, 292 * scale);
       ctx.stroke();
 
-      // 7. Assessment Qualification Text
+      // 7. Assessment Body Text
       ctx.fillStyle = "#334155";
       ctx.font = `400 ${12 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.letterSpacing = "normal";
@@ -194,7 +207,7 @@ export default function QuizPage() {
         348 * scale
       );
 
-      // 8. Qualified Badge Pill
+      // 8. Qualified Badge Chip
       const badgeW = 210 * scale;
       const badgeH = 32 * scale;
       const badgeX = width / 2 - badgeW / 2;
@@ -212,15 +225,13 @@ export default function QuizPage() {
       ctx.font = `bold ${11 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText(`QUALIFIED ★ ${roleText.toUpperCase()}`, width / 2, badgeY + 20 * scale);
 
-      // 9. Footer (Date, Verify URL, Signature)
+      // 9. Footer Details & Verification[cite: 1]
       const footerY = height - 100 * scale;
-
       const now = new Date();
       const monthNames = [
-        "SEPT", "OCT", "NOV", "DEC", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG"
+        "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
       ];
-      const monthName = now.toLocaleString("en-US", { month: "short" }).toUpperCase();
-      const formattedDate = `${monthName} ${String(now.getDate()).padStart(2, "0")}, ${now.getFullYear()}`;
+      const formattedDate = `${monthNames[now.getMonth()]} ${String(now.getDate()).padStart(2, "0")}, ${now.getFullYear()}`;
 
       // Left: Date
       ctx.textAlign = "left";
@@ -234,7 +245,7 @@ export default function QuizPage() {
       ctx.font = `400 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText("Certified Registry Record", 70 * scale, footerY + 34 * scale);
 
-      // Center: Verify Link
+      // Center: Verification Link & ID
       ctx.textAlign = "center";
       ctx.fillStyle = "#64748B";
       ctx.font = `600 ${9 * scale}px system-ui, -apple-system, sans-serif`;
@@ -247,7 +258,7 @@ export default function QuizPage() {
 
       ctx.fillStyle = "#64748B";
       ctx.font = `500 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
-      ctx.fillText(`Verify at: https://verify.upforge.org/${certId}`, width / 2, footerY + 34 * scale);
+      ctx.fillText(`Verify at: ${verifyUrl}`, width / 2, footerY + 34 * scale);
 
       // Right: Lucky Tiwari Signature
       ctx.textAlign = "right";
@@ -270,14 +281,14 @@ export default function QuizPage() {
       ctx.font = `400 ${8.5 * scale}px system-ui, -apple-system, sans-serif`;
       ctx.fillText("UpForge Global Ecosystem", width - 70 * scale, footerY + 38 * scale);
 
-      // 10. Trigger Download
+      // 10. Download
       const imgUri = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = imgUri;
       a.download = `${candidate.replace(/\s+/g, "_")}_UpForge_Certificate.png`;
       a.click();
     } catch (e) {
-      console.error("Certificate download error:", e);
+      console.error("Certificate generation error:", e);
     } finally {
       setIsGeneratingCert(false);
     }
@@ -297,19 +308,19 @@ export default function QuizPage() {
                 </span>
               </div>
               <span className="text-xs font-medium text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
-                Question {currentQuestionIndex + 1} of {questions.length}
+                Question {currentQuestionIndex + 1} of {questions.length || 1}
               </span>
             </div>
 
             {/* Question Body */}
-            {currentQuestion && (
+            {currentQuestion ? (
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 leading-relaxed">
-                  {currentQuestion.question}
+                  {currentQuestion.question || currentQuestion.title}
                 </h2>
 
                 <div className="space-y-3 mb-8">
-                  {currentQuestion.options.map((option, idx) => {
+                  {(currentQuestion.options || []).map((option: string, idx: number) => {
                     const isSelected = selectedAnswers[currentQuestionIndex] === idx;
                     return (
                       <button
@@ -342,10 +353,22 @@ export default function QuizPage() {
                     disabled={selectedAnswers[currentQuestionIndex] === undefined}
                     className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold px-6 py-3 rounded-xl transition-all shadow-md active:scale-95"
                   >
-                    {currentQuestionIndex === questions.length - 1 ? "Submit Assessment" : "Next Question"}
+                    {currentQuestionIndex === questions.length - 1
+                      ? "Submit Assessment"
+                      : "Next Question"}
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-slate-400 mb-4">No questions available in this assessment.</p>
+                <button
+                  onClick={() => setIsCompleted(true)}
+                  className="bg-amber-500 text-slate-950 px-5 py-2.5 rounded-xl font-bold text-sm"
+                >
+                  View Result
+                </button>
               </div>
             )}
           </div>
@@ -361,7 +384,7 @@ export default function QuizPage() {
             </h1>
             <p className="text-sm text-slate-400 mb-6">
               You scored <span className="text-white font-bold">{score}</span> out of{" "}
-              <span className="text-white font-bold">{questions.length}</span>
+              <span className="text-white font-bold">{totalQuestions}</span>
             </p>
 
             {passed ? (
