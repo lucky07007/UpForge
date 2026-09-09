@@ -298,5 +298,364 @@ export const QUIZ_REGISTRY: QuizItem[] = [
         correctIndex: 1
       }
     ]
+  },
+  {
+    id: "career-iq-2026",
+    slug: "career-iq-challenge-2026",
+    title: "UpForge Career IQ Challenge 2026",
+    tagline: "Think like a professional. Make career moves that actually compound.",
+    badge: "Career Benchmark",
+    duration: "3–5 Minutes",
+    image: "https://images.upforge.org/quiz/Upforge%20career-iq-2026.webp",
+    baseParticipants: 16230,
+    metrics: {
+      scenariosCount: "10 MCQs",
+      avgCompletionTime: "3.3 Mins",
+      passingStandard: "Verified (≥ 70%)",
+      credentialTier: "Career Ready"
+    },
+    questions: [
+      {
+        id: 1,
+        question: "You're applying for your first internship and have zero work experience. What should your resume emphasize most?",
+        options: [
+          "Projects, coursework and initiatives that show applied skills",
+          "A long objective statement about your dreams",
+          "Every subject you've ever studied",
+          "Your school's name in bold across the page"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 2,
+        question: "An interviewer asks, 'Tell me about yourself.' What's the smartest way to answer?",
+        options: [
+          "Recite your entire life story chronologically",
+          "Give a short, relevant summary connecting your background to the role",
+          "Ask them to skip the question",
+          "List your hobbies only"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 3,
+        question: "You have two job offers: one with a higher salary but no learning curve, another with a lower salary but strong mentorship and skill growth. Early in your career, what usually matters more?",
+        options: ["Immediate salary only", "Company logo prestige only", "Learning, mentorship and skill compounding", "Office location only"],
+        correctIndex: 2
+      },
+      {
+        id: 4,
+        question: "You want to build a professional network but don't personally know many senior people. What's the smartest first step?",
+        options: [
+          "Wait until someone reaches out to you",
+          "Engage genuinely with people's work and start real conversations",
+          "Mass-message 500 strangers with the same copy-paste text",
+          "Avoid networking until you have a job title"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 5,
+        question: "A recruiter reviews your LinkedIn profile before an interview. Which of these matters most for a strong first impression?",
+        options: [
+          "A profile photo, clear headline and evidence of real work",
+          "Number of connections only",
+          "A generic headline like 'Student'",
+          "A cover photo with a meme"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 6,
+        question: "You've been offered a starting salary lower than the market rate. What's the smartest approach?",
+        options: [
+          "Accept immediately without discussion",
+          "Politely negotiate using market data and your value",
+          "Reject the offer without any conversation",
+          "Complain publicly on social media"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 7,
+        question: "You notice your industry is shifting fast due to new tools and automation. What's the smartest long-term career move?",
+        options: [
+          "Ignore it and hope your role stays the same",
+          "Continuously upskill and adapt to stay relevant",
+          "Switch industries randomly without research",
+          "Wait for your employer to decide for you"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 8,
+        question: "You're choosing between two internships: one at a well-known brand with limited real responsibility, and one at a smaller company where you'll own real projects. What typically builds a stronger portfolio?",
+        options: [
+          "The well-known brand, regardless of the work",
+          "Real ownership and outcomes you can actually show",
+          "Whichever pays for lunch",
+          "Whichever has a nicer office"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 9,
+        question: "During a group project, a teammate isn't contributing. What's the most professional way to handle it?",
+        options: [
+          "Silently do all the work yourself and say nothing",
+          "Publicly call them out in front of others",
+          "Have a direct, respectful conversation and set clear expectations",
+          "Report them without ever speaking to them first"
+        ],
+        correctIndex: 2
+      },
+      {
+        id: 10,
+        question: "You're unsure which career path fits you best. What's the smartest way to figure it out?",
+        options: [
+          "Guess randomly and commit for life",
+          "Try internships, projects and real conversations with professionals to gather evidence",
+          "Pick whatever pays the most without any research",
+          "Avoid making a decision indefinitely"
+        ],
+        correctIndex: 1
+      }
+    ]
+  },
+  {
+    id: "fundraising-iq-2026",
+    slug: "fundraising-iq-challenge-2026",
+    title: "UpForge Fundraising IQ Challenge 2026",
+    tagline: "Think like an investor. Raise capital without giving away the store.",
+    badge: "Investor Benchmark",
+    duration: "3–5 Minutes",
+    image: "https://images.upforge.org/quiz/Upforge%20fundraising-iq-2026.png",
+    baseParticipants: 12870,
+    metrics: {
+      scenariosCount: "10 MCQs",
+      avgCompletionTime: "3.5 Mins",
+      passingStandard: "Verified (≥ 70%)",
+      credentialTier: "Fundraising Pro"
+    },
+    questions: [
+      {
+        id: 1,
+        question: "A founder gives away 40% equity to an early investor for a small cheque. What's the biggest long-term risk?",
+        options: [
+          "The founder loses meaningful control and future negotiating leverage",
+          "There is no risk at all",
+          "The company automatically fails",
+          "The investor must return the equity later"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 2,
+        question: "A company is valued at ₹8 crore before funding and raises ₹2 crore. What is its approximate post-money valuation?",
+        options: ["₹6 crore", "₹8 crore", "₹10 crore", "₹2 crore"],
+        correctIndex: 2
+      },
+      {
+        id: 3,
+        question: "An early-stage startup wants to raise a small amount quickly without fixing a valuation yet. What's a common instrument for this?",
+        options: ["A convertible note or SAFE", "A bank loan", "An IPO", "A franchise agreement"],
+        correctIndex: 0
+      },
+      {
+        id: 4,
+        question: "A founder is preparing a pitch deck for investors. What should it primarily communicate?",
+        options: [
+          "The problem, solution, market size, traction and team",
+          "Only the founder's personal achievements",
+          "A detailed 40-page technical manual",
+          "Just the logo and tagline"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 5,
+        question: "An investor asks to see the startup's cap table. What are they trying to understand?",
+        options: [
+          "Who owns what percentage of the company",
+          "The company's office furniture list",
+          "The founder's personal expenses",
+          "The number of employees on leave"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 6,
+        question: "A startup raises multiple funding rounds over several years, issuing new shares each time. What effect does this typically have on early shareholders?",
+        options: [
+          "Their percentage ownership dilutes unless they invest more",
+          "Their ownership percentage automatically increases",
+          "Nothing changes for anyone",
+          "Only the founder is affected"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 7,
+        question: "Before writing a cheque, a serious investor typically conducts a deep review of the company's financials, legal standing and team. This process is called:",
+        options: ["Due diligence", "Market research", "Product testing", "Customer onboarding"],
+        correctIndex: 0
+      },
+      {
+        id: 8,
+        question: "A founder is choosing between an angel investor and a venture capital fund for a seed round. What's a key practical difference?",
+        options: [
+          "Angels typically write smaller personal cheques; VC funds invest institutional capital, often with more structure",
+          "There is no difference between the two",
+          "Angels only invest in public companies",
+          "VC funds never sign any documents"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 9,
+        question: "An investor offers a high valuation but demands a board seat and strong control clauses. What should a founder evaluate before accepting?",
+        options: [
+          "Only the valuation number",
+          "The valuation together with control terms, board dynamics and long-term fit",
+          "Nothing — always accept the highest number",
+          "Whether the investor has a nice office"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 10,
+        question: "A startup is burning cash fast and has under 4 months of runway left, with a raise not yet closed. What's the smartest immediate move?",
+        options: [
+          "Keep spending at the same pace and hope for the best",
+          "Cut non-essential burn and actively accelerate fundraising or bridge financing conversations",
+          "Shut down immediately without exploring options",
+          "Ignore the runway and launch a large ad campaign"
+        ],
+        correctIndex: 1
+      }
+    ]
+  },
+  {
+    id: "ai-iq-2026",
+    slug: "ai-iq-challenge-2026",
+    title: "UpForge AI & Future Skills IQ Challenge 2026",
+    tagline: "Think like an innovator. Work smarter in the AI-driven era.",
+    badge: "Future Skills Benchmark",
+    duration: "3–5 Minutes",
+    image: "https://images.upforge.org/quiz/ai-iq-2026.webp",
+    baseParticipants: 20340,
+    metrics: {
+      scenariosCount: "10 MCQs",
+      avgCompletionTime: "3.1 Mins",
+      passingStandard: "Verified (≥ 70%)",
+      credentialTier: "AI Ready"
+    },
+    questions: [
+      {
+        id: 1,
+        question: "You give an AI assistant a vague one-line instruction and get a poor result. What's the smartest fix?",
+        options: [
+          "Give up on using AI tools entirely",
+          "Provide clearer context, specific goals and examples in your prompt",
+          "Repeat the exact same vague prompt again",
+          "Assume the tool is broken"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 2,
+        question: "A company uses an algorithm to automatically approve or reject loan applications. What's a critical factor it must monitor?",
+        options: [
+          "Whether the algorithm shows bias against certain groups",
+          "The color of the loan application form",
+          "How many fonts are used in the UI",
+          "The office's Wi-Fi speed"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 3,
+        question: "A student uses an AI tool to summarize research papers before writing an assignment. What's the smartest practice?",
+        options: [
+          "Copy the AI output directly without reading the source",
+          "Use the summary as a starting point, then verify facts and add original analysis",
+          "Avoid reading anything the AI produces",
+          "Submit the AI's raw output as final work"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 4,
+        question: "A business wants to automate repetitive customer support queries while keeping complex issues handled by humans. What approach makes most sense?",
+        options: [
+          "Automate everything, including sensitive complaints",
+          "Use automation for routine queries and route complex cases to humans",
+          "Avoid any automation entirely",
+          "Replace all support staff immediately with no fallback"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 5,
+        question: "Which of these best describes 'machine learning'?",
+        options: [
+          "Software that follows only fixed, hardcoded rules forever",
+          "Systems that improve their performance by learning patterns from data",
+          "A type of physical robot hardware",
+          "A method for formatting spreadsheets"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 6,
+        question: "A team wants to use AI to speed up work but is worried about sharing confidential company data. What's the smartest approach?",
+        options: [
+          "Paste all confidential data into any public tool without checking",
+          "Review data privacy policies and avoid sharing sensitive information with unvetted tools",
+          "Avoid using AI tools forever out of fear",
+          "Share passwords with the AI tool for convenience"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 7,
+        question: "An AI writing tool produces a confident-sounding but factually incorrect answer. This is commonly known as:",
+        options: ["A hallucination", "A firewall", "A cookie", "A cache hit"],
+        correctIndex: 0
+      },
+      {
+        id: 8,
+        question: "A founder wants their small team to use AI tools effectively across the company. What's the smartest rollout strategy?",
+        options: [
+          "Force adoption overnight with zero training",
+          "Introduce tools gradually with clear use-cases and basic training",
+          "Ban all AI tools indefinitely",
+          "Let only one person use it and tell no one else"
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 9,
+        question: "Which skill becomes more valuable, not less, as AI tools automate routine tasks?",
+        options: [
+          "Critical thinking and judgment on what to build and why",
+          "Manually doing repetitive data entry",
+          "Avoiding all new technology",
+          "Memorizing information available with one search"
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 10,
+        question: "You're deciding whether to learn a new AI-related skill this year. What's the smartest way to evaluate it?",
+        options: [
+          "Ignore it since your current skills feel sufficient forever",
+          "Check how the skill compounds with your existing strengths and industry direction",
+          "Learn it only if a friend randomly mentions it",
+          "Assume all new skills are equally important with no prioritization"
+        ],
+        correctIndex: 1
+      }
+    ]
   }
 ];
