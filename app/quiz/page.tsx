@@ -245,6 +245,44 @@ export default function UpForgeQuizPage() {
     return lines + 1;
   };
 
+  // Small decorative corner flourish (double line + diamond) drawn at each of the four
+  // inner-border corners so the frame doesn't look empty. Takes ctx as an explicit
+  // parameter (rather than closing over an outer nullable variable) so TypeScript can
+  // verify it without needing extra null-guards at every call site.
+  const drawCornerOrnament = (
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    signX: number,
+    signY: number
+  ) => {
+    ctx.strokeStyle = "#0056D2";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x, y + 70 * signY);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x + 70 * signX, y);
+    ctx.stroke();
+
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y + 40 * signY);
+    ctx.lineTo(x + 10 * signX, y + 40 * signY);
+    ctx.lineTo(x + 10 * signX, y + 10 * signY);
+    ctx.lineTo(x + 40 * signX, y + 10 * signY);
+    ctx.lineTo(x + 40 * signX, y);
+    ctx.stroke();
+
+    ctx.fillStyle = "#0056D2";
+    ctx.beginPath();
+    ctx.moveTo(x + 26 * signX, y + 12 * signY);
+    ctx.lineTo(x + 36 * signX, y + 2 * signY);
+    ctx.lineTo(x + 46 * signX, y + 12 * signY);
+    ctx.lineTo(x + 36 * signX, y + 22 * signY);
+    ctx.closePath();
+    ctx.fill();
+  };
+
   // Professional White & Blue Certificate Engine (3500 x 2475 — Coursera/Google-style credential)
   // Draws the full certificate onto the hidden canvas, then invokes onReady(canvas)
   // so the same render can be either downloaded or shared natively.
@@ -289,6 +327,12 @@ export default function UpForgeQuizPage() {
     ctx.fillStyle = BLUE;
     ctx.fillRect(80, 80, W - 160, 8);
     ctx.fillRect(80, H - 88, W - 160, 8);
+
+    // Corner flourishes so the frame corners don't sit empty
+    drawCornerOrnament(ctx, 110, 110, 1, 1);
+    drawCornerOrnament(ctx, W - 110, 110, -1, 1);
+    drawCornerOrnament(ctx, 110, H - 110, 1, -1);
+    drawCornerOrnament(ctx, W - 110, H - 110, -1, -1);
 
     // ---- 3. Header band: light blue wash with logo + wordmark ----
     ctx.fillStyle = BLUE_TINT;
@@ -347,69 +391,86 @@ export default function UpForgeQuizPage() {
 
       ctx.textAlign = "left";
       ctx.fillStyle = BLUE_DARK;
-      ctx.font = "800 52px system-ui, -apple-system, sans-serif";
-      ctx.fillText("UpForge", 350, 245);
+      ctx.font = "800 58px system-ui, -apple-system, sans-serif";
+      ctx.fillText("UpForge", 350, 240);
 
       ctx.fillStyle = SUB;
-      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
+      ctx.font = "400 26px system-ui, -apple-system, sans-serif";
       ctx.fillText("National Startup Readiness Platform  •  www.upforge.org", 350, 285);
 
       ctx.textAlign = "right";
       ctx.fillStyle = BLUE_DARK;
-      ctx.font = "700 26px system-ui, -apple-system, sans-serif";
-      ctx.fillText("VERIFIED CREDENTIAL", 3150, 240);
+      ctx.font = "700 30px system-ui, -apple-system, sans-serif";
+      ctx.fillText("VERIFIED CREDENTIAL", 3150, 235);
       ctx.fillStyle = SUB;
-      ctx.font = "400 22px system-ui, -apple-system, sans-serif";
+      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
       ctx.fillText(`Certificate ID: ${certId}`, 3150, 275);
 
-      // ---- 4. Title block ----
+      // ---- 4. Title block (auto-shrinks so long titles never overflow the frame) ----
       ctx.textAlign = "center";
       ctx.fillStyle = NAVY;
-      ctx.font = "800 92px system-ui, -apple-system, sans-serif";
-      ctx.fillText("Certificate of Completion", 1750, 500);
+      const titleText = "Certificate of Completion";
+      let titleSize = 104;
+      ctx.font = `800 ${titleSize}px system-ui, -apple-system, sans-serif`;
+      while (titleSize > 60 && ctx.measureText(titleText).width > 2900) {
+        titleSize -= 2;
+        ctx.font = `800 ${titleSize}px system-ui, -apple-system, sans-serif`;
+      }
+      ctx.fillText(titleText, 1750, 520);
 
       ctx.strokeStyle = BLUE;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(1450, 545);
-      ctx.lineTo(2050, 545);
+      ctx.moveTo(1400, 572);
+      ctx.lineTo(2100, 572);
       ctx.stroke();
+      ctx.fillStyle = BLUE;
+      ctx.beginPath();
+      ctx.arc(1750, 572, 8, 0, Math.PI * 2);
+      ctx.fill();
 
       // ---- 5. Presentation line ----
       ctx.fillStyle = SUB;
-      ctx.font = "italic 400 34px Georgia, serif";
-      ctx.fillText("This is to certify that", 1750, 650);
+      ctx.font = "italic 400 38px Georgia, serif";
+      ctx.fillText("This is to certify that", 1750, 670);
 
-      // ---- 6. Name ----
+      // ---- 6. Name (auto-shrinks to fit long names, underline matches its width) ----
       ctx.fillStyle = NAVY;
-      ctx.font = "800 86px system-ui, -apple-system, sans-serif";
-      ctx.fillText(displayName, 1750, 765);
+      let nameSize = 100;
+      ctx.font = `800 ${nameSize}px system-ui, -apple-system, sans-serif`;
+      while (nameSize > 56 && ctx.measureText(displayName).width > 2700) {
+        nameSize -= 2;
+        ctx.font = `800 ${nameSize}px system-ui, -apple-system, sans-serif`;
+      }
+      ctx.fillText(displayName, 1750, 810);
+      const nameWidth = ctx.measureText(displayName).width;
+      const underlineHalf = Math.min(Math.max(nameWidth / 2 + 100, 450), 1300);
 
       ctx.strokeStyle = BLUE;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(1100, 800);
-      ctx.lineTo(2400, 800);
+      ctx.moveTo(1750 - underlineHalf, 858);
+      ctx.lineTo(1750 + underlineHalf, 858);
       ctx.stroke();
 
       // ---- 7. Qualification paragraph (what the student demonstrated) ----
       ctx.fillStyle = INK;
-      ctx.font = "400 34px system-ui, -apple-system, sans-serif";
+      ctx.font = "400 40px system-ui, -apple-system, sans-serif";
       const paragraph =
         `has successfully completed the ${quizTitle}, a scenario-based assessment ` +
         `administered by UpForge, and has demonstrated verified applied knowledge, sound judgment ` +
         `and practical decision-making ability across real-world, industry-relevant scenarios.`;
-      wrapCenteredText(ctx, paragraph, 1750, 890, 2500, 52);
+      wrapCenteredText(ctx, paragraph, 1750, 960, 2700, 60);
 
       // ---- 8. Skill tags (competencies demonstrated) ----
-      ctx.font = "700 28px system-ui, -apple-system, sans-serif";
-      const tagPaddingX = 34;
-      const tagHeight = 66;
-      const tagGap = 24;
+      ctx.font = "700 32px system-ui, -apple-system, sans-serif";
+      const tagPaddingX = 38;
+      const tagHeight = 76;
+      const tagGap = 26;
       const tagWidths = skills.map((s) => ctx.measureText(s).width + tagPaddingX * 2);
       const totalTagsWidth = tagWidths.reduce((a, b) => a + b, 0) + tagGap * (skills.length - 1);
       let tagX = 1750 - totalTagsWidth / 2;
-      const tagY = 1080;
+      const tagY = 1180;
       skills.forEach((skill, i) => {
         const tw = tagWidths[i];
         ctx.fillStyle = BLUE_TINT;
@@ -427,29 +488,97 @@ export default function UpForgeQuizPage() {
         ctx.stroke();
         ctx.fillStyle = BLUE_DARK;
         ctx.textAlign = "center";
-        ctx.fillText(skill, tagX + tw / 2, tagY + tagHeight / 2 + 10);
+        ctx.fillText(skill, tagX + tw / 2, tagY + tagHeight / 2 + 11);
         tagX += tw + tagGap;
       });
 
-      // ---- 9. Assessment details strip (format & standard — no scores) ----
-      ctx.textAlign = "center";
-      ctx.fillStyle = SUB;
-      ctx.font = "400 28px system-ui, -apple-system, sans-serif";
-      ctx.fillText(
-        `Assessment Format: ${activeQuiz.metrics.scenariosCount}   |   Duration: ${activeQuiz.duration}   |   Credential Tier: ${activeQuiz.metrics.credentialTier}`,
-        1750,
-        1230
-      );
-
-      // ---- 10. Verified badge (simple, professional — no score) ----
-      const badgeX = 1750, badgeY = 1360, badgeR = 70;
+      // ---- 9. Assessment details panel (bordered stat bar with 3 columns — no scores) ----
+      const panelX = 550, panelY = 1330, panelW = 2400, panelH = 150;
+      ctx.fillStyle = BLUE_TINT;
+      ctx.strokeStyle = BLUE;
+      ctx.lineWidth = 2;
+      const pr = 20;
       ctx.beginPath();
-      ctx.arc(badgeX, badgeY, badgeR, 0, Math.PI * 2);
+      ctx.moveTo(panelX + pr, panelY);
+      ctx.arcTo(panelX + panelW, panelY, panelX + panelW, panelY + panelH, pr);
+      ctx.arcTo(panelX + panelW, panelY + panelH, panelX, panelY + panelH, pr);
+      ctx.arcTo(panelX, panelY + panelH, panelX, panelY, pr);
+      ctx.arcTo(panelX, panelY, panelX + panelW, panelY, pr);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      const stats: [string, string][] = [
+        ["FORMAT", String(activeQuiz.metrics.scenariosCount)],
+        ["DURATION", String(activeQuiz.duration)],
+        ["CREDENTIAL TIER", String(activeQuiz.metrics.credentialTier)]
+      ];
+      const colW = panelW / stats.length;
+      stats.forEach(([label, value], i) => {
+        const colCenter = panelX + colW * i + colW / 2;
+        ctx.textAlign = "center";
+        ctx.fillStyle = SUB;
+        ctx.font = "700 24px system-ui, -apple-system, sans-serif";
+        ctx.fillText(label, colCenter, panelY + 54);
+        ctx.fillStyle = BLUE_DARK;
+        ctx.font = "800 44px system-ui, -apple-system, sans-serif";
+        ctx.fillText(value, colCenter, panelY + 108);
+        if (i > 0) {
+          ctx.strokeStyle = BLUE;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(panelX + colW * i, panelY + 24);
+          ctx.lineTo(panelX + colW * i, panelY + panelH - 24);
+          ctx.stroke();
+        }
+      });
+
+      // ---- 10. Verified seal (ribbon medallion — no score) ----
+      const badgeX = 1750, badgeY = 1650, outerR = 115;
+
+      // Ribbon tails behind the medallion
+      ctx.fillStyle = BLUE_DARK;
+      ctx.beginPath();
+      ctx.moveTo(badgeX - 75, badgeY + 65);
+      ctx.lineTo(badgeX - 48, badgeY + 235);
+      ctx.lineTo(badgeX - 14, badgeY + 168);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(badgeX + 75, badgeY + 65);
+      ctx.lineTo(badgeX + 48, badgeY + 235);
+      ctx.lineTo(badgeX + 14, badgeY + 168);
+      ctx.closePath();
+      ctx.fill();
+
+      // Scalloped outer edge
+      ctx.fillStyle = BLUE;
+      const scallops = 22;
+      for (let i = 0; i < scallops; i++) {
+        const angle = (i / scallops) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(badgeX + Math.cos(angle) * outerR, badgeY + Math.sin(angle) * outerR, 15, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Inner disc + checkmark
+      ctx.beginPath();
+      ctx.arc(badgeX, badgeY, outerR - 22, 0, Math.PI * 2);
       ctx.fillStyle = BLUE;
       ctx.fill();
-      ctx.fillStyle = WHITE;
-      ctx.font = "800 60px system-ui, -apple-system, sans-serif";
-      ctx.fillText("✓", badgeX, badgeY + 22);
+      ctx.strokeStyle = WHITE;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+
+      ctx.strokeStyle = WHITE;
+      ctx.lineWidth = 12;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(badgeX - 40, badgeY);
+      ctx.lineTo(badgeX - 12, badgeY + 32);
+      ctx.lineTo(badgeX + 45, badgeY - 38);
+      ctx.stroke();
 
       // ---- 11. Date + Signature ----
       const today = new Date();
@@ -457,43 +586,43 @@ export default function UpForgeQuizPage() {
 
       ctx.textAlign = "left";
       ctx.fillStyle = SUB;
-      ctx.font = "700 24px system-ui, -apple-system, sans-serif";
-      ctx.fillText("DATE OF ISSUE", 400, 1780);
+      ctx.font = "700 26px system-ui, -apple-system, sans-serif";
+      ctx.fillText("DATE OF ISSUE", 350, 2010);
       ctx.fillStyle = INK;
-      ctx.font = "700 34px system-ui, -apple-system, sans-serif";
-      ctx.fillText(formattedDate, 400, 1828);
+      ctx.font = "700 38px system-ui, -apple-system, sans-serif";
+      ctx.fillText(formattedDate, 350, 2062);
       ctx.strokeStyle = LINE;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(400, 1850);
-      ctx.lineTo(850, 1850);
+      ctx.moveTo(350, 2088);
+      ctx.lineTo(950, 2088);
       ctx.stroke();
 
       ctx.textAlign = "right";
       ctx.fillStyle = NAVY;
-      ctx.font = "italic 700 40px Georgia, serif";
-      ctx.fillText("UpForge Certification Board", 3100, 1828);
+      ctx.font = "italic 700 44px Georgia, serif";
+      ctx.fillText("UpForge Certification Board", 3150, 2062);
       ctx.strokeStyle = LINE;
       ctx.beginPath();
-      ctx.moveTo(2650, 1850);
-      ctx.lineTo(3100, 1850);
+      ctx.moveTo(2550, 2088);
+      ctx.lineTo(3150, 2088);
       ctx.stroke();
       ctx.fillStyle = SUB;
-      ctx.font = "400 22px system-ui, -apple-system, sans-serif";
-      ctx.fillText("Authorized Signatory", 3100, 1885);
+      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
+      ctx.fillText("Authorized Signatory", 3150, 2126);
 
       // ---- 12. Footer ----
       ctx.textAlign = "center";
       ctx.fillStyle = SUB;
-      ctx.font = "400 25px system-ui, -apple-system, sans-serif";
-      ctx.fillText("This credential can be verified at", 1750, 2020);
+      ctx.font = "400 27px system-ui, -apple-system, sans-serif";
+      ctx.fillText("This credential can be verified at", 1750, 2210);
       ctx.fillStyle = BLUE;
-      ctx.font = "700 30px system-ui, -apple-system, sans-serif";
-      ctx.fillText("www.upforge.org", 1750, 2060);
+      ctx.font = "700 32px system-ui, -apple-system, sans-serif";
+      ctx.fillText("www.upforge.org", 1750, 2255);
 
       ctx.fillStyle = SUB;
-      ctx.font = "400 22px system-ui, -apple-system, sans-serif";
-      ctx.fillText("Issued by UpForge — the National Startup Readiness Platform", 1750, 2110);
+      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
+      ctx.fillText("Issued by UpForge — the National Startup Readiness Platform", 1750, 2300);
 
       // ---- 13. Subtle diagonal watermark ----
       ctx.save();
