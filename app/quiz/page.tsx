@@ -295,19 +295,13 @@ export default function UpForgeQuizPage() {
     // Logo is mandatory — always loaded from the local public asset (/logo.jpg)
     const logoImg = new window.Image();
     let fallbackTried = false;
-    logoImg.onerror = () => {
-      if (!fallbackTried) {
-        fallbackTried = true;
-        logoImg.crossOrigin = "anonymous";
-        logoImg.src = "https://images.upforge.org/logo.jpg";
-      } else {
-        drawBody();
-      }
-    };
-    logoImg.onload = drawBody;
-    logoImg.src = "/logo.jpg";
 
-    const drawBody = () => {
+    // NOTE: `function drawBody() {...}` is used here (instead of `const drawBody = () => {...}`)
+    // specifically because function declarations are hoisted. logoImg.onload/onerror below
+    // reference drawBody before its definition further down this scope, which is fine at
+    // runtime (callbacks fire later) but TypeScript's block-scope analysis flags a `const`
+    // used-before-declaration as an error. Hoisting drawBody avoids that build failure.
+    function drawBody() {
       // Logo (rounded square, white card so it reads clean on the blue tint)
       const logoBoxX = 190, logoBoxY = 175, logoBoxSize = 120;
       ctx.fillStyle = WHITE;
@@ -505,7 +499,19 @@ export default function UpForgeQuizPage() {
       ctx.restore();
 
       onReady(canvas);
+    }
+
+    logoImg.onerror = () => {
+      if (!fallbackTried) {
+        fallbackTried = true;
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = "https://images.upforge.org/logo.jpg";
+      } else {
+        drawBody();
+      }
     };
+    logoImg.onload = drawBody;
+    logoImg.src = "/logo.jpg";
   };
 
   const handleDownloadExecutiveCert = () => {
