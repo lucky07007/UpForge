@@ -1,3 +1,5 @@
+//app/quiz/page.tsx
+
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
@@ -302,6 +304,12 @@ export default function UpForgeQuizPage() {
     // runtime (callbacks fire later) but TypeScript's block-scope analysis flags a `const`
     // used-before-declaration as an error. Hoisting drawBody avoids that build failure.
     function drawBody() {
+      // TypeScript narrowing from the outer `if (!ctx) return;` doesn't carry into this
+      // nested function scope, so we re-assert it here. ctx is guaranteed non-null by the
+      // time this runs (it only fires from logoImg.onload/onerror after renderCertificate's
+      // own early-return check already passed).
+      if (!ctx) return;
+
       // Logo (rounded square, white card so it reads clean on the blue tint)
       const logoBoxX = 190, logoBoxY = 175, logoBoxSize = 120;
       ctx.fillStyle = WHITE;
