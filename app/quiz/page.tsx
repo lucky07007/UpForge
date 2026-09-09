@@ -41,7 +41,6 @@ export default function UpForgeQuizPage() {
     const loadedComments: Record<string, CommentItem[]> = {};
 
     QUIZ_REGISTRY.forEach((item) => {
-      // 12.8% of participants as base upvotes
       const baseUpvote = Math.round(item.baseParticipants * 0.128);
       const savedUpvote = localStorage.getItem(`upf_upvotes_${item.id}`);
       const userVoted = localStorage.getItem(`upf_voted_${item.id}`) === "true";
@@ -178,131 +177,196 @@ export default function UpForgeQuizPage() {
     }
   };
 
-  // Professional Certificate Engine (Standard Course Certificate Size 3300 x 2550)
+  // Premium Professional Certificate Engine (Standard Size 3500 x 2500)
   const handleDownloadExecutiveCert = () => {
     const canvas = certCanvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Standard Course Certificate Size (Coursera/Udemy style landscape)
-    canvas.width = 3300;
-    canvas.height = 2550;
+    canvas.width = 3500;
+    canvas.height = 2500;
 
-    // 1. Clean White Base
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, 3300, 2550);
+    // 1. Premium White Base with subtle gradient
+    const baseGradient = ctx.createLinearGradient(0, 0, 0, 2500);
+    baseGradient.addColorStop(0, "#FFFFFF");
+    baseGradient.addColorStop(0.5, "#FEFEFE");
+    baseGradient.addColorStop(1, "#FDFDFD");
+    ctx.fillStyle = baseGradient;
+    ctx.fillRect(0, 0, 3500, 2500);
 
-    // 2. Professional Blue Header Bar
-    const headerGradient = ctx.createLinearGradient(0, 0, 3300, 0);
+    // 2. Elegant Double Border Design
+    // Outer border
+    ctx.strokeStyle = "#1E3A8A";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(60, 60, 3380, 2380);
+
+    // Inner border
+    ctx.strokeStyle = "#D1D5DB";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(100, 100, 3300, 2300);
+
+    // Corner decorations
+    const drawCorner = (x: number, y: number, rotation: number) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+      ctx.strokeStyle = "#1E3A8A";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(120, 0);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, 120);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    drawCorner(100, 100, 0);
+    drawCorner(3400, 100, Math.PI / 2);
+    drawCorner(3400, 2400, Math.PI);
+    drawCorner(100, 2400, -Math.PI / 2);
+
+    // 3. Professional Header Section
+    // Header background
+    const headerGradient = ctx.createLinearGradient(0, 140, 3500, 140);
     headerGradient.addColorStop(0, "#1E3A8A");
     headerGradient.addColorStop(0.5, "#2563EB");
     headerGradient.addColorStop(1, "#1E3A8A");
     ctx.fillStyle = headerGradient;
-    ctx.fillRect(0, 0, 3300, 180);
+    ctx.fillRect(140, 140, 3220, 160);
 
-    // Header decorative line
-    ctx.fillStyle = "#60A5FA";
-    ctx.fillRect(0, 180, 3300, 8);
-
-    // 3. Logo and Brand Area
+    // Logo
     const logoImg = new window.Image();
     logoImg.crossOrigin = "anonymous";
     logoImg.src = "https://images.upforge.org/logo.jpg";
 
     const drawCertificate = () => {
-      // Logo in top left
+      // Draw Logo
       try {
-        ctx.drawImage(logoImg, 120, 25, 130, 130);
+        ctx.drawImage(logoImg, 200, 170, 100, 100);
       } catch {
-        // Fallback if logo fails to load
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillRect(120, 25, 130, 130);
-        ctx.fillStyle = "#2563EB";
-        ctx.font = "bold 60px system-ui, -apple-system, sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("U", 185, 110);
+        ctx.fillRect(200, 170, 100, 100);
       }
 
-      // Brand Name next to logo
+      // Institution Name
       ctx.textAlign = "left";
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "700 48px system-ui, -apple-system, sans-serif";
-      ctx.fillText("UPFORGE", 280, 85);
-      
-      ctx.fillStyle = "#E0E7FF";
-      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
-      ctx.fillText("Startup Readiness Platform", 280, 130);
+      ctx.font = "700 52px system-ui, -apple-system, sans-serif";
+      ctx.fillText("UPFORGE", 340, 230);
 
-      // Right side - Certificate Number
+      ctx.fillStyle = "#E0E7FF";
+      ctx.font = "400 22px system-ui, -apple-system, sans-serif";
+      ctx.fillText("National Startup Readiness Platform", 340, 270);
+
+      // Certificate ID on right
       const certId = "UPF-" + Math.random().toString(36).substring(2, 10).toUpperCase();
       ctx.textAlign = "right";
       ctx.fillStyle = "#E0E7FF";
-      ctx.font = "400 28px system-ui, -apple-system, sans-serif";
-      ctx.fillText(`Certificate No: ${certId}`, 3180, 80);
+      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
+      ctx.fillText(`Certificate ID: ${certId}`, 3200, 230);
 
-      // 4. Main Title
+      // 4. Main Content Area
       ctx.textAlign = "center";
-      ctx.fillStyle = "#1E3A8A";
-      ctx.font = "300 100px system-ui, -apple-system, sans-serif";
-      ctx.letterSpacing = "8px";
-      ctx.fillText("CERTIFICATE", 1650, 450);
 
-      ctx.fillStyle = "#64748B";
-      ctx.font = "400 36px system-ui, -apple-system, sans-serif";
-      ctx.letterSpacing = "4px";
-      ctx.fillText("OF COMPLETION", 1650, 530);
+      // "CERTIFICATE" Title
+      ctx.fillStyle = "#1E3A8A";
+      ctx.font = "700 110px system-ui, -apple-system, sans-serif";
+      ctx.letterSpacing = "15px";
+      ctx.fillText("CERTIFICATE", 1750, 520);
+
+      ctx.fillStyle = "#6B7280";
+      ctx.font = "400 38px system-ui, -apple-system, sans-serif";
+      ctx.letterSpacing = "8px";
+      ctx.fillText("OF ACHIEVEMENT", 1750, 590);
+
+      // Decorative divider
+      ctx.strokeStyle = "#1E3A8A";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(1300, 630);
+      ctx.lineTo(2200, 630);
+      ctx.stroke();
+
+      // Diamond decoration
+      ctx.fillStyle = "#1E3A8A";
+      ctx.save();
+      ctx.translate(1750, 630);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillRect(-10, -10, 20, 20);
+      ctx.restore();
 
       // 5. Presentation Text
-      ctx.fillStyle = "#64748B";
-      ctx.font = "400 32px Georgia, serif";
-      ctx.letterSpacing = "0px";
-      ctx.fillText("This certificate is proudly presented to", 1650, 680);
+      ctx.fillStyle = "#4B5563";
+      ctx.font = "italic 400 36px Georgia, serif";
+      ctx.letterSpacing = "1px";
+      ctx.fillText("This prestigious certificate is proudly presented to", 1750, 760);
 
-      // 6. Student Name
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "700 76px system-ui, -apple-system, sans-serif";
-      ctx.letterSpacing = "0px";
-      ctx.fillText(fullName.trim() || "Distinguished Founder", 1650, 820);
+      // 6. Student Name in Large Bold
+      ctx.fillStyle = "#111827";
+      ctx.font = "700 85px system-ui, -apple-system, sans-serif";
+      ctx.letterSpacing = "2px";
+      ctx.fillText(fullName.trim() || "Distinguished Founder", 1750, 920);
 
-      // Elegant line under name
-      ctx.strokeStyle = "#CBD5E1";
-      ctx.lineWidth = 2;
+      // Gold underline
+      const nameUnderline = ctx.createLinearGradient(0, 0, 3500, 0);
+      nameUnderline.addColorStop(0, "#1E3A8A");
+      nameUnderline.addColorStop(0.5, "#60A5FA");
+      nameUnderline.addColorStop(1, "#1E3A8A");
+      ctx.strokeStyle = nameUnderline;
+      ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.moveTo(900, 870);
-      ctx.lineTo(2400, 870);
+      ctx.moveTo(1100, 960);
+      ctx.lineTo(2400, 960);
       ctx.stroke();
 
       // 7. Achievement Statement
-      ctx.fillStyle = "#475569";
+      ctx.fillStyle = "#4B5563";
       ctx.font = "400 32px system-ui, -apple-system, sans-serif";
       ctx.letterSpacing = "0px";
-      ctx.fillText("has successfully completed the assessment in", 1650, 980);
+      ctx.fillText("for demonstrating exceptional knowledge, strategic thinking, and practical", 1750, 1060);
+      
+      ctx.fillText("understanding in the domain of", 1750, 1120);
 
       // 8. Course Name
       ctx.fillStyle = "#2563EB";
-      ctx.font = "700 52px system-ui, -apple-system, sans-serif";
-      ctx.fillText(activeQuiz.title.split("|")[0].trim(), 1650, 1090);
+      ctx.font = "700 48px system-ui, -apple-system, sans-serif";
+      ctx.letterSpacing = "0px";
+      ctx.fillText(activeQuiz.title.split("|")[0].trim(), 1750, 1220);
 
-      // 9. Simple Achievement Badge
-      const accuracyPct = Math.round((score / activeQuiz.questions.length) * 100);
-      
-      // Achievement Badge
-      ctx.fillStyle = "#F0F9FF";
-      ctx.fillRect(1150, 1160, 1000, 180);
-      ctx.strokeStyle = "#BAE6FD";
+      // 9. Achievement Details Box
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fillRect(950, 1280, 1600, 350);
+      ctx.strokeStyle = "#E5E7EB";
       ctx.lineWidth = 2;
-      ctx.strokeRect(1150, 1160, 1000, 180);
+      ctx.strokeRect(950, 1280, 1600, 350);
 
-      ctx.fillStyle = "#0284C7";
-      ctx.font = "700 40px system-ui, -apple-system, sans-serif";
-      ctx.fillText("✓ Successfully Completed", 1650, 1260);
+      // Achievement Badge
+      ctx.fillStyle = "#10B981";
+      ctx.beginPath();
+      ctx.arc(1200, 1455, 60, 0, Math.PI * 2);
+      ctx.fill();
 
-      ctx.fillStyle = "#475569";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "700 50px system-ui, -apple-system, sans-serif";
+      ctx.fillText("✓", 1200, 1470);
+
+      // Text in box
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#111827";
+      ctx.font = "700 36px system-ui, -apple-system, sans-serif";
+      ctx.fillText("Successfully Completed", 1320, 1420);
+
+      ctx.fillStyle = "#6B7280";
       ctx.font = "400 28px system-ui, -apple-system, sans-serif";
-      ctx.fillText(`${activeQuiz.metrics.scenariosCount} • ${activeQuiz.duration}`, 1650, 1320);
+      ctx.fillText(`Assessment Format: ${activeQuiz.metrics.scenariosCount}`, 1320, 1480);
 
-      // 10. Date and Signature Section
+      ctx.fillText(`Duration: ${activeQuiz.duration}`, 1320, 1530);
+
+      ctx.fillText(`Standard: ${activeQuiz.metrics.passingStandard}`, 1320, 1580);
+
+      // 10. Signature Section
       const today = new Date();
       const formattedDate = today.toLocaleDateString("en-US", {
         year: "numeric",
@@ -310,55 +374,64 @@ export default function UpForgeQuizPage() {
         day: "numeric"
       });
 
-      // Date - Left
+      // Date
       ctx.textAlign = "left";
-      ctx.fillStyle = "#64748B";
-      ctx.font = "400 24px system-ui, -apple-system, sans-serif";
-      ctx.fillText("DATE OF ISSUE", 350, 1650);
-      
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "500 32px system-ui, -apple-system, sans-serif";
-      ctx.fillText(formattedDate, 350, 1710);
+      ctx.fillStyle = "#6B7280";
+      ctx.font = "400 26px system-ui, -apple-system, sans-serif";
+      ctx.fillText("DATE OF ISSUE", 400, 1850);
 
-      // Signature - Right
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "italic 40px 'Brush Script MT', cursive, Georgia";
-      ctx.fillText("UpForge Team", 2950, 1680);
+      ctx.fillStyle = "#111827";
+      ctx.font = "600 34px system-ui, -apple-system, sans-serif";
+      ctx.fillText(formattedDate, 400, 1920);
 
-      ctx.strokeStyle = "#CBD5E1";
+      // Date underline
+      ctx.strokeStyle = "#D1D5DB";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(2600, 1720);
-      ctx.lineTo(2950, 1720);
+      ctx.moveTo(400, 1940);
+      ctx.lineTo(800, 1940);
       ctx.stroke();
 
-      ctx.fillStyle = "#64748B";
+      // Signature
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#111827";
+      ctx.font = "italic 44px 'Brush Script MT', cursive, Georgia";
+      ctx.fillText("UpForge Certification Board", 3100, 1880);
+
+      // Signature underline
+      ctx.strokeStyle = "#D1D5DB";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(2700, 1920);
+      ctx.lineTo(3100, 1920);
+      ctx.stroke();
+
+      ctx.fillStyle = "#6B7280";
       ctx.font = "400 24px system-ui, -apple-system, sans-serif";
-      ctx.fillText("Startup Education Board", 2950, 1770);
+      ctx.fillText("Authorized Signatory", 3100, 1970);
 
-      // 11. Bottom Area
+      // 11. Footer Section
       ctx.textAlign = "center";
-      
-      // Bottom line
+
+      // Footer line
       ctx.fillStyle = "#1E3A8A";
-      ctx.fillRect(0, 2250, 3300, 120);
+      ctx.fillRect(140, 2200, 3220, 5);
 
-      // Footer text in blue bar
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = "500 32px system-ui, -apple-system, sans-serif";
-      ctx.fillText("Building India's Startup Ecosystem", 1650, 2320);
+      ctx.fillStyle = "#4B5563";
+      ctx.font = "400 26px system-ui, -apple-system, sans-serif";
+      ctx.fillText("This certificate verifies the successful completion of an UpForge assessment", 1750, 2290);
 
-      // Website below
+      ctx.fillText("and demonstrates commitment to professional development in entrepreneurship", 1750, 2330);
+
       ctx.fillStyle = "#2563EB";
-      ctx.font = "500 28px system-ui, -apple-system, sans-serif";
-      ctx.fillText("www.upforge.org", 1650, 2430);
+      ctx.font = "600 30px system-ui, -apple-system, sans-serif";
+      ctx.fillText("www.upforge.org", 1750, 2400);
 
       // 12. Subtle Watermark
-      ctx.globalAlpha = 0.02;
-      ctx.fillStyle = "#2563EB";
-      ctx.font = "900 300px system-ui, -apple-system, sans-serif";
-      ctx.fillText("UPFORGE", 1650, 1500);
+      ctx.globalAlpha = 0.015;
+      ctx.fillStyle = "#1E3A8A";
+      ctx.font = "900 500px system-ui, -apple-system, sans-serif";
+      ctx.fillText("UPFORGE", 1750, 1500);
       ctx.globalAlpha = 1;
 
       // Save Certificate
@@ -378,9 +451,7 @@ export default function UpForgeQuizPage() {
       {/* Canvas for Certificate PNG */}
       <canvas ref={certCanvasRef} className="hidden" />
 
-      {/* ========================================================================= */}
       {/* VIEW 1: OVERVIEW DIRECTORY */}
-      {/* ========================================================================= */}
       {view === "OVERVIEW" && (
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
@@ -400,7 +471,6 @@ export default function UpForgeQuizPage() {
             {QUIZ_REGISTRY.map((quiz) => {
               const quizUpvotes = upvotes[quiz.id] || Math.round(quiz.baseParticipants * 0.128);
               const isVoted = hasVoted[quiz.id];
-              // Exact 22% to 28% discussions ratio based on upvotes
               const totalDiscussions = Math.round(quizUpvotes * 0.24) + (userComments[quiz.id]?.length || 0);
 
               return (
@@ -498,9 +568,7 @@ export default function UpForgeQuizPage() {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* VIEW 2: FULL-PAGE CHALLENGE BRIEFING & DISCUSSIONS (NO POPUPS) */}
-      {/* ========================================================================= */}
+      {/* VIEW 2: FULL-PAGE CHALLENGE BRIEFING & DISCUSSIONS */}
       {view === "CHALLENGE_DETAIL" && (
         <div className="w-full">
           <div className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#111622]/80 backdrop-blur-md sticky top-0 z-30">
@@ -526,7 +594,7 @@ export default function UpForgeQuizPage() {
 
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
             <div className="grid lg:grid-cols-3 gap-10">
-              {/* Left Column: Briefing & High-Signal Comments */}
+              {/* Left Column */}
               <div className="lg:col-span-2 space-y-10">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold mb-3">
@@ -581,7 +649,7 @@ export default function UpForgeQuizPage() {
                   </div>
                 </div>
 
-                {/* Discussion Section (20-30% Ratio Real Feel) */}
+                {/* Discussion Section */}
                 <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
                   <div className="flex items-center justify-between mb-6">
                     <div>
@@ -726,9 +794,7 @@ export default function UpForgeQuizPage() {
         </div>
       )}
 
-      {/* ========================================================================= */}
       {/* VIEW 3: ACTIVE TEST QUESTIONS */}
-      {/* ========================================================================= */}
       {view === "TESTING" && (
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="mb-6">
@@ -790,9 +856,7 @@ export default function UpForgeQuizPage() {
         </div>
       )}
 
-      {/* ========================================================================= */}
       {/* VIEW 4: ASSESSMENT COMPLETED & CERTIFICATE */}
-      {/* ========================================================================= */}
       {view === "CREDENTIAL_READY" && (
         <div className="max-w-xl mx-auto px-4 py-12 text-center">
           <div className="bg-white dark:bg-[#111622] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-sm">
