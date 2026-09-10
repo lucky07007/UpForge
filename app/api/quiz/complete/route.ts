@@ -34,11 +34,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
     }
 
+    // FIX #4: Standardize answer validation with correctIndex
     let score = 0;
     quiz.questions.forEach((q: any, index: number) => {
-    if (answers[index] === q.correctIndex) {
-      score += 1;
-    }
+      const correctIdx = q.correctIndex ?? q.correctAnswer ?? q.answer ?? q.correctOption ?? q.correct ?? -1;
+      if (answers[index] === correctIdx) {
+        score += 1;
+      }
     });
 
     const totalQuestions = quiz.questions.length;
@@ -174,8 +176,9 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    const certId = `UFRN-CERT-${quiz.id.toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+    const certId = passed ? `UFRN-CERT-${quiz.id.toUpperCase()}-${Date.now().toString(36).toUpperCase()}` : null;
 
+    // FIX #8: Return comprehensive response data
     return NextResponse.json({
       success: true,
       score,
@@ -185,7 +188,7 @@ export async function POST(req: NextRequest) {
       xpAwarded,
       isFirstAttempt,
       newBestScore,
-      certId: passed ? certId : null,
+      certId,
     });
   } catch (err: any) {
     console.error("API error during quiz completion:", err);
