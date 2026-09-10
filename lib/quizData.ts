@@ -21,9 +21,10 @@ export interface QuizItem {
   title: string;
   tagline: string;
   badge: string;
-  duration: string;
-  image: string;
   category: string;
+  duration: string;
+  time: string;
+  image: string;
   baseParticipants: number;
   metrics: {
     scenariosCount: string;
@@ -137,6 +138,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     badge: "Official Benchmark",
     category: "Startup Intelligence",
     duration: "3–5 Minutes",
+    time: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/UpForge%2020Startup%2020IQ%2020Challenge%20202026.webp",
     baseParticipants: 18450,
     metrics: {
@@ -231,6 +233,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     badge: "Growth Benchmark",
     category: "Marketing & Growth",
     duration: "3–5 Minutes",
+    time: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/UpForge%2020Marketing%2020IQ%2020Challenge%20202026.webp",
     baseParticipants: 14210,
     metrics: {
@@ -310,6 +313,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     badge: "Career Benchmark",
     category: "Career & Leadership",
     duration: "3–5 Minutes",
+    time: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/Upforge%20career-iq-2026.webp",
     baseParticipants: 16230,
     metrics: {
@@ -434,6 +438,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     badge: "Investor Benchmark",
     category: "Fundraising",
     duration: "3–5 Minutes",
+    time: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/Upforge%20fundraising-iq-2026.png",
     baseParticipants: 12870,
     metrics: {
@@ -548,6 +553,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     badge: "Future Skills Benchmark",
     category: "AI & Technology",
     duration: "3–5 Minutes",
+    time: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/ai-iq-2026.webp",
     baseParticipants: 20340,
     metrics: {
@@ -666,7 +672,6 @@ export const QUIZ_REGISTRY: QuizItem[] = [
   }
 ];
 
-// Helper functions for static generation and page lookups
 export function getQuizBySlug(slug: string): QuizItem | undefined {
   return QUIZ_REGISTRY.find((quiz) => quiz.slug === slug);
 }
