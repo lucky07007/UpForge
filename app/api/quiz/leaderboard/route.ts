@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
 import { getCurrentPeriodIds } from "@/lib/quiz-periods";
 
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type") || "global";
     const quizId = searchParams.get("quizId");
-    const limitCount = Math.min(parseInt(searchParams.get("limit") || "10", 10), 50);
+    const limitCount = Math.min(parseInt(searchParams.get("limit") || "10", 10), 10);
 
     const entries: Array<{
       uid: string;
@@ -74,7 +76,17 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    return NextResponse.json({ success: true, type, entries });
+    // Cloudflare Edge Cache: 120 seconds edge CDN cache, 60 seconds browser cache
+    // Isse baar-baar Firestore queries nahi chalengi aur 1ms mein response aayega
+    return NextResponse.json(
+      { success: true, type, entries },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "public, max-age=60, s-maxage=120, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (err: any) {
     console.error("Leaderboard query error:", err);
     return NextResponse.json({ error: "Failed to fetch leaderboard" }, { status: 500 });
