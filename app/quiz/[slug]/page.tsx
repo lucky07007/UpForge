@@ -48,13 +48,7 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
   }
 
   const categoryLabel = quiz.category || quiz.badge || "Startup Intelligence";
-  const displayTime = quiz.time || quiz.duration || quiz.metrics?.avgCompletionTime || "3–5 Mins";
-
-  // Guarantees all fields required by QuizData in QuizDetailClient
-  const clientQuizData = {
-    ...quiz,
-    time: displayTime,
-  };
+  const displayTime = quiz.time || quiz.duration || quiz.metrics?.avgCompletionTime || "3–5 Minutes";
 
   return (
     <div className="min-h-screen bg-[#07090E] text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8">
@@ -96,7 +90,7 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
           </div>
         </div>
 
-        <QuizDetailClient quiz={clientQuizData as any} />
+        <QuizDetailClient quiz={{ ...quiz, time: displayTime }} />
       </div>
     </div>
   );
