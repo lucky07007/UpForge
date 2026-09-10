@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { quizzes } from "@/lib/quizData";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { CheckCircle2, Clock, HelpCircle, Award, Trophy, MessageSquare, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -13,7 +13,6 @@ export default function QuizListPage() {
   return (
     <div className="min-h-screen bg-[#06080E] text-slate-100 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-12">
-        {/* Header Header Preserved */}
         <div className="border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-semibold tracking-wide uppercase mb-4">
@@ -37,9 +36,8 @@ export default function QuizListPage() {
           </div>
         </div>
 
-        {/* Existing Grid Cards Unaltered In Visual Styling */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {quizzes.map((quiz) => (
+          {QUIZ_REGISTRY.map((quiz: any) => (
             <div
               key={quiz.id}
               className="bg-[#0B0F17] rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all duration-300 shadow-xl group"
