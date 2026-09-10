@@ -24,8 +24,16 @@ import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight, RotateCcw } from "lucide-react";
 import type { QuizItem } from "@/lib/quizData";
 
+// Type-safe extension matching whatever fields quizData actually uses
+interface SafeQuizItem extends Omit<QuizItem, "questions"> {
+  description?: string;
+  summary?: string;
+  questions: any[];
+  [key: string]: any;
+}
+
 interface QuizDetailClientProps {
-  quiz: QuizItem;
+  quiz: SafeQuizItem | QuizItem;
 }
 
 export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
@@ -90,17 +98,15 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     }
   };
 
-  const questions = (quiz.questions || []) as any[];
+  const questions: any[] = ((quiz as any)?.questions || []) as any[];
   const currentQ = questions[currentIndex];
 
-  // Safely extract correct answer index regardless of field name (answer / correctAnswer / correctOption)
   const getCorrectAnswerIndex = (q: any): number => {
     if (!q) return -1;
     if (typeof q.correctAnswer === "number") return q.correctAnswer;
     if (typeof q.answer === "number") return q.answer;
     if (typeof q.correctOption === "number") return q.correctOption;
     if (typeof q.correct === "number") return q.correct;
-    // In case answer is given as a string matching the option
     if (typeof q.answer === "string" && Array.isArray(q.options)) {
       return q.options.indexOf(q.answer);
     }
@@ -152,14 +158,16 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     setIsFinished(false);
   };
 
+  const quizDesc = (quiz as any)?.description || (quiz as any)?.summary || "";
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
       <Card className="border border-border/60 shadow-sm">
         <CardHeader>
           <CardTitle className="text-2xl font-bold tracking-tight">{quiz.title}</CardTitle>
-          {quiz.description && (
+          {quizDesc && (
             <CardDescription className="text-sm text-muted-foreground">
-              {quiz.description}
+              {quizDesc}
             </CardDescription>
           )}
         </CardHeader>
