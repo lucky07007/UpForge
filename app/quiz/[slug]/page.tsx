@@ -90,7 +90,7 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
           </div>
         </div>
 
-        <QuizDetailClient quiz={{ ...quiz, time: displayTime }} />
+ <QuizDetailClient quiz={{ ...quiz, time: displayTime }} autoStart={false} />
       </div>
     </div>
   );
