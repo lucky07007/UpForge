@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Clock, HelpCircle, Award } from "lucide-react";
 import { getQuizBySlug, getAllQuizzes, QuizItem } from "@/lib/quizData";
-import QuizDetailClient from "./quiz-detail-client";
+import { QuizDetailClient } from "./quiz-detail-client";
 
 interface QuizPageProps {
   params: Promise<{
@@ -30,10 +30,10 @@ export async function generateMetadata({ params }: QuizPageProps) {
 
   return {
     title: `${quiz.title} | UpForge Startup Quiz`,
-    description: quiz.description,
+    description: quiz.tagline || quiz.title,
     openGraph: {
       title: quiz.title,
-      description: quiz.description,
+      description: quiz.tagline || quiz.title,
       type: "website",
     },
   };
@@ -47,7 +47,7 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
     notFound();
   }
 
-  const categoryLabel = quiz.category || "Startup Intelligence";
+  const categoryLabel = quiz.category || quiz.badge || "Startup Intelligence";
 
   return (
     <div className="min-h-screen bg-[#07090E] text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8">
@@ -70,21 +70,21 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
             {quiz.title}
           </h1>
           <p className="text-neutral-400 text-sm sm:text-base leading-relaxed mb-6">
-            {quiz.description}
+            {quiz.tagline}
           </p>
 
           <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-white/10 text-xs sm:text-sm">
             <div className="flex items-center gap-2 text-neutral-300">
               <Clock className="w-4 h-4 text-[#D4AF37]" />
-              <span>{quiz.estimatedMinutes} mins</span>
+              <span>{quiz.duration || quiz.metrics.avgCompletionTime}</span>
             </div>
             <div className="flex items-center gap-2 text-neutral-300">
               <HelpCircle className="w-4 h-4 text-[#D4AF37]" />
-              <span>{quiz.questions.length} Questions</span>
+              <span>{quiz.questions.length} Scenarios</span>
             </div>
             <div className="flex items-center gap-2 text-neutral-300">
               <Award className="w-4 h-4 text-[#D4AF37]" />
-              <span>{quiz.difficulty}</span>
+              <span>{quiz.metrics.credentialTier}</span>
             </div>
           </div>
         </div>
