@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminAuth, adminDb } from "@/lib/firebase-admin";
-import { quizzes } from "@/lib/quizData";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { getCurrentPeriodIds } from "@/lib/quiz-periods";
 import { FieldValue } from "firebase-admin/firestore";
+
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,14 +29,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const quiz = quizzes.find((q) => q.id === quizId || q.slug === quizId);
+    const quiz = QUIZ_REGISTRY.find((q: any) => q.id === quizId || q.slug === quizId);
     if (!quiz) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
     }
 
-    // Secure server-side calculation of the score
     let score = 0;
-    quiz.questions.forEach((q, index) => {
+    quiz.questions.forEach((q: any, index: number) => {
       if (answers[index] === q.answer) {
         score += 1;
       }
