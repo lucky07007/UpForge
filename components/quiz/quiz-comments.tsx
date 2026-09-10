@@ -7,7 +7,7 @@ import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, AlertCircle, Loader2 } from "lucide-react";
-import { toast } from "soner";
+import { toast } from "sonner";
 
 interface Comment {
   id: string;
