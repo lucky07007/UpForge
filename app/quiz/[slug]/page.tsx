@@ -1,17 +1,17 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/image";
-import { quizzes } from "@/lib/quizData";
+import Link from "next/link";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { QuizDetailClient } from "./quiz-detail-client";
-import { Clock, HelpCircle, Award, ShieldCheck, Zap, ArrowLeft, Trophy } from "lucide-react";
+import { Clock, HelpCircle, Award, ShieldCheck, Zap, ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
-  return quizzes.map((q) => ({ slug: q.slug }));
+  return QUIZ_REGISTRY.map((q: any) => ({ slug: q.slug }));
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const quiz = quizzes.find((q) => q.slug === params.slug);
+  const quiz = QUIZ_REGISTRY.find((q: any) => q.slug === params.slug);
   if (!quiz) return { title: "Quiz Not Found | UpForge" };
 
   return {
@@ -32,7 +32,7 @@ export default function QuizDetailPage({
   params: { slug: string };
   searchParams?: { start?: string };
 }) {
-  const quiz = quizzes.find((q) => q.slug === params.slug);
+  const quiz = QUIZ_REGISTRY.find((q: any) => q.slug === params.slug);
   if (!quiz) notFound();
 
   const autoStart = searchParams?.start === "true";
@@ -40,21 +40,19 @@ export default function QuizDetailPage({
   return (
     <div className="min-h-screen bg-[#06080E] text-slate-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-10">
-        {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
-          <a
+          <Link
             href="/quiz"
             className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to All Benchmarks</span>
-          </a>
+          </Link>
           <span className="text-xs font-semibold uppercase tracking-wider text-[#D4AF37] px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full">
             {quiz.category}
           </span>
         </div>
 
-        {/* Hero Banner with Responsive Artwork */}
         <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#0B0F17] shadow-2xl">
           <div className="relative h-64 sm:h-80 w-full">
             <Image
@@ -76,7 +74,6 @@ export default function QuizDetailPage({
               {quiz.description}
             </p>
 
-            {/* Quick Metrics */}
             <div className="pt-4 flex flex-wrap items-center gap-6 text-xs sm:text-sm text-slate-300 border-t border-white/10">
               <div className="flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-[#D4AF37]" />
@@ -98,7 +95,6 @@ export default function QuizDetailPage({
           </div>
         </div>
 
-        {/* Dynamic Client Controller: Auth Modal, Quiz Runner, Leaderboard & Comments */}
         <QuizDetailClient quiz={quiz} autoStart={autoStart} />
       </div>
     </div>
