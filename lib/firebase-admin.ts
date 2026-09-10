@@ -1,6 +1,10 @@
 import * as admin from "firebase-admin";
 
-if (!admin.apps.length) {
+function getFirebaseAdminApp() {
+  if (admin.apps.length > 0) {
+    return admin.apps[0]!;
+  }
+
   const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
   if (serviceAccountKey) {
@@ -11,27 +15,29 @@ if (!admin.apps.length) {
       if (rawString.startsWith("{")) {
         credentialJson = JSON.parse(rawString);
       } else {
-        // Safe base64 decoding for Cloudflare Worker Node runtime
         const decoded = Buffer.from(rawString, "base64").toString("utf-8");
         credentialJson = JSON.parse(decoded);
       }
 
-      admin.initializeApp({
+      return admin.initializeApp({
         credential: admin.credential.cert(credentialJson),
-        projectId: "upforge-quizz",
+        projectId: credentialJson.project_id || "upforge-quizz",
       });
     } catch (e) {
-      console.error("Critical: Failed to initialize Firebase Admin SDK:", e);
-      admin.initializeApp({
+      console.error("Warning: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY, falling back:", e);
+      return admin.initializeApp({
         projectId: "upforge-quizz",
       });
     }
-  } else {
-    admin.initializeApp({
-      projectId: "upforge-quizz",
-    });
   }
+
+  return admin.initializeApp({
+    projectId: "upforge-quizz",
+  });
 }
 
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
+const app = getFirebaseAdminApp();
+
+export const adminDb = admin.firestore(app);
+export const adminAuth = admin.auth(app);
+export default admin;
