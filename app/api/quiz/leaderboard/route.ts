@@ -1,94 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebase-admin";
-import { getCurrentPeriodIds } from "@/lib/quiz-periods";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const type = searchParams.get("type") || "global";
-    const quizId = searchParams.get("quizId");
-    const limitCount = Math.min(parseInt(searchParams.get("limit") || "10", 10), 10);
+    const slug = searchParams.get("slug") || "";
 
-    const entries: Array<{
-      uid: string;
-      displayName: string;
-      scoreOrXp: number;
-      secondary?: string | number;
-    }> = [];
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "upforge";
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
 
-    if (type === "quiz" && quizId) {
-      const snap = await adminDb
-        .collection("leaderboards")
-        .doc(quizId)
-        .collection("scores")
-        .orderBy("bestScore", "desc")
-        .limit(limitCount)
-        .get();
+    const body = {
+      structuredQuery: {
+        from: [{ collectionId: "quiz_leaderboard" }],
+        where: slug
+          ? {
+              fieldFilter: {
+                field: { fieldPath: "quizSlug" },
+                op: "EQUAL",
+                value: { stringValue: slug },
+              },
+            }
+          : undefined,
+        orderBy: [{ field: { fieldPath: "score" }, direction: "DESCENDING" }],
+        limit: 10,
+      },
+    };
 
-      snap.forEach((doc) => {
-        const data = doc.data();
-        entries.push({
-          uid: doc.id,
-          displayName: data.displayName || "Founder",
-          scoreOrXp: data.bestScore ?? 0,
-          secondary: `${data.percentage ?? 0}%`,
-        });
-      });
-    } else if (type === "weekly" || type === "monthly") {
-      const { weeklyId, monthlyId } = getCurrentPeriodIds();
-      const periodId = type === "weekly" ? weeklyId : monthlyId;
+    const res = await fetch(firestoreUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
-      const snap = await adminDb
-        .collection("periodScores")
-        .doc(periodId)
-        .collection("users")
-        .orderBy("xp", "desc")
-        .limit(limitCount)
-        .get();
-
-      snap.forEach((doc) => {
-        const data = doc.data();
-        entries.push({
-          uid: doc.id,
-          displayName: data.displayName || "Founder",
-          scoreOrXp: data.xp ?? 0,
-          secondary: "XP",
-        });
-      });
-    } else {
-      // Global Leaderboard
-      const snap = await adminDb
-        .collection("users")
-        .orderBy("totalXP", "desc")
-        .limit(limitCount)
-        .get();
-
-      snap.forEach((doc) => {
-        const data = doc.data();
-        entries.push({
-          uid: doc.id,
-          displayName: data.displayName || "Founder",
-          scoreOrXp: data.totalXP ?? 0,
-          secondary: `${data.quizzesCompleted ?? 0} finished`,
-        });
-      });
+    if (!res.ok) {
+      return NextResponse.json({ success: true, leaderboard: [] });
     }
 
-    // Cloudflare Edge Cache: 120 seconds edge CDN cache, 60 seconds browser cache
-    // Isse baar-baar Firestore queries nahi chalengi aur 1ms mein response aayega
-    return NextResponse.json(
-      { success: true, type, entries },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, max-age=60, s-maxage=120, stale-while-revalidate=300",
-        },
-      }
-    );
+    const data = await res.json();
+    const leaderboard = (Array.isArray(data) ? data : [])
+      .filter((item: any) => item.document)
+      .map((item: any) => {
+        const fields = item.document.fields || {};
+        return {
+          id: item.document.name.split("/").pop(),
+          userName: fields.userName?.stringValue || "Anonymous",
+          score: Number(fields.score?.integerValue || 0),
+          totalQuestions: Number(fields.totalQuestions?.integerValue || 10),
+          quizSlug: fields.quizSlug?.stringValue || "",
+        };
+      });
+
+    return NextResponse.json({ success: true, leaderboard });
   } catch (err: any) {
-    console.error("Leaderboard query error:", err);
-    return NextResponse.json({ error: "Failed to fetch leaderboard" }, { status: 500 });
+    return NextResponse.json({ success: false, leaderboard: [], error: err.message }, { status: 200 });
   }
 }
