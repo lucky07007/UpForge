@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, CheckCircle2, XCircle, ArrowRight, RotateCcw } from "lucide-react";
+import { Trophy, ArrowRight, RotateCcw } from "lucide-react";
 import type { QuizItem } from "@/lib/quizData";
 
 interface QuizDetailClientProps {
@@ -90,18 +90,34 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     }
   };
 
-  const currentQ = quiz.questions?.[currentIndex];
+  const questions = (quiz.questions || []) as any[];
+  const currentQ = questions[currentIndex];
+
+  // Safely extract correct answer index regardless of field name (answer / correctAnswer / correctOption)
+  const getCorrectAnswerIndex = (q: any): number => {
+    if (!q) return -1;
+    if (typeof q.correctAnswer === "number") return q.correctAnswer;
+    if (typeof q.answer === "number") return q.answer;
+    if (typeof q.correctOption === "number") return q.correctOption;
+    if (typeof q.correct === "number") return q.correct;
+    // In case answer is given as a string matching the option
+    if (typeof q.answer === "string" && Array.isArray(q.options)) {
+      return q.options.indexOf(q.answer);
+    }
+    return 0;
+  };
 
   const handleNext = () => {
-    if (selectedOption === null) return;
-    const isCorrect = selectedOption === currentQ.correctAnswer;
+    if (selectedOption === null || !currentQ) return;
+    const correctIdx = getCorrectAnswerIndex(currentQ);
+    const isCorrect = selectedOption === correctIdx;
     const nextScore = score + (isCorrect ? 1 : 0);
 
     if (isCorrect) {
       setScore(nextScore);
     }
 
-    if (currentIndex + 1 < (quiz.questions?.length || 0)) {
+    if (currentIndex + 1 < questions.length) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
     } else {
@@ -118,7 +134,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
         userName: user?.displayName || user?.email?.split("@")[0] || "Anonymous Founder",
         userEmail: user?.email || "",
         score: finalScore,
-        totalQuestions: quiz.questions.length,
+        totalQuestions: questions.length,
         createdAt: serverTimestamp(),
       });
       await fetchLeaderboard();
@@ -153,7 +169,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
               <div className="space-y-6">
                 <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   <span>
-                    Question {currentIndex + 1} of {quiz.questions.length}
+                    Question {currentIndex + 1} of {questions.length}
                   </span>
                   <span>Score: {score}</span>
                 </div>
@@ -161,7 +177,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
                 <h3 className="text-lg font-medium">{currentQ.question}</h3>
 
                 <div className="grid grid-cols-1 gap-3">
-                  {currentQ.options.map((opt, idx) => (
+                  {(currentQ.options || []).map((opt: string, idx: number) => (
                     <button
                       key={idx}
                       onClick={() => setSelectedOption(idx)}
@@ -182,7 +198,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
                     disabled={selectedOption === null}
                     className="gap-2"
                   >
-                    {currentIndex + 1 === quiz.questions.length ? "Finish Quiz" : "Next"}
+                    {currentIndex + 1 === questions.length ? "Finish Quiz" : "Next"}
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -196,7 +212,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
               <h3 className="text-2xl font-bold">Quiz Completed!</h3>
               <p className="text-muted-foreground text-sm">
                 You scored <span className="font-bold text-foreground">{score}</span> out of{" "}
-                {quiz.questions.length}
+                {questions.length}
               </p>
 
               {!user && (
@@ -254,7 +270,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
                     <span className="font-medium text-foreground">{item.userName}</span>
                   </div>
                   <div className="font-bold text-xs px-2.5 py-1 rounded bg-muted">
-                    {item.score} / {item.totalQuestions || quiz.questions.length}
+                    {item.score} / {item.totalQuestions || questions.length}
                   </div>
                 </div>
               ))}
