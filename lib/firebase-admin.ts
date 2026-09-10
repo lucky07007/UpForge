@@ -5,18 +5,23 @@ if (!admin.apps.length) {
 
   if (serviceAccountKey) {
     try {
-      const parsedKey = JSON.parse(
-        serviceAccountKey.startsWith("{")
-          ? serviceAccountKey
-          : Buffer.from(serviceAccountKey, "base64").toString("utf-8")
-      );
+      const rawString = serviceAccountKey.trim();
+      let credentialJson: any;
+
+      if (rawString.startsWith("{")) {
+        credentialJson = JSON.parse(rawString);
+      } else {
+        // Safe base64 decoding for Cloudflare Worker Node runtime
+        const decoded = Buffer.from(rawString, "base64").toString("utf-8");
+        credentialJson = JSON.parse(decoded);
+      }
 
       admin.initializeApp({
-        credential: admin.credential.cert(parsedKey),
+        credential: admin.credential.cert(credentialJson),
         projectId: "upforge-quizz",
       });
     } catch (e) {
-      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:", e);
+      console.error("Critical: Failed to initialize Firebase Admin SDK:", e);
       admin.initializeApp({
         projectId: "upforge-quizz",
       });
