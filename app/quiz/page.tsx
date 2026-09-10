@@ -37,79 +37,82 @@ export default function QuizListPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {QUIZ_REGISTRY.map((quiz: any) => (
-            <div
-              key={quiz.id}
-              className="bg-[#0B0F17] rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all duration-300 shadow-xl group"
-            >
-              <div>
-                <div className="relative h-48 w-full bg-[#141A29]">
-                  <Image
-                    src={quiz.image}
-                    alt={quiz.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F17] via-transparent to-black/30" />
-                  <span className="absolute top-3 left-3 bg-[#0B0F17]/80 backdrop-blur-md border border-white/10 text-xs px-2.5 py-1 rounded-md text-[#D4AF37] font-semibold">
-                    {quiz.category}
-                  </span>
-                </div>
+          {QUIZ_REGISTRY.map((quiz: any) => {
+            const summary = quiz.subtitle || quiz.description || "";
+            return (
+              <div
+                key={quiz.id}
+                className="bg-[#0B0F17] rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all duration-300 shadow-xl group"
+              >
+                <div>
+                  <div className="relative h-48 w-full bg-[#141A29]">
+                    <Image
+                      src={quiz.image}
+                      alt={quiz.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F17] via-transparent to-black/30" />
+                    <span className="absolute top-3 left-3 bg-[#0B0F17]/80 backdrop-blur-md border border-white/10 text-xs px-2.5 py-1 rounded-md text-[#D4AF37] font-semibold">
+                      {quiz.category}
+                    </span>
+                  </div>
 
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-white font-serif line-clamp-1 group-hover:text-[#D4AF37] transition-colors">
-                    {quiz.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-400 line-clamp-2 leading-relaxed">
-                    {quiz.description}
-                  </p>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-white font-serif line-clamp-1 group-hover:text-[#D4AF37] transition-colors">
+                      {quiz.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                      {summary}
+                    </p>
 
-                  <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-slate-300 border-t border-white/5 pt-4">
-                    <div className="flex items-center gap-1.5">
-                      <HelpCircle className="w-4 h-4 text-slate-400" />
-                      <span>{quiz.questionsCount} Questions</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-slate-400" />
-                      <span>{quiz.time}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Award className="w-4 h-4 text-[#D4AF37]" />
-                      <span>Verified Cert</span>
+                    <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-slate-300 border-t border-white/5 pt-4">
+                      <div className="flex items-center gap-1.5">
+                        <HelpCircle className="w-4 h-4 text-slate-400" />
+                        <span>{quiz.questionsCount || quiz.questions?.length} Questions</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-4 h-4 text-slate-400" />
+                        <span>{quiz.time}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Award className="w-4 h-4 text-[#D4AF37]" />
+                        <span>Verified Cert</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="p-6 pt-0 space-y-4">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Standard Mode
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageSquare className="w-3.5 h-3.5 text-slate-400" /> Peer Discussions
-                  </span>
-                </div>
+                <div className="p-6 pt-0 space-y-4">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span className="flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Standard Mode
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageSquare className="w-3.5 h-3.5 text-slate-400" /> Peer Discussions
+                    </span>
+                  </div>
 
-                <div className="flex items-center gap-3">
-                  <Link
-                    href={`/quiz/${quiz.slug}`}
-                    className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <span>Review Details</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                  <Link
-                    href={`/quiz/${quiz.slug}?start=true`}
-                    className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0B0F17] bg-gradient-to-r from-[#D4AF37] to-[#B38F27] hover:brightness-110 transition-all shadow-md shadow-[#D4AF37]/20"
-                  >
-                    Start Quiz
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/quiz/${quiz.slug}`}
+                      className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <span>Review Details</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                    <Link
+                      href={`/quiz/${quiz.slug}?start=true`}
+                      className="flex-1 text-center py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0B0F17] bg-gradient-to-r from-[#D4AF37] to-[#B38F27] hover:brightness-110 transition-all shadow-md shadow-[#D4AF37]/20"
+                    >
+                      Start Quiz
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
