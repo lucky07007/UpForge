@@ -13,7 +13,7 @@ import {
 import {
   Trophy,
   MessageSquare,
-  ShieldAlert,
+  ShieldCheck,
   Award,
   Clock,
   Sparkles,
@@ -35,10 +35,11 @@ interface QuizData {
   id: string;
   slug: string;
   title: string;
-  description: string;
+  subtitle?: string;
+  description?: string;
   category: string;
   time: string;
-  questionsCount: number;
+  questionsCount?: number;
   image: string;
   questions: QuizQuestion[];
 }
@@ -51,7 +52,6 @@ export function QuizDetailClient({
   autoStart: boolean;
 }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
 
   // Flow views: 'overview' | 'auth' | 'playing' | 'result'
   const [view, setView] = useState<"overview" | "auth" | "playing" | "result">("overview");
@@ -98,7 +98,6 @@ export function QuizDetailClient({
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (usr) => {
       setCurrentUser(usr);
-      setAuthLoading(false);
       if (usr && (autoStart || view === "auth")) {
         startQuizSession();
       }
@@ -331,7 +330,6 @@ export function QuizDetailClient({
 
   return (
     <div className="space-y-12">
-      {/* 1. OVERVIEW & CTA VIEW */}
       {view === "overview" && (
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -358,7 +356,6 @@ export function QuizDetailClient({
             </div>
           </div>
 
-          {/* Rules & Start CTA Strip */}
           <div className="bg-[#0D121F] border border-[#D4AF37]/30 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
             <div className="space-y-1 text-center sm:text-left">
               <h2 className="text-xl font-bold text-white font-serif">Ready to Begin Assessment?</h2>
@@ -377,7 +374,6 @@ export function QuizDetailClient({
         </div>
       )}
 
-      {/* 2. AUTHENTICATION MODAL / EMBED VIEW */}
       {view === "auth" && (
         <div className="max-w-md mx-auto bg-[#0B0F17] border border-white/15 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="text-center space-y-2">
@@ -484,7 +480,6 @@ export function QuizDetailClient({
         </div>
       )}
 
-      {/* 3. IN-GAME ASSESSMENT RUNNER */}
       {view === "playing" && (
         <div className="max-w-3xl mx-auto bg-[#0B0F17] border border-white/10 rounded-2xl p-6 sm:p-10 space-y-8 shadow-2xl">
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -555,7 +550,6 @@ export function QuizDetailClient({
         </div>
       )}
 
-      {/* 4. RESULT & CERTIFICATE VIEW */}
       {view === "result" && completionData && (
         <div className="max-w-2xl mx-auto bg-[#0B0F17] border border-white/10 rounded-2xl p-6 sm:p-10 space-y-8 shadow-2xl text-center">
           <div className="inline-flex p-3 rounded-full bg-white/5 border border-white/10">
@@ -634,7 +628,6 @@ export function QuizDetailClient({
         </div>
       )}
 
-      {/* 5. TABBED COMMUNITY SECTION: LEADERBOARDS & DISCUSSIONS */}
       <div className="border border-white/10 rounded-2xl bg-[#0B0F17] overflow-hidden shadow-2xl">
         <div className="flex border-b border-white/10 bg-[#0D121F]">
           <button
@@ -657,7 +650,6 @@ export function QuizDetailClient({
           </button>
         </div>
 
-        {/* Tab Content */}
         <div className="p-6">
           {activeTab === "leaderboard" && (
             <div className="space-y-6">
@@ -736,7 +728,6 @@ export function QuizDetailClient({
 
           {activeTab === "discussions" && (
             <div className="space-y-6">
-              {/* Comment Input */}
               <form onSubmit={submitComment} className="space-y-3">
                 <textarea
                   rows={2}
@@ -756,7 +747,6 @@ export function QuizDetailClient({
                 </div>
               </form>
 
-              {/* Discussion Stream */}
               {loadingComments ? (
                 <div className="text-center py-12 text-slate-500 text-xs">Loading community insights...</div>
               ) : comments.length === 0 ? (
@@ -792,7 +782,6 @@ export function QuizDetailClient({
                         </button>
                       </div>
 
-                      {/* Reply form */}
                       {replyParentId === c.id && (
                         <div className="pl-4 pt-2 flex gap-2">
                           <input
