@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Clock, HelpCircle, Award } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getQuizBySlug, getAllQuizzes } from "@/lib/quizData";
 import { QuizDetailClient } from "./quiz-detail-client";
 
@@ -12,7 +12,7 @@ interface QuizPageProps {
 
 export async function generateStaticParams() {
   const quizzes = getAllQuizzes();
-  return quizzes.map((q) => ({
+  return (quizzes || []).map((q: any) => ({
     slug: q.slug,
   }));
 }
