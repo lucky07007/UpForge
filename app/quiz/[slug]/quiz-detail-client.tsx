@@ -28,7 +28,7 @@ interface QuizQuestion {
   id: number;
   question: string;
   options: string[];
-  answer: number;
+  answer?: number;
 }
 
 interface QuizData {
