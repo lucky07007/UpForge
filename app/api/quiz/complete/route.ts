@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
 
     let score = 0;
     quiz.questions.forEach((q: any, index: number) => {
-      if (answers[index] === q.answer) {
-        score += 1;
-      }
+    if (answers[index] === q.correctIndex) {
+      score += 1;
+    }
     });
 
     const totalQuestions = quiz.questions.length;
