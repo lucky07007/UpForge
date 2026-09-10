@@ -21,27 +21,14 @@ import {
 } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Trophy, CheckCircle2, XCircle, ArrowRight, RotateCcw } from "lucide-react";
+import type { QuizItem } from "@/lib/quizData";
 
-interface Question {
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation?: string;
+interface QuizDetailClientProps {
+  quiz: QuizItem;
 }
 
-interface QuizProps {
-  quiz: {
-    id?: string;
-    title: string;
-    slug: string;
-    description?: string;
-    questions: Question[];
-  };
-}
-
-export default function QuizDetailClient({ quiz }: QuizProps) {
+export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +41,6 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [savingScore, setSavingScore] = useState(false);
 
-  // Auth observer
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -62,7 +48,6 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
     return () => unsubscribe();
   }, []);
 
-  // Fetch leaderboard for this quiz
   const fetchLeaderboard = async () => {
     try {
       const q = query(
@@ -83,7 +68,6 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
     fetchLeaderboard();
   }, [quiz.slug]);
 
-  // Google Sign In
   const handleGoogleLogin = async () => {
     try {
       setAuthError("");
@@ -93,7 +77,6 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
     }
   };
 
-  // Email Sign In / Sign Up
   const handleEmailAuth = async (isSignUp: boolean) => {
     try {
       setAuthError("");
@@ -111,8 +94,11 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
 
   const handleNext = () => {
     if (selectedOption === null) return;
-    if (selectedOption === currentQ.correctAnswer) {
-      setScore((prev) => prev + 1);
+    const isCorrect = selectedOption === currentQ.correctAnswer;
+    const nextScore = score + (isCorrect ? 1 : 0);
+
+    if (isCorrect) {
+      setScore(nextScore);
     }
 
     if (currentIndex + 1 < (quiz.questions?.length || 0)) {
@@ -120,7 +106,7 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
       setSelectedOption(null);
     } else {
       setIsFinished(true);
-      submitScore(score + (selectedOption === currentQ.correctAnswer ? 1 : 0));
+      submitScore(nextScore);
     }
   };
 
@@ -152,7 +138,6 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      {/* Quiz Card */}
       <Card className="border border-border/60 shadow-sm">
         <CardHeader>
           <CardTitle className="text-2xl font-bold tracking-tight">{quiz.title}</CardTitle>
@@ -234,7 +219,6 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
         </CardContent>
       </Card>
 
-      {/* Leaderboard Section */}
       <Card className="border border-border/60">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <div>
@@ -281,3 +265,5 @@ export default function QuizDetailClient({ quiz }: QuizProps) {
     </div>
   );
 }
+
+export default QuizDetailClient;
