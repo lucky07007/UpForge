@@ -3,6 +3,10 @@ export interface Question {
   question: string;
   options: string[];
   correctIndex: number;
+  correctAnswer?: number;
+  answer?: number | string;
+  correctOption?: number;
+  explanation?: string;
 }
 
 export interface CommentItem {
@@ -26,6 +30,9 @@ export interface QuizItem {
   time: string;
   image: string;
   baseParticipants: number;
+  description?: string;
+  summary?: string;
+  subtitle?: string;
   metrics: {
     scenariosCount: string;
     avgCompletionTime: string;
@@ -35,7 +42,6 @@ export interface QuizItem {
   questions: Question[];
 }
 
-// 12 Sharp, High-Signal Operator Profiles (India, US, China, UK, Singapore)
 export const OPERATOR_DISCUSSIONS: CommentItem[] = [
   {
     id: "op_1",
@@ -135,6 +141,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     slug: "startup-iq-challenge-2026",
     title: "How Startup-Smart Are You? | UpForge Startup IQ Challenge 2026",
     tagline: "Think like a founder. Decide like a builder. Test your Startup IQ.",
+    description: "Think like a founder. Decide like a builder. Test your Startup IQ across 10 real-world scenarios.",
+    summary: "Think like a founder. Decide like a builder. Test your Startup IQ.",
     badge: "Official Benchmark",
     category: "Startup Intelligence",
     duration: "3–5 Minutes",
@@ -152,7 +160,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
         id: 1,
         question: "A startup gets 10,000 website visitors, but only 500 sign up. What should the team calculate first to understand this?",
         options: ["Burn Rate", "Conversion Rate", "Customer Lifetime Value", "Runway"],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 2,
@@ -163,37 +172,43 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Increase the office budget",
           "Launch a new product"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 3,
         question: "A software startup charges customers ₹999 every month to continue using its platform. What business model is this?",
         options: ["One-time purchase", "Subscription", "Marketplace", "Commission-only"],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 4,
         question: "A company spends ₹50,000 on marketing and acquires 100 new customers. What is its approximate CAC?",
         options: ["₹50", "₹500", "₹5,000", "₹50,000"],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 5,
         question: "A startup has ₹30 lakh in cash and spends ₹5 lakh every month. Approximately how much runway does it have?",
         options: ["3 months", "5 months", "6 months", "12 months"],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 6,
         question: "A startup's user count is growing rapidly, but most new users stop using the product after one week. What should concern the founder most?",
         options: ["Retention", "Logo design", "Office size", "Number of employees"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 7,
         question: "A startup uses historical customer data to predict which users are likely to cancel their subscription. What technology is primarily being used?",
         options: ["Machine Learning", "Word Processing", "Cloud Storage", "UI Design"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 8,
@@ -204,13 +219,15 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Immediately increase advertising",
           "Remove all customer reviews"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 9,
         question: "Startup A operates in a market worth ₹10 crore. Startup B operates in a similar market worth ₹1,000 crore. Assuming other factors are comparable, which has the larger addressable market?",
         options: ["Startup B", "Startup A", "Both are equal", "Cannot be compared"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 10,
@@ -221,7 +238,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Hire a large team",
           "Spend heavily on advertising"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       }
     ]
   },
@@ -230,6 +248,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     slug: "marketing-iq-challenge-2026",
     title: "UpForge Marketing IQ Challenge 2026",
     tagline: "Think like a marketer. Understand what makes people act.",
+    description: "Think like a marketer. Understand what makes people act and master growth metrics.",
+    summary: "Think like a marketer. Understand what makes people act.",
     badge: "Growth Benchmark",
     category: "Marketing & Growth",
     duration: "3–5 Minutes",
@@ -247,61 +267,71 @@ export const QUIZ_REGISTRY: QuizItem[] = [
         id: 1,
         question: "A website gets 10,000 visitors but only 200 purchases. What should you examine first?",
         options: ["Logo", "Conversion rate", "Office size", "Employee count"],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 2,
         question: "A company wants to understand why customers are buying its product. What is most useful?",
         options: ["Customer interviews", "More advertisements", "New logo", "More followers"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 3,
         question: "Which is the strongest example of a target audience?",
         options: ["Everyone", "People who use the internet", "College students looking for internships", "All Indians"],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 4,
         question: "An Instagram post gets 1,000 views and 100 people interact with it. What does this primarily indicate?",
         options: ["Engagement", "Revenue", "Profit", "Market size"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 5,
         question: "A startup spends ₹20,000 on ads and gets 40 customers. What is its CAC?",
         options: ["₹200", "₹400", "₹500", "₹800"],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 6,
         question: "A customer sees an ad, visits the website, compares alternatives and then purchases. This is part of the:",
         options: ["Customer journey", "Balance sheet", "Hiring funnel", "Supply chain"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 7,
         question: "Which headline is most likely to attract a founder looking for networking?",
         options: ["“We are a company.”", "“Join our platform.”", "“Meet founders building what comes next.”", "“Our website is live.”"],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 8,
         question: "A campaign receives lots of clicks but almost no sign-ups. What should the marketer investigate?",
         options: ["Landing page and user experience", "Office location", "Company logo size", "Number of employees"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 9,
         question: "A brand consistently publishes useful content that attracts potential customers without directly selling every time. This is:",
         options: ["Content marketing", "Cold calling", "Accounting", "Inventory management"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 10,
         question: "You have ₹10,000 to promote a new product, but don't know which audience responds best. What's the smartest approach?",
         options: ["Spend everything immediately", "Test small campaigns with different audiences and measure results", "Target everyone", "Stop marketing"],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       }
     ]
   },
@@ -310,6 +340,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     slug: "career-iq-challenge-2026",
     title: "UpForge Career IQ Challenge 2026",
     tagline: "Think like a professional. Make career moves that actually compound.",
+    description: "Think like a professional. Make career moves that actually compound over your professional journey.",
+    summary: "Think like a professional. Make career moves that actually compound.",
     badge: "Career Benchmark",
     category: "Career & Leadership",
     duration: "3–5 Minutes",
@@ -332,7 +364,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Every subject you've ever studied",
           "Your school's name in bold across the page"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 2,
@@ -343,13 +376,15 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Ask them to skip the question",
           "List your hobbies only"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 3,
         question: "You have two job offers: one with a higher salary but no learning curve, another with a lower salary but strong mentorship and skill growth. Early in your career, what usually matters more?",
         options: ["Immediate salary only", "Company logo prestige only", "Learning, mentorship and skill compounding", "Office location only"],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 4,
@@ -360,7 +395,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Mass-message 500 strangers with the same copy-paste text",
           "Avoid networking until you have a job title"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 5,
@@ -371,7 +407,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "A generic headline like 'Student'",
           "A cover photo with a meme"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 6,
@@ -382,7 +419,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Reject the offer without any conversation",
           "Complain publicly on social media"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 7,
@@ -393,7 +431,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Switch industries randomly without research",
           "Wait for your employer to decide for you"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 8,
@@ -404,7 +443,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Whichever pays for lunch",
           "Whichever has a nicer office"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 9,
@@ -415,7 +455,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Have a direct, respectful conversation and set clear expectations",
           "Report them without ever speaking to them first"
         ],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 10,
@@ -426,7 +467,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Pick whatever pays the most without any research",
           "Avoid making a decision indefinitely"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       }
     ]
   },
@@ -435,6 +477,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     slug: "fundraising-iq-challenge-2026",
     title: "UpForge Fundraising IQ Challenge 2026",
     tagline: "Think like an investor. Raise capital without giving away the store.",
+    description: "Think like an investor. Raise capital without giving away the store.",
+    summary: "Think like an investor. Raise capital without giving away the store.",
     badge: "Investor Benchmark",
     category: "Fundraising",
     duration: "3–5 Minutes",
@@ -457,19 +501,22 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "The company automatically fails",
           "The investor must return the equity later"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 2,
         question: "A company is valued at ₹8 crore before funding and raises ₹2 crore. What is its approximate post-money valuation?",
         options: ["₹6 crore", "₹8 crore", "₹10 crore", "₹2 crore"],
-        correctIndex: 2
+        correctIndex: 2,
+        correctAnswer: 2
       },
       {
         id: 3,
         question: "An early-stage startup wants to raise a small amount quickly without fixing a valuation yet. What's a common instrument for this?",
         options: ["A convertible note or SAFE", "A bank loan", "An IPO", "A franchise agreement"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 4,
@@ -480,7 +527,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "A detailed 40-page technical manual",
           "Just the logo and tagline"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 5,
@@ -491,7 +539,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "The founder's personal expenses",
           "The number of employees on leave"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 6,
@@ -502,13 +551,15 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Nothing changes for anyone",
           "Only the founder is affected"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 7,
         question: "Before writing a cheque, a serious investor typically conducts a deep review of the company's financials, legal standing and team. This process is called:",
         options: ["Due diligence", "Market research", "Product testing", "Customer onboarding"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 8,
@@ -519,7 +570,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Angels only invest in public companies",
           "VC funds never sign any documents"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 9,
@@ -530,7 +582,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Nothing — always accept the highest number",
           "Whether the investor has a nice office"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 10,
@@ -541,7 +594,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Shut down immediately without exploring options",
           "Ignore the runway and launch a large ad campaign"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       }
     ]
   },
@@ -550,6 +604,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     slug: "ai-iq-challenge-2026",
     title: "UpForge AI & Future Skills IQ Challenge 2026",
     tagline: "Think like an innovator. Work smarter in the AI-driven era.",
+    description: "Think like an innovator. Work smarter in the AI-driven era with practical skills.",
+    summary: "Think like an innovator. Work smarter in the AI-driven era.",
     badge: "Future Skills Benchmark",
     category: "AI & Technology",
     duration: "3–5 Minutes",
@@ -572,7 +628,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Repeat the exact same vague prompt again",
           "Assume the tool is broken"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 2,
@@ -583,7 +640,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "How many fonts are used in the UI",
           "The office's Wi-Fi speed"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 3,
@@ -594,7 +652,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Avoid reading anything the AI produces",
           "Submit the AI's raw output as final work"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 4,
@@ -605,7 +664,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Avoid any automation entirely",
           "Replace all support staff immediately with no fallback"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 5,
@@ -616,7 +676,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "A type of physical robot hardware",
           "A method for formatting spreadsheets"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 6,
@@ -627,13 +688,15 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Avoid using AI tools forever out of fear",
           "Share passwords with the AI tool for convenience"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 7,
         question: "An AI writing tool produces a confident-sounding but factually incorrect answer. This is commonly known as:",
         options: ["A hallucination", "A firewall", "A cookie", "A cache hit"],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 8,
@@ -644,7 +707,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Ban all AI tools indefinitely",
           "Let only one person use it and tell no one else"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       },
       {
         id: 9,
@@ -655,7 +719,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Avoiding all new technology",
           "Memorizing information available with one search"
         ],
-        correctIndex: 0
+        correctIndex: 0,
+        correctAnswer: 0
       },
       {
         id: 10,
@@ -666,7 +731,8 @@ export const QUIZ_REGISTRY: QuizItem[] = [
           "Learn it only if a friend randomly mentions it",
           "Assume all new skills are equally important with no prioritization"
         ],
-        correctIndex: 1
+        correctIndex: 1,
+        correctAnswer: 1
       }
     ]
   }
