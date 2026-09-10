@@ -48,6 +48,13 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
   }
 
   const categoryLabel = quiz.category || quiz.badge || "Startup Intelligence";
+  const displayTime = quiz.time || quiz.duration || quiz.metrics?.avgCompletionTime || "3–5 Mins";
+
+  // Guarantees all fields required by QuizData in QuizDetailClient
+  const clientQuizData = {
+    ...quiz,
+    time: displayTime,
+  };
 
   return (
     <div className="min-h-screen bg-[#07090E] text-white pt-24 pb-20 px-4 sm:px-6 lg:px-8">
@@ -76,7 +83,7 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
           <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-white/10 text-xs sm:text-sm">
             <div className="flex items-center gap-2 text-neutral-300">
               <Clock className="w-4 h-4 text-[#D4AF37]" />
-              <span>{quiz.duration || quiz.metrics.avgCompletionTime}</span>
+              <span>{displayTime}</span>
             </div>
             <div className="flex items-center gap-2 text-neutral-300">
               <HelpCircle className="w-4 h-4 text-[#D4AF37]" />
@@ -84,12 +91,12 @@ export default async function QuizDetailPage({ params }: QuizPageProps) {
             </div>
             <div className="flex items-center gap-2 text-neutral-300">
               <Award className="w-4 h-4 text-[#D4AF37]" />
-              <span>{quiz.metrics.credentialTier}</span>
+              <span>{quiz.metrics?.credentialTier || "Verified"}</span>
             </div>
           </div>
         </div>
 
-        <QuizDetailClient quiz={quiz} />
+        <QuizDetailClient quiz={clientQuizData as any} />
       </div>
     </div>
   );
