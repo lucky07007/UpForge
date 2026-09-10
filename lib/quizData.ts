@@ -23,6 +23,7 @@ export interface QuizItem {
   badge: string;
   duration: string;
   image: string;
+  category: string;
   baseParticipants: number;
   metrics: {
     scenariosCount: string;
@@ -134,6 +135,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     title: "How Startup-Smart Are You? | UpForge Startup IQ Challenge 2026",
     tagline: "Think like a founder. Decide like a builder. Test your Startup IQ.",
     badge: "Official Benchmark",
+    category: "Startup Intelligence",
     duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/UpForge%2020Startup%2020IQ%2020Challenge%20202026.webp",
     baseParticipants: 18450,
@@ -227,6 +229,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     title: "UpForge Marketing IQ Challenge 2026",
     tagline: "Think like a marketer. Understand what makes people act.",
     badge: "Growth Benchmark",
+    category: "Marketing & Growth",
     duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/UpForge%2020Marketing%2020IQ%2020Challenge%20202026.webp",
     baseParticipants: 14210,
@@ -305,6 +308,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     title: "UpForge Career IQ Challenge 2026",
     tagline: "Think like a professional. Make career moves that actually compound.",
     badge: "Career Benchmark",
+    category: "Career & Leadership",
     duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/Upforge%20career-iq-2026.webp",
     baseParticipants: 16230,
@@ -428,6 +432,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     title: "UpForge Fundraising IQ Challenge 2026",
     tagline: "Think like an investor. Raise capital without giving away the store.",
     badge: "Investor Benchmark",
+    category: "Fundraising",
     duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/Upforge%20fundraising-iq-2026.png",
     baseParticipants: 12870,
@@ -541,6 +546,7 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     title: "UpForge AI & Future Skills IQ Challenge 2026",
     tagline: "Think like an innovator. Work smarter in the AI-driven era.",
     badge: "Future Skills Benchmark",
+    category: "AI & Technology",
     duration: "3–5 Minutes",
     image: "https://images.upforge.org/quiz/ai-iq-2026.webp",
     baseParticipants: 20340,
@@ -659,3 +665,12 @@ export const QUIZ_REGISTRY: QuizItem[] = [
     ]
   }
 ];
+
+// Helper functions for static generation and page lookups
+export function getQuizBySlug(slug: string): QuizItem | undefined {
+  return QUIZ_REGISTRY.find((quiz) => quiz.slug === slug);
+}
+
+export function getAllQuizzes(): QuizItem[] {
+  return QUIZ_REGISTRY;
+}
