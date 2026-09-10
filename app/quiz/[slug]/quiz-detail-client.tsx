@@ -22,21 +22,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight, RotateCcw } from "lucide-react";
-import type { QuizItem } from "@/lib/quizData";
 
-// Type-safe extension matching whatever fields quizData actually uses
-interface SafeQuizItem extends Omit<QuizItem, "questions"> {
-  description?: string;
-  summary?: string;
-  questions: any[];
-  [key: string]: any;
-}
-
-interface QuizDetailClientProps {
-  quiz: SafeQuizItem | QuizItem;
-}
-
-export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
+export function QuizDetailClient({ quiz }: { quiz: any }) {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +47,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     try {
       const q = query(
         collection(db, "quiz_leaderboard"),
-        where("quizSlug", "==", quiz.slug),
+        where("quizSlug", "==", quiz?.slug || ""),
         orderBy("score", "desc"),
         limit(10)
       );
@@ -73,8 +60,10 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
   };
 
   useEffect(() => {
-    fetchLeaderboard();
-  }, [quiz.slug]);
+    if (quiz?.slug) {
+      fetchLeaderboard();
+    }
+  }, [quiz?.slug]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -98,7 +87,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     }
   };
 
-  const questions: any[] = ((quiz as any)?.questions || []) as any[];
+  const questions: any[] = Array.isArray(quiz?.questions) ? quiz.questions : [];
   const currentQ = questions[currentIndex];
 
   const getCorrectAnswerIndex = (q: any): number => {
@@ -136,7 +125,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     setSavingScore(true);
     try {
       await addDoc(collection(db, "quiz_leaderboard"), {
-        quizSlug: quiz.slug,
+        quizSlug: quiz?.slug || "",
         userName: user?.displayName || user?.email?.split("@")[0] || "Anonymous Founder",
         userEmail: user?.email || "",
         score: finalScore,
@@ -158,18 +147,18 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     setIsFinished(false);
   };
 
-  const quizDesc = (quiz as any)?.description || (quiz as any)?.summary || "";
+  const quizDesc = quiz?.description || quiz?.summary || quiz?.subtitle || "";
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
       <Card className="border border-border/60 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold tracking-tight">{quiz.title}</CardTitle>
-          {quizDesc && (
+          <CardTitle className="text-2xl font-bold tracking-tight">{quiz?.title}</CardTitle>
+          {quizDesc ? (
             <CardDescription className="text-sm text-muted-foreground">
               {quizDesc}
             </CardDescription>
-          )}
+          ) : null}
         </CardHeader>
         <CardContent className="space-y-6">
           {!isFinished ? (
@@ -188,6 +177,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
                   {(currentQ.options || []).map((opt: string, idx: number) => (
                     <button
                       key={idx}
+                      type="button"
                       onClick={() => setSelectedOption(idx)}
                       className={`text-left px-4 py-3 rounded-lg border text-sm transition-all duration-150 ${
                         selectedOption === idx
@@ -202,6 +192,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
 
                 <div className="flex justify-end pt-4">
                   <Button
+                    type="button"
                     onClick={handleNext}
                     disabled={selectedOption === null}
                     className="gap-2"
@@ -228,14 +219,24 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
                   <p className="text-xs text-muted-foreground">
                     Save your score to the official Leaderboard
                   </p>
-                  <Button onClick={handleGoogleLogin} variant="outline" className="w-full text-xs">
+                  <Button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    variant="outline"
+                    className="w-full text-xs"
+                  >
                     Sign in with Google
                   </Button>
                   {authError && <p className="text-xs text-red-500">{authError}</p>}
                 </div>
               )}
 
-              <Button onClick={handleRestart} variant="secondary" className="gap-2 mt-4">
+              <Button
+                type="button"
+                onClick={handleRestart}
+                variant="secondary"
+                className="gap-2 mt-4"
+              >
                 <RotateCcw className="w-4 h-4" /> Try Again
               </Button>
             </div>
@@ -249,7 +250,7 @@ export function QuizDetailClient({ quiz }: QuizDetailClientProps) {
             <CardTitle className="text-lg font-bold flex items-center gap-2">
               <Trophy className="w-5 h-5 text-amber-500" /> Leaderboard
             </CardTitle>
-            <CardDescription className="text-xs">Top scores for {quiz.title}</CardDescription>
+            <CardDescription className="text-xs">Top scores for {quiz?.title}</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
