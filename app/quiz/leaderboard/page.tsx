@@ -18,3 +18,4 @@ export default function QuizLeaderboardPage() {
   return <LeaderboardClient quizzes={quizzes} />;
 }
 
+
