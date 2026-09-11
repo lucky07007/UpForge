@@ -9,9 +9,6 @@ const config: OpenNextConfig = {
       tagCache: "dummy",
       queue: "dummy",
     },
-    packageJson: {
-      external: ["firebase-admin", "jwks-rsa", "jose"],
-    },
   },
 };
 
