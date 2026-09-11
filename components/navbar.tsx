@@ -18,11 +18,10 @@ import {
   Sun,
   Moon,
   Loader2,
+  Trophy,
 } from "lucide-react";
 
 import { useTheme } from "next-themes";
-import { FOUNDERS } from "@/lib/founders/data";
-
 type NavLink = {
   name: string;
   href: string;
@@ -61,10 +60,17 @@ export function Navbar() {
   const router = useRouter();
 
   const { theme, setTheme } = useTheme();
-  const latestFounder = FOUNDERS[0];
-
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Global leaderboard #1 is fetched from the real server-verified leaderboard.
+  // A small local cache keeps the header populated instantly while the fresh
+  // value refreshes silently in the background.
+  const [leaderboardTop, setLeaderboardTop] = useState<{
+    userName: string;
+    percentage: number;
+    quizTitle?: string;
+  } | null>(null);
   
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -82,6 +88,74 @@ export function Navbar() {
   const navigationInProgressRef = useRef(false);
 
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const cacheKey = "upforge:header:leaderboard-top";
+
+    // Paint the last verified #1 immediately if this browser has seen it before.
+    try {
+      const raw = window.localStorage.getItem(cacheKey);
+      if (raw) {
+        const cached = JSON.parse(raw);
+        if (cached?.userName) {
+          setLeaderboardTop({
+            userName: String(cached.userName).slice(0, 80),
+            percentage: Number(cached.percentage) || 0,
+            quizTitle: cached.quizTitle ? String(cached.quizTitle).slice(0, 120) : undefined,
+          });
+        }
+      }
+    } catch {}
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 2500);
+
+    const loadTop = async () => {
+      try {
+        const response = await fetch(
+          "/api/quiz/leaderboard?scope=global&period=all-time&topOnly=1",
+          {
+            cache: "force-cache",
+            signal: controller.signal,
+            credentials: "same-origin",
+          },
+        );
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const top = data?.top;
+
+        if (!top?.userName) return;
+
+        const next = {
+          userName: String(top.userName).slice(0, 80),
+          percentage: Number(top.percentage) || 0,
+          quizTitle: top.quizTitle ? String(top.quizTitle).slice(0, 120) : undefined,
+        };
+
+        setLeaderboardTop(next);
+
+        try {
+          window.localStorage.setItem(
+            cacheKey,
+            JSON.stringify({ ...next, savedAt: Date.now() }),
+          );
+        } catch {}
+      } catch {
+        // Never block or surface a leaderboard network error in the global header.
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    };
+
+    void loadTop();
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     setIsOpen(false);
@@ -411,36 +485,28 @@ export function Navbar() {
               </div>
             </Link>
 
-            {/* IG Player Style Active Story Ring (Dynamic Top Founder) */}
-            {latestFounder && (
-              <Link
-                href={`/founder-stories/${latestFounder.slug}`}
-                className="hidden lg:flex items-center gap-2 pl-3 border-l border-border/50 group/story"
-                title={`Read Cover Story: ${latestFounder.name} (${latestFounder.company})`}
-              >
-                <div className="relative p-[1.5px] rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-amber-300 shadow-sm animate-pulse">
-                  <div className="relative w-6 h-6 rounded-full overflow-hidden border border-background">
-                    <Image
-                      src={latestFounder.cardImage || latestFounder.imageUrl}
-                      alt={`${latestFounder.name} — Cover Story`}
-                      fill
-                      sizes="24px"
-                      className="object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col text-[10px] font-mono">
-                  <span className="text-amber-500 font-bold tracking-wider uppercase flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                    COVER STORY
-                  </span>
-                  <span className="text-muted-foreground group-hover/story:text-foreground transition-colors truncate max-w-[110px]">
-                    {latestFounder.nameShort || latestFounder.name}
-                  </span>
-                </div>
-              </Link>
-            )}
+            {/* LIVE GLOBAL LEADERBOARD #1 — compact social proof */}
+            <Link
+              href="/quiz/leaderboard"
+              className="hidden lg:flex items-center gap-2 pl-3 border-l border-border/50 group/rank min-w-0"
+              title={
+                leaderboardTop
+                  ? `${leaderboardTop.userName} is #1 on the global leaderboard`
+                  : "View the global leaderboard"
+              }
+            >
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-gold/10 text-accent-gold ring-1 ring-accent-gold/20">
+                <Trophy className="h-3.5 w-3.5" />
+              </span>
+              <span className="flex min-w-0 flex-col leading-none">
+                <span className="text-[8px] font-black uppercase tracking-[0.16em] text-accent-gold">
+                  #1 LEADERBOARD
+                </span>
+                <span className="mt-1 max-w-[112px] truncate text-[10px] font-bold text-muted-foreground transition-colors group-hover/rank:text-foreground">
+                  {leaderboardTop?.userName || "Top performer"}
+                </span>
+              </span>
+            </Link>
           </div>
 
 
@@ -770,39 +836,27 @@ export function Navbar() {
         {/* Full Screen Scrollable Body */}
         <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
           
-          {/* Cover Story Feature Banner (Dynamic Top Founder) */}
-          {latestFounder && (
-            <Link
-              href={`/founder-stories/${latestFounder.slug}`}
-              onClick={closeAll}
-              className="group flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-amber-500/10 border border-amber-500/20 shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <div className="relative p-[1.5px] rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 shrink-0">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-background">
-                    <Image
-                      src={latestFounder.cardImage || latestFounder.imageUrl}
-                      alt={latestFounder.name}
-                      fill
-                      sizes="32px"
-                      className="object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
-                    READ COVER STORY
-                  </span>
-                  <p className="text-xs font-bold text-foreground group-hover:text-amber-600 transition-colors">
-                    {latestFounder.name} • {latestFounder.company}
-                  </p>
-                </div>
+          {/* Live leaderboard #1 — same real server value as the desktop header */}
+          <Link
+            href="/quiz/leaderboard"
+            onClick={closeAll}
+            className="group flex items-center justify-between rounded-2xl border border-accent-gold/20 bg-accent-gold/[0.06] p-3.5 shadow-sm"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-gold/10 text-accent-gold ring-1 ring-accent-gold/20">
+                <Trophy className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <span className="text-[9px] font-black uppercase tracking-[0.16em] text-accent-gold">
+                  #1 LEADERBOARD
+                </span>
+                <p className="truncate text-xs font-bold text-foreground transition-colors group-hover:text-accent-gold">
+                  {leaderboardTop?.userName || "Top performer"}
+                </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-            </Link>
-          )}
+            </div>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />
+          </Link>
 
           {/* Search Input */}
           <div className="relative">
