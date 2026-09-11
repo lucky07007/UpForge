@@ -22,13 +22,13 @@ type CachedLeaderboard = {
 };
 
 const memoryCache = new Map<string, CachedLeaderboard>();
-const CACHE_TTL_MS = 20_000;
+const CACHE_TTL_MS = 60_000;
 const TODAY = () => new Date().toISOString().slice(0, 10);
 
 function response(
   data: Record<string, unknown>,
   status = 200,
-  browserCache = "public, max-age=15, stale-while-revalidate=60, stale-if-error=600",
+  browserCache = "public, max-age=60, stale-while-revalidate=300, stale-if-error=900",
   edgeCache = "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
 ) {
   return NextResponse.json(data, {
