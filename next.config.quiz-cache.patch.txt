@@ -1,0 +1,35 @@
+# In next.config.mjs, replace the existing /api/(.*) Cache-Control block.
+# Your current config sets all API routes to no-store, which would defeat the
+# leaderboard/comments edge cache.
+
+# REMOVE this header from the /api/(.*) block:
+# {
+#   key: "Cache-Control",
+#   value: "no-cache, no-store, must-revalidate",
+# },
+
+# Keep the CORS headers in that block. The route handlers themselves now return
+# their own cache policy:
+# - /api/quiz/leaderboard: s-maxage=30, stale-while-revalidate=120
+# - /api/quiz/comments GET: s-maxage=30, stale-while-revalidate=120
+# - POST completion/comments: no-store / uncached
+
+# Next.js applies the last matching header rule when duplicate header keys match.
+# If you prefer a config-level override instead of removing the old rule, add
+# these rules AFTER the generic /api/(.*) rule:
+
+# {
+#   source: "/api/quiz/leaderboard",
+#   headers: [{
+#     key: "Cache-Control",
+#     value: "public, max-age=0, s-maxage=30, stale-while-revalidate=120",
+#   }],
+# },
+# {
+#   source: "/api/quiz/comments",
+#   has: [{ type: "method", value: "GET" }],
+#   headers: [{
+#     key: "Cache-Control",
+#     value: "public, max-age=0, s-maxage=30, stale-while-revalidate=120",
+#   }],
+# },
