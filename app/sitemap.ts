@@ -1,8 +1,9 @@
 import { MetadataRoute } from "next"
 import { fetchAllStartups } from "@/lib/google-sheets"
 import { BLOG_CATEGORIES } from "@/data/blog-posts"
+import { QUIZ_REGISTRY } from "@/lib/quizData"
 
-const BASE = "https://www.upforge.org"
+const BASE = "https://upforge.org"
 // String fallback format directly use karenge taaki transform crash na ho
 const STATIC_DATE_STR = "2026-04-28"
 
@@ -73,6 +74,7 @@ const FEATURED_FOUNDER_SLUGS = [
 const STATIC_ROUTES = [
   { path: "", priority: 1.0, changeFrequency: "daily" as const },
   { path: "/registry", priority: 0.95, changeFrequency: "daily" as const },
+  { path: "/quiz", priority: 0.9, changeFrequency: "weekly" as const },
   { path: "/startup", priority: 0.9, changeFrequency: "daily" as const },
   { path: "/startups", priority: 0.9, changeFrequency: "daily" as const },
   { path: "/submit", priority: 0.85, changeFrequency: "monthly" as const },
@@ -281,8 +283,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }))
 
+  const quizEntries: MetadataRoute.Sitemap = QUIZ_REGISTRY.map((quiz) => ({
+    url: `${BASE}/quiz/${quiz.slug}`,
+    lastModified: safeDateString(STATIC_DATE_STR),
+    changeFrequency: "monthly" as const,
+    priority: 0.85,
+  }))
+
   return [
     ...staticEntries,
+    ...quizEntries,
     ...founderEntries,
     ...founderStoryEntries,
     ...founderCategoryEntries,
