@@ -84,6 +84,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
           userRole,
           company: company.trim(),
           comment: commentText.trim(),
+          website: "",
         }),
       });
 
@@ -131,6 +132,15 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-7 space-y-3">
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute -left-[10000px] h-px w-px overflow-hidden opacity-0"
+          defaultValue=""
+        />
         {errorMsg && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
             {errorMsg}
