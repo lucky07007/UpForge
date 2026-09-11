@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
   try {
     const docs = await adminListDocuments(
       `comments/${quizSlug}/userComments`,
-      50
+      100
     );
 
     docs.sort((a: any, b: any) => {
@@ -225,9 +225,19 @@ export async function POST(req: NextRequest) {
       likesCount: 0,
     };
 
+    // Reverse timestamp IDs keep newest comments near the beginning of Firestore
+    // document-name ordering, so the public feed does not have to scan the whole collection.
+    const reverseTimestamp = String(9_999_999_999_999 - Date.now()).padStart(13, "0");
+    const entropy =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID().replace(/-/g, "").slice(0, 12)
+        : Math.random().toString(36).slice(2, 14);
+    const commentId = `c_${reverseTimestamp}_${entropy}`;
+
     const doc = await adminAddDocument(
       `comments/${quizSlug}/userComments`,
-      payload
+      payload,
+      commentId
     );
 
     // Make the next GET hit Firebase once so the new comment becomes visible.
