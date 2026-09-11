@@ -10,7 +10,7 @@ export interface Question {
   question: string;
   options: string[];
   correctIndex: number;
-  explanation: string;
+  explanation?: string;
 }
 
 export interface QuizDetailData {
@@ -209,7 +209,7 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
               })}
             </div>
 
-            {showExplanation && (
+            {showExplanation && currentQ.explanation && (
               <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">Insight: </span>
                 <span>{currentQ.explanation}</span>
