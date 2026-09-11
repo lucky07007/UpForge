@@ -14,8 +14,8 @@ export default function QuizIndexPage() {
   const quizzes = QUIZ_REGISTRY || [];
 
   return (
-    <main className="min-h-screen bg-[#FFFDF5] px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
-      <div className="mx-auto w-full max-w-[1440px]">
+    <main className="min-h-screen bg-[#FFFDF5] px-4 py-8 md:px-8">
+      <div className="mx-auto w-full max-w-[1300px]">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-3xl">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-700">
