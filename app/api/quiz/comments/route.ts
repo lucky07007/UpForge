@@ -1,29 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { firestoreAddDocument, firestoreListDocuments } from "@/lib/firebase-admin";
+import { adminAddDocument, adminListDocuments } from "@/lib/firebase-admin";
 
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const quizSlug = searchParams.get("quizSlug");
+    const quizSlug = searchParams.get("quizSlug") || "startup-iq-challenge-2026";
 
-    const docs = await firestoreListDocuments("quiz_comments", 80);
+    // Matches Firestore Rule: match /comments/{quizId}/userComments/{commentId}
+    const docs = await adminListDocuments(`comments/${quizSlug}/userComments`, 50);
 
-    let filtered = docs;
-    if (quizSlug) {
-      filtered = docs.filter((c: any) => c.quizSlug === quizSlug);
-    }
-
-    filtered.sort((a: any, b: any) => {
+    docs.sort((a: any, b: any) => {
       const timeA = new Date(a.createdAt || a.createTime || 0).getTime();
       const timeB = new Date(b.createdAt || b.createTime || 0).getTime();
       return timeB - timeA;
     });
 
-    return NextResponse.json({ success: true, comments: filtered });
+    return NextResponse.json({ success: true, comments: docs });
   } catch (error: any) {
-    console.error("Fetch comments error:", error);
+    console.error("Comments fetch error:", error);
     return NextResponse.json({ success: true, comments: [] });
   }
 }
@@ -34,29 +30,23 @@ export async function POST(req: NextRequest) {
     const { quizSlug, author, comment, userRole } = body;
 
     if (!quizSlug || !comment?.trim() || !author?.trim()) {
-      return NextResponse.json(
-        { error: "quizSlug, author, and comment are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const payload = {
-      quizSlug: String(quizSlug),
       author: String(author).slice(0, 50),
       comment: String(comment).slice(0, 500),
       userRole: String(userRole || "Founder"),
       createdAt: new Date().toISOString(),
-      upvotes: 0,
+      likesCount: 0,
     };
 
-    const doc = await firestoreAddDocument("quiz_comments", payload);
+    // Server-side write bypassing client "allow write: if false"
+    const doc = await adminAddDocument(`comments/${quizSlug}/userComments`, payload);
 
     return NextResponse.json({ success: true, comment: doc });
   } catch (error: any) {
     console.error("Post comment error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to post comment" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || "Failed to post comment" }, { status: 500 });
   }
 }
