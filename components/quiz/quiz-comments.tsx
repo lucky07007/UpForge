@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { MessageSquare, Send, ThumbsUp, User } from "lucide-react";
+import { MessageSquare, Send } from "lucide-react";
 
 interface CommentItem {
   id?: string;
@@ -10,14 +10,9 @@ interface CommentItem {
   comment: string;
   userRole?: string;
   createdAt?: string;
-  upvotes?: number;
 }
 
-interface QuizCommentsProps {
-  quizSlug: string;
-}
-
-export default function QuizComments({ quizSlug }: QuizCommentsProps) {
+export default function QuizComments({ quizSlug }: { quizSlug: string }) {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [author, setAuthor] = useState("");
@@ -66,14 +61,12 @@ export default function QuizComments({ quizSlug }: QuizCommentsProps) {
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to post comment");
-      }
+      if (!res.ok) throw new Error("Failed to post");
 
       setCommentText("");
       await fetchComments();
     } catch (err: any) {
-      setErrorMsg(err.message || "Unable to send comment. Please try again.");
+      setErrorMsg(err.message || "Failed to post comment");
     } finally {
       setSubmitting(false);
     }
@@ -93,7 +86,7 @@ export default function QuizComments({ quizSlug }: QuizCommentsProps) {
 
       <form onSubmit={handleSubmit} className="mb-8 space-y-3">
         {errorMsg && (
-          <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900">
+          <div className="p-3 text-xs text-red-600 bg-red-50 dark:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900">
             {errorMsg}
           </div>
         )}
@@ -117,14 +110,13 @@ export default function QuizComments({ quizSlug }: QuizCommentsProps) {
             <option value="Growth & Marketing">Growth & Marketing</option>
             <option value="Product Manager">Product Manager</option>
             <option value="Investor / VC">Investor / VC</option>
-            <option value="Aspiring Entrepreneur">Aspiring Entrepreneur</option>
           </select>
         </div>
 
-        <div className="relative">
+        <div>
           <textarea
             rows={3}
-            placeholder="Share your score, strategy, or insights from this challenge..."
+            placeholder="Share your score or strategy..."
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             className="w-full p-3.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
@@ -147,7 +139,7 @@ export default function QuizComments({ quizSlug }: QuizCommentsProps) {
           <p className="text-sm text-zinc-500 py-4 text-center">Loading discussions...</p>
         ) : comments.length === 0 ? (
           <p className="text-sm text-zinc-500 py-4 text-center">
-            No community notes yet. Take the quiz and share your thoughts!
+            No community notes yet. Share your thoughts!
           </p>
         ) : (
           comments.map((item, idx) => (
@@ -156,10 +148,7 @@ export default function QuizComments({ quizSlug }: QuizCommentsProps) {
               className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 space-y-1.5"
             >
               <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-[10px]">
-                    {item.author.charAt(0).toUpperCase()}
-                  </div>
+                <div className="flex items-center gap-2">
                   <span className="font-semibold text-zinc-900 dark:text-zinc-200">{item.author}</span>
                   <span className="text-[11px] px-2 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                     {item.userRole || "Founder"}
@@ -169,7 +158,7 @@ export default function QuizComments({ quizSlug }: QuizCommentsProps) {
                   <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                 )}
               </div>
-              <p className="text-sm text-zinc-800 dark:text-zinc-200 pl-7 leading-relaxed">
+              <p className="text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
                 {item.comment}
               </p>
             </div>
