@@ -1,7 +1,18 @@
-import { defineCloudflareConfig } from "@opennextjs/cloudflare";
+import type { OpenNextConfig } from "@opennextjs/aws/types/open-next";
 
-export default defineCloudflareConfig({
-  // FIX #9: Use correct Cloudflare config for v1.20.2+
-  // Remove deprecated 'edgeExternals' - handled automatically
-  // Instead, specify externals at build time in wrangler.jsonc
-});
+const config: OpenNextConfig = {
+  default: {
+    override: {
+      wrapper: "cloudflare-node",
+      converter: "edge",
+      incrementalCache: "dummy",
+      tagCache: "dummy",
+      queue: "dummy",
+    },
+    packageJson: {
+      external: ["firebase-admin", "jwks-rsa", "jose"],
+    },
+  },
+};
+
+export default config;
