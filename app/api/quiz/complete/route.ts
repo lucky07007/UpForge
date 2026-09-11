@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { adminAddDocument } from "@/lib/firebase-admin";
+import { allowRateLimitedRequest, getClientIp } from "@/lib/quiz-rate-limit";
 
 const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
@@ -42,7 +43,29 @@ function getBadge(percentage: number) {
 
 export async function POST(req: NextRequest) {
   try {
+    const contentLength = Number(req.headers.get("content-length") || 0);
+    if (contentLength > 64 * 1024) {
+      return json({ success: false, error: "Request is too large." }, 413);
+    }
+
+    const rate = allowRateLimitedRequest(`complete:${getClientIp(req)}`, 30);
+    if (!rate.allowed) {
+      const response = json(
+        {
+          success: false,
+          error: "Too many completion attempts. Please try again shortly.",
+        },
+        429
+      );
+      response.headers.set("Retry-After", String(rate.retryAfterSeconds));
+      return response;
+    }
+
     const body = await req.json();
+    if (String(body?.website || "").trim()) {
+      return json({ success: false, error: "Invalid submission." }, 400);
+    }
+
     const quizSlug = String(body?.quizSlug || "").trim();
     const answers =
       body?.answers && typeof body.answers === "object"
@@ -87,15 +110,37 @@ export async function POST(req: NextRequest) {
     }
 
     const totalQuestions = quiz.questions.length;
+    const answeredQuestionCount = quiz.questions.reduce((count, question) => {
+      const value = Number(answers[String(question.id)]);
+      return Number.isInteger(value) && value >= 0 && value < question.options.length
+        ? count + 1
+        : count;
+    }, 0);
+
+    if (answeredQuestionCount !== totalQuestions) {
+      return json(
+        { success: false, error: "Please answer every question before completing the challenge." },
+        400
+      );
+    }
+
     const percentage = Math.round((score / Math.max(totalQuestions, 1)) * 100);
     const badgeEarned = getBadge(percentage);
-    const completionId = `ufc_${attemptId}`;
+    // Firestore listDocuments() defaults to document-name ASC ordering.
+    // Encode the final score into the document ID so the first 10 documents
+    // are already the true top 10 without reading the whole collection.
+    const scoreKey = [
+      String(100 - percentage).padStart(3, "0"),
+      String(Math.max(totalQuestions - score, 0)).padStart(4, "0"),
+      String(Math.max(timeTakenSeconds, 0)).padStart(6, "0"),
+    ].join("_");
+    const completionId = `ufc_${scoreKey}_${attemptId}`;
     const certificateId = `UFR-CERT-${quizSlug.slice(0, 8).toUpperCase()}-${attemptId
       .slice(-8)
       .toUpperCase()}`;
 
     const record = {
-      uid: completionId,
+      uid: attemptId,
       userName,
       score,
       totalQuestions,
