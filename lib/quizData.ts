@@ -30,6 +30,7 @@ export interface QuizItem {
   time: string;
   image: string;
   baseParticipants: number;
+  publishedAt?: string;
   description?: string;
   summary?: string;
   subtitle?: string;
