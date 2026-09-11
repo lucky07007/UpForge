@@ -98,7 +98,13 @@ export default function QuizCertificate({
           <div className="relative flex h-full flex-col px-[7.5%] py-[6.2%]">
             <header className="flex items-center justify-between border-b border-[#D7E1ED] pb-[2.4%]">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#173B72] text-xl font-black text-white">U</div>
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white p-0.5">
+                  <img
+                    src="/logo.jpg"
+                    alt="UpForge"
+                    className="h-full w-full object-contain"
+                  />
+                </div>
                 <div>
                   <div className="text-[15px] font-black tracking-[0.22em] text-[#173B72]">UPFORGE</div>
                   <div className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.18em] text-[#718096]">Startup intelligence platform</div>
