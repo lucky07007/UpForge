@@ -170,6 +170,39 @@ async function getGlobalLeaderboard(period: "daily" | "all-time", dateKey: strin
   };
 }
 
+async function getGlobalTop(period: "daily" | "all-time", dateKey: string) {
+  // The navbar only needs the real #1 record. Each quiz leaderboard is
+  // ordered by its completion ID, so one document per quiz is enough to
+  // identify the global winner without loading the normal top-10 pages.
+  const results = await Promise.all(
+    QUIZ_REGISTRY.map(async (quiz) => {
+      const collectionPath =
+        period === "daily"
+          ? `leaderboards/${quiz.slug}/daily/${dateKey}/scores`
+          : `leaderboards/${quiz.slug}/scores`;
+
+      try {
+        const documents = await adminListDocuments(collectionPath, 1);
+        const first = documents[0];
+        if (!first) return null;
+
+        return normalizeEntry(first, first?.id, quiz.slug);
+      } catch (error) {
+        console.error(`[quiz/leaderboard] top ${quiz.slug} failed:`, error);
+        return null;
+      }
+    }),
+  );
+
+  const candidates = results.filter(
+    (entry): entry is LeaderboardEntry => Boolean(entry),
+  );
+
+  const top = rankEntries(candidates, 1)[0] ?? null;
+
+  return { top };
+}
+
 export async function GET(request: NextRequest) {
   const rawSlug =
     request.nextUrl.searchParams.get("quizSlug") ??
@@ -182,7 +215,56 @@ export async function GET(request: NextRequest) {
   const requestedDate = sanitize(request.nextUrl.searchParams.get("date") ?? "");
   const requestedPage = Number(request.nextUrl.searchParams.get("page") ?? "1");
   const page = Number.isFinite(requestedPage) ? Math.min(100, Math.max(1, Math.floor(requestedPage))) : 1;
+  const topOnly = request.nextUrl.searchParams.get("topOnly") === "1";
   const dateKey = /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ? requestedDate : TODAY();
+
+  if (topOnly && scope === "global") {
+    const topCacheKey = `global-top:${period}:${period === "daily" ? dateKey : "all-time"}`;
+    const now = Date.now();
+    const cachedTop = memoryCache.get(topCacheKey);
+
+    if (cachedTop && cachedTop.expiresAt > now) {
+      return response({
+        success: true,
+        top: cachedTop.leaderboard[0] ?? null,
+        leaderboard: cachedTop.leaderboard,
+        scope: "global",
+        period,
+        date: period === "daily" ? dateKey : undefined,
+        cached: true,
+      });
+    }
+
+    try {
+      const result = await getGlobalTop(period, dateKey);
+      const leaderboard = result.top ? [result.top] : [];
+
+      memoryCache.set(topCacheKey, {
+        leaderboard,
+        hasMore: false,
+        expiresAt: now + CACHE_TTL_MS,
+      });
+
+      return response({
+        success: true,
+        top: result.top,
+        leaderboard,
+        scope: "global",
+        period,
+        date: period === "daily" ? dateKey : undefined,
+        cached: false,
+      });
+    } catch (error) {
+      console.error("[quiz/leaderboard] top lookup failed:", error);
+      return response({
+        success: false,
+        top: null,
+        leaderboard: [],
+        scope: "global",
+        period,
+      }, 503);
+    }
+  }
 
   if (scope === "quiz" && !quizSlug) {
     return noStoreResponse({ success: false, error: "Quiz slug is required.", leaderboard: [] }, 400);
