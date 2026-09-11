@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
   try {
     const docs = await adminListDocuments(
       `comments/${quizSlug}/userComments`,
-      50
+      30
     );
 
     docs.sort((a: any, b: any) => {
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
       );
     });
 
-    const comments = docs.slice(0, 50);
+    const comments = docs.slice(0, 30);
 
     commentCache.set(quizSlug, {
       expiresAt: Date.now() + CACHE_MS,
