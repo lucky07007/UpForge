@@ -21,6 +21,14 @@ interface Entry {
   timeTakenSeconds?: number;
 }
 
+async function readJson(res: Response) {
+  const contentType = res.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    throw new Error("Leaderboard service returned an invalid response.");
+  }
+  return res.json();
+}
+
 export default function LeaderboardClient({
   quizzes,
 }: {
@@ -29,10 +37,11 @@ export default function LeaderboardClient({
   const [selectedSlug, setSelectedSlug] = useState(quizzes[0]?.slug || "");
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const requested = params.get("quiz");
+    const requested = new URLSearchParams(window.location.search).get("quiz");
+
     if (requested && quizzes.some((quiz) => quiz.slug === requested)) {
       setSelectedSlug(requested);
     }
@@ -41,14 +50,32 @@ export default function LeaderboardClient({
   useEffect(() => {
     if (!selectedSlug) return;
 
+    let active = true;
     setLoading(true);
-    fetch(`/api/quiz/leaderboard?quizSlug=${encodeURIComponent(selectedSlug)}`, {
-      headers: { "x-upforge-domain": "quiz" },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setEntries(data?.leaderboard || []))
-      .catch(() => setEntries([]))
-      .finally(() => setLoading(false));
+    setError("");
+
+    fetch(
+      `/api/quiz/leaderboard?quizSlug=${encodeURIComponent(selectedSlug)}`,
+      { headers: { "x-upforge-domain": "quiz" } }
+    )
+      .then(readJson)
+      .then((data) => {
+        if (!active) return;
+        setEntries(Array.isArray(data?.leaderboard) ? data.leaderboard : []);
+        if (!data?.success && data?.error) setError(data.error);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setEntries([]);
+        setError(err?.message || "Leaderboard is temporarily unavailable.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [selectedSlug]);
 
   const activeQuiz = useMemo(
@@ -57,31 +84,32 @@ export default function LeaderboardClient({
   );
 
   return (
-    <main className="min-h-screen bg-[#FFFDF5] px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen bg-[#FFFDF5] px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
+      <div className="mx-auto w-full max-w-[1440px]">
         <Link
           href="/quiz"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-950"
+          className="inline-flex items-center gap-1.5 text-xs font-black text-slate-500 hover:text-slate-950"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to challenges
         </Link>
 
-        <header className="mt-8 rounded-3xl border border-amber-100 bg-white p-6 shadow-sm sm:p-8">
+        <header className="mt-6 rounded-3xl border border-amber-100 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-800">
               <Trophy className="h-6 w-6" />
             </div>
+
             <div>
-              <p className="text-xs font-black uppercase tracking-wider text-amber-700">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
                 UpForge public rankings
               </p>
-              <h1 className="mt-1 text-3xl font-black">
+              <h1 className="mt-1 text-3xl font-black text-slate-950 sm:text-4xl">
                 Quiz Leaderboards
               </h1>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Rankings are ordered by accuracy first and completion time second.
-                Quiz completion is submitted automatically when a challenge ends.
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                Rankings use accuracy first, score second and completion time
+                third. Every completed challenge is submitted automatically.
               </p>
             </div>
           </div>
@@ -92,7 +120,7 @@ export default function LeaderboardClient({
                 key={quiz.slug}
                 type="button"
                 onClick={() => setSelectedSlug(quiz.slug)}
-                className={`rounded-xl px-3.5 py-2 text-xs font-black transition ${
+                className={`rounded-xl px-3.5 py-2.5 text-xs font-black transition ${
                   selectedSlug === quiz.slug
                     ? "bg-[#F4C542] text-slate-950"
                     : "border border-slate-200 bg-white text-slate-600 hover:border-amber-300"
@@ -107,13 +135,21 @@ export default function LeaderboardClient({
         <section className="mt-6 rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-8">
           <div className="mb-5 flex items-end justify-between gap-4 border-b border-slate-100 pb-5">
             <div>
-              <p className="text-xs font-black uppercase tracking-wider text-amber-700">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
                 {activeQuiz?.category}
               </p>
-              <h2 className="mt-1 text-xl font-black">{activeQuiz?.title}</h2>
+              <h2 className="mt-1 text-2xl font-black text-slate-950">
+                {activeQuiz?.title}
+              </h2>
             </div>
             <Medal className="h-6 w-6 text-amber-600" />
           </div>
+
+          {error && (
+            <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+              {error}
+            </div>
+          )}
 
           {loading ? (
             <div className="py-12 text-center text-sm text-slate-500">
@@ -149,7 +185,7 @@ export default function LeaderboardClient({
                   </div>
 
                   <div className="flex shrink-0 items-center gap-3 text-right">
-                    <div>
+                    <div className="hidden sm:block">
                       <p className="text-sm font-black text-slate-950">
                         {entry.score}/{entry.totalQuestions}
                       </p>
