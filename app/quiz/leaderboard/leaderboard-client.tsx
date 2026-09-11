@@ -84,8 +84,8 @@ export default function LeaderboardClient({
   );
 
   return (
-    <main className="min-h-screen bg-[#FFFDF5] px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
-      <div className="mx-auto w-full max-w-[1440px]">
+    <main className="min-h-screen bg-[#FFFDF5] px-4 py-8 md:px-8">
+      <div className="mx-auto w-full max-w-[1300px]">
         <Link
           href="/quiz"
           className="inline-flex items-center gap-1.5 text-xs font-black text-slate-500 hover:text-slate-950"
