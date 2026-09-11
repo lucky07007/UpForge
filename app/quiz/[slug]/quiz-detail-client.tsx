@@ -482,3 +482,4 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
     </main>
   );
 }
+
