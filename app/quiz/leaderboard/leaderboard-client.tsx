@@ -37,17 +37,17 @@ async function readJson(res: Response) {
 }
 
 function rowStyle(rank: number) {
-  if (rank === 1) return "border-[#E7C65C] bg-[#FFF9E7]";
-  if (rank === 2) return "border-[#CBD5E1] bg-[#F8FAFC]";
-  if (rank === 3) return "border-[#D6B08A] bg-[#FFF8F2]";
-  return "border-slate-100 bg-white";
+  if (rank === 1) return "border-accent-gold/50 bg-accent-gold/10 shadow-sm";
+  if (rank === 2) return "border-slate-300/60 bg-muted/50";
+  if (rank === 3) return "border-amber-700/25 bg-amber-50/50 dark:bg-amber-950/10";
+  return "border-[var(--glass-border)] bg-card";
 }
 
 function RankMark({ rank }: { rank: number }) {
-  if (rank === 1) return <span className="text-xl">🥇</span>;
-  if (rank === 2) return <span className="text-xl">🥈</span>;
-  if (rank === 3) return <span className="text-xl">🥉</span>;
-  return <span className="w-7 text-center text-xs font-black text-slate-500">#{rank}</span>;
+  if (rank === 1) return <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-gold/15 text-lg">🥇</span>;
+  if (rank === 2) return <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-lg">🥈</span>;
+  if (rank === 3) return <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-lg">🥉</span>;
+  return <span className="w-7 text-center text-xs font-bold text-muted-foreground">#{rank}</span>;
 }
 
 export default function LeaderboardClient({ quizzes }: { quizzes: QuizMeta[] }) {
@@ -115,49 +115,49 @@ export default function LeaderboardClient({ quizzes }: { quizzes: QuizMeta[] }) 
     : `${activeQuiz?.title || "Challenge"} leaderboard`;
 
   return (
-    <main className="min-h-screen bg-[#FFFDF5] px-4 py-6 md:px-8">
+    <main className="min-h-screen bg-background px-4 py-6 text-foreground md:px-8">
       <div className="mx-auto w-full max-w-[1400px]">
-        <Link href="/quiz" className="inline-flex items-center gap-1.5 text-xs font-black text-slate-500 hover:text-slate-950">
+        <Link href="/quiz" className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />
           Back to challenges
         </Link>
 
-        <header className="mt-5 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <header className="mt-5 rounded-2xl border border-[var(--glass-border)] bg-card p-5 shadow-sm sm:p-7">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#1D4ED8]">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent-primary/10 text-accent-primary">
               <Trophy className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1D4ED8]">UpForge rankings</p>
-              <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Leaderboards</h1>
-              <p className="mt-1 text-sm text-slate-500">Accuracy first · score second · fastest time breaks ties.</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent-primary">UpForge rankings</p>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Leaderboards</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Accuracy first · score second · fastest time breaks ties.</p>
             </div>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            <button type="button" onClick={() => setScope("global")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${scope === "global" ? "bg-[#173B72] text-white" : "border border-slate-200 bg-white text-slate-600"}`}>
+            <button type="button" onClick={() => setScope("global")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${scope === "global" ? "bg-accent-primary text-white" : "border border-[var(--glass-border)] bg-background text-muted-foreground"}`}>
               Global
             </button>
-            <button type="button" onClick={() => setScope("quiz")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${scope === "quiz" ? "bg-[#173B72] text-white" : "border border-slate-200 bg-white text-slate-600"}`}>
+            <button type="button" onClick={() => setScope("quiz")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${scope === "quiz" ? "bg-accent-primary text-white" : "border border-[var(--glass-border)] bg-background text-muted-foreground"}`}>
               By challenge
             </button>
             <span className="mx-1 hidden h-9 w-px bg-slate-200 sm:block" />
-            <button type="button" onClick={() => setPeriod("daily")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${period === "daily" ? "bg-[#EEF4FB] text-[#173B72]" : "border border-slate-200 bg-white text-slate-600"}`}>
+            <button type="button" onClick={() => setPeriod("daily")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${period === "daily" ? "bg-accent-primary/10 text-accent-primary" : "border border-[var(--glass-border)] bg-background text-muted-foreground"}`}>
               Today
             </button>
-            <button type="button" onClick={() => setPeriod("all-time")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${period === "all-time" ? "bg-[#EEF4FB] text-[#173B72]" : "border border-slate-200 bg-white text-slate-600"}`}>
+            <button type="button" onClick={() => setPeriod("all-time")} className={`rounded-xl px-4 py-2.5 text-xs font-black transition ${period === "all-time" ? "bg-accent-primary/10 text-accent-primary" : "border border-[var(--glass-border)] bg-background text-muted-foreground"}`}>
               All time
             </button>
           </div>
 
           {scope === "quiz" && (
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {quizzes.map((quiz) => (
                 <button
                   key={quiz.slug}
                   type="button"
                   onClick={() => setSelectedSlug(quiz.slug)}
-                  className={`shrink-0 rounded-xl px-3.5 py-2 text-xs font-black transition ${selectedSlug === quiz.slug ? "bg-[#F4C542] text-slate-950" : "border border-slate-200 bg-white text-slate-600"}`}
+                  className={`shrink-0 rounded-xl px-3.5 py-2 text-xs font-black transition ${selectedSlug === quiz.slug ? "bg-accent-gold text-slate-950" : "border border-[var(--glass-border)] bg-background text-muted-foreground"}`}
                 >
                   {quiz.title}
                 </button>
@@ -166,25 +166,25 @@ export default function LeaderboardClient({ quizzes }: { quizzes: QuizMeta[] }) 
           )}
         </header>
 
-        <section className="mt-5 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
-          <div className="mb-5 flex items-end justify-between gap-3 border-b border-slate-100 pb-4">
+        <section className="mt-5 rounded-2xl border border-[var(--glass-border)] bg-card p-5 shadow-sm sm:p-7">
+          <div className="mb-5 flex items-end justify-between gap-3 border-b border-[var(--glass-border)] pb-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#1D4ED8]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent-primary">
                 {period === "daily" ? "Today" : "All time"}
               </p>
-              <h2 className="mt-1 text-2xl font-black text-slate-950">{heading}</h2>
+              <h2 className="mt-1 text-2xl font-bold text-foreground">{heading}</h2>
             </div>
-            <span className="hidden rounded-full bg-slate-50 px-3 py-1.5 text-[10px] font-black text-slate-500 sm:inline-flex">
+            <span className="hidden rounded-full bg-muted px-3 py-1.5 text-[10px] font-bold text-muted-foreground sm:inline-flex">
               Top 10
             </span>
           </div>
 
-          {error && <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">{error}</div>}
+          {error && <div className="mb-4 rounded-xl border border-accent-gold/30 bg-accent-gold/10 px-4 py-3 text-sm font-semibold text-foreground">{error}</div>}
 
           {loading ? (
             <LeaderboardLoading />
           ) : entries.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 p-10 text-center text-sm text-slate-500">No scores yet. Be first.</div>
+            <div className="rounded-2xl border border-dashed border-[var(--glass-border)] p-10 text-center text-sm text-muted-foreground">No scores yet. Be first.</div>
           ) : (
             <div className="space-y-2">
               {entries.slice(0, 10).map((entry) => (
@@ -192,13 +192,13 @@ export default function LeaderboardClient({ quizzes }: { quizzes: QuizMeta[] }) 
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="flex w-8 shrink-0 justify-center"><RankMark rank={entry.rank} /></div>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-black text-slate-950">{entry.userName}</p>
-                      <p className="mt-0.5 truncate text-[10px] font-semibold text-slate-500">
+                      <p className="truncate text-sm font-bold text-foreground">{entry.userName}</p>
+                      <p className="mt-0.5 truncate text-[10px] font-medium text-muted-foreground">
                         {scope === "global" && entry.quizTitle ? `${entry.quizTitle} · ` : ""}{entry.score}/{entry.totalQuestions} · {entry.timeTakenSeconds || 0}s
                       </p>
                     </div>
                   </div>
-                  <span className="shrink-0 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-black text-[#173B72]">{entry.percentage}%</span>
+                  <span className="shrink-0 rounded-full bg-accent-primary/10 px-2.5 py-1 text-xs font-bold text-accent-primary">{entry.percentage}%</span>
                 </div>
               ))}
             </div>
