@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, XCircle, Trophy, Clock, Share2, Award, RotateCcw } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Trophy, Clock, Award, RotateCcw } from "lucide-react";
 import QuizComments from "@/components/quiz/quiz-comments";
 
 interface Question {
@@ -18,33 +18,46 @@ interface QuizDetailData {
   title: string;
   description: string;
   category: string;
-  timeLimitMinutes?: number;
   questions: Question[];
 }
 
-interface QuizDetailClientProps {
-  quiz: QuizDetailData;
+interface LeaderboardItem {
+  rank: number;
+  userName: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  badgeEarned: string;
 }
 
-export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
+export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [startTime] = useState<number>(Date.now());
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [submittingResult, setSubmittingResult] = useState(false);
   const [founderName, setFounderName] = useState("");
   const [founderEmail, setFounderEmail] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardItem[]>([]);
 
   useEffect(() => {
     if (isCompleted) return;
     const interval = setInterval(() => {
-      setTimeElapsed(Math.floor((Date.now() - startTime) / 1000));
+      setTimeElapsed((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [startTime, isCompleted]);
+  }, [isCompleted]);
+
+  useEffect(() => {
+    fetch(`/api/quiz/leaderboard?quizSlug=${encodeURIComponent(quiz.slug)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.leaderboard) setLeaderboard(data.leaderboard);
+      })
+      .catch(() => {});
+  }, [quiz.slug, submissionSuccess]);
 
   const currentQ = quiz.questions[currentIdx];
   const hasAnsweredCurrent = selectedAnswers[currentIdx] !== undefined;
@@ -64,18 +77,11 @@ export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     }
   };
 
-  const calculateScore = () => {
-    let score = 0;
-    quiz.questions.forEach((q, idx) => {
-      if (selectedAnswers[idx] === q.correctIndex) {
-        score += 1;
-      }
-    });
-    return score;
-  };
+  const score = quiz.questions.reduce((acc, q, idx) => {
+    return acc + (selectedAnswers[idx] === q.correctIndex ? 1 : 0);
+  }, 0);
 
-  const score = calculateScore();
-  const percentage = Math.round((score / quiz.questions.length) * 100);
+  const percentage = Math.round((score / (quiz.questions.length || 1)) * 100);
 
   const getBadge = (pct: number) => {
     if (pct >= 90) return "Top 1% Founder Elite";
@@ -109,7 +115,7 @@ export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
         setSubmissionSuccess(true);
       }
     } catch (err) {
-      console.error("Score submission error", err);
+      console.error(err);
     } finally {
       setSubmittingResult(false);
     }
@@ -120,6 +126,7 @@ export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
     setShowExplanation(false);
     setIsCompleted(false);
     setCurrentIdx(0);
+    setTimeElapsed(0);
     setSubmissionSuccess(false);
   };
 
@@ -194,7 +201,7 @@ export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
             </div>
 
             {showExplanation && (
-              <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 space-y-1">
+              <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">Insight: </span>
                 <span>{currentQ.explanation}</span>
               </div>
@@ -235,7 +242,7 @@ export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
             {!submissionSuccess ? (
               <form onSubmit={handleSubmitScore} className="max-w-md mx-auto space-y-3 text-left">
                 <p className="text-xs text-zinc-500 text-center">
-                  Claim your spot on the Verified Founder Leaderboard:
+                  Claim your rank on the Verified Founder Leaderboard:
                 </p>
                 <input
                   type="text"
@@ -258,12 +265,41 @@ export default function QuizDetailClient({ quiz }: QuizDetailClientProps) {
                   disabled={submittingResult}
                   className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {submittingResult ? "Recording Score..." : "Submit to Leaderboard"}
+                  {submittingResult ? "Recording..." : "Submit to Leaderboard"}
                 </button>
               </form>
             ) : (
               <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm font-medium">
-                Verified! Your score is recorded on the official UpForge Founder Leaderboard.
+                Verified! Your score has been added to the UpForge Leaderboard.
+              </div>
+            )}
+
+            {leaderboard.length > 0 && (
+              <div className="border-t border-zinc-200 dark:border-zinc-800 pt-6 text-left">
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-3">
+                  Live Leaderboard
+                </h4>
+                <div className="space-y-2">
+                  {leaderboard.slice(0, 5).map((entry, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between text-xs p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-emerald-600">#{entry.rank}</span>
+                        <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                          {entry.userName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-zinc-500">
+                        <span>{entry.score}/{entry.totalQuestions} ({entry.percentage}%)</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800">
+                          {entry.badgeEarned}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
