@@ -159,7 +159,36 @@ const nextConfig = {
           },
         ],
       },
-      // API routes - no cache, CORS enabled
+      // Quiz and registry pages are public and identical for all visitors.
+      // Keep them edge-cacheable so normal browsing does not re-run SSR work.
+      {
+        source: "/registry",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=60, s-maxage=300, stale-while-revalidate=600, stale-if-error=1800",
+          },
+        ],
+      },
+      {
+        source: "/quiz",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=60, s-maxage=300, stale-while-revalidate=600, stale-if-error=1800",
+          },
+        ],
+      },
+      {
+        source: "/quiz/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=60, s-maxage=300, stale-while-revalidate=600, stale-if-error=1800",
+          },
+        ],
+      },
+      // API routes - route handlers decide whether GET is cacheable; POST stays no-store.
       {
         source: "/api/(.*)",
         headers: [
@@ -182,10 +211,6 @@ const nextConfig = {
           {
             key: "Access-Control-Max-Age",
             value: "7200",
-          },
-          {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate",
           },
         ],
       },
