@@ -39,7 +39,7 @@ export default function QuizIndexPage() {
                 <div className="flex items-center justify-between text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                   <span>{quiz.category}</span>
                   <span className="flex items-center gap-1 text-zinc-500">
-                    <Clock className="w-3 h-3" /> {quiz.timeLimitMinutes || 5} min
+                    <Clock className="w-3 h-3" /> {quiz.duration || quiz.time || "3–5 Minutes"}
                   </span>
                 </div>
                 <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
