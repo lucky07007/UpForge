@@ -1,68 +1,98 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminAddDocument } from "@/lib/firebase-admin";
 import { QUIZ_REGISTRY } from "@/lib/quizData";
+import { adminAddDocument } from "@/lib/firebase-admin";
 
-export const runtime = "edge";
+const JSON_HEADERS = {
+  "Content-Type": "application/json; charset=utf-8",
+  "Cache-Control": "no-store",
+};
 
-function getBadge(percentage: number, credentialTier: string) {
-  if (percentage >= 90) return "Founder Elite";
-  if (percentage >= 70) return credentialTier || "UpForge Certified";
-  if (percentage >= 50) return "UpForge Operator";
-  return "UpForge Learner";
+function json(data: unknown, status = 200) {
+  return new NextResponse(JSON.stringify(data), {
+    status,
+    headers: JSON_HEADERS,
+  });
 }
 
 function cleanName(value: unknown) {
-  return String(value || "UpForge Builder")
+  const name = String(value ?? "")
     .replace(/[<>]/g, "")
+    .replace(/\s+/g, " ")
     .trim()
-    .slice(0, 60) || "UpForge Builder";
+    .slice(0, 80);
+
+  return name || "UpForge Builder";
+}
+
+function makeId(prefix: string) {
+  const random =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID().replace(/-/g, "").slice(0, 16)
+      : Math.random().toString(36).slice(2, 14);
+
+  return `${prefix}_${Date.now().toString(36)}_${random}`;
+}
+
+function getBadge(percentage: number) {
+  if (percentage >= 90) return "Top 1% Founder Elite";
+  if (percentage >= 70) return "Growth Master";
+  if (percentage >= 50) return "Startup Operator";
+  return "Emerging Founder";
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const quizSlug = String(body?.quizSlug || "");
-    const quiz = QUIZ_REGISTRY.find((item) => item.slug === quizSlug);
-
-    if (!quiz) {
-      return NextResponse.json({ error: "Unknown quiz" }, { status: 404 });
-    }
-
-    const rawAnswers = body?.answers;
-    if (!rawAnswers || typeof rawAnswers !== "object") {
-      return NextResponse.json({ error: "Answers are required" }, { status: 400 });
-    }
-
-    const answers = Array.from({ length: quiz.questions.length }, (_, index) => {
-      const value = rawAnswers[String(index)] ?? rawAnswers[index];
-      return Number.isInteger(Number(value)) ? Number(value) : -1;
-    });
-
-    // Score is ALWAYS calculated from the server-side answer key.
-    // Never trust score/percentage sent by the browser.
-    let score = 0;
-    quiz.questions.forEach((question, index) => {
-      if (answers[index] === question.correctIndex) score += 1;
-    });
-
-    const totalQuestions = quiz.questions.length;
-    const percentage = Math.round((score / Math.max(totalQuestions, 1)) * 100);
-    const badgeEarned = getBadge(percentage, quiz.metrics.credentialTier);
+    const quizSlug = String(body?.quizSlug || "").trim();
+    const answers =
+      body?.answers && typeof body.answers === "object"
+        ? body.answers
+        : {};
     const userName = cleanName(body?.userName);
     const timeTakenSeconds = Math.max(
       0,
-      Math.min(Number(body?.timeTakenSeconds || 0), 60 * 60)
+      Math.min(Number(body?.timeTakenSeconds) || 0, 60 * 60)
     );
 
-    const completionId =
-      "q_" +
-      crypto.randomUUID().replace(/-/g, "").slice(0, 24);
+    const suppliedAttemptId = String(body?.attemptId || "")
+      .replace(/[^a-zA-Z0-9_-]/g, "")
+      .slice(0, 48);
 
-    const certificateId =
-      "UPF-" +
-      new Date().toISOString().slice(0, 10).replace(/-/g, "") +
-      "-" +
-      completionId.slice(-8).toUpperCase();
+    const attemptId = suppliedAttemptId || makeId("attempt");
+
+    const quiz = QUIZ_REGISTRY.find((item) => item.slug === quizSlug);
+
+    if (!quiz) {
+      return json({ success: false, error: "Quiz not found." }, 404);
+    }
+
+    if (!answers || typeof answers !== "object") {
+      return json({ success: false, error: "Answers are required." }, 400);
+    }
+
+    let score = 0;
+
+    for (const question of quiz.questions) {
+      const raw = answers[String(question.id)];
+      const selected = Number(raw);
+
+      if (
+        Number.isInteger(selected) &&
+        selected >= 0 &&
+        selected < question.options.length &&
+        selected === question.correctIndex
+      ) {
+        score += 1;
+      }
+    }
+
+    const totalQuestions = quiz.questions.length;
+    const percentage = Math.round((score / Math.max(totalQuestions, 1)) * 100);
+    const badgeEarned = getBadge(percentage);
+    const completionId = `ufc_${attemptId}`;
+    const certificateId = `UFR-CERT-${quizSlug.slice(0, 8).toUpperCase()}-${attemptId
+      .slice(-8)
+      .toUpperCase()}`;
 
     const record = {
       uid: completionId,
@@ -73,37 +103,44 @@ export async function POST(req: NextRequest) {
       timeTakenSeconds,
       badgeEarned,
       certificateId,
-      quizTitle: quiz.title,
+      quizSlug,
       completedAt: new Date().toISOString(),
     };
 
-    await adminAddDocument(
-      `leaderboards/${quizSlug}/scores`,
-      record,
-      completionId
-    );
+    let doc: any = null;
 
-    return NextResponse.json(
-      {
-        success: true,
-        completionId,
-        certificateId,
-        score,
-        totalQuestions,
-        percentage,
-        badgeEarned,
-      },
-      {
-        headers: {
-          "Cache-Control": "no-store",
-        },
+    try {
+      doc = await adminAddDocument(
+        `leaderboards/${quizSlug}/scores`,
+        record,
+        completionId
+      );
+    } catch (error: any) {
+      // A lost network response can cause the browser to retry. The same
+      // custom document ID makes that retry idempotent.
+      if (!String(error?.message || "").includes("409")) {
+        throw error;
       }
-    );
+    }
+
+    return json({
+      success: true,
+      completionId: doc?.id || completionId,
+      certificateId,
+      record: {
+        ...record,
+        id: doc?.id || completionId,
+      },
+    });
   } catch (error) {
     console.error("Quiz completion error:", error);
-    return NextResponse.json(
-      { error: "Could not record quiz completion." },
-      { status: 500 }
+
+    return json(
+      {
+        success: false,
+        error: "We could not record this completion. Please retry once.",
+      },
+      500
     );
   }
 }
