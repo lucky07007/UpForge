@@ -156,21 +156,49 @@ export async function POST(req: NextRequest) {
       completedAt: new Date().toISOString(),
     };
 
-    let doc: any = null;
+    const dayKey = record.completedAt.slice(0, 10);
 
-    try {
-      doc = await adminAddDocument(
-        `leaderboards/${quizSlug}/scores`,
-        record,
-        completionId
-      );
-    } catch (error: any) {
-      // A lost network response can cause the browser to retry. The same
-      // custom document ID makes that retry idempotent.
-      if (!String(error?.message || "").includes("409")) {
+    // One durable all-time record powers the main quiz leaderboard. A second
+    // materialized daily record makes daily rankings cheap: daily requests
+    // never need to scan the all-time collection. Both writes happen in
+    // parallel, and a daily-write failure never hides a successful completion.
+    const writeAllTime = async () => {
+      try {
+        return await adminAddDocument(
+          `leaderboards/${quizSlug}/scores`,
+          record,
+          completionId
+        );
+      } catch (error: any) {
+        if (String(error?.message || "").includes("409")) return null;
         throw error;
       }
+    };
+
+    const writeDaily = async () => {
+      try {
+        return await adminAddDocument(
+          `leaderboards/${quizSlug}/daily/${dayKey}/scores`,
+          record,
+          completionId
+        );
+      } catch (error: any) {
+        if (String(error?.message || "").includes("409")) return null;
+        throw error;
+      }
+    };
+
+    const [allTimeResult, dailyResult] = await Promise.allSettled([writeAllTime(), writeDaily()]);
+
+    if (allTimeResult.status === "rejected") {
+      throw allTimeResult.reason;
     }
+
+    if (dailyResult.status === "rejected") {
+      console.error("Quiz daily leaderboard write failed:", dailyResult.reason);
+    }
+
+    const doc = allTimeResult.value;
 
     return json({
       success: true,
