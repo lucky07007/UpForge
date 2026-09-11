@@ -1,12 +1,13 @@
- "use client";
+"use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   Award,
   CheckCircle2,
   Clock,
+  Play,
   RotateCcw,
   Trophy,
 } from "lucide-react";
@@ -41,20 +42,19 @@ interface LeaderboardItem {
   percentage: number;
   badgeEarned: string;
   timeTakenSeconds?: number;
+  completedAt?: string;
 }
 
 interface CompletionResult {
   certificateId: string;
-  record: LeaderboardItem & { id?: string };
+  record: LeaderboardItem & { id?: string; completedAt?: string };
 }
 
 async function readJson(res: Response) {
   const contentType = res.headers.get("content-type") || "";
-
   if (!contentType.includes("application/json")) {
     throw new Error("The assessment service returned an invalid response.");
   }
-
   return res.json();
 }
 
@@ -65,71 +65,52 @@ function getBadge(pct: number) {
   return "Emerging Founder";
 }
 
-export default function QuizDetailClient({
-  quiz,
-}: {
-  quiz: QuizDetailData;
-}) {
+function makeAttemptId() {
+  try {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  } catch {}
+  return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
+export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
   const questions = quiz.questions || [];
+  const title = quiz.title.split("|")[0].trim();
+
+  const [started, setStarted] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<
-    Record<string, number>
-  >({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [userName, setUserName] = useState("UpForge Builder");
+  const [userName, setUserName] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [submittingResult, setSubmittingResult] = useState(false);
   const [completionError, setCompletionError] = useState("");
   const [completion, setCompletion] = useState<CompletionResult | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardItem[]>([]);
-  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [attemptId, setAttemptId] = useState("");
 
   useEffect(() => {
-    const makeAttemptId = () => {
-      try {
-        if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-          return crypto.randomUUID();
-        }
-      } catch {}
-      return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    };
-
     setAttemptId(makeAttemptId());
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem("upforge_quiz_name");
-      if (saved) setUserName(saved);
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    if (isCompleted) return;
-
-    const interval = window.setInterval(() => {
-      setTimeElapsed((value) => value + 1);
-    }, 1000);
-
+    if (!started || isCompleted) return;
+    const interval = window.setInterval(() => setTimeElapsed((value) => value + 1), 1000);
     return () => window.clearInterval(interval);
-  }, [isCompleted]);
+  }, [started, isCompleted]);
 
   useEffect(() => {
+    if (!started) return;
     let active = true;
-
     setLeaderboardLoading(true);
 
-    fetch(
-      `/api/quiz/leaderboard?quizSlug=${encodeURIComponent(quiz.slug)}`,
-      { headers: { "x-upforge-domain": "quiz" } }
-    )
+    fetch(`/api/quiz/leaderboard?quizSlug=${encodeURIComponent(quiz.slug)}`, {
+      headers: { "x-upforge-domain": "quiz" },
+    })
       .then(readJson)
       .then((data) => {
-        if (active) {
-          setLeaderboard(Array.isArray(data?.leaderboard) ? data.leaderboard : []);
-        }
+        if (active) setLeaderboard(Array.isArray(data?.leaderboard) ? data.leaderboard : []);
       })
       .catch(() => {
         if (active) setLeaderboard([]);
@@ -141,26 +122,27 @@ export default function QuizDetailClient({
     return () => {
       active = false;
     };
-  }, [quiz.slug]);
+  }, [started, quiz.slug]);
 
   const currentQuestion = questions[currentIdx];
   const currentKey = String(currentQuestion?.id ?? currentIdx);
-  const hasAnsweredCurrent =
-    selectedAnswers[currentKey] !== undefined;
+  const hasAnsweredCurrent = selectedAnswers[currentKey] !== undefined;
 
-  const saveName = (value: string) => {
-    setUserName(value);
+  const canStart = userName.trim().length >= 2;
 
-    try {
-      window.localStorage.setItem("upforge_quiz_name", value);
-    } catch {}
+  const startChallenge = () => {
+    if (!canStart || !questions.length) return;
+    setUserName(userName.trim().replace(/\s+/g, " ").slice(0, 80));
+    setStarted(true);
   };
 
-  const submitCompletion = async (
-    nextAnswers: Record<string, number>
-  ) => {
+  const submitCompletion = async (nextAnswers: Record<string, number>) => {
     if (!attemptId) {
       setCompletionError("Preparing your secure attempt. Please try again.");
+      return;
+    }
+    if (!userName.trim()) {
+      setCompletionError("Please enter your name before completing the challenge.");
       return;
     }
 
@@ -175,22 +157,18 @@ export default function QuizDetailClient({
           quizSlug: quiz.slug,
           answers: nextAnswers,
           attemptId,
-          userName: userName.trim() || "UpForge Builder",
+          userName: userName.trim(),
           timeTakenSeconds: timeElapsed,
           website: "",
         }),
       });
 
       const data = await readJson(res);
-
       if (!res.ok || !data?.success) {
-        throw new Error(
-          data?.error || "We could not record the leaderboard result."
-        );
+        throw new Error(data?.error || "We could not record the leaderboard result.");
       }
 
       const record = data.record;
-
       const submittedEntry: LeaderboardItem = {
         rank: 0,
         id: data.completionId,
@@ -200,6 +178,7 @@ export default function QuizDetailClient({
         percentage: record.percentage,
         badgeEarned: record.badgeEarned,
         timeTakenSeconds: record.timeTakenSeconds,
+        completedAt: record.completedAt,
       };
 
       setCompletion({
@@ -207,36 +186,19 @@ export default function QuizDetailClient({
         record: submittedEntry,
       });
 
-      // Optimistic UI: no second Firestore read after the write.
       setLeaderboard((previous) => {
-        const merged = [
-          submittedEntry,
-          ...previous.filter((entry) => entry.id !== submittedEntry.id),
-        ];
-
+        const merged = [submittedEntry, ...previous.filter((entry) => entry.id !== submittedEntry.id)];
         merged.sort((a, b) => {
-          if (b.percentage !== a.percentage) {
-            return b.percentage - a.percentage;
-          }
+          if (b.percentage !== a.percentage) return b.percentage - a.percentage;
           if (b.score !== a.score) return b.score - a.score;
-          return (
-            (a.timeTakenSeconds || 999999) -
-            (b.timeTakenSeconds || 999999)
-          );
+          return (a.timeTakenSeconds || 999999) - (b.timeTakenSeconds || 999999);
         });
-
-        return merged.slice(0, 10).map((entry, index) => ({
-          ...entry,
-          rank: index + 1,
-        }));
+        return merged.slice(0, 10).map((entry, index) => ({ ...entry, rank: index + 1 }));
       });
 
       setIsCompleted(true);
     } catch (error: any) {
-      setCompletionError(
-        error?.message ||
-          "We could not record the leaderboard result. Your answers remain on this page."
-      );
+      setCompletionError(error?.message || "We could not record this completion. Please retry once.");
       setIsCompleted(true);
     } finally {
       setSubmittingResult(false);
@@ -245,27 +207,16 @@ export default function QuizDetailClient({
 
   const handleSelectOption = (optionIndex: number) => {
     if (hasAnsweredCurrent || submittingResult) return;
-
-    setSelectedAnswers((previous) => ({
-      ...previous,
-      [currentKey]: optionIndex,
-    }));
-
+    setSelectedAnswers((previous) => ({ ...previous, [currentKey]: optionIndex }));
     setShowExplanation(true);
   };
 
   const handleNext = async () => {
     setShowExplanation(false);
-
     if (currentIdx + 1 < questions.length) {
       setCurrentIdx((value) => value + 1);
       return;
     }
-
-    await submitCompletion(selectedAnswers);
-  };
-
-  const handleRetryCompletion = async () => {
     await submitCompletion(selectedAnswers);
   };
 
@@ -275,136 +226,119 @@ export default function QuizDetailClient({
     setShowExplanation(false);
     setTimeElapsed(0);
     setIsCompleted(false);
+    setStarted(false);
     setSubmittingResult(false);
     setCompletionError("");
     setCompletion(null);
-    try {
-      if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-        setAttemptId(crypto.randomUUID());
-      } else {
-        setAttemptId(`${Date.now()}_${Math.random().toString(36).slice(2)}`);
-      }
-    } catch {
-      setAttemptId(`${Date.now()}_${Math.random().toString(36).slice(2)}`);
-    }
+    setLeaderboard([]);
+    setAttemptId(makeAttemptId());
   };
-
-  if (!currentQuestion && !isCompleted) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#FFFDF5] p-6">
-        <p className="text-sm text-slate-500">
-          No questions are available for this challenge.
-        </p>
-      </main>
-    );
-  }
 
   const liveScore = completion?.record.score ?? 0;
   const livePercentage = completion?.record.percentage ?? 0;
   const liveBadge = completion?.record.badgeEarned ?? getBadge(livePercentage);
 
+  const progress = useMemo(
+    () => (questions.length ? ((currentIdx + 1) / questions.length) * 100 : 0),
+    [currentIdx, questions.length]
+  );
+
+  if (!currentQuestion && !isCompleted) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#FFFDF5] p-6">
+        <p className="text-sm text-slate-500">No questions are available for this challenge.</p>
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-[#FFFDF5] px-4 py-5 sm:px-6 lg:px-10 xl:px-12">
-      <div className="mx-auto w-full max-w-[1440px]">
+    <main className="min-h-screen bg-[#FFFDF5] px-4 py-5 sm:px-6 lg:px-8 xl:px-10">
+      <div className="mx-auto w-full max-w-[1300px]">
         <div className="mb-5 flex items-center justify-between gap-4">
-          <Link
-            href="/quiz"
-            className="inline-flex items-center gap-1.5 text-xs font-black text-slate-500 transition hover:text-slate-950"
-          >
+          <Link href="/quiz" className="inline-flex items-center gap-1.5 text-xs font-black text-slate-500 transition hover:text-slate-950">
             <ArrowLeft className="h-4 w-4" />
             All challenges
           </Link>
-
-          {!isCompleted && (
+          {started && !isCompleted && (
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white px-3.5 py-2 text-xs font-black text-slate-600 shadow-sm">
               <Clock className="h-4 w-4 text-amber-600" />
-              {Math.floor(timeElapsed / 60)}:
-              {(timeElapsed % 60).toString().padStart(2, "0")}
+              {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, "0")}
             </div>
           )}
         </div>
 
-        {/* Full desktop-width hero. The source image is allowed to keep its natural ratio. */}
         <section className="overflow-hidden rounded-3xl border border-amber-100 bg-white shadow-sm">
-          <div className="w-full bg-slate-100">
-            <img
-              src={quiz.image}
-              alt={quiz.title}
-              className="block h-auto w-full"
-              loading="eager"
-              decoding="async"
-            />
+          <div className="hidden w-full bg-slate-100 sm:block">
+            <img src={quiz.image} alt={quiz.title} className="block h-auto w-full" loading="eager" decoding="async" />
           </div>
-
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-amber-100 bg-white px-5 py-5 sm:px-7 lg:px-9">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
-                {quiz.category}
-              </p>
-              <h1 className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">
-                {quiz.title.split("|")[0].trim()}
-              </h1>
-              <p className="mt-1 max-w-3xl text-sm text-slate-600">
-                {quiz.description}
-              </p>
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">{quiz.category}</p>
+              <h1 className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{title}</h1>
+              <p className="mt-1 max-w-4xl text-sm text-slate-600">{quiz.description}</p>
             </div>
-
-            <div className="rounded-xl bg-amber-50 px-4 py-2.5 text-xs font-black text-amber-900">
-              {quiz.duration || "3–5 Minutes"}
-            </div>
+            <div className="rounded-xl bg-amber-50 px-4 py-2.5 text-xs font-black text-amber-900">{quiz.duration || "3–5 Minutes"}</div>
           </div>
         </section>
 
-        {!isCompleted ? (
+        {!started && !isCompleted ? (
           <section className="mt-6 rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
-            <div className="rounded-2xl border border-amber-100 bg-[#FFFDF5] p-4 sm:p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-amber-700">
-                    Certificate & leaderboard name
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Optional. If blank, we use “UpForge Builder”.
-                  </p>
-                </div>
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+                <Award className="h-7 w-7" />
+              </div>
+              <p className="mt-5 text-xs font-black uppercase tracking-[0.16em] text-amber-700">Before you begin</p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Enter your name for your certificate</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                Your name will appear exactly as entered on your UpForge certificate and public leaderboard result.
+              </p>
 
+              <div className="mx-auto mt-7 max-w-xl text-left">
+                <label htmlFor="quiz-name" className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-slate-600">
+                  Full name
+                </label>
                 <input
+                  id="quiz-name"
                   type="text"
                   value={userName}
-                  onChange={(event) => saveName(event.target.value)}
-                  maxLength={80}
-                  className="w-full rounded-xl border border-amber-300 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:ring-2 focus:ring-amber-100 sm:max-w-sm"
-                  placeholder="Your name"
-                />
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <div className="mb-3 flex items-center justify-between text-xs font-black uppercase tracking-wider text-amber-700">
-                <span>Question {currentIdx + 1}</span>
-                <span>
-                  {currentIdx + 1} / {questions.length}
-                </span>
-              </div>
-
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-[#F4C542] transition-all duration-300"
-                  style={{
-                    width: `${((currentIdx + 1) / questions.length) * 100}%`,
+                  onChange={(event) => setUserName(event.target.value.slice(0, 80))}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") startChallenge();
                   }}
+                  autoComplete="name"
+                  maxLength={80}
+                  placeholder="e.g. Raj Kumar"
+                  className="w-full rounded-2xl border border-amber-300 bg-white px-5 py-4 text-base font-bold text-slate-950 outline-none transition focus:ring-4 focus:ring-amber-100"
                 />
+                <p className="mt-2 text-xs text-slate-400">Please use your real professional name. No default name is added.</p>
               </div>
+
+              <button
+                type="button"
+                onClick={startChallenge}
+                disabled={!canStart}
+                className="mt-7 inline-flex items-center gap-2 rounded-xl bg-[#F4C542] px-7 py-3.5 text-sm font-black text-slate-950 shadow-sm transition hover:bg-[#E9B72F] disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                <Play className="h-4 w-4" />
+                Start challenge
+              </button>
+            </div>
+          </section>
+        ) : !isCompleted ? (
+          <section className="mt-6 rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-black uppercase tracking-wider text-amber-700">
+              <span>Question {currentIdx + 1}</span>
+              <span>{currentIdx + 1} / {questions.length}</span>
+            </div>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className="h-full rounded-full bg-[#F4C542] transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
 
-            <h2 className="mt-8 max-w-5xl text-2xl font-black leading-tight text-slate-950 sm:text-3xl lg:text-4xl">
-              {currentQuestion.question}
-            </h2>
+            <h2 className="mt-8 max-w-6xl text-2xl font-black leading-tight text-slate-950 sm:text-3xl lg:text-4xl">{currentQuestion.question}</h2>
 
             <div className="mt-7 grid gap-3">
               {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswers[currentKey] === index;
-
                 return (
                   <button
                     key={index}
@@ -418,9 +352,7 @@ export default function QuizDetailClient({
                     } disabled:cursor-default`}
                   >
                     <span>{option}</span>
-                    {hasAnsweredCurrent && isSelected && (
-                      <CheckCircle2 className="h-5 w-5 shrink-0 text-amber-600" />
-                    )}
+                    {hasAnsweredCurrent && isSelected && <CheckCircle2 className="h-5 w-5 shrink-0 text-amber-600" />}
                   </button>
                 );
               })}
@@ -428,8 +360,7 @@ export default function QuizDetailClient({
 
             {showExplanation && currentQuestion.explanation && (
               <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50/60 p-4 text-sm leading-6 text-slate-700">
-                <span className="font-black text-amber-800">Insight: </span>
-                {currentQuestion.explanation}
+                <span className="font-black text-amber-800">Insight: </span>{currentQuestion.explanation}
               </div>
             )}
 
@@ -441,11 +372,7 @@ export default function QuizDetailClient({
                   disabled={submittingResult}
                   className="rounded-xl bg-slate-950 px-6 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-50"
                 >
-                  {currentIdx + 1 === questions.length
-                    ? submittingResult
-                      ? "Recording result…"
-                      : "Finish challenge"
-                    : "Next question"}
+                  {currentIdx + 1 === questions.length ? (submittingResult ? "Recording result…" : "Finish challenge") : "Next question"}
                 </button>
               </div>
             )}
@@ -453,41 +380,23 @@ export default function QuizDetailClient({
         ) : (
           <section className="mt-6 space-y-6">
             <div className="rounded-3xl border border-amber-100 bg-white p-7 text-center shadow-sm sm:p-10">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-                <Trophy className="h-8 w-8" />
-              </div>
-
-              <h2 className="mt-5 text-3xl font-black text-slate-950 sm:text-4xl">
-                Challenge completed
-              </h2>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Your result was recorded automatically.
-              </p>
-
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-700"><Trophy className="h-8 w-8" /></div>
+              <h2 className="mt-5 text-3xl font-black text-slate-950 sm:text-4xl">Challenge completed</h2>
+              <p className="mt-2 text-sm text-slate-500">Your result was recorded automatically on the public UpForge leaderboard.</p>
               <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-wider text-amber-900">
-                <Award className="h-4 w-4" />
-                {liveBadge}
+                <Award className="h-4 w-4" />{liveBadge}
               </div>
 
               {completionError ? (
                 <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
                   <p>{completionError}</p>
-                  <button
-                    type="button"
-                    onClick={handleRetryCompletion}
-                    disabled={submittingResult}
-                    className="mt-3 underline"
-                  >
+                  <button type="button" onClick={() => submitCompletion(selectedAnswers)} disabled={submittingResult} className="mt-3 underline">
                     {submittingResult ? "Retrying…" : "Retry completion"}
                   </button>
                 </div>
               ) : completion ? (
                 <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800">
-                  {completion.record.userName}: {liveScore}/
-                  {completion.record.totalQuestions} ({livePercentage}%)
-                  <span className="mx-2">·</span>
-                  Certificate ready
+                  {completion.record.userName}: {liveScore}/{completion.record.totalQuestions} ({livePercentage}%) · Certificate ready
                 </div>
               ) : null}
             </div>
@@ -495,12 +404,13 @@ export default function QuizDetailClient({
             {completion && (
               <QuizCertificate
                 userName={completion.record.userName}
-                quizTitle={quiz.title.split("|")[0].trim()}
+                quizTitle={title}
                 category={quiz.category}
                 score={completion.record.score}
                 totalQuestions={completion.record.totalQuestions}
                 percentage={completion.record.percentage}
                 certificateId={completion.certificateId}
+                issuedAt={completion.record.completedAt}
                 credentialTier={quiz.credentialTier}
               />
             )}
@@ -508,67 +418,30 @@ export default function QuizDetailClient({
             <section className="rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-8">
               <div className="flex flex-wrap items-end justify-between gap-4 border-b border-slate-100 pb-5">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
-                    Public results
-                  </p>
-                  <h3 className="mt-1 text-2xl font-black text-slate-950">
-                    {quiz.title.split("|")[0].trim()} leaderboard
-                  </h3>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">Public results</p>
+                  <h3 className="mt-1 text-2xl font-black text-slate-950">{title} leaderboard</h3>
                 </div>
-
-                <Link
-                  href={`/quiz/leaderboard?quiz=${encodeURIComponent(quiz.slug)}`}
-                  className="text-xs font-black text-amber-800 underline underline-offset-4"
-                >
-                  Open full leaderboard
-                </Link>
+                <Link href={`/quiz/leaderboard?quiz=${encodeURIComponent(quiz.slug)}`} className="text-xs font-black text-amber-800 underline underline-offset-4">Open full leaderboard</Link>
               </div>
 
               {leaderboardLoading ? (
-                <div className="py-10 text-center text-sm text-slate-500">
-                  Loading rankings…
-                </div>
+                <div className="py-10 text-center text-sm text-slate-500">Loading rankings…</div>
               ) : leaderboard.length === 0 ? (
-                <div className="py-10 text-center text-sm text-slate-500">
-                  No leaderboard entries yet.
-                </div>
+                <div className="py-10 text-center text-sm text-slate-500">No leaderboard entries yet.</div>
               ) : (
                 <div className="mt-5 space-y-2">
                   {leaderboard.slice(0, 10).map((entry) => (
-                    <div
-                      key={entry.id || `${entry.rank}-${entry.userName}`}
-                      className={`flex items-center justify-between gap-4 rounded-2xl border p-4 ${
-                        entry.rank === 1
-                          ? "border-amber-300 bg-amber-50"
-                          : "border-slate-100 bg-slate-50/60"
-                      }`}
-                    >
+                    <div key={entry.id || `${entry.rank}-${entry.userName}`} className={`flex items-center justify-between gap-4 rounded-2xl border p-4 ${entry.rank === 1 ? "border-amber-300 bg-amber-50" : "border-slate-100 bg-slate-50/60"}`}>
                       <div className="flex min-w-0 items-center gap-3">
-                        <span className="w-8 text-center text-sm font-black text-amber-700">
-                          #{entry.rank}
-                        </span>
+                        <span className="w-8 text-center text-sm font-black text-amber-700">#{entry.rank}</span>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-black text-slate-950">
-                            {entry.userName}
-                          </p>
-                          <p className="mt-0.5 text-[11px] font-semibold text-slate-500">
-                            {entry.badgeEarned}
-                          </p>
+                          <p className="truncate text-sm font-black text-slate-950">{entry.userName}</p>
+                          <p className="mt-0.5 text-[11px] font-semibold text-slate-500">{entry.badgeEarned}</p>
                         </div>
                       </div>
-
                       <div className="flex shrink-0 items-center gap-3 text-right">
-                        <div className="hidden sm:block">
-                          <p className="text-sm font-black text-slate-950">
-                            {entry.score}/{entry.totalQuestions}
-                          </p>
-                          <p className="text-[11px] font-semibold text-slate-500">
-                            {entry.timeTakenSeconds || 0}s
-                          </p>
-                        </div>
-                        <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-black text-amber-900">
-                          {entry.percentage}%
-                        </span>
+                        <div className="hidden sm:block"><p className="text-sm font-black text-slate-950">{entry.score}/{entry.totalQuestions}</p><p className="text-[11px] font-semibold text-slate-500">{entry.timeTakenSeconds || 0}s</p></div>
+                        <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-black text-amber-900">{entry.percentage}%</span>
                       </div>
                     </div>
                   ))}
@@ -577,28 +450,13 @@ export default function QuizDetailClient({
             </section>
 
             <div className="flex flex-wrap justify-center gap-3">
-              <button
-                type="button"
-                onClick={handleRestart}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-xs font-black text-slate-700 transition hover:border-amber-300"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Retake challenge
-              </button>
-
-              <Link
-                href="/quiz"
-                className="rounded-xl bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800"
-              >
-                Explore other quizzes
-              </Link>
+              <button type="button" onClick={handleRestart} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-xs font-black text-slate-700 transition hover:border-amber-300"><RotateCcw className="h-4 w-4" />Retake challenge</button>
+              <Link href="/quiz" className="rounded-xl bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800">Explore other quizzes</Link>
             </div>
           </section>
         )}
 
-        <div className="mt-8">
-          <QuizComments quizSlug={quiz.slug} />
-        </div>
+        <div className="mt-8"><QuizComments quizSlug={quiz.slug} /></div>
       </div>
     </main>
   );
