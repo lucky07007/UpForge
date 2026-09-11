@@ -18,6 +18,7 @@ type LeaderboardEntry = {
 
 type CachedLeaderboard = {
   leaderboard: LeaderboardEntry[];
+  hasMore: boolean;
   expiresAt: number;
 };
 
@@ -103,7 +104,7 @@ function normalizeEntry(
   };
 }
 
-function rankEntries(entries: LeaderboardEntry[]) {
+function rankEntries(entries: LeaderboardEntry[], limit = 10) {
   return entries
     .sort((a, b) => {
       if (b.percentage !== a.percentage) return b.percentage - a.percentage;
@@ -111,37 +112,62 @@ function rankEntries(entries: LeaderboardEntry[]) {
       if (a.timeTakenSeconds !== b.timeTakenSeconds) return a.timeTakenSeconds - b.timeTakenSeconds;
       return a.id.localeCompare(b.id);
     })
-    .slice(0, 10)
+    .slice(0, limit)
     .map((entry, index) => ({ ...entry, rank: index + 1 }));
 }
 
-async function readCollection(collectionPath: string, quizSlug?: string) {
-  const documents = await adminListDocuments(collectionPath, 10);
-  return documents
+async function readCollection(collectionPath: string, quizSlug?: string, page = 1) {
+  // listDocuments is ordered by document name ASC. Completion IDs encode the
+  // ranking tuple, so the first N documents are the real top N. Read one extra
+  // document to determine whether another page exists without scanning the
+  // collection.
+  const requested = Math.min(1001, Math.max(11, page * 10 + 1));
+  const documents = await adminListDocuments(collectionPath, requested);
+  const entries = documents
     .map((document: any) => normalizeEntry(document, document?.id, quizSlug))
     .filter((entry: LeaderboardEntry | null): entry is LeaderboardEntry => Boolean(entry));
+
+  return {
+    entries,
+    hasMore: entries.length > page * 10,
+  };
 }
 
-async function getLeaderboard(quizSlug: string, period: "daily" | "all-time", dateKey: string) {
+async function getLeaderboard(
+  quizSlug: string,
+  period: "daily" | "all-time",
+  dateKey: string,
+  page = 1,
+) {
   const collectionPath =
     period === "daily"
       ? `leaderboards/${quizSlug}/daily/${dateKey}/scores`
       : `leaderboards/${quizSlug}/scores`;
 
-  return rankEntries(await readCollection(collectionPath, quizSlug));
+  const result = await readCollection(collectionPath, quizSlug, page);
+  return {
+    leaderboard: rankEntries(result.entries, page * 10),
+    hasMore: result.hasMore,
+  };
 }
 
-async function getGlobalLeaderboard(period: "daily" | "all-time", dateKey: string) {
+async function getGlobalLeaderboard(period: "daily" | "all-time", dateKey: string, page = 1) {
   const results = await Promise.all(
     QUIZ_REGISTRY.map((quiz) =>
-      getLeaderboard(quiz.slug, period, dateKey).catch((error) => {
+      getLeaderboard(quiz.slug, period, dateKey, page).catch((error) => {
         console.error(`[quiz/leaderboard] global ${quiz.slug} failed:`, error);
-        return [] as LeaderboardEntry[];
+        return { leaderboard: [] as LeaderboardEntry[], hasMore: false };
       }),
     ),
   );
 
-  return rankEntries(results.flat());
+  const merged = rankEntries(results.flatMap((result) => result.leaderboard), page * 10 + 1);
+  const hasMore = merged.length > page * 10 || results.some((result) => result.hasMore);
+
+  return {
+    leaderboard: merged,
+    hasMore,
+  };
 }
 
 export async function GET(request: NextRequest) {
@@ -154,6 +180,8 @@ export async function GET(request: NextRequest) {
   const scope = request.nextUrl.searchParams.get("scope") === "global" ? "global" : "quiz";
   const period = request.nextUrl.searchParams.get("period") === "daily" ? "daily" : "all-time";
   const requestedDate = sanitize(request.nextUrl.searchParams.get("date") ?? "");
+  const requestedPage = Number(request.nextUrl.searchParams.get("page") ?? "1");
+  const page = Number.isFinite(requestedPage) ? Math.min(100, Math.max(1, Math.floor(requestedPage))) : 1;
   const dateKey = /^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ? requestedDate : TODAY();
 
   if (scope === "quiz" && !quizSlug) {
@@ -164,13 +192,15 @@ export async function GET(request: NextRequest) {
     return noStoreResponse({ success: false, error: "Quiz not found.", leaderboard: [] }, 404);
   }
 
-  const cacheKey = `${scope}:${quizSlug || "global"}:${period}:${dateKey}`;
+  const cacheKey = `${scope}:${quizSlug || "global"}:${period}:${dateKey}:page:${page}`;
   const now = Date.now();
   const cached = memoryCache.get(cacheKey);
   if (cached && cached.expiresAt > now) {
     return response({
       success: true,
       leaderboard: cached.leaderboard,
+      hasMore: cached.hasMore,
+      page,
       scope,
       period,
       date: period === "daily" ? dateKey : undefined,
@@ -179,12 +209,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const leaderboard =
+    const result =
       scope === "global"
-        ? await getGlobalLeaderboard(period, dateKey)
-        : await getLeaderboard(quizSlug, period, dateKey);
+        ? await getGlobalLeaderboard(period, dateKey, page)
+        : await getLeaderboard(quizSlug, period, dateKey, page);
 
-    memoryCache.set(cacheKey, { leaderboard, expiresAt: now + CACHE_TTL_MS });
+    const pageEntries = result.leaderboard.slice((page - 1) * 10, page * 10);
+    const hasMore = result.hasMore;
+    memoryCache.set(cacheKey, { leaderboard: pageEntries, hasMore, expiresAt: now + CACHE_TTL_MS });
 
     if (memoryCache.size > 200) {
       const firstKey = memoryCache.keys().next().value;
@@ -193,7 +225,9 @@ export async function GET(request: NextRequest) {
 
     return response({
       success: true,
-      leaderboard,
+      leaderboard: pageEntries,
+      hasMore,
+      page,
       scope,
       period,
       date: period === "daily" ? dateKey : undefined,
