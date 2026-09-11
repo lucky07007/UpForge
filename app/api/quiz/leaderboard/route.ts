@@ -1,42 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { firestoreListDocuments } from "@/lib/firebase-admin";
+import { adminListDocuments } from "@/lib/firebase-admin";
 
 export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const quizSlug = searchParams.get("quizSlug");
+    const quizSlug = searchParams.get("quizSlug") || "startup-iq-challenge-2026";
 
-    const docs = await firestoreListDocuments("quiz_completions", 100);
+    // Matches Firestore Rule: match /leaderboards/{quizId}/scores/{uid}
+    const docs = await adminListDocuments(`leaderboards/${quizSlug}/scores`, 50);
 
-    let filtered = docs;
-    if (quizSlug) {
-      filtered = docs.filter((item: any) => item.quizSlug === quizSlug);
-    }
-
-    filtered.sort((a: any, b: any) => {
+    docs.sort((a: any, b: any) => {
       if ((b.percentage || 0) !== (a.percentage || 0)) {
         return (b.percentage || 0) - (a.percentage || 0);
       }
       return (a.timeTakenSeconds || 999) - (b.timeTakenSeconds || 999);
     });
 
-    const leaderboard = filtered.slice(0, 20).map((entry: any, index: number) => ({
+    const leaderboard = docs.slice(0, 10).map((entry: any, index: number) => ({
       rank: index + 1,
       id: entry.id,
-      userName: entry.userName || "Anonymous Founder",
+      userName: entry.userName || "Founder",
       score: entry.score ?? 0,
       totalQuestions: entry.totalQuestions ?? 10,
       percentage: entry.percentage ?? 0,
-      timeTakenSeconds: entry.timeTakenSeconds ?? 0,
-      badgeEarned: entry.badgeEarned || "Participant",
-      completedAt: entry.completedAt || entry.createTime,
+      badgeEarned: entry.badgeEarned || "Emerging Founder",
     }));
 
-    return NextResponse.json({ success: true, count: leaderboard.length, leaderboard });
+    return NextResponse.json({ success: true, leaderboard });
   } catch (error: any) {
     console.error("Leaderboard fetch error:", error);
-    return NextResponse.json({ success: true, count: 0, leaderboard: [] });
+    return NextResponse.json({ success: true, leaderboard: [] });
   }
 }
