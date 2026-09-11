@@ -2,12 +2,13 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "upforge-production",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+  apiKey: "AIzaSyCvGgGbTU67B7fYE6veykJ35DwPC5svSF0",
+  authDomain: "upforge-quizz.firebaseapp.com",
+  projectId: "upforge-quizz",
+  storageBucket: "upforge-quizz.firebasestorage.app",
+  messagingSenderId: "103480268317",
+  appId: "1:103480268317:web:310e3b5bebc4fcbb872eb8",
+  measurementId: "G-TQW93WBMRK",
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
