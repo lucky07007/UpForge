@@ -1,7 +1,6 @@
  "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -178,6 +177,7 @@ export default function QuizDetailClient({
           attemptId,
           userName: userName.trim() || "UpForge Builder",
           timeTakenSeconds: timeElapsed,
+          website: "",
         }),
       });
 
@@ -404,7 +404,6 @@ export default function QuizDetailClient({
             <div className="mt-7 grid gap-3">
               {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswers[currentKey] === index;
-                const isCorrect = false; // Answer key is server-only.
 
                 return (
                   <button
