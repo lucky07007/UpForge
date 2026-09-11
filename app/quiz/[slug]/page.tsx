@@ -23,13 +23,13 @@ export default async function QuizDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const normalizedQuiz = {
+  const cleanQuiz = {
     slug: quiz.slug,
     title: quiz.title,
-    description: quiz.description || "",
+    description: quiz.description ?? "",
     category: quiz.category,
-    questions: quiz.questions,
+    questions: quiz.questions || [],
   };
 
-  return <QuizDetailClient quiz={normalizedQuiz} />;
+  return <QuizDetailClient quiz={cleanQuiz} />;
 }
