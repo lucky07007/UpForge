@@ -73,7 +73,7 @@ export default async function QuizIndexPage({ searchParams }: PageProps) {
       <section className="relative border-b border-[var(--glass-border)] bg-card px-6 py-10 md:py-12">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <span className="inline-flex rounded-full border border-accent-primary/20 bg-accent-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-accent-gold">
+            <span className="inline-flex rounded-full border border-accent-gold/25 bg-accent-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-accent-gold">
               UpForge Assessments
             </span>
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
@@ -83,7 +83,7 @@ export default async function QuizIndexPage({ searchParams }: PageProps) {
               Short, scenario-based assessments across startup intelligence, growth and professional skills. Earn a verifiable credential when you finish.
             </p>
           </div>
-          <Link href="/quiz/leaderboard" className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--glass-border)] bg-card px-4 py-2.5 text-xs font-black text-foreground transition hover:border-accent-primary/50 hover:bg-muted/40">
+          <Link href="/quiz/leaderboard" className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--glass-border)] bg-card px-4 py-2.5 text-xs font-black text-foreground transition hover:border-accent-gold/50 hover:bg-muted/40">
             <Trophy className="h-4 w-4 text-accent-gold" />
             View leaderboards
           </Link>
@@ -101,11 +101,11 @@ export default async function QuizIndexPage({ searchParams }: PageProps) {
               name="q"
               defaultValue={sp.q || ""}
               placeholder={`Search ${QUIZ_REGISTRY.length} challenges by topic, skill or title...`}
-              className="w-full rounded-full border border-[var(--glass-border)] bg-muted/40 py-3.5 pl-12 pr-28 text-sm text-foreground outline-none transition focus:border-accent-primary/50 focus:ring-2 focus:ring-accent-primary/20"
+              className="w-full rounded-full border border-[var(--glass-border)] bg-muted/40 py-3.5 pl-12 pr-28 text-sm text-foreground outline-none transition focus:border-accent-gold/50 focus:ring-2 focus:ring-accent-gold/20"
               autoComplete="off"
               aria-label="Search UpForge challenges"
             />
-            <button type="submit" className="absolute right-1.5 top-1.5 bottom-1.5 rounded-full bg-accent-primary px-5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition hover:opacity-90">
+            <button type="submit" className="absolute right-1.5 top-1.5 bottom-1.5 rounded-full bg-accent-gold px-5 text-xs font-bold uppercase tracking-wider text-slate-950 shadow-sm transition hover:opacity-90">
               Search
             </button>
           </form>
