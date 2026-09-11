@@ -1,11 +1,22 @@
 import React from "react";
+import type { Metadata } from "next";
 import { QUIZ_REGISTRY } from "@/lib/quizData";
 import LeaderboardClient from "./leaderboard-client";
 
-export const metadata = {
-  title: "UpForge Public Quiz Leaderboards",
+const BASE_URL = "https://upforge.org";
+
+export const metadata: Metadata = {
+  title: "UpForge Quiz Leaderboards",
   description:
-    "Public UpForge quiz rankings for startup, marketing, career, fundraising and AI challenges.",
+    "See the global and challenge-by-challenge UpForge quiz rankings, including daily and all-time results.",
+  alternates: { canonical: `${BASE_URL}/quiz/leaderboard` },
+  openGraph: {
+    title: "UpForge Quiz Leaderboards",
+    description: "Global, daily and all-time rankings for UpForge challenges.",
+    url: `${BASE_URL}/quiz/leaderboard`,
+    type: "website",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function QuizLeaderboardPage() {
@@ -17,5 +28,3 @@ export default function QuizLeaderboardPage() {
 
   return <LeaderboardClient quizzes={quizzes} />;
 }
-
-
