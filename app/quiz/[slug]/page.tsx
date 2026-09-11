@@ -88,7 +88,7 @@ export default async function QuizDetailPage({ params }: PageProps) {
     learningResourceType: "Quiz",
     educationalUse: "Assessment",
     interactivityType: "active",
-    timeRequired: quiz.duration || quiz.time || "PT5M",
+    timeRequired: "PT5M",
     about: {
       "@type": "Thing",
       name: quiz.category,
