@@ -22,7 +22,7 @@ function cleanName(value: unknown) {
     .trim()
     .slice(0, 80);
 
-  return name || "UpForge Builder";
+  return name;
 }
 
 function makeId(prefix: string) {
@@ -72,6 +72,10 @@ export async function POST(req: NextRequest) {
         ? body.answers
         : {};
     const userName = cleanName(body?.userName);
+    if (!userName) {
+      return json({ success: false, error: "Please enter your name before starting the challenge." }, 400);
+    }
+
     const timeTakenSeconds = Math.max(
       0,
       Math.min(Number(body?.timeTakenSeconds) || 0, 60 * 60)
