@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { QUIZ_LIST } from "@/lib/quizData";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 import QuizDetailClient from "./quiz-detail-client";
 
 interface PageProps {
@@ -8,14 +8,16 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return QUIZ_LIST.map((quiz) => ({
+  return (QUIZ_REGISTRY || []).map((quiz) => ({
     slug: quiz.slug,
   }));
 }
 
 export default async function QuizDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const quiz = QUIZ_LIST.find((q) => q.slug === resolvedParams.slug);
+  const quiz = (QUIZ_REGISTRY || []).find(
+    (q) => q.slug === resolvedParams.slug
+  );
 
   if (!quiz) {
     notFound();
