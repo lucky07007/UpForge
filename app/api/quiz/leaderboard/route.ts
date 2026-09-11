@@ -3,12 +3,13 @@ import { adminListDocuments } from "@/lib/firebase-admin";
 import { QUIZ_REGISTRY } from "@/lib/quizData";
 
 type LeaderboardEntry = {
-  uid: string;
-  name: string;
+  rank: number;
+  id: string;
+  userName: string;
   score: number;
   totalQuestions: number;
   percentage: number;
-  badge: string;
+  badgeEarned: string;
   timeTakenSeconds: number;
   completedAt: string;
 };
@@ -19,33 +20,26 @@ type CachedLeaderboard = {
 };
 
 const memoryCache = new Map<string, CachedLeaderboard>();
-
 const CACHE_TTL_MS = 20_000;
 
 function response(
   data: Record<string, unknown>,
   status = 200,
   cacheControl =
-    "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
+    "public, max-age=5, s-maxage=10, stale-while-revalidate=30, stale-if-error=120",
 ) {
   return NextResponse.json(data, {
     status,
     headers: {
       "Cache-Control": cacheControl,
+      "CDN-Cache-Control": cacheControl,
       "Content-Type": "application/json; charset=utf-8",
     },
   });
 }
 
-function noStoreResponse(
-  data: Record<string, unknown>,
-  status = 200,
-) {
-  return response(
-    data,
-    status,
-    "no-store, no-cache, must-revalidate, proxy-revalidate",
-  );
+function noStoreResponse(data: Record<string, unknown>, status = 200) {
+  return response(data, status, "no-store, max-age=0");
 }
 
 function sanitizeQuizSlug(value: string) {
@@ -55,305 +49,103 @@ function sanitizeQuizSlug(value: string) {
     .replace(/[^a-z0-9_-]/g, "");
 }
 
-function isValidQuizSlug(slug: string): boolean {
-  return QUIZ_REGISTRY.some((quiz) => {
-    const quizRecord = quiz as unknown as Record<string, unknown>;
-
-    return (
-      quizRecord.slug === slug ||
-      quizRecord.id === slug
-    );
-  });
+function isValidQuizSlug(slug: string) {
+  return QUIZ_REGISTRY.some((quiz) => quiz.slug === slug || quiz.id === slug);
 }
 
-function sanitizeEntry(
-  raw: Record<string, unknown>,
-): LeaderboardEntry | null {
-  const uid =
-    typeof raw.uid === "string"
-      ? raw.uid.slice(0, 128)
-      : "";
+function toNumber(value: unknown, fallback = 0) {
+  const number = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
 
-  const name =
-    typeof raw.name === "string"
-      ? raw.name.slice(0, 100)
-      : "";
+function normalizeEntry(raw: Record<string, unknown>, idFromDoc?: string): LeaderboardEntry | null {
+  const id = String(raw.id ?? idFromDoc ?? "").slice(0, 160);
+  const userName = String(raw.userName ?? raw.name ?? "").replace(/[<>]/g, "").trim().slice(0, 100);
+  const score = Math.max(0, Math.floor(toNumber(raw.score)));
+  const totalQuestions = Math.max(1, Math.floor(toNumber(raw.totalQuestions, 1)));
+  const percentage = Math.min(100, Math.max(0, Math.round(toNumber(raw.percentage, (score / totalQuestions) * 100))));
+  const badgeEarned = String(raw.badgeEarned ?? raw.badge ?? "").slice(0, 100);
+  const timeTakenSeconds = Math.max(0, Math.floor(toNumber(raw.timeTakenSeconds)));
+  const completedAt = String(raw.completedAt ?? "").slice(0, 100);
 
-  const score =
-    typeof raw.score === "number" &&
-    Number.isFinite(raw.score)
-      ? Math.max(0, Math.floor(raw.score))
-      : 0;
-
-  const totalQuestions =
-    typeof raw.totalQuestions === "number" &&
-    Number.isFinite(raw.totalQuestions)
-      ? Math.max(1, Math.floor(raw.totalQuestions))
-      : 1;
-
-  const percentage =
-    typeof raw.percentage === "number" &&
-    Number.isFinite(raw.percentage)
-      ? Math.min(
-          100,
-          Math.max(0, Math.round(raw.percentage)),
-        )
-      : Math.round(
-          (score / totalQuestions) * 100,
-        );
-
-  const badge =
-    typeof raw.badge === "string"
-      ? raw.badge.slice(0, 100)
-      : "";
-
-  const timeTakenSeconds =
-    typeof raw.timeTakenSeconds === "number" &&
-    Number.isFinite(raw.timeTakenSeconds)
-      ? Math.max(
-          0,
-          Math.floor(raw.timeTakenSeconds),
-        )
-      : 0;
-
-  const completedAt =
-    typeof raw.completedAt === "string"
-      ? raw.completedAt.slice(0, 100)
-      : "";
-
-  if (!uid || !name) {
-    return null;
-  }
+  if (!id || !userName) return null;
 
   return {
-    uid,
-    name,
+    rank: 0,
+    id,
+    userName,
     score,
     totalQuestions,
     percentage,
-    badge,
+    badgeEarned,
     timeTakenSeconds,
     completedAt,
   };
 }
 
-function unwrapFirestoreValue(
-  value: unknown,
-): unknown {
-  if (!value || typeof value !== "object") {
-    return value;
-  }
-
-  const objectValue =
-    value as Record<string, unknown>;
-
-  if ("stringValue" in objectValue) {
-    return objectValue.stringValue;
-  }
-
-  if ("integerValue" in objectValue) {
-    const number = Number(
-      objectValue.integerValue,
-    );
-
-    return Number.isFinite(number)
-      ? number
-      : 0;
-  }
-
-  if ("doubleValue" in objectValue) {
-    const number = Number(
-      objectValue.doubleValue,
-    );
-
-    return Number.isFinite(number)
-      ? number
-      : 0;
-  }
-
-  if ("timestampValue" in objectValue) {
-    return objectValue.timestampValue;
-  }
-
-  if ("booleanValue" in objectValue) {
-    return objectValue.booleanValue;
-  }
-
-  return value;
-}
-
-export async function GET(
-  request: NextRequest,
-) {
+export async function GET(request: NextRequest) {
   const rawSlug =
+    request.nextUrl.searchParams.get("quizSlug") ??
     request.nextUrl.searchParams.get("quiz") ??
     request.nextUrl.searchParams.get("slug") ??
     "";
-
   const quizSlug = sanitizeQuizSlug(rawSlug);
 
+  if (!quizSlug) {
+    return noStoreResponse({ success: false, error: "Quiz slug is required.", leaderboard: [] }, 400);
+  }
+
+  if (!isValidQuizSlug(quizSlug)) {
+    return noStoreResponse({ success: false, error: "Quiz not found.", leaderboard: [] }, 404);
+  }
+
+  const now = Date.now();
+  const cached = memoryCache.get(quizSlug);
+  if (cached && cached.expiresAt > now) {
+    return response({ success: true, leaderboard: cached.leaderboard, cached: true });
+  }
+
   try {
-    if (!quizSlug) {
-      return noStoreResponse(
-        {
-          success: false,
-          error: "Quiz slug is required.",
-        },
-        400,
-      );
-    }
-
     /*
-     * QUIZ_REGISTRY is an array in quizData.ts,
-     * so do not use QUIZ_REGISTRY[quizSlug].
+     * Completion IDs are deliberately sortable:
+     * ufc_<100-percentage>_<questions-score>_<time>_<attemptId>
+     *
+     * Firestore documents.list returns document names in ascending order when
+     * no orderBy is supplied, so pageSize=10 gives the best 10 without scanning
+     * the whole collection.
      */
-    if (!isValidQuizSlug(quizSlug)) {
-      return noStoreResponse(
-        {
-          success: false,
-          error: "Quiz not found.",
-        },
-        404,
-      );
-    }
+    const documents = await adminListDocuments(`leaderboards/${quizSlug}/scores`, 10);
+    const entries: LeaderboardEntry[] = documents
+      .map((document: any) => normalizeEntry(document, document?.id))
+      .filter((entry: LeaderboardEntry | null): entry is LeaderboardEntry => Boolean(entry));
 
-    const now = Date.now();
+    const leaderboard: LeaderboardEntry[] = entries
+      .slice(0, 10)
+      .map((entry: LeaderboardEntry, index: number) => ({ ...entry, rank: index + 1 }));
 
-    const cached =
-      memoryCache.get(quizSlug);
-
-    if (
-      cached &&
-      cached.expiresAt > now
-    ) {
-      return response({
-        success: true,
-        leaderboard:
-          cached.leaderboard,
-        cached: true,
-      });
-    }
-
-    /*
-     * Completion documents use a sortable ID:
-     *
-     * ufc_<percentage-rank>_<score-rank>_<time-rank>_<attemptId>
-     *
-     * Firestore documents.list defaults to
-     * __name__ ASC when no orderBy is supplied.
-     *
-     * Therefore the first 10 documents represent
-     * the best leaderboard results without scanning
-     * the entire collection.
-     */
-    const documents =
-      await adminListDocuments(
-        `leaderboards/${quizSlug}/scores`,
-        10,
-      );
-
-    const leaderboard: LeaderboardEntry[] =
-      [];
-
-    for (const document of documents) {
-      const rawFields =
-        document &&
-        typeof document === "object" &&
-        "fields" in document
-          ? (
-              document as {
-                fields?: Record<
-                  string,
-                  unknown
-                >;
-              }
-            ).fields
-          : undefined;
-
-      if (!rawFields) {
-        continue;
-      }
-
-      const normalized: Record<
-        string,
-        unknown
-      > = {};
-
-      for (const [key, value] of Object.entries(
-        rawFields,
-      )) {
-        normalized[key] =
-          unwrapFirestoreValue(value);
-      }
-
-      const entry =
-        sanitizeEntry(normalized);
-
-      if (entry) {
-        leaderboard.push(entry);
-      }
-    }
-
-    const cacheEntry: CachedLeaderboard = {
+    memoryCache.set(quizSlug, {
       leaderboard,
-      expiresAt:
-        now + CACHE_TTL_MS,
-    };
-
-    memoryCache.set(
-      quizSlug,
-      cacheEntry,
-    );
-
-    /*
-     * Prevent unbounded memory growth if random
-     * quiz slugs are requested.
-     */
-    if (memoryCache.size > 100) {
-      const firstKey =
-        memoryCache.keys().next().value;
-
-      if (typeof firstKey === "string") {
-        memoryCache.delete(firstKey);
-      }
-    }
-
-    return response({
-      success: true,
-      leaderboard,
-      cached: false,
+      expiresAt: now + CACHE_TTL_MS,
     });
+
+    if (memoryCache.size > 100) {
+      const firstKey = memoryCache.keys().next().value;
+      if (typeof firstKey === "string") memoryCache.delete(firstKey);
+    }
+
+    return response({ success: true, leaderboard, cached: false });
   } catch (error) {
-    console.error(
-      "[quiz/leaderboard] GET failed:",
-      error,
-    );
+    console.error("[quiz/leaderboard] GET failed:", error);
 
-    /*
-     * Return stale in-memory data when Firebase
-     * temporarily fails.
-     */
-    const stale =
-      memoryCache.get(quizSlug);
-
+    const stale = memoryCache.get(quizSlug);
     if (stale) {
-      return response({
-        success: true,
-        leaderboard:
-          stale.leaderboard,
-        stale: true,
-      });
+      return response({ success: true, leaderboard: stale.leaderboard, stale: true });
     }
 
     return response(
-      {
-        success: false,
-        error:
-          "Leaderboard temporarily unavailable.",
-        leaderboard: [],
-      },
+      { success: false, error: "Leaderboard temporarily unavailable.", leaderboard: [] },
       503,
-      "public, max-age=5, stale-if-error=60",
+      "public, max-age=5, s-maxage=5, stale-if-error=60",
     );
   }
 }
