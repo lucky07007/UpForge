@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MessageSquare, Send } from "lucide-react";
 
 interface CommentItem {
@@ -30,13 +30,22 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    let active = true;
+    const node = sectionRef.current;
+    if (!node || hasLoaded) return;
 
-    fetch(`/api/quiz/comments?quizSlug=${encodeURIComponent(quizSlug)}`, {
-      headers: { "x-upforge-domain": "quiz" },
-    })
+    let active = true;
+    const load = () => {
+      if (!active || hasLoaded) return;
+      setHasLoaded(true);
+      setLoading(true);
+
+      fetch(`/api/quiz/comments?quizSlug=${encodeURIComponent(quizSlug)}`, {
+        headers: { "x-upforge-domain": "quiz" },
+      })
       .then(readJson)
       .then((data) => {
         if (active) {
@@ -49,14 +58,31 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
           setErrorMsg(error?.message || "Community is temporarily unavailable.");
         }
       })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
+        .finally(() => {
+          if (active) setLoading(false);
+        });
     };
-  }, [quizSlug]);
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            load();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: "500px 0px" },
+      );
+      observer.observe(node);
+      return () => {
+        active = false;
+        observer.disconnect();
+      };
+    }
+
+    load();
+    return () => { active = false; };
+  }, [quizSlug, hasLoaded]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -95,7 +121,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
       }
 
       if (data.comment) {
-        setComments((prev) => [data.comment, ...prev].slice(0, 50));
+        setComments((prev) => [data.comment, ...prev].slice(0, 30));
       }
 
       setCommentText("");
@@ -108,7 +134,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
   };
 
   return (
-    <section className="rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-7 lg:p-8">
+    <section ref={sectionRef} className="rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-7 lg:p-8">
       <div className="flex flex-wrap items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
           <MessageSquare className="h-5 w-5" />
