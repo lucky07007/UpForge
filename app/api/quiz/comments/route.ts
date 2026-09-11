@@ -9,7 +9,7 @@ type CachedComments = {
 };
 
 const commentCache = new Map<string, CachedComments>();
-const CACHE_MS = 20_000;
+const CACHE_MS = 60_000;
 
 const ABUSE_TERMS = [
   "fuck",
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
   try {
     const docs = await adminListDocuments(
       `comments/${quizSlug}/userComments`,
-      30
+      50
     );
 
     docs.sort((a: any, b: any) => {
