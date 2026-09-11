@@ -1,42 +1,25 @@
+import React from "react";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { getQuizBySlug, getAllQuizzes } from "@/lib/quizData";
-import { QuizDetailClient } from "./quiz-detail-client";
+import { QUIZ_LIST } from "@/lib/quizData";
+import QuizDetailClient from "./quiz-detail-client";
 
-interface QuizPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
+interface PageProps {
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const quizzes = getAllQuizzes();
-  return (quizzes || []).map((q: any) => ({
-    slug: q.slug,
+  return QUIZ_LIST.map((quiz) => ({
+    slug: quiz.slug,
   }));
 }
 
-export default async function QuizPage({ params }: QuizPageProps) {
-  const { slug } = await params;
-  const quiz = getQuizBySlug(slug);
+export default async function QuizDetailPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const quiz = QUIZ_LIST.find((q) => q.slug === resolvedParams.slug);
 
   if (!quiz) {
     notFound();
   }
 
-  return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="max-w-4xl mx-auto px-4 mb-6">
-        <Link
-          href="/quiz"
-          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors gap-1.5"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Quizzes
-        </Link>
-      </div>
-
-      <QuizDetailClient quiz={quiz} />
-    </div>
-  );
+  return <QuizDetailClient quiz={quiz} />;
 }
