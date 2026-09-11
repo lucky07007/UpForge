@@ -15,7 +15,7 @@ export default function QuizIndexPage() {
 
   return (
     <main className="min-h-screen bg-[#FFFDF5] px-4 py-8 md:px-8">
-      <div className="mx-auto w-full max-w-[1300px]">
+      <div className="mx-auto w-full max-w-[1400px]">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-3xl">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-700">
@@ -25,8 +25,7 @@ export default function QuizIndexPage() {
               Challenges built for builders
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              Complete a challenge, get your UpForge certificate and have your
-              result added automatically to the public leaderboard.
+              Practical assessments for builders. Finish a challenge, earn a certificate and join the public rankings.
             </p>
           </div>
 
