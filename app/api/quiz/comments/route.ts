@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
     const { quizSlug, author, comment, userRole } = body;
 
     if (!quizSlug || !comment?.trim() || !author?.trim()) {
-      return NextResponse.json({ error: "quizSlug, author, and comment are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "quizSlug, author, and comment are required" },
+        { status: 400 }
+      );
     }
 
     const payload = {
@@ -51,6 +54,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, comment: doc });
   } catch (error: any) {
     console.error("Post comment error:", error);
-    return NextResponse.json({ error: error.message || "Failed to post comment" }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || "Failed to post comment" },
+      { status: 500 }
+    );
   }
 }
