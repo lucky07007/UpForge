@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, XCircle, Trophy, Clock, Award, RotateCcw } from "lucide-react";
 import QuizComments from "@/components/quiz/quiz-comments";
 
-interface Question {
+export interface Question {
   id: string | number;
   question: string;
   options: string[];
@@ -13,10 +13,10 @@ interface Question {
   explanation: string;
 }
 
-interface QuizDetailData {
+export interface QuizDetailData {
   slug: string;
   title: string;
-  description: string;
+  description?: string;
   category: string;
   questions: Question[];
 }
@@ -54,12 +54,13 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
     fetch(`/api/quiz/leaderboard?quizSlug=${encodeURIComponent(quiz.slug)}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.leaderboard) setLeaderboard(data.leaderboard);
+        if (data?.leaderboard) setLeaderboard(data.leaderboard);
       })
       .catch(() => {});
   }, [quiz.slug, submissionSuccess]);
 
-  const currentQ = quiz.questions[currentIdx];
+  const questions = quiz.questions || [];
+  const currentQ = questions[currentIdx];
   const hasAnsweredCurrent = selectedAnswers[currentIdx] !== undefined;
 
   const handleSelectOption = (optIdx: number) => {
@@ -70,18 +71,18 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
 
   const handleNext = () => {
     setShowExplanation(false);
-    if (currentIdx + 1 < quiz.questions.length) {
+    if (currentIdx + 1 < questions.length) {
       setCurrentIdx((prev) => prev + 1);
     } else {
       setIsCompleted(true);
     }
   };
 
-  const score = quiz.questions.reduce((acc, q, idx) => {
+  const score = questions.reduce((acc, q, idx) => {
     return acc + (selectedAnswers[idx] === q.correctIndex ? 1 : 0);
   }, 0);
 
-  const percentage = Math.round((score / (quiz.questions.length || 1)) * 100);
+  const percentage = Math.round((score / (questions.length || 1)) * 100);
 
   const getBadge = (pct: number) => {
     if (pct >= 90) return "Top 1% Founder Elite";
@@ -103,7 +104,7 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
           quizSlug: quiz.slug,
           quizTitle: quiz.title,
           score,
-          totalQuestions: quiz.questions.length,
+          totalQuestions: questions.length,
           percentage,
           timeTakenSeconds: timeElapsed,
           userName: founderName.trim() || "Founder",
@@ -130,6 +131,14 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
     setSubmissionSuccess(false);
   };
 
+  if (!currentQ && !isCompleted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <p className="text-sm text-zinc-500">No questions available in this challenge.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
@@ -154,13 +163,13 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
               <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 <span>{quiz.category}</span>
                 <span>
-                  Question {currentIdx + 1} of {quiz.questions.length}
+                  Question {currentIdx + 1} of {questions.length}
                 </span>
               </div>
               <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
                 <div
                   className="bg-emerald-500 h-full transition-all duration-300"
-                  style={{ width: `${((currentIdx + 1) / quiz.questions.length) * 100}%` }}
+                  style={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
                 />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 pt-2">
@@ -214,7 +223,7 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
                   onClick={handleNext}
                   className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow transition-colors"
                 >
-                  {currentIdx + 1 === quiz.questions.length ? "Finish Assessment" : "Next Question"}
+                  {currentIdx + 1 === questions.length ? "Finish Assessment" : "Next Question"}
                 </button>
               </div>
             )}
@@ -231,7 +240,7 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
               </h2>
               <p className="text-zinc-500 text-sm">
                 You scored <span className="font-bold text-emerald-600 dark:text-emerald-400">{score}</span> out of{" "}
-                <span className="font-bold">{quiz.questions.length}</span> ({percentage}%)
+                <span className="font-bold">{questions.length}</span> ({percentage}%)
               </p>
             </div>
 
