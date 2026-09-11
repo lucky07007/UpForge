@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { firestoreAddDocument } from "@/lib/firebase-admin";
+import { adminAddDocument } from "@/lib/firebase-admin";
 
 export const runtime = "edge";
 
@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       quizSlug,
-      quizTitle,
       score,
       totalQuestions,
       percentage,
@@ -19,30 +18,28 @@ export async function POST(req: NextRequest) {
     } = body;
 
     if (!quizSlug || score === undefined || !totalQuestions) {
-      return NextResponse.json(
-        { error: "Missing required quiz result data" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const record = {
-      quizSlug: String(quizSlug),
-      quizTitle: String(quizTitle || quizSlug),
+    const uid = "user_" + Math.random().toString(36).substring(2, 10);
+    const scoreData = {
+      uid,
+      userName: String(userName || "Founder"),
+      userEmail: String(userEmail || ""),
       score: Number(score),
       totalQuestions: Number(totalQuestions),
       percentage: Number(percentage || Math.round((score / totalQuestions) * 100)),
       timeTakenSeconds: Number(timeTakenSeconds || 0),
-      userName: String(userName || "Anonymous Founder"),
-      userEmail: String(userEmail || ""),
-      badgeEarned: String(badgeEarned || "Participant"),
+      badgeEarned: String(badgeEarned || "Emerging Founder"),
       completedAt: new Date().toISOString(),
     };
 
-    const doc = await firestoreAddDocument("quiz_completions", record);
+    // Matches Firestore Rule: match /leaderboards/{quizId}/scores/{uid}
+    const doc = await adminAddDocument(`leaderboards/${quizSlug}/scores`, scoreData, uid);
 
-    return NextResponse.json({ success: true, completionId: doc?.id || "recorded", record });
+    return NextResponse.json({ success: true, completionId: doc?.id || uid, record: scoreData });
   } catch (error: any) {
-    console.error("Quiz complete API error:", error);
-    return NextResponse.json({ error: error.message || "Failed to submit" }, { status: 500 });
+    console.error("Score submission error:", error);
+    return NextResponse.json({ error: error.message || "Failed to record score" }, { status: 500 });
   }
 }
