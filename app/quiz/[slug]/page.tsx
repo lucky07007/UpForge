@@ -38,3 +38,4 @@ export default async function QuizDetailPage({ params }: PageProps) {
   return <QuizDetailClient quiz={cleanQuiz} />;
 }
 
+
