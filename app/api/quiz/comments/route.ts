@@ -1,29 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { adminAddDocument, adminListDocuments } from "@/lib/firebase-admin";
 
-export const runtime = "edge";
+type CachedComments = {
+  expiresAt: number;
+  comments: any[];
+};
 
-const CACHE_SECONDS = 30;
+const commentCache = new Map<string, CachedComments>();
+const CACHE_MS = 20_000;
 
-// Keep this intentionally conservative: the goal is to block obvious abuse,
-// not to police normal disagreement or strong opinions.
-const ABUSIVE_TERMS = [
+const ABUSE_TERMS = [
   "fuck",
   "fucking",
   "motherfucker",
+  "shit",
   "bitch",
   "bastard",
   "asshole",
-  "dickhead",
-  "cocksucker",
-  "nigger",
-  "faggot",
+  "dumbass",
+  "stfu",
   "chutiya",
+  "chutia",
   "madarchod",
+  "madharchod",
   "bhenchod",
+  "behenchod",
+  "bc",
+  "mc",
   "gandu",
+  "gaand",
   "harami",
+  "kamina",
+  "kamine",
 ];
+
+function json(data: unknown, status = 200) {
+  return NextResponse.json(data, {
+    status,
+    headers: {
+      "Cache-Control":
+        "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
+      "CDN-Cache-Control":
+        "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
+    },
+  });
+}
 
 function normalizeForModeration(value: string) {
   return value
@@ -31,20 +53,29 @@ function normalizeForModeration(value: string) {
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[@4]/g, "a")
-    .replace(/[1!]/g, "i")
-    .replace(/[$5]/g, "s")
-    .replace(/[0]/g, "o")
     .replace(/[3]/g, "e")
-    .replace(/[^a-z0-9]+/g, "");
+    .replace(/[1!|]/g, "i")
+    .replace(/[0]/g, "o")
+    .replace(/[5$]/g, "s")
+    .replace(/[7]/g, "t")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function containsAbuse(value: string) {
   const normalized = normalizeForModeration(value);
-  return ABUSIVE_TERMS.some((term) => normalized.includes(term));
+
+  return ABUSE_TERMS.some((term) => {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(?:^|\\s)${escaped}(?:$|\\s)`, "i").test(
+      normalized
+    );
+  });
 }
 
 function cleanText(value: unknown, max: number) {
-  return String(value || "")
+  return String(value ?? "")
     .replace(/[<>]/g, "")
     .replace(/\s+/g, " ")
     .trim()
@@ -52,48 +83,50 @@ function cleanText(value: unknown, max: number) {
 }
 
 export async function GET(req: NextRequest) {
+  const quizSlug =
+    new URL(req.url).searchParams.get("quizSlug") ||
+    "startup-iq-challenge-2026";
+
+  if (!QUIZ_REGISTRY.some((quiz) => quiz.slug === quizSlug)) {
+    return json({ success: false, comments: [], error: "Quiz not found." }, 404);
+  }
+
+  const cached = commentCache.get(quizSlug);
+  if (cached && cached.expiresAt > Date.now()) {
+    return json({ success: true, comments: cached.comments });
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const quizSlug = (searchParams.get("quizSlug") || "").trim();
-
-    if (!quizSlug || !/^[a-z0-9-]{3,100}$/.test(quizSlug)) {
-      return NextResponse.json({ error: "Invalid quiz" }, { status: 400 });
-    }
-
     const docs = await adminListDocuments(
       `comments/${quizSlug}/userComments`,
       50
     );
 
-    const comments = docs
-      .sort((a: any, b: any) => {
-        return (
-          new Date(b.createdAt || b.createTime || 0).getTime() -
-          new Date(a.createdAt || a.createTime || 0).getTime()
-        );
-      })
-      .slice(0, 50);
+    docs.sort((a: any, b: any) => {
+      return (
+        new Date(b?.createdAt || b?.createTime || 0).getTime() -
+        new Date(a?.createdAt || a?.createTime || 0).getTime()
+      );
+    });
 
-    return NextResponse.json(
-      { success: true, comments },
-      {
-        headers: {
-          "Cache-Control":
-            `public, max-age=0, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=120`,
-          "CDN-Cache-Control":
-            `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=120`,
-        },
-      }
-    );
+    const comments = docs.slice(0, 50);
+
+    commentCache.set(quizSlug, {
+      expiresAt: Date.now() + CACHE_MS,
+      comments,
+    });
+
+    return json({ success: true, comments });
   } catch (error) {
     console.error("Comments fetch error:", error);
-    return NextResponse.json(
-      { success: true, comments: [] },
+
+    return json(
       {
-        headers: {
-          "Cache-Control": "public, s-maxage=15, stale-while-revalidate=60",
-        },
-      }
+        success: false,
+        comments: [],
+        error: "Community is temporarily unavailable.",
+      },
+      503
     );
   }
 }
@@ -103,43 +136,53 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const quizSlug = cleanText(body?.quizSlug, 100);
-    const author = cleanText(body?.author, 60);
-    const comment = cleanText(body?.comment, 600);
-    const userRole = body?.userRole === "Founder" ? "Founder" : "Student";
+    const author = cleanText(body?.author, 50);
+    const userRole = cleanText(body?.userRole, 20);
     const company = cleanText(body?.company, 80);
+    const comment = cleanText(body?.comment, 500);
 
-    if (!quizSlug || !author || !comment) {
-      return NextResponse.json(
-        { error: "Name and comment are required." },
-        { status: 400 }
+    if (!QUIZ_REGISTRY.some((quiz) => quiz.slug === quizSlug)) {
+      return json({ success: false, error: "Quiz not found." }, 404);
+    }
+
+    if (!author || !comment) {
+      return json(
+        { success: false, error: "Name and comment are required." },
+        400
       );
     }
 
-    if (!/^[a-z0-9-]{3,100}$/.test(quizSlug)) {
-      return NextResponse.json({ error: "Invalid quiz." }, { status: 400 });
+    if (!["Founder", "Student"].includes(userRole)) {
+      return json(
+        { success: false, error: "Please select Founder or Student." },
+        400
+      );
     }
 
     if (userRole === "Founder" && !company) {
-      return NextResponse.json(
-        { error: "Founders must add their company name." },
-        { status: 400 }
+      return json(
+        { success: false, error: "Company name is required for founders." },
+        400
       );
     }
 
-    if (containsAbuse(`${author} ${company} ${comment}`)) {
-      // Reject before Firestore write: abusive content is never persisted.
-      return NextResponse.json(
-        { error: "Please keep the discussion respectful and useful." },
-        { status: 422 }
+    if (containsAbuse(author) || containsAbuse(company) || containsAbuse(comment)) {
+      return json(
+        {
+          success: false,
+          error: "Please remove abusive language and try again.",
+        },
+        400
       );
     }
 
     const payload = {
-      quizSlug,
       author,
       comment,
       userRole,
       company: userRole === "Founder" ? company : "",
+      displayRole:
+        userRole === "Founder" ? `Founder @ ${company}` : "Student",
       createdAt: new Date().toISOString(),
       likesCount: 0,
     };
@@ -149,21 +192,28 @@ export async function POST(req: NextRequest) {
       payload
     );
 
-    return NextResponse.json(
+    // Make the next GET hit Firebase once so the new comment becomes visible.
+    commentCache.delete(quizSlug);
+
+    return json(
       {
         success: true,
         comment: {
+          ...(doc || {}),
           ...payload,
-          id: doc?.id,
         },
       },
-      { status: 201 }
+      201
     );
   } catch (error) {
     console.error("Post comment error:", error);
-    return NextResponse.json(
-      { error: "Could not post the community note." },
-      { status: 500 }
+
+    return json(
+      {
+        success: false,
+        error: "Could not post your insight right now. Please try again.",
+      },
+      500
     );
   }
 }
