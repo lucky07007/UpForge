@@ -207,6 +207,8 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
         completedAt: record.completedAt,
       };
 
+      try { sessionStorage.setItem("upforge:last-completion", data.completionId); } catch {}
+
       setCompletion({ certificateId: data.certificateId, record: submittedEntry });
 
       setLeaderboard((previous) => {
@@ -284,67 +286,70 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
           </Link>
           {started && !isCompleted && (
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--glass-border)] bg-card px-3 py-2 text-xs font-bold text-muted-foreground shadow-sm">
-              <Clock className="h-4 w-4 text-accent-primary" />
+              <Clock className="h-4 w-4 text-accent-gold" />
               {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, "0")}
             </div>
           )}
         </div>
 
         {!started && !isCompleted ? (
-          <section className="rounded-2xl border border-[var(--glass-border)] bg-card shadow-sm">
-            <div className="mx-auto max-w-4xl px-5 py-7 text-center sm:px-10 sm:py-10">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary/10 text-accent-primary">
-                <Award className="h-6 w-6" />
-              </div>
-              <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-accent-primary">UpForge assessment</p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">{title}</h1>
-              <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{quiz.description}</p>
-
-              <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs font-medium text-muted-foreground">
-                <span className="rounded-full bg-muted px-3 py-1.5">{questions.length} questions</span>
-                <span className="rounded-full bg-muted px-3 py-1.5">{quiz.duration || "3–5 minutes"}</span>
-                <span className="rounded-full bg-muted px-3 py-1.5">Certificate</span>
+          <section className="overflow-hidden rounded-[24px] border border-[var(--glass-border)] bg-card shadow-sm">
+            <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
+              <div className="relative min-h-[240px] overflow-hidden bg-muted lg:min-h-[420px]">
+                <img src={quiz.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5 text-white sm:bottom-7 sm:left-7">
+                  <span className="inline-flex rounded-full border border-white/20 bg-black/30 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] backdrop-blur">{quiz.category}</span>
+                  <p className="mt-3 text-xs font-semibold text-white/80">{quiz.badge}</p>
+                  <p className="mt-1 text-lg font-black sm:text-xl">{questions.length} questions · {quiz.duration || "3–5 minutes"}</p>
+                </div>
               </div>
 
-              <div className="mx-auto mt-6 max-w-xl text-left">
-                <label htmlFor="quiz-name" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                  Your name
-                </label>
-                <input
-                  id="quiz-name"
-                  type="text"
-                  value={userName}
-                  onChange={(event) => setUserName(event.target.value.slice(0, 80))}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") startChallenge();
-                  }}
-                  autoComplete="name"
-                  maxLength={80}
-                  placeholder="Enter your name"
-                  className="w-full rounded-xl border border-[var(--glass-border)] bg-background px-4 py-3 text-base font-semibold text-foreground outline-none transition focus:border-accent-primary focus:ring-4 focus:ring-accent-primary/10"
-                />
-                <p className="mt-1.5 text-[11px] text-muted-foreground">Used on your certificate and leaderboard.</p>
-              </div>
+              <div className="p-6 sm:p-8 lg:p-10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-gold/10 text-accent-gold">
+                  <Award className="h-5 w-5" />
+                </div>
+                <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-accent-gold">UpForge assessment</p>
+                <h1 className="mt-2 text-2xl font-black tracking-tight text-foreground sm:text-3xl">{title}</h1>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{quiz.description}</p>
 
-              <button
-                type="button"
-                onClick={startChallenge}
-                disabled={!canStart}
-                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent-primary px-7 py-3.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45"
-              >
-                <Play className="h-4 w-4" />
-                Start challenge
-              </button>
+                <div className="mt-5 grid grid-cols-2 gap-2 text-xs font-semibold text-muted-foreground">
+                  <span className="rounded-xl bg-muted px-3 py-2.5">{questions.length} questions</span>
+                  <span className="rounded-xl bg-muted px-3 py-2.5">{quiz.duration || "3–5 minutes"}</span>
+                  <span className="rounded-xl bg-muted px-3 py-2.5">Server scored</span>
+                  <span className="rounded-xl bg-muted px-3 py-2.5">Certificate</span>
+                </div>
+
+                <div className="mt-6">
+                  <label htmlFor="quiz-name" className="mb-2 block text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">Your name</label>
+                  <input
+                    id="quiz-name"
+                    type="text"
+                    value={userName}
+                    onChange={(event) => setUserName(event.target.value.slice(0, 80))}
+                    onKeyDown={(event) => { if (event.key === "Enter") startChallenge(); }}
+                    autoComplete="name"
+                    maxLength={80}
+                    placeholder="Enter your name"
+                    className="w-full rounded-xl border border-[var(--glass-border)] bg-background px-4 py-3.5 text-sm font-semibold text-foreground outline-none transition focus:border-accent-gold focus:ring-4 focus:ring-accent-gold/10"
+                  />
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">Shown on your certificate and public ranking.</p>
+                </div>
+
+                <button type="button" onClick={startChallenge} disabled={!canStart} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent-gold px-6 py-3.5 text-sm font-black text-slate-950 shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45">
+                  <Play className="h-4 w-4" /> Start challenge
+                </button>
+              </div>
             </div>
           </section>
         ) : !isCompleted ? (
           <section className="rounded-2xl border border-[var(--glass-border)] bg-card p-4 shadow-sm sm:p-7 lg:p-9">
-            <div className="flex items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em] text-accent-primary">
+            <div className="flex items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em] text-accent-gold">
               <span>Question {currentIdx + 1}</span>
               <span>{currentIdx + 1} / {questions.length}</span>
             </div>
             <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-accent-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+              <div className="h-full rounded-full bg-accent-gold transition-all duration-300" style={{ width: `${progress}%` }} />
             </div>
 
             <h2 className="mt-5 max-w-5xl text-xl font-bold leading-tight text-foreground sm:text-2xl lg:text-3xl">
@@ -362,12 +367,12 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
                     onClick={() => handleSelectOption(index)}
                     className={`flex min-h-14 w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm font-medium transition sm:min-h-16 sm:px-5 ${
                       isSelected
-                        ? "border-accent-primary bg-accent-primary/10 text-foreground shadow-sm"
-                        : "border-[var(--glass-border)] bg-background text-foreground hover:border-accent-primary/40 hover:bg-accent-primary/5"
+                        ? "border-accent-gold bg-accent-gold/10 text-foreground shadow-sm"
+                        : "border-[var(--glass-border)] bg-background text-foreground hover:border-accent-gold/40 hover:bg-accent-gold/5"
                     } disabled:cursor-default`}
                   >
                     <span>{option}</span>
-                    {hasAnsweredCurrent && isSelected && <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-primary" />}
+                    {hasAnsweredCurrent && isSelected && <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-gold" />}
                   </button>
                 );
               })}
@@ -385,7 +390,7 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
                   type="button"
                   onClick={handleNext}
                   disabled={submittingResult}
-                  className="rounded-xl bg-accent-primary px-6 py-3 text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-50"
+                  className="rounded-xl bg-accent-gold px-6 py-3 text-sm font-black text-slate-950 transition hover:opacity-90 disabled:opacity-50"
                 >
                   {currentIdx + 1 === questions.length ? (submittingResult ? "Recording…" : "Finish") : "Next"}
                 </button>
@@ -482,4 +487,3 @@ export default function QuizDetailClient({ quiz }: { quiz: QuizDetailData }) {
     </main>
   );
 }
-
