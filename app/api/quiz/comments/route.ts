@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { adminAddDocument, adminListDocuments } from "@/lib/firebase-admin";
+import { allowRateLimitedRequest, getClientIp } from "@/lib/quiz-rate-limit";
 
 type CachedComments = {
   expiresAt: number;
@@ -35,7 +36,7 @@ const ABUSE_TERMS = [
   "kamine",
 ];
 
-function json(data: unknown, status = 200) {
+function publicJson(data: unknown, status = 200) {
   return NextResponse.json(data, {
     status,
     headers: {
@@ -43,6 +44,15 @@ function json(data: unknown, status = 200) {
         "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
       "CDN-Cache-Control":
         "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
+    },
+  });
+}
+
+function noStoreJson(data: unknown, status = 200) {
+  return NextResponse.json(data, {
+    status,
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
     },
   });
 }
@@ -88,12 +98,12 @@ export async function GET(req: NextRequest) {
     "startup-iq-challenge-2026";
 
   if (!QUIZ_REGISTRY.some((quiz) => quiz.slug === quizSlug)) {
-    return json({ success: false, comments: [], error: "Quiz not found." }, 404);
+    return publicJson({ success: false, comments: [], error: "Quiz not found." }, 404);
   }
 
   const cached = commentCache.get(quizSlug);
   if (cached && cached.expiresAt > Date.now()) {
-    return json({ success: true, comments: cached.comments });
+    return publicJson({ success: true, comments: cached.comments });
   }
 
   try {
@@ -116,11 +126,20 @@ export async function GET(req: NextRequest) {
       comments,
     });
 
-    return json({ success: true, comments });
+    return publicJson({ success: true, comments });
   } catch (error) {
     console.error("Comments fetch error:", error);
 
-    return json(
+    const stale = commentCache.get(quizSlug);
+    if (stale) {
+      return publicJson({
+        success: true,
+        comments: stale.comments,
+        stale: true,
+      });
+    }
+
+    return publicJson(
       {
         success: false,
         comments: [],
@@ -133,7 +152,26 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const contentLength = Number(req.headers.get("content-length") || 0);
+    if (contentLength > 16 * 1024) {
+      return noStoreJson({ success: false, error: "Request is too large." }, 413);
+    }
+
+    const rate = allowRateLimitedRequest(`comment:${getClientIp(req)}`, 10);
+    if (!rate.allowed) {
+      const response = noStoreJson(
+        { success: false, error: "Too many posts. Please try again shortly." },
+        429
+      );
+      response.headers.set("Retry-After", String(rate.retryAfterSeconds));
+      return response;
+    }
+
     const body = await req.json();
+
+    if (String(body?.website || "").trim()) {
+      return noStoreJson({ success: false, error: "Invalid submission." }, 400);
+    }
 
     const quizSlug = cleanText(body?.quizSlug, 100);
     const author = cleanText(body?.author, 50);
@@ -142,32 +180,32 @@ export async function POST(req: NextRequest) {
     const comment = cleanText(body?.comment, 500);
 
     if (!QUIZ_REGISTRY.some((quiz) => quiz.slug === quizSlug)) {
-      return json({ success: false, error: "Quiz not found." }, 404);
+      return noStoreJson({ success: false, error: "Quiz not found." }, 404);
     }
 
     if (!author || !comment) {
-      return json(
+      return noStoreJson(
         { success: false, error: "Name and comment are required." },
         400
       );
     }
 
     if (!["Founder", "Student"].includes(userRole)) {
-      return json(
+      return noStoreJson(
         { success: false, error: "Please select Founder or Student." },
         400
       );
     }
 
     if (userRole === "Founder" && !company) {
-      return json(
+      return noStoreJson(
         { success: false, error: "Company name is required for founders." },
         400
       );
     }
 
     if (containsAbuse(author) || containsAbuse(company) || containsAbuse(comment)) {
-      return json(
+      return noStoreJson(
         {
           success: false,
           error: "Please remove abusive language and try again.",
@@ -195,7 +233,7 @@ export async function POST(req: NextRequest) {
     // Make the next GET hit Firebase once so the new comment becomes visible.
     commentCache.delete(quizSlug);
 
-    return json(
+    return noStoreJson(
       {
         success: true,
         comment: {
@@ -208,7 +246,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Post comment error:", error);
 
-    return json(
+    return noStoreJson(
       {
         success: false,
         error: "Could not post your insight right now. Please try again.",
