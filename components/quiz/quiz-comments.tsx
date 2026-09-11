@@ -136,7 +136,11 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
       }
 
       if (data.comment) {
-        setComments((prev) => [data.comment, ...prev].slice(0, 30));
+        setComments((prev) => {
+          const next = [data.comment, ...prev.filter((item) => item.id !== data.comment.id)].slice(0, 30);
+          try { sessionStorage.setItem(storageKey, JSON.stringify({ savedAt: Date.now(), comments: next })); } catch {}
+          return next;
+        });
       }
 
       setCommentText("");
@@ -196,7 +200,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
             onChange={(event) => setAuthor(event.target.value)}
             maxLength={50}
             required
-            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-950 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+            className="w-full rounded-xl border border-[var(--glass-border)] bg-background px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/10"
           />
 
           <select
@@ -204,7 +208,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
             onChange={(event) =>
               setUserRole(event.target.value as "Founder" | "Student")
             }
-            className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm font-semibold text-slate-950 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+            className="w-full rounded-xl border border-[var(--glass-border)] bg-background px-3.5 py-3 text-sm font-semibold text-foreground outline-none transition focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/10"
           >
             <option value="Student">Student</option>
             <option value="Founder">Founder</option>
@@ -218,7 +222,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
               onChange={(event) => setCompany(event.target.value)}
               maxLength={80}
               required
-              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-950 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-background px-3.5 py-3 text-sm text-foreground outline-none transition focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/10"
             />
           )}
         </div>
@@ -230,7 +234,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
           onChange={(event) => setCommentText(event.target.value)}
           maxLength={500}
           required
-          className="w-full resize-none rounded-xl border border-[var(--glass-border)] bg-background p-3.5 text-sm text-foreground outline-none transition focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10"
+          className="w-full resize-none rounded-xl border border-[var(--glass-border)] bg-background p-3.5 text-sm text-foreground outline-none transition focus:border-accent-gold focus:ring-2 focus:ring-accent-gold/10"
         />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -241,7 +245,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent-primary px-5 py-3 text-xs font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent-gold px-5 py-3 text-xs font-black text-slate-950 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send className="h-3.5 w-3.5" />
             {submitting ? "Posting…" : "Post insight"}
