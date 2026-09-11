@@ -53,26 +53,11 @@ export async function GET(req: NextRequest) {
     // One Firestore read per cache window per Worker isolate.
     const docs = await adminListDocuments(
       `leaderboards/${quizSlug}/scores`,
-      50
+      10
     );
 
-    docs.sort((a: any, b: any) => {
-      const percentageDiff =
-        Number(b?.percentage || 0) - Number(a?.percentage || 0);
-
-      if (percentageDiff !== 0) return percentageDiff;
-
-      const scoreDiff =
-        Number(b?.score || 0) - Number(a?.score || 0);
-
-      if (scoreDiff !== 0) return scoreDiff;
-
-      return (
-        Number(a?.timeTakenSeconds || 999999) -
-        Number(b?.timeTakenSeconds || 999999)
-      );
-    });
-
+    // Completion document IDs are score-sorted, so Firestore returns the
+    // best entries first without an expensive collection-wide read.
     const leaderboard = docs.slice(0, 10).map((entry: any, index: number) => ({
       rank: index + 1,
       id: entry.id,
@@ -94,6 +79,22 @@ export async function GET(req: NextRequest) {
     console.error("Leaderboard fetch error:", error);
 
     // JSON even on failure — never let the browser try to parse a Cloudflare HTML error.
+    if (cached) {
+      return response({
+        success: true,
+        leaderboard: cached.leaderboard,
+        stale: true,
+      });
+    }
+
+    if (cached) {
+      return response({
+        success: true,
+        leaderboard: cached.leaderboard,
+        stale: true,
+      });
+    }
+
     return response(
       {
         success: false,
