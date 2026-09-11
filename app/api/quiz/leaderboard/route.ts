@@ -1,68 +1,106 @@
 import { NextRequest, NextResponse } from "next/server";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
 import { adminListDocuments } from "@/lib/firebase-admin";
 
-export const runtime = "edge";
+type LeaderboardItem = {
+  rank: number;
+  id?: string;
+  userName: string;
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  badgeEarned: string;
+  timeTakenSeconds: number;
+};
 
-const CACHE_SECONDS = 30;
+const memoryCache = new Map<
+  string,
+  { expiresAt: number; leaderboard: LeaderboardItem[] }
+>();
 
-function sortLeaderboard(a: any, b: any) {
-  if ((b.percentage || 0) !== (a.percentage || 0)) {
-    return (b.percentage || 0) - (a.percentage || 0);
-  }
-  return (a.timeTakenSeconds || 999999) - (b.timeTakenSeconds || 999999);
+const CACHE_MS = 20_000;
+
+function response(data: unknown, status = 200) {
+  return NextResponse.json(data, {
+    status,
+    headers: {
+      "Cache-Control":
+        "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
+      "CDN-Cache-Control":
+        "public, max-age=30, stale-while-revalidate=120, stale-if-error=600",
+    },
+  });
 }
 
 export async function GET(req: NextRequest) {
+  const quizSlug =
+    new URL(req.url).searchParams.get("quizSlug") ||
+    "startup-iq-challenge-2026";
+
+  if (!QUIZ_REGISTRY.some((quiz) => quiz.slug === quizSlug)) {
+    return response(
+      { success: false, leaderboard: [], error: "Quiz not found." },
+      404
+    );
+  }
+
+  const cached = memoryCache.get(quizSlug);
+  if (cached && cached.expiresAt > Date.now()) {
+    return response({ success: true, leaderboard: cached.leaderboard });
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const quizSlug = (searchParams.get("quizSlug") || "").trim();
-
-    if (!quizSlug || !/^[a-z0-9-]{3,100}$/.test(quizSlug)) {
-      return NextResponse.json({ error: "Invalid quiz" }, { status: 400 });
-    }
-
+    // One Firestore read per cache window per Worker isolate.
     const docs = await adminListDocuments(
       `leaderboards/${quizSlug}/scores`,
       50
     );
 
-    const leaderboard = docs
-      .sort(sortLeaderboard)
-      .slice(0, 10)
-      .map((entry: any, index: number) => ({
-        rank: index + 1,
-        id: entry.id,
-        userName: entry.userName || "UpForge Builder",
-        score: Number(entry.score || 0),
-        totalQuestions: Number(entry.totalQuestions || 0),
-        percentage: Number(entry.percentage || 0),
-        badgeEarned: entry.badgeEarned || "UpForge Learner",
-        timeTakenSeconds: Number(entry.timeTakenSeconds || 0),
-      }));
+    docs.sort((a: any, b: any) => {
+      const percentageDiff =
+        Number(b?.percentage || 0) - Number(a?.percentage || 0);
 
-    return NextResponse.json(
-      { success: true, leaderboard },
-      {
-        headers: {
-          // Browser may revalidate, while Cloudflare can serve the cached edge
-          // copy for 30s and stale data for another 2 minutes.
-          "Cache-Control":
-            `public, max-age=0, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=120`,
-          "CDN-Cache-Control":
-            `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=120`,
-          Vary: "Accept-Encoding",
-        },
-      }
-    );
+      if (percentageDiff !== 0) return percentageDiff;
+
+      const scoreDiff =
+        Number(b?.score || 0) - Number(a?.score || 0);
+
+      if (scoreDiff !== 0) return scoreDiff;
+
+      return (
+        Number(a?.timeTakenSeconds || 999999) -
+        Number(b?.timeTakenSeconds || 999999)
+      );
+    });
+
+    const leaderboard = docs.slice(0, 10).map((entry: any, index: number) => ({
+      rank: index + 1,
+      id: entry.id,
+      userName: String(entry.userName || "UpForge Builder"),
+      score: Number(entry.score || 0),
+      totalQuestions: Number(entry.totalQuestions || 10),
+      percentage: Number(entry.percentage || 0),
+      badgeEarned: String(entry.badgeEarned || "Emerging Founder"),
+      timeTakenSeconds: Number(entry.timeTakenSeconds || 0),
+    }));
+
+    memoryCache.set(quizSlug, {
+      expiresAt: Date.now() + CACHE_MS,
+      leaderboard,
+    });
+
+    return response({ success: true, leaderboard });
   } catch (error) {
     console.error("Leaderboard fetch error:", error);
-    return NextResponse.json(
-      { success: true, leaderboard: [] },
+
+    // JSON even on failure — never let the browser try to parse a Cloudflare HTML error.
+    return response(
       {
-        headers: {
-          "Cache-Control": "public, s-maxage=15, stale-while-revalidate=60",
-        },
-      }
+        success: false,
+        leaderboard: [],
+        error: "Leaderboard is temporarily unavailable.",
+      },
+      503
     );
   }
 }
