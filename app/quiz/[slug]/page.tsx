@@ -116,7 +116,7 @@ export default async function QuizDetailPage({ params }: PageProps) {
     title: quiz.title,
     description: quiz.description ?? "",
     category: quiz.category,
-    duration: quiz.duration || quiz.time || "3–5 Minutes",
+    duration: quiz.duration || quiz.time || "3–5 Minutes", 
     badge: quiz.badge,
     credentialTier: quiz.metrics?.credentialTier || "UpForge Credential",
     image: quiz.image,
