@@ -17,17 +17,16 @@ export default async function QuizDetailPage({ params }: PageProps) {
 
   if (!quiz) notFound();
 
-  // IMPORTANT: correctIndex never goes to the browser.
-  // The completion API calculates the final score server-side.
+  // Never send the answer key to the browser.
   const cleanQuiz = {
     slug: quiz.slug,
     title: quiz.title,
     description: quiz.description ?? "",
     category: quiz.category,
-    image: quiz.image,
     duration: quiz.duration || quiz.time || "3–5 Minutes",
     badge: quiz.badge,
-    credentialTier: quiz.metrics.credentialTier,
+    credentialTier: quiz.metrics?.credentialTier || "UpForge Credential",
+    image: quiz.image,
     questions: (quiz.questions || []).map((question) => ({
       id: question.id,
       question: question.question,
