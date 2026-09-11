@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { MessageSquare, Send } from "lucide-react";
+import { LeaderboardLoading } from "@/components/quiz/quiz-loading";
 
 interface CommentItem {
   id?: string;
@@ -236,8 +237,8 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
 
       <div className="mt-7 space-y-3">
         {loading ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">
-            Loading community…
+          <div className="rounded-2xl border border-slate-100 bg-slate-50/40 p-4">
+            <LeaderboardLoading />
           </div>
         ) : comments.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">
