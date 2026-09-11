@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
     } = body;
 
     if (!quizSlug || score === undefined || !totalQuestions) {
-      return NextResponse.json({ error: "Missing required quiz result data" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required quiz result data" },
+        { status: 400 }
+      );
     }
 
     const record = {
@@ -39,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, completionId: doc?.id || "recorded", record });
   } catch (error: any) {
-    console.error("Quiz complete submission error:", error);
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+    console.error("Quiz complete API error:", error);
+    return NextResponse.json({ error: error.message || "Failed to submit" }, { status: 500 });
   }
 }
