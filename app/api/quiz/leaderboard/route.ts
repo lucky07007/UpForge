@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     }
 
     filtered.sort((a: any, b: any) => {
-      if (b.percentage !== a.percentage) {
+      if ((b.percentage || 0) !== (a.percentage || 0)) {
         return (b.percentage || 0) - (a.percentage || 0);
       }
       return (a.timeTakenSeconds || 999) - (b.timeTakenSeconds || 999);
@@ -26,11 +26,11 @@ export async function GET(req: NextRequest) {
       rank: index + 1,
       id: entry.id,
       userName: entry.userName || "Anonymous Founder",
-      score: entry.score,
-      totalQuestions: entry.totalQuestions,
-      percentage: entry.percentage,
-      timeTakenSeconds: entry.timeTakenSeconds,
-      badgeEarned: entry.badgeEarned,
+      score: entry.score ?? 0,
+      totalQuestions: entry.totalQuestions ?? 10,
+      percentage: entry.percentage ?? 0,
+      timeTakenSeconds: entry.timeTakenSeconds ?? 0,
+      badgeEarned: entry.badgeEarned || "Participant",
       completedAt: entry.completedAt || entry.createTime,
     }));
 
