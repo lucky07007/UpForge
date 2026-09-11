@@ -1,14 +1,17 @@
 import React from "react";
 import Link from "next/link";
-import { QUIZ_LIST } from "@/lib/quizData";
-import { Trophy, Clock, ArrowRight, BrainCircuit, CheckCircle2 } from "lucide-react";
+import { QUIZ_REGISTRY } from "@/lib/quizData";
+import { Clock, ArrowRight, BrainCircuit } from "lucide-react";
 
 export const metadata = {
   title: "Startup & Founder IQ Challenges | UpForge",
-  description: "Test your startup intelligence, benchmark against verified Indian founders, and earn ecosystem credentials.",
+  description:
+    "Test your startup intelligence, benchmark against verified Indian founders, and earn ecosystem credentials.",
 };
 
 export default function QuizIndexPage() {
+  const quizzes = QUIZ_REGISTRY || [];
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-12">
@@ -20,12 +23,14 @@ export default function QuizIndexPage() {
             Startup & Founder IQ Challenges
           </h1>
           <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
-            Assess your startup building readiness, fundraising metrics, and execution IQ. Benchmark against leading founders and earn verifiable badges.
+            Assess your startup building readiness, fundraising metrics, and
+            execution IQ. Benchmark against leading founders and earn verifiable
+            badges.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {QUIZ_LIST.map((quiz) => (
+          {quizzes.map((quiz) => (
             <div
               key={quiz.slug}
               className="flex flex-col justify-between rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-sm hover:border-emerald-500/60 transition-all"
