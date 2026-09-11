@@ -51,6 +51,5 @@ export function allowRateLimitedRequest(
   current.count += 1;
   windows.set(key, current);
 
-  
   return { allowed: true, retryAfterSeconds: 0 };
 }
