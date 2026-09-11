@@ -79,18 +79,11 @@ export async function GET(req: NextRequest) {
     console.error("Leaderboard fetch error:", error);
 
     // JSON even on failure — never let the browser try to parse a Cloudflare HTML error.
-    if (cached) {
+    const stale = memoryCache.get(quizSlug);
+    if (stale) {
       return response({
         success: true,
-        leaderboard: cached.leaderboard,
-        stale: true,
-      });
-    }
-
-    if (cached) {
-      return response({
-        success: true,
-        leaderboard: cached.leaderboard,
+        leaderboard: stale.leaderboard,
         stale: true,
       });
     }
