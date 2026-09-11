@@ -53,4 +53,3 @@ export function allowRateLimitedRequest(
 
   return { allowed: true, retryAfterSeconds: 0 };
 }
-
