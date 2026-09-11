@@ -33,6 +33,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const storageKey = `upforge:quiz-comments:${quizSlug}`;
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -44,13 +45,26 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
       setHasLoaded(true);
       setLoading(true);
 
+      try {
+        const cached = sessionStorage.getItem(storageKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed?.savedAt && Date.now() - parsed.savedAt < 5 * 60 * 1000 && Array.isArray(parsed.comments)) {
+            setComments(parsed.comments);
+            setLoading(false);
+          }
+        }
+      } catch {}
+
       fetch(`/api/quiz/comments?quizSlug=${encodeURIComponent(quizSlug)}`, {
         headers: { "x-upforge-domain": "quiz" },
       })
       .then(readJson)
       .then((data) => {
         if (active) {
-          setComments(Array.isArray(data?.comments) ? data.comments : []);
+          const nextComments = Array.isArray(data?.comments) ? data.comments : [];
+          setComments(nextComments);
+          try { sessionStorage.setItem(storageKey, JSON.stringify({ savedAt: Date.now(), comments: nextComments })); } catch {}
           if (!data?.success && data?.error) setErrorMsg(data.error);
         }
       })
@@ -72,7 +86,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
             observer.disconnect();
           }
         },
-        { rootMargin: "500px 0px" },
+        { rootMargin: "1000px 0px" },
       );
       observer.observe(node);
       return () => {
@@ -83,7 +97,7 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
 
     load();
     return () => { active = false; };
-  }, [quizSlug, hasLoaded]);
+  }, [quizSlug, hasLoaded, storageKey]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -135,30 +149,30 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
   };
 
   return (
-    <section ref={sectionRef} className="rounded-3xl border border-amber-100 bg-white p-5 shadow-sm sm:p-7 lg:p-8">
+    <section ref={sectionRef} className="rounded-2xl border border-[var(--glass-border)] bg-card p-5 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-gold/10 text-accent-gold">
           <MessageSquare className="h-5 w-5" />
         </div>
 
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-accent-gold">
             Community
           </p>
-          <h3 className="mt-1 text-2xl font-black text-slate-950">
+          <h3 className="mt-1 text-xl font-bold text-foreground">
             Founder & Student Discussion
           </h3>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-muted-foreground">
             Share a useful insight, strategy or lesson from this challenge.
           </p>
         </div>
 
-        <span className="ml-auto rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+        <span className="ml-auto rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">
           {comments.length} notes
         </span>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-7 space-y-3">
+      <form onSubmit={handleSubmit} className="mt-5 space-y-3">
         <input
           type="text"
           name="website"
@@ -216,18 +230,18 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
           onChange={(event) => setCommentText(event.target.value)}
           maxLength={500}
           required
-          className="w-full resize-none rounded-xl border border-slate-200 bg-white p-3.5 text-sm text-slate-950 outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+          className="w-full resize-none rounded-xl border border-[var(--glass-border)] bg-background p-3.5 text-sm text-foreground outline-none transition focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10"
         />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Safety filter is active. Abusive posts are rejected automatically.
           </p>
 
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-xs font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent-primary px-5 py-3 text-xs font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send className="h-3.5 w-3.5" />
             {submitting ? "Posting…" : "Post insight"}
@@ -235,39 +249,39 @@ export default function QuizComments({ quizSlug }: { quizSlug: string }) {
         </div>
       </form>
 
-      <div className="mt-7 space-y-3">
+      <div className="mt-5 space-y-3">
         {loading ? (
-          <div className="rounded-2xl border border-slate-100 bg-slate-50/40 p-4">
+          <div className="rounded-2xl border border-[var(--glass-border)] bg-muted/30 p-4">
             <LeaderboardLoading />
           </div>
         ) : comments.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">
+          <div className="rounded-2xl border border-dashed border-[var(--glass-border)] p-8 text-center text-sm text-muted-foreground">
             Be the first to add a useful note.
           </div>
         ) : (
           comments.map((item, index) => (
             <article
               key={item.id || `${item.author}-${item.createdAt}-${index}`}
-              className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4"
+              className="rounded-2xl border border-[var(--glass-border)] bg-muted/30 p-4"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-black text-slate-950">
+                <span className="text-sm font-bold text-foreground">
                   {item.author}
                 </span>
-                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-black text-amber-900">
+                <span className="rounded-full bg-accent-gold/10 px-2.5 py-1 text-[11px] font-bold text-accent-gold">
                   {item.displayRole ||
                     (item.userRole === "Founder"
                       ? `Founder @ ${item.company || "Company"}`
                       : "Student")}
                 </span>
                 {item.createdAt && (
-                  <span className="ml-auto text-[11px] font-semibold text-slate-400">
+                  <span className="ml-auto text-[11px] font-medium text-muted-foreground">
                     {new Date(item.createdAt).toLocaleDateString()}
                   </span>
                 )}
               </div>
 
-              <p className="mt-2 text-sm leading-6 text-slate-700">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {item.comment}
               </p>
             </article>
