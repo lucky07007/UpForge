@@ -24,7 +24,7 @@ export default function DashboardClient({
   const featuredStartups = [
     { name: "Sarvam", url: "https://www.sarvam.ai/" },
     { name: "Factacy AI", url: "https://www.factacy.ai/" },
-    { name: "Registry", url: "https://www.upforge.org/registry" },
+    { name: "Registry", url: "https://upforge.org/registry" },
     { name: "Cava", url: "https://cavaathleisure.com/" },
     { name: "Visey", url: "https://visey.co.in/" },
     { name: "Entellus", url: "https://entellusind.com/" },

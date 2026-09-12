@@ -16,7 +16,7 @@ import {
 import { generateCategoryKeywords } from "@/lib/seo-keywords"
 
 const PAGE_SIZE = 24
-const BASE_URL = "https://www.upforge.org"
+const BASE_URL = "https://upforge.org"
 
 interface PageProps {
   params: Promise<{ category: string }>

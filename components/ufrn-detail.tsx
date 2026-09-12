@@ -106,7 +106,7 @@ function getEmbedCode(startup: Startup, canonicalUrl: string): string {
    rel="noopener noreferrer"
    title="${startup.ufrn} — Verified on UpForge Global Registry">
   <img 
-    src="https://www.upforge.org/badges/verified.png" 
+    src="https://upforge.org/badges/verified.png" 
     alt="UFRN: ${startup.ufrn} - Verified Startup Profile"
     width="160" 
     height="40"
@@ -146,7 +146,7 @@ function DataRow({ icon: Icon, label, value, href }: {
 export function UFRNDetailView({ startup, canonicalUrl }: Props) {
   const ufrn = startup.ufrn!
   const embedCode = getEmbedCode(startup, canonicalUrl)
-  const profileUrl = `https://www.upforge.org/startup/${startup.slug}`
+  const profileUrl = `https://upforge.org/startup/${startup.slug}`
 
   const categorySlug = startup.category
     ? startup.category

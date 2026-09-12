@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/notion-vs-obsidian" 
+    ? "https://upforge.org/compare/notion-vs-obsidian" 
     : "https://www.upforge.in/compare/notion-vs-obsidian"
 
   return {
@@ -126,7 +126,7 @@ const comparisonData = {
 export default async function NotionVsObsidianPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

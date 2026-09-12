@@ -9,7 +9,7 @@ import { ArrowRight, ArrowUpRight, Search, ShieldCheck, Filter, X } from "lucide
 export const revalidate = 300
 
 const PAGE_SIZE = 12
-const BASE_URL = "https://www.upforge.org"
+const BASE_URL = "https://upforge.org"
 
 interface PageProps {
   searchParams: Promise<{
@@ -246,7 +246,7 @@ export default async function RegistryPage({ searchParams }: PageProps) {
       "@type": "ListItem",
       position: baseNum + idx + 1,
       name: s.name,
-      url: `https://www.upforge.org/startup/${s.slug}`,
+      url: `https://upforge.org/startup/${s.slug}`,
     })),
   }
 

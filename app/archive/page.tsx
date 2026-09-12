@@ -591,7 +591,7 @@ const ARCHIVE_FOUNDERS: ArchiveFounder[] = [
     valuation: "Private",
     funding: "Bootstrapped",
     founded: "2024",
-    imgSrc: "https://www.upforge.org/logo.jpg",
+    imgSrc: "https://upforge.org/logo.jpg",
     accent: "#C59A2E",
     accentBg: "#FFFDF0",
     accentBorder: "#F5E6A8",
@@ -784,23 +784,23 @@ export function ArchiveClientPage() {
   const archiveJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": "https://www.upforge.org/archive#cp",
+    "@id": "https://upforge.org/archive#cp",
     name: "The Founder Chronicle — Indian Startup Origin Stories",
     description:
       "Deeply reported origin stories of India's most consequential startup founders. Each edition profiles one builder: their founding moment, the bet they made, and the lesson it left behind.",
-    url: "https://www.upforge.org/archive",
+    url: "https://upforge.org/archive",
     inLanguage: "en-US",
     publisher: {
       "@type": "Organization",
       name: "UpForge",
-      url: "https://www.upforge.org",
-      logo: { "@type": "ImageObject", url: "https://www.upforge.org/logo.jpg" },
+      url: "https://upforge.org",
+      logo: { "@type": "ImageObject", url: "https://upforge.org/logo.jpg" },
     },
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "UpForge", item: "https://www.upforge.org" },
-        { "@type": "ListItem", position: 2, name: "Founder Chronicle", item: "https://www.upforge.org/archive" },
+        { "@type": "ListItem", position: 1, name: "UpForge", item: "https://upforge.org" },
+        { "@type": "ListItem", position: 2, name: "Founder Chronicle", item: "https://upforge.org/archive" },
       ],
     },
   }

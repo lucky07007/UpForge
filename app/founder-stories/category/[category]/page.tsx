@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const url = `${baseUrl}/founder-stories/category/${categorySlug}`
   const title = `${matchedCat.name} Founder Stories & Intelligence | UpForge`
   const description = `Explore ${matchedCat.count} verified founder profiles, leadership analysis, and startup data in ${matchedCat.name} on UpForge.`
@@ -72,7 +72,7 @@ export default async function CategoryPage({ params }: PageProps) {
   if (!currentCat) notFound()
 
   const founders = getFoundersByCategory(categorySlug)
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const pageUrl = `${baseUrl}/founder-stories/category/${categorySlug}`
 
   const collectionSchema = {

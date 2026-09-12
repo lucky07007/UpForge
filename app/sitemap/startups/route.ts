@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { fetchAllStartups } from "@/lib/google-sheets"
 
-const BASE = "https://www.upforge.org"
-const FALLBACK_DATE_STR = "2026-04-28"
+const BASE = "https://upforge.org"
+const FALLBACK_DATE_STR = "2026-09-12"
 
 // Helper function jo kisi bhi haal me invalid string standard se crash nahi hone degi
 function cleanISOString(dateValue: any): string {

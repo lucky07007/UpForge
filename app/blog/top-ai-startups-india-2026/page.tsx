@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     "deep tech India",
     "AI funding India 2026",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/top-ai-startups-india-2026" },
+  alternates: { canonical: "https://upforge.org/blog/top-ai-startups-india-2026" },
   openGraph: {
     title: "Top AI Startups in India 2026: Complete List & Analysis | UpForge",
     description: "The most promising AI startups in India across generative AI, NLP, computer vision, and enterprise AI — with funding details and founding team profiles.",
-    url: "https://www.upforge.org/blog/top-ai-startups-india-2026",
+    url: "https://upforge.org/blog/top-ai-startups-india-2026",
     siteName: "UpForge",
     type: "article",
     locale: "en",
@@ -51,15 +51,15 @@ const articleJsonLd = {
   "author": {
     "@type": "Person",
     "name": "Lucky Tiwari",
-    "url": "https://www.upforge.org/about"
+    "url": "https://upforge.org/about"
   },
   "publisher": {
     "@type": "Organization",
     "name": "UpForge",
-    "url": "https://www.upforge.org",
-    "logo": { "@type": "ImageObject", "url": "https://www.upforge.org/logo.jpg" }
+    "url": "https://upforge.org",
+    "logo": { "@type": "ImageObject", "url": "https://upforge.org/logo.jpg" }
   },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.upforge.org/blog/top-ai-startups-india-2026" },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://upforge.org/blog/top-ai-startups-india-2026" },
   "articleSection": "AI & Deep Tech",
   "inLanguage": "en-US",
   "wordCount": 2600,

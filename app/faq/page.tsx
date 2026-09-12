@@ -7,7 +7,7 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { ArrowRight, ArrowUpRight, BadgeCheck, Shield, Globe, Calculator, FileText, Building2, Users } from "lucide-react"
 
-const BASE_URL = "https://www.upforge.org"
+const BASE_URL = "https://upforge.org"
 
 // ─── FAQ DATA ───
 // (identical shape — reused for both UI + JSON-LD schema)

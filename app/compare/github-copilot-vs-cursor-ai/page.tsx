@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/github-copilot-vs-cursor-ai" 
+    ? "https://upforge.org/compare/github-copilot-vs-cursor-ai" 
     : "https://www.upforge.in/compare/github-copilot-vs-cursor-ai"
 
   return {
@@ -126,7 +126,7 @@ const comparisonData = {
 export default async function GitHubCopilotVsCursorAIPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

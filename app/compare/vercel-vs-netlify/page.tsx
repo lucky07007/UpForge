@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/vercel-vs-netlify" 
+    ? "https://upforge.org/compare/vercel-vs-netlify" 
     : "https://www.upforge.in/compare/vercel-vs-netlify"
 
   return {
@@ -129,7 +129,7 @@ const comparisonData = {
 export default async function VercelVsNetlifyPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

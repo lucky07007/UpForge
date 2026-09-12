@@ -1,7 +1,7 @@
 import { FOUNDERS } from "@/lib/founders/data" 
 
 export async function GET() {
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const buildDate = new Date().toUTCString()
 
   const itemsXml = FOUNDERS.map((f) => {

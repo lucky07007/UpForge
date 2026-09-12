@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy | UpForge — Global Startup Registry",
   description:
     "UpForge's privacy policy explains how we collect, use, and protect your data. Includes Google AdSense advertising disclosure, cookie policy, and your rights under GDPR and CCPA.",
-  alternates: { canonical: "https://www.upforge.org/privacy" },
+  alternates: { canonical: "https://upforge.org/privacy" },
   robots: { index: true, follow: true },
 }
 
@@ -215,7 +215,7 @@ We encourage you to review this Privacy Policy periodically. Continued use of Up
 
 **Email:** privacy@upforge.org
 **Support:** support@upforge.org
-**Website:** https://www.upforge.org/contact
+**Website:** https://upforge.org/contact
 
 For advertising-related concerns or to report an AdSense policy issue, you may also contact Google directly at: https://support.google.com/adsense/`,
   },

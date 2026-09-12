@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     "seed funding India",
     "Series A funding India",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/how-to-get-startup-funding-india-2026" },
+  alternates: { canonical: "https://upforge.org/blog/how-to-get-startup-funding-india-2026" },
   openGraph: {
     title: "How to Get Startup Funding in India 2026: Complete Founder's Guide | UpForge",
     description: "Complete guide to raising startup capital in India — angel investors, VCs, government grants, pitch deck strategies, and funding stages explained.",
-    url: "https://www.upforge.org/blog/how-to-get-startup-funding-india-2026",
+    url: "https://upforge.org/blog/how-to-get-startup-funding-india-2026",
     siteName: "UpForge",
     type: "article",
     locale: "en",
@@ -52,15 +52,15 @@ const articleJsonLd = {
   "author": {
     "@type": "Person",
     "name": "Vikash Sharma",
-    "url": "https://www.upforge.org/about"
+    "url": "https://upforge.org/about"
   },
   "publisher": {
     "@type": "Organization",
     "name": "UpForge",
-    "url": "https://www.upforge.org",
-    "logo": { "@type": "ImageObject", "url": "https://www.upforge.org/logo.jpg" }
+    "url": "https://upforge.org",
+    "logo": { "@type": "ImageObject", "url": "https://upforge.org/logo.jpg" }
   },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.upforge.org/blog/how-to-get-startup-funding-india-2026" },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://upforge.org/blog/how-to-get-startup-funding-india-2026" },
   "articleSection": "Funding Guide",
   "inLanguage": "en-US",
   "wordCount": 3200,

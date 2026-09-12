@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/stripe-vs-razorpay" 
+    ? "https://upforge.org/compare/stripe-vs-razorpay" 
     : "https://www.upforge.in/compare/stripe-vs-razorpay"
 
   return {
@@ -126,7 +126,7 @@ const comparisonData = {
 export default async function StripeVsRazorpayPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

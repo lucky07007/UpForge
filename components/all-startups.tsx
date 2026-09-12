@@ -246,7 +246,7 @@ export default function App() {
               Explore international founders across 40+ countries. Access the global index of SaaS and AI market leaders.
             </p>
             <a 
-              href="https://www.upforge.org/registry" 
+              href="https://upforge.org/registry" 
               className="text-[11px] font-bold uppercase tracking-widest text-[#1C1C1C] flex items-center gap-2"
             >
               Explore Global Registry <ExternalLink size={14} className="text-[#AAA]" />

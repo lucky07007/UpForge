@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/linear-vs-jira" 
+    ? "https://upforge.org/compare/linear-vs-jira" 
     : "https://www.upforge.in/compare/linear-vs-jira"
 
   return {
@@ -130,7 +130,7 @@ const comparisonData = {
 export default async function LinearVsJiraPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

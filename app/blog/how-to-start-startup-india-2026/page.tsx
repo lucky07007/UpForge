@@ -15,11 +15,11 @@ export const metadata: Metadata = {
     "first-time founder India",
     "business setup India 2026",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/how-to-start-startup-india-2026" },
+  alternates: { canonical: "https://upforge.org/blog/how-to-start-startup-india-2026" },
   openGraph: {
     title: "How to Start a Startup in India 2026: Complete Step-by-Step Guide | UpForge",
     description: "From idea to incorporation — every legal, financial, and strategic step to launch your startup in India. Updated for 2026 regulations.",
-    url: "https://www.upforge.org/blog/how-to-start-startup-india-2026",
+    url: "https://upforge.org/blog/how-to-start-startup-india-2026",
     siteName: "UpForge",
     type: "article",
     locale: "en",
@@ -51,15 +51,15 @@ const articleJsonLd = {
   "author": {
     "@type": "Person",
     "name": "Vikash Sharma",
-    "url": "https://www.upforge.org/about"
+    "url": "https://upforge.org/about"
   },
   "publisher": {
     "@type": "Organization",
     "name": "UpForge",
-    "url": "https://www.upforge.org",
-    "logo": { "@type": "ImageObject", "url": "https://www.upforge.org/logo.jpg" }
+    "url": "https://upforge.org",
+    "logo": { "@type": "ImageObject", "url": "https://upforge.org/logo.jpg" }
   },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.upforge.org/blog/how-to-start-startup-india-2026" },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://upforge.org/blog/how-to-start-startup-india-2026" },
   "articleSection": "Founder Playbook",
   "inLanguage": "en-US",
   "wordCount": 2200,

@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const url = `${baseUrl}/founder-stories/country/${countrySlug}`
   const title = `${matched.flag} ${matched.name} Founder Stories & Intelligence | UpForge`
   const description = `Explore ${matched.count} verified tech founder profiles, leadership analysis, and startup data in ${matched.name} on UpForge.`
@@ -74,7 +74,7 @@ export default async function CountryPage({ params }: PageProps) {
   if (!currentCountry) notFound()
 
   const founders = getFoundersByCountry(countrySlug)
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const pageUrl = `${baseUrl}/founder-stories/country/${countrySlug}`
 
   const collectionSchema = {

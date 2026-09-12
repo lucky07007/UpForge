@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/meta-quest-vs-apple-vision-pro" 
+    ? "https://upforge.org/compare/meta-quest-vs-apple-vision-pro" 
     : "https://www.upforge.in/compare/meta-quest-vs-apple-vision-pro"
 
   return {
@@ -128,7 +128,7 @@ const comparisonData = {
 export default async function MetaQuestVsAppleVisionProPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

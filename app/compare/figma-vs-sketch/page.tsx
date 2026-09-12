@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/figma-vs-sketch" 
+    ? "https://upforge.org/compare/figma-vs-sketch" 
     : "https://www.upforge.in/compare/figma-vs-sketch"
 
   return {
@@ -123,7 +123,7 @@ const comparisonData = {
 export default async function FigmaVsSketchPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

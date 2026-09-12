@@ -22,7 +22,7 @@ export function getDomainContextClient(): DomainContext {
 export function getDomainMeta(context: DomainContext = "org"): DomainMeta {
   return {
     context: "org",
-    baseUrl: "https://www.upforge.org",
+    baseUrl: "https://upforge.org",
     isGlobal: true,
     locale: "en-US",
     hreflangSelf: "en",
@@ -40,7 +40,7 @@ export function getRegistryUrl(path = ""): string {
 }
 
 export function getCanonicalUrl(pathname: string): string {
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const cleanPath =
     pathname === "/" ? "" : pathname.replace(/\/$/, "")
 
@@ -50,7 +50,7 @@ export function getCanonicalUrl(pathname: string): string {
 export function getAlternatesForLayout(pathname: string) {
   const path = pathname === "/" ? "" : pathname
 
-  const orgUrl = `https://www.upforge.org${path}`
+  const orgUrl = `https://upforge.org${path}`
 
   return {
     canonical: orgUrl,
@@ -174,7 +174,7 @@ export function getWebsiteJsonLd(
 export function getBreadcrumbJsonLd(
   items: { name: string; item: string }[]
 ) {
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
 
   return {
     "@context": "https://schema.org",

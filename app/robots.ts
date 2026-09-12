@@ -1,45 +1,10 @@
 import type { MetadataRoute } from "next"
 
+const BASE = "https://upforge.org"
+
 export default function robots(): MetadataRoute.Robots {
-  const BASE = "https://www.upforge.org"
-
-  const commonAllows = [
-    "/",
-    "/data/",
-    "/llms.txt",
-    "/llms-full.txt",
-    "/startup/",
-    "/startups/",
-    "/blog/",
-    "/ufrn/",
-    "/registry/",
-    "/compare",
-    "/about",
-    "/submit",
-    "/contact",
-    "/privacy",
-    "/terms",
-    "/faq",
-    "/founders",
-    "/verify",
-    "/verification",
-    "/methodology",
-    "/editorial-standards",
-    "/sitemap.xml",
-  ]
-
-  const commonDisallows = [
-    "/api/",
-    "/_next/",
-    "/private/",
-    "/*?preview=",
-    "/*?draft=",
-    "/*?token=",
-  ]
-
   return {
     rules: [
-      // Rule 1: Allow major top-tier search engine crawlers (SEO)
       {
         userAgent: [
           "Googlebot",
@@ -48,15 +13,29 @@ export default function robots(): MetadataRoute.Robots {
           "Googlebot-Video",
           "AdsBot-Google",
           "AdsBot-Google-Mobile",
+          "Google-InspectionTool",
+          "GoogleOther",
           "Bingbot",
           "msnbot",
           "DuckDuckBot",
+          "YandexBot",
+          "YandexMobileBot",
+          "Baiduspider",
+          "Sogou",
+          "Yeti",
+          "Yahoo! Slurp",
+          "Yahoo",
         ],
-        allow: commonAllows,
-        disallow: commonDisallows,
+        allow: "/",
+        disallow: [
+          "/api/",
+          "/_next/",
+          "/private/",
+          "/*?preview=",
+          "/*?draft=",
+          "/*?token=",
+        ],
       },
-      
-      // Rule 2: Allow top-tier Answer Engines / AI Search (AEO)
       {
         userAgent: [
           "GPTBot",
@@ -67,61 +46,55 @@ export default function robots(): MetadataRoute.Robots {
           "Claude-Web",
           "Applebot",
           "Applebot-Extended",
+          "Meta-ExternalAgent",
+          "Twitterbot",
+          "LinkedInBot",
+          "Slackbot",
+          "Discordbot",
+          "WhatsApp",
+          "TelegramBot",
+          "Pinterest",
         ],
-        allow: commonAllows,
-        disallow: commonDisallows,
-        crawlDelay: 2, // Slow down AI crawlers slightly to save hosting limits
+        allow: "/",
+        disallow: [
+          "/api/",
+          "/_next/",
+          "/private/",
+          "/*?preview=",
+          "/*?draft=",
+          "/*?token=",
+        ],
       },
-      
-      // Rule 3: Block AI training, SEO scrapers, and regional search bots completely
       {
         userAgent: [
-          // AI Training Bots (Opt-out)
           "CCBot",
           "Bytespider",
-          "Amazonbot",
-          "cohere-ai",
-          "Anthropic-AI",
           "Google-Extended",
           "FacebookBot",
           "Diffbot",
-          
-          // SEO Auditing and Scrapers (Non-traffic-generating)
           "AhrefsBot",
           "SemrushBot",
           "DotBot",
-          "Rogerbot",
           "MJ12bot",
-          "MegaIndex",
-          "Criteobot",
           "PetalBot",
+          "MegaIndex",
           "Spyfu",
           "Serpstat",
-          "CognitiveSEO",
-          "Linkdex",
-          "Seokicks",
-          "Grapeshot",
-          "coccoc",
-          "Mail.Ru_Bot",
           "Screaming Frog",
-          
-          // Non-essential / Regional Search Engines (Saving resource limit)
-          "Baiduspider",
-          "YandexBot",
-          "YandexMobileBot",
-          "Sogou",
-          "Yahoo! Slurp",
-          "Yahoo",
-          "Yeti",
         ],
-        disallow: ["/"],
+        disallow: "/",
       },
-      
-      // Rule 4: Catch-all for other crawlers
       {
         userAgent: "*",
-        allow: commonAllows,
-        disallow: commonDisallows,
+        allow: "/",
+        disallow: [
+          "/api/",
+          "/_next/",
+          "/private/",
+          "/*?preview=",
+          "/*?draft=",
+          "/*?token=",
+        ],
       },
     ],
     sitemap: [

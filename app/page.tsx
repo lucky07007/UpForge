@@ -13,7 +13,7 @@ import Image from "next/image"
 export const revalidate = 300
 
 export async function generateMetadata(): Promise<Metadata> {
-  const canonicalUrl = "https://www.upforge.org"
+  const canonicalUrl = "https://upforge.org"
 
   const schema = {
     "@context": "https://schema.org",

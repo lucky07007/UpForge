@@ -20,12 +20,12 @@ export const metadata: Metadata = {
     "bootstrapped startups India",
     "women founders India",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog" },
+  alternates: { canonical: "https://upforge.org/blog" },
   openGraph: {
     title: "Startup Intelligence Journal | UpForge",
     description:
       "Global startup analysis, funding guides, VC rankings, and founder insights — updated regularly.",
-    url: "https://www.upforge.org/blog",
+    url: "https://upforge.org/blog",
     siteName: "UpForge",
     type: "website",
   },

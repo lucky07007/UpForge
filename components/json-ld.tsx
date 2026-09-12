@@ -70,13 +70,20 @@ export function StartupProfileJsonLd({ startup }: { startup: Startup }) {
     "url": startup.website || `https://upforge.org/startup/${startup.slug}`,
     "logo": startup.logo_url || undefined,
     "description": startup.description || undefined,
-    "foundingDate": startup.founded ? String(startup.founded) : undefined,
+    "foundingDate": startup.founded_year ? String(startup.founded_year) : startup.founded ? String(startup.founded) : undefined,
     "sameAs": sameAs.length > 0 ? sameAs : undefined,
-    "address": startup.location ? {
+    "address": (startup.location || startup.city || startup.country_name) ? {
       "@type": "PostalAddress",
-      "addressLocality": startup.location.city,
-      "addressRegion": startup.location.state,
-      "addressCountry": startup.location.country
+      "addressLocality": startup.location?.city ?? startup.city ?? undefined,
+      "addressRegion": startup.location?.state ?? startup.state ?? undefined,
+      "addressCountry": startup.location?.country ?? startup.country_name ?? startup.country_code ?? undefined
+    } : undefined,
+    "identifier": startup.ufrn ? {
+      "@type": "PropertyValue",
+      "propertyID": "UFRN",
+      "name": "UpForge Registry Number",
+      "value": startup.ufrn,
+      "url": `https://upforge.org/ufrn/${encodeURIComponent(startup.ufrn)}`
     } : undefined
   };
 

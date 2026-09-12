@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     "saas arr multiples 2026",
     "zoho vs freshworks india",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/top-20-saas-startups-india-2026" },
+  alternates: { canonical: "https://upforge.org/blog/top-20-saas-startups-india-2026" },
   openGraph: {
     title: "Top 20 SaaS Startups in India 2026: Ranked & Profiled | UpForge",
     description: "India's SaaS sector is on track to hit $37 billion in annual recurring revenue by the end of 2026, driven by a new wave of vertical AI-native platforms.",
-    url: "https://www.upforge.org/blog/top-20-saas-startups-india-2026",
+    url: "https://upforge.org/blog/top-20-saas-startups-india-2026",
     siteName: "UpForge",
     type: "article",
     images: [{ 
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     "google-site-verification": "YOUR_VERIFICATION_CODE_HERE",
     "article:published_time": "2026-07-01T08:00:00+05:30",
     "article:modified_time": "2026-07-01T08:00:00+05:30",
-    "article:author": "https://www.upforge.org/editors/lucky-tiwari",
+    "article:author": "https://upforge.org/editors/lucky-tiwari",
     "article:section": "SaaS Rankings",
   }
 }
@@ -71,7 +71,7 @@ const postMeta = {
     name: "Lucky Tiwari",
     image: "https://images.upforge.org/Editors/lucky.webp",
     role: "Editor-in-Chief",
-    url: "https://www.upforge.org/editors/lucky-tiwari"
+    url: "https://upforge.org/editors/lucky-tiwari"
   }
 }
 

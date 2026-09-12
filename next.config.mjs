@@ -1,40 +1,7 @@
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "url"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-try {
-  const componentsPath = path.resolve("./components")
-  if (fs.existsSync(componentsPath)) {
-    console.log("DIAGNOSTIC - Components Directory Structure on Vercel:")
-    const items = fs.readdirSync(componentsPath)
-    items.forEach(item => {
-      const fullPath = path.join(componentsPath, item)
-      const stat = fs.statSync(fullPath)
-      if (stat.isDirectory()) {
-        console.log(`Folder: ${item}`)
-        try {
-          const subItems = fs.readdirSync(fullPath)
-          console.log(`  Contents: ${subItems.join(", ")}`)
-        } catch (subErr) {
-          console.log(`  Failed to read: ${subErr.message}`)
-        }
-      } else {
-        console.log(`File: ${item}`)
-      }
-    })
-  } else {
-    console.log("DIAGNOSTIC - Components directory not found at path:", componentsPath)
-  }
-} catch (err) {
-  console.error("DIAGNOSTIC ERROR listing components:", err)
-}
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  poweredByHeader: false,
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion", "html-to-image", "@radix-ui/react-icons"],
@@ -43,7 +10,7 @@ const nextConfig = {
 
   // ─── IMAGE OPTIMIZATION ──────────────────────────────────────────────────
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
       { protocol: "https", hostname: "images.inc42.com" },
       { protocol: "https", hostname: "assets.inc42.com" },
@@ -159,8 +126,8 @@ const nextConfig = {
           },
         ],
       },
-      // Quiz and registry pages are public and identical for all visitors.
-      // Keep them edge-cacheable so normal browsing does not re-run SSR work.
+      // Public, read-mostly pages: allow Cloudflare to serve cached HTML while
+      // Next.js/ISR keeps the application data fresh at the origin.
       {
         source: "/registry",
         headers: [
@@ -185,6 +152,33 @@ const nextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=60, stale-while-revalidate=600, stale-if-error=1800",
+          },
+        ],
+      },
+      {
+        source: "/startup/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, stale-if-error=86400",
+          },
+        ],
+      },
+      {
+        source: "/startups/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=300, stale-while-revalidate=1800, stale-if-error=3600",
+          },
+        ],
+      },
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=300, stale-while-revalidate=1800, stale-if-error=3600",
           },
         ],
       },
@@ -220,6 +214,12 @@ const nextConfig = {
   // ─── REDIRECTS ──────────────────────────────────────────────────────────
   async redirects() {
     return [
+      // ─── CANONICAL STARTUP PROFILE ───────────────────────────────────────
+      // /registry/:slug is a legacy duplicate of /startup/:slug.
+      // Keep one indexable URL so Google does not have to choose between two
+      // near-identical profile documents.
+      { source: "/registry/:slug", destination: "/startup/:slug", permanent: true },
+
       // ─── SECTOR URL BUG FIXES ─────────────────────────────────────────────
       // These fix old broken slugs that had & encoded as literal chars.
       // All redirect to the canonical slug produced by categoryToSlug().

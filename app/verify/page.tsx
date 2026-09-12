@@ -27,7 +27,7 @@ async function getVerifyStats() {
 /* ── SEO Metadata ── */
 export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
-  const canonical = "https://www.upforge.org/verify"
+  const canonical = "https://upforge.org/verify"
   const ogImage   = "https://www.upforge.in/og/ufrn-verify.png"
 
   return {
@@ -48,9 +48,9 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical,
       languages: {
-        "en":        "https://www.upforge.org/verify",
+        "en":        "https://upforge.org/verify",
         "en-IN":     "https://www.upforge.in/verify",
-        "x-default": "https://www.upforge.org/verify",
+        "x-default": "https://upforge.org/verify",
       },
     },
     openGraph: {
@@ -89,27 +89,27 @@ const makeSchemas = (total: number) => [
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://www.upforge.org/verify#webpage",
-    url: "https://www.upforge.org/verify",
+    "@id": "https://upforge.org/verify#webpage",
+    url: "https://upforge.org/verify",
     name: "What is UFRN? Startup UFRN Verification — UpForge Registry Number Lookup",
     description: `UFRN (UpForge Registry Number) is a unique startup identifier. Verify any UFRN in our ${total.toLocaleString()}+ entry global registry.`,
     inLanguage: "en",
     datePublished: "2026-03-01",
     dateModified: new Date().toISOString().split("T")[0],
-    publisher: { "@id": "https://www.upforge.org/#organization" },
+    publisher: { "@id": "https://upforge.org/#organization" },
   },
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "@id": "https://www.upforge.org/verify#app",
+    "@id": "https://upforge.org/verify#app",
     name: "UpForge UFRN Verification Tool",
     description:
       "Free startup UFRN lookup tool. Enter a UFRN (UpForge Registry Number) to instantly verify any startup's registration, founders, and funding. No account needed.",
-    url: "https://www.upforge.org/verify",
+    url: "https://upforge.org/verify",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    publisher: { "@type": "Organization", name: "UpForge", url: "https://www.upforge.org" },
+    publisher: { "@type": "Organization", name: "UpForge", url: "https://upforge.org" },
   },
   {
     "@context": "https://schema.org",
@@ -177,18 +177,18 @@ const makeSchemas = (total: number) => [
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "UpForge",          item: "https://www.upforge.org" },
-      { "@type": "ListItem", position: 2, name: "Startup Registry", item: "https://www.upforge.org/startup" },
-      { "@type": "ListItem", position: 3, name: "Verify UFRN",      item: "https://www.upforge.org/verify" },
+      { "@type": "ListItem", position: 1, name: "UpForge",          item: "https://upforge.org" },
+      { "@type": "ListItem", position: 2, name: "Startup Registry", item: "https://upforge.org/startup" },
+      { "@type": "ListItem", position: 3, name: "Verify UFRN",      item: "https://upforge.org/verify" },
     ],
   },
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": "https://www.upforge.org/#organization",
+    "@id": "https://upforge.org/#organization",
     name: "UpForge",
-    url: "https://www.upforge.org",
-    logo: "https://www.upforge.org/logo.png",
+    url: "https://upforge.org",
+    logo: "https://upforge.org/logo.png",
     sameAs: ["https://www.upforge.in", "https://twitter.com/upforge_in"],
     description:
       "UpForge is the global startup registry issuing UFRN (UpForge Registry Numbers) — unique verified identifiers for startups worldwide.",

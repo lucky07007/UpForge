@@ -14,14 +14,14 @@ export const metadata: Metadata = {
     "ai agents customer service costs",
     "startup operations cost reduction",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/ai-agents-for-startups-india-2026" },
+  alternates: { canonical: "https://upforge.org/blog/ai-agents-for-startups-india-2026" },
   openGraph: {
     title: "How Indian Startups Are Using AI Agents to Cut Operating Costs by 40% in 2026 | UpForge",
     description: "In 2026, Indian early-stage companies are integrating autonomous AI agents to automate customer support, lead sourcing, and data processing, achieving up to 40% savings in overhead.",
-    url: "https://www.upforge.org/blog/ai-agents-for-startups-india-2026",
+    url: "https://upforge.org/blog/ai-agents-for-startups-india-2026",
     siteName: "UpForge",
     type: "article",
-    images: [{ url: "https://www.upforge.org/ai-agents-for-startups-india-2026.jpg", width: 1200, height: 630 }],
+    images: [{ url: "https://upforge.org/ai-agents-for-startups-india-2026.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",

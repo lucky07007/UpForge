@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!founder) return {}
 
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
   const url = `${baseUrl}/founder-stories/${slug}`
 
   const cardImg = founder.cardImage || founder.imageUrl
@@ -100,7 +100,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FounderPage({ params }: PageProps) {
   const { slug } = await params
   const founder = getFounderBySlug(slug)
-  const baseUrl = "https://www.upforge.org"
+  const baseUrl = "https://upforge.org"
 
   if (!founder) notFound()
 

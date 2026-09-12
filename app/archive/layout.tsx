@@ -3,7 +3,7 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
-const BASE_URL = "https://www.upforge.org"
+const BASE_URL = "https://upforge.org"
 
 export const metadata: Metadata = {
   title: "The Founder Chronicle — Indian Startup Origin Stories | UpForge",

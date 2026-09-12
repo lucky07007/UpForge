@@ -175,7 +175,7 @@ export function VerifyClient({ totalCount, isOrg }: Props) {
   /* ── Slug-based share URL ── */
   const handleCopy = () => {
     if (!result) return
-    navigator.clipboard.writeText(`https://www.upforge.org/startup/${result.slug}`)
+    navigator.clipboard.writeText(`https://upforge.org/startup/${result.slug}`)
     setCopied(true); setTimeout(() => setCopied(false), 2500)
   }
 

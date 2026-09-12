@@ -1,59 +1,48 @@
 import { NextResponse } from "next/server"
+import { BLOG_POSTS } from "@/data/blog-posts"
 
-const BASE_URL = "https://www.upforge.org"
+const BASE_URL = "https://upforge.org"
+const NEWS_WINDOW_MS = 48 * 60 * 60 * 1000
 
-// Core published articles for news sitemap (within news recency window)
-const RECENT_NEWS_ARTICLES = [
-  {
-    slug: "ai-startup-funding-exit-route-india-2026",
-    title: "AI Startup Funding & Exit Routes in India 2026: Complete Founder Playbook",
-    pubDate: "2026-07-06T08:00:00Z",
-  },
-  {
-    slug: "investors-rejecting-generic-ai-pitches-2026",
-    title: "Why VCs Are Rejecting Generic AI Wrapper Pitches in 2026",
-    pubDate: "2026-07-06T09:30:00Z",
-  },
-  {
-    slug: "defense-tech-startups-india-2026",
-    title: "India's Defense Tech Boom: Startup Opportunities & iDEX Funding",
-    pubDate: "2026-07-05T10:00:00Z",
-  },
-  {
-    slug: "top-20-saas-startups-india-2026",
-    title: "Top 20 SaaS Startups in India 2026: ARR Benchmarks & Growth Models",
-    pubDate: "2026-07-05T14:00:00Z",
-  },
-  {
-    slug: "ai-agents-for-startups-india-2026",
-    title: "Autonomous AI Agents for Startups: Operating Stack 2026",
-    pubDate: "2026-07-04T11:00:00Z",
-  },
-  {
-    slug: "top-startup-incubators-india-2026",
-    title: "Top Startup Incubators & Accelerators in India 2026",
-    pubDate: "2026-07-04T16:00:00Z",
-  },
-]
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;")
+}
 
 export async function GET() {
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-  ${RECENT_NEWS_ARTICLES.map(
-    (item) => `
+  const now = Date.now()
+
+  const recent = BLOG_POSTS
+    .map((post) => {
+      const rawDate = post.publishedAt || post.updatedAt || post.date
+      const date = new Date(rawDate)
+      return { post, date }
+    })
+    .filter(({ date }) => !Number.isNaN(date.getTime()))
+    .filter(({ date }) => now - date.getTime() >= 0 && now - date.getTime() <= NEWS_WINDOW_MS)
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 100)
+
+  const entries = recent.map(({ post, date }) => `
   <url>
-    <loc>${BASE_URL}/blog/${item.slug}</loc>
+    <loc>${BASE_URL}/blog/${escapeXml(post.slug)}</loc>
     <news:news>
       <news:publication>
         <news:name>UpForge Journal</news:name>
         <news:language>en</news:language>
       </news:publication>
-      <news:publication_date>${item.pubDate}</news:publication_date>
-      <news:title>${item.title.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</news:title>
+      <news:publication_date>${date.toISOString()}</news:publication_date>
+      <news:title>${escapeXml(post.title)}</news:title>
     </news:news>
-  </url>`
-  ).join("")}
+  </url>`).join("")
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">${entries}
 </urlset>`
 
   return new NextResponse(xml, {

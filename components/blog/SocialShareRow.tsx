@@ -11,7 +11,7 @@ interface SocialShareRowProps {
 
 export function SocialShareRow({ title, slug, className = "" }: SocialShareRowProps) {
   const [copied, setCopied] = useState(false)
-  const fullUrl = `https://www.upforge.org/blog/${slug}`
+  const fullUrl = `https://upforge.org/blog/${slug}`
 
   const handleCopy = async () => {
     try {

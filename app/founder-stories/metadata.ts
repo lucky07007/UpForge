@@ -26,24 +26,24 @@ export const metadata: Metadata = {
     "UpForge founder chronicle"
   ],
   alternates: {
-    canonical: "https://www.upforge.org/founder-stories",
+    canonical: "https://upforge.org/founder-stories",
     languages: {
-      'en-US': "https://www.upforge.org/founder-stories",
+      'en-US': "https://upforge.org/founder-stories",
       'en-IN': "https://www.upforge.in/founder-stories",
-      'x-default': "https://www.upforge.org/founder-stories"
+      'x-default': "https://upforge.org/founder-stories"
     }
   },
   openGraph: {
     title: "The Founder Chronicle — Global & Indian Startup Builder Stories 2026 | UpForge",
     description:
       "Editorial deep-dives into the founders building tomorrow's global economy. From AI pioneers to unicorn innovators.",
-    url: "https://www.upforge.org/founder-stories",
+    url: "https://upforge.org/founder-stories",
     siteName: "UpForge",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "https://www.upforge.org/og/founder-chronicle.png",
+        url: "https://upforge.org/og/founder-chronicle.png",
         width: 1200,
         height: 630,
         alt: "The Founder Chronicle by UpForge — Global Founder Stories 2026"
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     creator: "@UpForgeHQ",
     title: "The Founder Chronicle — Global Edition 2026 | UpForge",
     description: "Deep-dive founder profiles. Verified data, real quotes, newspaper editorial format.",
-    images: ["https://www.upforge.org/og/founder-chronicle.png"]
+    images: ["https://upforge.org/og/founder-chronicle.png"]
   },
   robots: {
     index: true,

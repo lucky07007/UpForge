@@ -4,11 +4,11 @@ import { PartnerProgramClient } from "./partner-program-client"
 export const metadata: Metadata = {
   title: "UpForge Partner Program | Creator & Ecosystem Network",
   description: "Join the official UpForge Partner Program. Earn ₹0.01 per verified organic view. Clear book cover rules, Amazon Kindle link, and direct WhatsApp verification.",
-  alternates: { canonical: "https://www.upforge.org/partner-program" },
+  alternates: { canonical: "https://upforge.org/partner-program" },
   openGraph: {
     title: "UpForge Partner Program | Creator & Ecosystem Network",
     description: "Earn ₹0.01 per verified organic view with UpForge. Transparent guidelines for creators, ecosystem partners, and analysts.",
-    url: "https://www.upforge.org/partner-program",
+    url: "https://upforge.org/partner-program",
     siteName: "UpForge",
     locale: "en_US",
     type: "website",
@@ -28,15 +28,15 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.upforge.org/partner-program#webpage",
-      "url": "https://www.upforge.org/partner-program",
+      "@id": "https://upforge.org/partner-program#webpage",
+      "url": "https://upforge.org/partner-program",
       "name": "UpForge Partner Program",
       "description": "Official overview, book cover rules, Amazon Kindle link, and WhatsApp verification terms for the UpForge Partner Program.",
       "breadcrumb": {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.upforge.org" },
-          { "@type": "ListItem", "position": 2, "name": "Partner Program", "item": "https://www.upforge.org/partner-program" }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.org" },
+          { "@type": "ListItem", "position": 2, "name": "Partner Program", "item": "https://upforge.org/partner-program" }
         ]
       }
     },

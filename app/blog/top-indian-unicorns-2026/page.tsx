@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     "startup unicorn India",
     "Indian decacorns",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/top-indian-unicorns-2026" },
+  alternates: { canonical: "https://upforge.org/blog/top-indian-unicorns-2026" },
   openGraph: {
     title: "Top Indian Unicorns 2026: Complete List & Rankings | UpForge",
     description: "All 125 Indian unicorns ranked by valuation with detailed profiles of the top 25. Funding history, founder stories, and sector breakdown.",
-    url: "https://www.upforge.org/blog/top-indian-unicorns-2026",
+    url: "https://upforge.org/blog/top-indian-unicorns-2026",
     siteName: "UpForge",
     type: "article",
     locale: "en",
@@ -52,15 +52,15 @@ const articleJsonLd = {
   "author": {
     "@type": "Person",
     "name": "Anurag Tiwari",
-    "url": "https://www.upforge.org/about"
+    "url": "https://upforge.org/about"
   },
   "publisher": {
     "@type": "Organization",
     "name": "UpForge",
-    "url": "https://www.upforge.org",
-    "logo": { "@type": "ImageObject", "url": "https://www.upforge.org/logo.jpg" }
+    "url": "https://upforge.org",
+    "logo": { "@type": "ImageObject", "url": "https://upforge.org/logo.jpg" }
   },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.upforge.org/blog/top-indian-unicorns-2026" },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://upforge.org/blog/top-indian-unicorns-2026" },
   "articleSection": "Unicorn Report",
   "inLanguage": "en-US",
   "wordCount": 3800,

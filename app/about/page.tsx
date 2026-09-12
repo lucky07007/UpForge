@@ -17,13 +17,13 @@ export const revalidate = 600
 export const metadata: Metadata = {
   title: "About UpForge — Global Startup Registry & Verification Standard",
   description: "UpForge is the independent global startup registry. Standardized company records, UFRN verification credentials, and ecosystem intelligence.",
-  alternates: { canonical: "https://www.upforge.org/about" },
+  alternates: { canonical: "https://upforge.org/about" },
   openGraph: {
     title: "About UpForge — Global Startup Registry & Verification Standard",
     description: "The trust index for verified startups and founders worldwide. Independent, standardized, permanent.",
-    url: "https://www.upforge.org/about",
+    url: "https://upforge.org/about",
     siteName: "UpForge",
-    images: [{ url: "https://www.upforge.org/og/registry.png", width: 1200, height: 630 }],
+    images: [{ url: "https://upforge.org/og/registry.png", width: 1200, height: 630 }],
     locale: "en_US",
     type: "website",
   },
@@ -62,10 +62,10 @@ export default async function AboutPage() {
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://www.upforge.org/#organization",
+        "@id": "https://upforge.org/#organization",
         name: "UpForge",
-        url: "https://www.upforge.org",
-        logo: "https://www.upforge.org/logo.png",
+        url: "https://upforge.org",
+        logo: "https://upforge.org/logo.png",
         description: "Independent global startup registry and verified founder database.",
         contactPoint: {
           "@type": "ContactPoint",
@@ -76,8 +76,8 @@ export default async function AboutPage() {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.upforge.org" },
-          { "@type": "ListItem", position: 2, name: "About", item: "https://www.upforge.org/about" }
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.org" },
+          { "@type": "ListItem", position: 2, name: "About", item: "https://upforge.org/about" }
         ]
       }
     ]

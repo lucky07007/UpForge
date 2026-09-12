@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/aws-vs-azure-vs-gcp" 
+    ? "https://upforge.org/compare/aws-vs-azure-vs-gcp" 
     : "https://www.upforge.in/compare/aws-vs-azure-vs-gcp"
 
   return {
@@ -164,7 +164,7 @@ const comparisonData = {
 export default async function AwsVsAzureVsGcpPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

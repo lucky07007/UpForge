@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
   const canonicalUrl = isOrg 
-    ? "https://www.upforge.org/compare/fiverr-vs-upwork" 
+    ? "https://upforge.org/compare/fiverr-vs-upwork" 
     : "https://www.upforge.in/compare/fiverr-vs-upwork"
 
   return {
@@ -126,7 +126,7 @@ const comparisonData = {
 export default async function FiverrVsUpworkPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = {
     "@context": "https://schema.org",

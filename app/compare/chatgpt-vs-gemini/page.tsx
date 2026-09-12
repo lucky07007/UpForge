@@ -15,7 +15,7 @@ async function getDomain(): Promise<"org" | "in"> {
 export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const canonicalUrl = isOrg ? "https://www.upforge.org/compare/chatgpt-vs-gemini" : "https://www.upforge.in/compare/chatgpt-vs-gemini"
+  const canonicalUrl = isOrg ? "https://upforge.org/compare/chatgpt-vs-gemini" : "https://www.upforge.in/compare/chatgpt-vs-gemini"
 
   return {
     title: "ChatGPT vs Google Gemini — Which AI Assistant Wins in 2026? | UpForge",
@@ -101,7 +101,7 @@ const comparisonData = {
 export default async function ChatGPTVsGeminiPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = { "@context": "https://schema.org", "@type": "Article", "headline": "ChatGPT vs Google Gemini — Complete Comparison 2026", "description": comparisonData.verdict.summary, "datePublished": "2026-04-01", "dateModified": "2026-04-23", "author": { "@type": "Organization", "name": "UpForge Editorial", "url": baseUrl } }
 

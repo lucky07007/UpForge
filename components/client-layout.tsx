@@ -31,7 +31,7 @@ const DomainCtx = createContext<DomainContextValue>({
   isIndia: true,
   isGlobal: false,
   baseUrl: 'https://www.upforge.in',
-  alternateUrl: 'https://www.upforge.org',
+  alternateUrl: 'https://upforge.org',
 })
 
 /**
@@ -42,7 +42,7 @@ const DomainCtx = createContext<DomainContextValue>({
  * @example
  * const { domainContext, isIndia } = useDomain()
  * const registryUrl = isIndia
- *   ? "https://www.upforge.org/registry"
+ *   ? "https://upforge.org/registry"
  *   : "/registry"
  */
 export function useDomain(): DomainContextValue {
@@ -66,8 +66,8 @@ export function ClientLayout({ children, domainContext }: ClientLayoutProps) {
     domainContext: 'org',
     isIndia:      false,
     isGlobal:     true,
-    baseUrl:      'https://www.upforge.org',
-    alternateUrl: 'https://www.upforge.org',
+    baseUrl:      'https://upforge.org',
+    alternateUrl: 'https://upforge.org',
   }), [])
 
   return (

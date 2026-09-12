@@ -37,7 +37,7 @@ export function PartnerProgramClient() {
   const handleDownloadRulebook = () => {
     const rulebookText = `===========================================================
 UPFORGE CREATOR PARTNER PROGRAM — OFFICIAL GUIDELINES
-Official Web: https://www.upforge.org | ISO Verified Program
+Official Web: https://upforge.org | ISO Verified Program
 ===========================================================
 
 1. GET THE BOOK ON AMAZON KINDLE

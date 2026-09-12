@@ -11,7 +11,7 @@ interface BreadcrumbSchemaProps {
 
 export function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
   const fullItems: BreadcrumbItem[] = [
-    { name: "Home", url: "https://www.upforge.org" },
+    { name: "Home", url: "https://upforge.org" },
     ...items,
   ]
 
@@ -47,7 +47,7 @@ export function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
                   {item.name}
                 </span>
               ) : (
-                <Link href={item.url.replace("https://www.upforge.org", "")} className="hover:text-foreground transition-colors">
+                <Link href={item.url.replace("https://upforge.org", "")} className="hover:text-foreground transition-colors">
                   {item.name}
                 </Link>
               )}

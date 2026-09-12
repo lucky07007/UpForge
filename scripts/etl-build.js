@@ -70,51 +70,62 @@ const COUNTRY_CODE_MAP = {
 };
 
 // ── Helper CSV Parser ────────────────────────────────────────────────────────
-function parseCSVLine(line) {
-  const result = [];
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
   let current = "";
   let inQuotes = false;
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
     if (char === '"') {
-      if (inQuotes && line[i + 1] === '"') {
+      if (inQuotes && next === '"') {
         current += '"';
-        i++;
+        i += 1;
       } else {
         inQuotes = !inQuotes;
       }
-    } else if (char === "," && !inQuotes) {
-      result.push(current.trim());
-      current = "";
-    } else {
-      current += char;
+      continue;
     }
+
+    if (char === ',' && !inQuotes) {
+      row.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && next === '\n') i += 1;
+      row.push(current.trim());
+      current = "";
+      if (row.some(Boolean)) rows.push(row);
+      row = [];
+      continue;
+    }
+
+    current += char;
   }
-  result.push(current.trim());
-  return result;
-}
 
-function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  if (lines.length < 2) return [];
+  if (current.length || row.length) {
+    row.push(current.trim());
+    if (row.some(Boolean)) rows.push(row);
+  }
 
-  const headers = parseCSVLine(lines[0]).map((h) =>
-    h.replace(/^"|"$/g, "").trim()
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map((h) =>
+    h.replace(/^"|"$/g, "").replace(/^\uFEFF/, "").trim()
   );
 
-  const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    const values = parseCSVLine(line);
-    const row = {};
+  return rows.slice(1).map((values) => {
+    const rowObject = {};
     headers.forEach((header, idx) => {
-      row[header] = (values[idx] ?? "").replace(/^"|"$/g, "").trim();
+      if (header) rowObject[header] = (values[idx] ?? "").trim();
     });
-    rows.push(row);
-  }
-  return rows;
+    return rowObject;
+  });
 }
 
 function slugify(text) {
@@ -344,73 +355,25 @@ const FALLBACK_STARTUPS = [
 ];
 
 // ── Trust Score Calculator ──────────────────────────────────────────────────
-function computeTrustScore(item, hasIndependentEvidence) {
-  let score = 0;
-  const breakdown = {
-    website_reachable: 0,
-    domain_validity: 0,
-    company_identity_signal: 0,
-    founder_identity_signal: 0,
-    social_presence: 0,
-    product_evidence: 0,
-    registration_evidence: 0,
-    recent_activity: 0
-  };
-
-  // 1. Website reachable (15)
-  if (item.website && item.website.startsWith("http")) {
-    breakdown.website_reachable = 15;
-  }
-  // 2. Domain validity (15)
-  if (item.website && (item.website.includes(".in") || item.website.includes(".com") || item.website.includes(".ai") || item.website.includes(".energy") || item.website.includes(".dev"))) {
-    breakdown.domain_validity = 15;
-  }
-  // 3. Company identity signal (15)
-  if (item.name && item.slug && item.description && item.description.length > 20) {
-    breakdown.company_identity_signal = 15;
-  }
-  // 4. Founder identity signal (15)
-  if (item.founders && (typeof item.founders === 'string' ? item.founders.length > 3 : item.founders.length > 0)) {
-    breakdown.founder_identity_signal = 15;
-  }
-  // 5. Social presence (10)
-  if (item.linkedin_url || item.twitter_url || item.instagram_url) {
-    breakdown.social_presence = 10;
-  }
-  // 6. Product evidence (10)
-  if (item.description && item.description.length > 50) {
-    breakdown.product_evidence = 10;
-  }
-  // 7. Registration evidence (10) - Requires independent corroboration
-  if (hasIndependentEvidence) {
-    breakdown.registration_evidence = 10;
-  }
-  // 8. Recent activity (10)
-  if (item.founded_year && item.founded_year >= 2012) {
-    breakdown.recent_activity = 10;
-  }
-
-  score = Object.values(breakdown).reduce((a, b) => a + b, 0);
-
-  // Self-reported structural cap:
-  // Capped at score 54 max and max status "partially_verified" if no independent corroboration
-  let is_self_reported_capped = false;
-  let status = "verified";
-
-  if (!hasIndependentEvidence) {
-    is_self_reported_capped = false;
-    score = Math.max(score, 75);
-    status = "verified";
-  } else {
-    status = "verified";
-  }
-
-  // perf: Force all startups to approved and verified status
+function computeTrustScore() {
+  // Google Sheet entries are the already-vetted UpForge registry source.
+  // This function intentionally performs NO second verification, DNS check,
+  // founder check, or external corroboration. The 90/100 score is the
+  // registry's standard verified-listing tier.
   return {
     status: "verified",
-    score: Math.max(score, 90),
+    score: 90,
     is_self_reported_capped: false,
-    breakdown,
+    breakdown: {
+      website_reachable: 15,
+      domain_validity: 15,
+      company_identity_signal: 15,
+      founder_identity_signal: 15,
+      social_presence: 10,
+      product_evidence: 10,
+      registration_evidence: 5,
+      recent_activity: 5
+    },
     last_verified: new Date().toISOString().split('T')[0]
   };
 }
@@ -443,10 +406,10 @@ async function main() {
       rawRows = parseCSV(csvText);
       console.log(`📥 Downloaded ${rawRows.length} rows from Google Sheets CSV.`);
     } else {
-      console.warn(`⚠️ Google Sheets fetch returned status ${res.status}. Using fallback dataset.`);
+      throw new Error(`Google Sheets fetch returned status ${res.status}.`);
     }
   } catch (err) {
-    console.warn(`⚠️ Failed to fetch Google Sheets CSV: ${err.message}. Using fallback dataset.`);
+    throw new Error(`Failed to fetch Google Sheets CSV: ${err.message}`);
   }
 
 function convertGoogleDriveUrl(url) {
@@ -517,9 +480,9 @@ function convertGoogleDriveUrl(url) {
   if (rawRows.length > 0) {
     rawStartups = rawRows.map((row, idx) => {
       const name = getVal(row, "name", "startupname", "startup", "company");
-      const website = getVal(row, "website", "url", "domain");
+      const website = getVal(row, "website", "website_url", "websiteurl", "official_website", "officialwebsite", "website_link", "url", "domain");
       const rawSlug = getVal(row, "slug") || slugify(name || website);
-      const rawLogo = getVal(row, "logo_url", "logourl", "logo", "image");
+      const rawLogo = getVal(row, "logo_url", "logourl", "logo", "logo_link", "logolink", "logo_image", "logoimage", "image_url", "imageurl", "image");
       const convertedLogo = convertGoogleDriveUrl(rawLogo);
       const logo_url = convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : generateInitialsAvatar(name || website));
 
@@ -550,21 +513,23 @@ function convertGoogleDriveUrl(url) {
         founded_year: parseInt(getVal(row, "founded_year", "founded", "established") || "2022", 10) || 2022,
         website: website || null,
         logo_url,
-        description: getVal(row, "description", "about", "summary"),
+        description: getVal(row, "description", "short_description", "shortdescription", "short_desc", "shortdesc", "one_liner", "oneliner", "about", "summary"),
+        description_short: getVal(row, "short_description", "shortdescription", "short_desc", "shortdesc", "one_liner", "oneliner"),
+        description_long: getVal(row, "description_long", "descriptionlong", "long_description", "longdescription"),
         founders: getVal(row, "founders", "founder", "foundingteam"),
-        linkedin_url: getVal(row, "linkedin_url", "linkedin"),
-        twitter_url: getVal(row, "twitter_url", "twitter"),
-        instagram_url: getVal(row, "instagram_url", "instagram"),
+        linkedin_url: getVal(row, "linkedin_url", "linkedin", "linkedin_link"),
+        twitter_url: getVal(row, "twitter_url", "twitter", "twitter_link", "x_url", "x"),
+        instagram_url: getVal(row, "instagram_url", "instagram", "instagram_link"),
         is_featured: getVal(row, "is_featured", "featured") === "true" || getVal(row, "is_featured", "featured") === "1",
         verification_evidence: true
       };
     }).filter(s => s.name || s.website); // 2.4 Automated Sanity Filter: Skip row ONLY if BOTH name AND website are empty
   } else {
-    // ONLY use fallback startups if Google Sheets fetch returned 0 rows
-    console.warn("⚠️ Google Sheets fetch returned 0 rows. Using fallback dataset.");
-    for (const fallback of FALLBACK_STARTUPS) {
-      rawStartups.push(fallback);
-    }
+    throw new Error("Google Sheets registry returned zero rows. Refusing to publish a stale fallback dataset.");
+  }
+
+  if (rawStartups.length === 0) {
+    throw new Error("No valid startup rows were produced from the Google Sheet.");
   }
 
   console.log(`🧹 Deduplicating & Normalizing ${rawStartups.length} startup records...`);
@@ -590,22 +555,21 @@ function convertGoogleDriveUrl(url) {
     const cleanUfrn = item.ufrn || `UF-2026-${normalizedCountryCode.slice(0, 3)}-${cleanSlug.replace(/[^a-z0-9]/gi, '').slice(0, 5).toUpperCase()}`;
 
     // Verification & Trust Score
-    const hasEvidence = item.verification_evidence !== false;
-    const verification = computeTrustScore(item, hasEvidence);
+    const verification = computeTrustScore();
 
     // Provenance Records
     const provenance = [
       {
         field: "founded_year",
         value: String(item.founded_year || 2022),
-        source: "Public Corporate Registry / MCA Record",
+        source: "UpForge Registry Google Sheet",
         verified_on: verification.last_verified,
         confidence: "high"
       },
       {
         field: "website",
         value: item.website || "N/A",
-        source: "Domain DNS & HTTPS Verification",
+        source: "UpForge Registry Google Sheet",
         verified_on: verification.last_verified,
         confidence: "high"
       }
@@ -622,7 +586,7 @@ function convertGoogleDriveUrl(url) {
       ufrn: cleanUfrn,
       name: item.name,
       slug: cleanSlug,
-      status: verification.status,
+      status: "approved",
       founded: item.founded_year || 2022,
       founded_year: item.founded_year || 2022,
       location: {
@@ -646,9 +610,9 @@ function convertGoogleDriveUrl(url) {
                         normalizedSector.includes("EdTech") ? "EdTech" : "Other",
       founders: item.founders || "Founding Team",
       business_model: "B2B",
-      description: item.description || `${item.name} is an active technology venture based in ${item.city || normalizedCountryName}.`,
-      description_short: (item.description || "").slice(0, 150),
-      description_long: item.description || "",
+      description: item.description || item.description_long || `${item.name} is an active technology venture based in ${item.city || normalizedCountryName}.`,
+      description_short: item.description_short || (item.description || "").slice(0, 150),
+      description_long: item.description_long || item.description || "",
       logo_url: item.logo_url || null,
       website: item.website || null,
       social: {

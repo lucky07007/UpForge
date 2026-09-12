@@ -54,7 +54,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 
   const canonicalUrl = `${baseUrl}/startup`
   const inUrl  = "https://www.upforge.in/startup"
-  const orgUrl = "https://www.upforge.org/startup"
+  const orgUrl = "https://upforge.org/startup"
 
   const title = `Indian Startup Registry 2026 — ${n}+ Verified Indian Startups | UpForge`
   const description = `Discover ${n}+ verified Indian startups across AI, FinTech, SaaS, EdTech, HealthTech, Climate Tech, AgriTech, Web3 and 30+ sectors. Search by founder, city, year. India's most trusted free startup database — updated daily.`

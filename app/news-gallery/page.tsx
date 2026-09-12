@@ -7,7 +7,7 @@ import { Navbar } from "@/components/navbar"
 import { getSortedNewsItems } from "@/data/news-gallery"
 import { ArrowUpRight, Newspaper } from "lucide-react"
 
-const BASE_URL = "https://www.upforge.org"
+const BASE_URL = "https://upforge.org"
 
 export const metadata: Metadata = {
   title: "News Gallery — UpForge in the Press & Media | UpForge",

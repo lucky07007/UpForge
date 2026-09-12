@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const canonicalUrl = `https://www.upforge.org/startup/${slug}`
+  const canonicalUrl = `https://upforge.org/startup/${slug}`
   const ufrnTag = startup.ufrn ? ` [${startup.ufrn}]` : ""
   const title = `${startup.name}${ufrnTag} — Global Startup Registry | UpForge`
 
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       url: canonicalUrl,
-      images: [{ url: "https://www.upforge.org/og/startup-default.png", width: 1200, height: 630 }],
+      images: [{ url: "https://upforge.org/og/startup-default.png", width: 1200, height: 630 }],
     },
   }
 }
@@ -92,7 +92,7 @@ export default async function RegistryPage({ params }: PageProps) {
       {/* ── REGISTRY HEADER ── */}
       <header className="border-b-2 border-[#1C1C1C] bg-white">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="https://www.upforge.org/registry" className="flex items-center gap-2">
+          <Link href="https://upforge.org/registry" className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-[#1C1C1C]">
               UP<span className="text-[#A89060]">FORGE</span>
             </span>
@@ -111,16 +111,16 @@ export default async function RegistryPage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto px-6 py-2">
           {/* Breadcrumb - always on top */}
           <nav className="text-[11px] text-[#888] flex gap-2">
-            <Link href="https://www.upforge.org" className="hover:text-[#1C1C1C]">UpForge</Link>
+            <Link href="https://upforge.org" className="hover:text-[#1C1C1C]">UpForge</Link>
             <span>/</span>
-            <Link href="https://www.upforge.org/registry" className="hover:text-[#1C1C1C]">Registry</Link>
+            <Link href="https://upforge.org/registry" className="hover:text-[#1C1C1C]">Registry</Link>
             <span>/</span>
             <span className="text-[#1C1C1C]">{startup.name}</span>
           </nav>
           
           {/* Mobile: Back to Index + Export BELOW breadcrumb */}
           <div className="flex gap-4 mt-2 sm:hidden text-[11px]">
-            <Link href="https://www.upforge.org/registry" className="text-[#1C1C1C] hover:text-[#A89060]">
+            <Link href="https://upforge.org/registry" className="text-[#1C1C1C] hover:text-[#A89060]">
               ← Back to Global Index
             </Link>
             <span className="text-[#CCC]">|</span>
@@ -134,7 +134,7 @@ export default async function RegistryPage({ params }: PageProps) {
       {/* ── DESKTOP: Action bar ABOVE hamburger on desktop ── */}
       <div className="hidden sm:block border-b border-[#E0DDD6] bg-white">
         <div className="max-w-4xl mx-auto px-6 py-2 flex justify-between items-center">
-          <Link href="https://www.upforge.org/registry" className="text-[11px] text-[#1C1C1C] hover:text-[#A89060]">
+          <Link href="https://upforge.org/registry" className="text-[11px] text-[#1C1C1C] hover:text-[#A89060]">
             ← Back to Global Index
           </Link>
           <button className="text-[11px] text-[#1C1C1C] hover:text-[#A89060]">

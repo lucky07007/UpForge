@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   title: "Registry Verification Methodology & Data Standards | UpForge",
   description:
     "Explore the UpForge verification framework. Learn how we issue UFRN credentials, cross-reference state registries, and audit startup profile data.",
-  alternates: { canonical: "https://www.upforge.org/methodology" },
+  alternates: { canonical: "https://upforge.org/methodology" },
   openGraph: {
     title: "Registry Verification Methodology & Data Standards | UpForge",
     description:
       "The official UpForge verification framework: manual audit stages, UFRN taxonomy, and database integrity guidelines.",
-    url: "https://www.upforge.org/methodology",
+    url: "https://upforge.org/methodology",
     siteName: "UpForge",
-    images: [{ url: "https://www.upforge.org/og-methodology.png", width: 1200, height: 630 }],
+    images: [{ url: "https://upforge.org/og-methodology.png", width: 1200, height: 630 }],
     locale: "en_US",
     type: "website",
   },
@@ -28,15 +28,15 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.upforge.org/methodology",
-      "url": "https://www.upforge.org/methodology",
+      "@id": "https://upforge.org/methodology",
+      "url": "https://upforge.org/methodology",
       "name": "Registry Verification Methodology & Data Standards",
       "description": "The verification methodology and operational guidelines for issuing UFRN credentials on the UpForge global startup registry.",
       "breadcrumb": {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.upforge.org" },
-          { "@type": "ListItem", "position": 2, "name": "Methodology", "item": "https://www.upforge.org/methodology" }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.org" },
+          { "@type": "ListItem", "position": 2, "name": "Methodology", "item": "https://upforge.org/methodology" }
         ]
       }
     }

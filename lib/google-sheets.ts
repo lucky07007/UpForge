@@ -24,51 +24,63 @@ let _cacheTime = 0
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
 // ── CSV parser — handles quoted fields with embedded commas/newlines ──────────
-function parseCSVLine(line: string): string[] {
-  const result: string[] = []
+function parseCSV(text: string): Record<string, string>[] {
+  const rows: string[][] = []
+  let row: string[] = []
   let current = ""
   let inQuotes = false
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i]
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    const next = text[i + 1]
+
     if (char === '"') {
-      if (inQuotes && line[i + 1] === '"') {
+      if (inQuotes && next === '"') {
         current += '"'
-        i++ // escaped double-quote
+        i += 1
       } else {
         inQuotes = !inQuotes
       }
-    } else if (char === "," && !inQuotes) {
-      result.push(current.trim())
-      current = ""
-    } else {
-      current += char
+      continue
     }
+
+    if (char === ',' && !inQuotes) {
+      row.push(current.trim())
+      current = ""
+      continue
+    }
+
+    if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && next === '\n') i += 1
+      row.push(current.trim())
+      current = ""
+      if (row.some(Boolean)) rows.push(row)
+      row = []
+      continue
+    }
+
+    current += char
   }
-  result.push(current.trim())
-  return result
-}
 
-function parseCSV(text: string): Record<string, string>[] {
-  const lines = text.trim().split("\n")
-  if (lines.length < 2) return []
+  if (current.length || row.length) {
+    row.push(current.trim())
+    if (row.some(Boolean)) rows.push(row)
+  }
 
-  const headers = parseCSVLine(lines[0]).map((h) =>
-    h.replace(/^"|"$/g, "").trim()
+  if (rows.length < 2) return []
+
+  const headers = rows[0].map((header) =>
+    header.replace(/^"|"$/g, "").replace(/^\uFEFF/, "").trim()
   )
 
-  const rows: Record<string, string>[] = []
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (!line) continue
-    const values = parseCSVLine(line)
-    const row: Record<string, string> = {}
-    headers.forEach((header, idx) => {
-      row[header] = (values[idx] ?? "").replace(/^"|"$/g, "").trim()
+  return rows.slice(1).map((values) => {
+    const record: Record<string, string> = {}
+    headers.forEach((header, index) => {
+      if (!header) return
+      record[header] = (values[index] ?? "").trim()
     })
-    rows.push(row)
-  }
-  return rows
+    return record
+  })
 }
 
 // ── Safe decode (handles URL-encoded values) ──────────────────────────────────
@@ -179,7 +191,7 @@ const MAP_NAME_TO_CODE: Record<string, string> = {
 // ── Row → Startup mapper ──────────────────────────────────────────────────────
 function rowToStartup(row: Record<string, string>, index: number): Startup | null {
   const name = safeDecode(getRowVal(row, "name", "startupname", "startup", "company"))
-  const website = getRowVal(row, "website", "url", "domain") || null
+  const website = getRowVal(row, "website", "website_url", "websiteurl", "official_website", "officialwebsite", "website_link", "url", "domain") || null
   
   // perf: 2.4 Automated Sanity Filter — skip row ONLY if BOTH name AND website are empty
   if (!name && !website) return null
@@ -193,11 +205,12 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "")
 
-  const rawLogo = getRowVal(row, "logo_url", "logourl", "logo", "image")
+  const rawLogo = getRowVal(row, "logo_url", "logourl", "logo", "logo_link", "logolink", "logo_image", "logoimage", "image_url", "imageurl", "image")
   const convertedLogo = convertGoogleDriveUrl(rawLogo)
 
-  const rawDesc = safeDecode(getRowVal(row, "description", "about", "summary"))
-  const description = rawDesc || STARTUP_DESCRIPTION_OVERRIDES[slug] || null
+  const rawDesc = safeDecode(getRowVal(row, "description", "short_description", "shortdescription", "short_desc", "shortdesc", "one_liner", "oneliner", "about", "summary"))
+  const longDesc = safeDecode(getRowVal(row, "description_long", "descriptionlong", "long_description", "longdescription"))
+  const description = rawDesc || longDesc || STARTUP_DESCRIPTION_OVERRIDES[slug] || null
 
   const rawCountryName = safeDecode(getRowVal(row, "country_name", "countryname", "country"))
   const rawCountryCode = getRowVal(row, "country_code", "countrycode", "iso")
@@ -224,6 +237,8 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
     name: displayName,
     slug,
     description,
+    description_short: rawDesc || null,
+    description_long: longDesc || null,
     logo_url: convertedLogo || (rawLogo && rawLogo.startsWith("http") ? rawLogo : null),
     website,
     founders: safeDecode(getRowVal(row, "founders", "founder", "foundingteam")) || null,
@@ -255,9 +270,9 @@ function rowToStartup(row: Record<string, string>, index: number): Startup | nul
       getRowVal(row, "is_featured", "featured") === "TRUE" ||
       getRowVal(row, "is_featured", "featured") === "1",
     is_sponsored: false,
-    linkedin_url: getRowVal(row, "linkedin_url", "linkedin") || null,
-    twitter_url: getRowVal(row, "twitter_url", "twitter") || null,
-    instagram_url: getRowVal(row, "instagram_url", "instagram") || null,
+    linkedin_url: getRowVal(row, "linkedin_url", "linkedin", "linkedin_link") || null,
+    twitter_url: getRowVal(row, "twitter_url", "twitter", "twitter_link", "x_url", "x") || null,
+    instagram_url: getRowVal(row, "instagram_url", "instagram", "instagram_link") || null,
     ufrn: formattedUFRN,
     country_code: countryCode,
     country_name: countryName,

@@ -66,13 +66,13 @@ export async function generateMetadata({ searchParams }: { searchParams?: { q?: 
     title,
     description,
     keywords: keywords.filter(Boolean),
-    alternates: { canonical: "https://www.upforge.org/startups" },
+    alternates: { canonical: "https://upforge.org/startups" },
     openGraph: {
       title: `Global Startups by Category 2026 | UpForge`,
       description: `Browse ${n}+ verified startups by sector. The world's most comprehensive startup registry.`,
-      url: "https://www.upforge.org/startups",
+      url: "https://upforge.org/startups",
       siteName: "UpForge",
-      images: [{ url: "https://www.upforge.org/og/registry.png", width: 1200, height: 630 }],
+      images: [{ url: "https://upforge.org/og/registry.png", width: 1200, height: 630 }],
       locale: "en",
       type: "website",
     },
@@ -80,7 +80,7 @@ export async function generateMetadata({ searchParams }: { searchParams?: { q?: 
       card: "summary_large_image",
       title: `Global Startups by Category 2026 | UpForge`,
       description: `Browse ${n}+ verified startups by sector.`,
-      images: ["https://www.upforge.org/og/registry.png"],
+      images: ["https://upforge.org/og/registry.png"],
     },
     robots: { index: true, follow: true },
   }
@@ -117,20 +117,20 @@ export default async function StartupsHubPage() {
   const schemas = [
     { "@context": "https://schema.org", "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://www.upforge.org" },
-        { "@type": "ListItem", position: 2, name: "Startup Registry", item: "https://www.upforge.org/registry" },
-        { "@type": "ListItem", position: 3, name: "Browse by Sector", item: "https://www.upforge.org/startups" },
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://upforge.org" },
+        { "@type": "ListItem", position: 2, name: "Startup Registry", item: "https://upforge.org/registry" },
+        { "@type": "ListItem", position: 3, name: "Browse by Sector", item: "https://upforge.org/startups" },
       ]},
     { "@context": "https://schema.org", "@type": "CollectionPage",
       name: "Global Startups by Category 2026 — UpForge",
       description: `${total.toLocaleString()}+ verified startups across ${categories.length} sectors.`,
-      url: "https://www.upforge.org/startups", numberOfItems: total },
+      url: "https://upforge.org/startups", numberOfItems: total },
     { "@context": "https://schema.org", "@type": "ItemList",
       name: "Startup Sectors",
       itemListElement: categories.map((c, i) => ({
         "@type": "ListItem", position: i + 1,
         name: `${c.displayName} Startups`,
-        url: `https://www.upforge.org/startups/${c.slug}`,
+        url: `https://upforge.org/startups/${c.slug}`,
       }))},
   ]
 

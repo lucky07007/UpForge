@@ -15,7 +15,7 @@ async function getDomain(): Promise<"org" | "in"> {
 export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const canonicalUrl = isOrg ? "https://www.upforge.org/compare/slack-vs-teams" : "https://www.upforge.in/compare/slack-vs-teams"
+  const canonicalUrl = isOrg ? "https://upforge.org/compare/slack-vs-teams" : "https://www.upforge.in/compare/slack-vs-teams"
 
   return {
     title: "Slack vs Microsoft Teams — Which Team Chat Wins in 2026? | UpForge",
@@ -102,7 +102,7 @@ const comparisonData = {
 export default async function SlackVsTeamsPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
 
   const comparisonSchema = { "@context": "https://schema.org", "@type": "Article", "headline": "Slack vs Microsoft Teams — Complete Comparison 2026", "description": comparisonData.verdict.summary, "datePublished": "2026-04-01", "dateModified": "2026-04-23", "author": { "@type": "Organization", "name": "UpForge Editorial", "url": baseUrl } }
 

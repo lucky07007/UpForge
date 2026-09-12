@@ -118,7 +118,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const ufrn = startup.ufrn!
-  const canonicalUrl = `https://www.upforge.org/ufrn/${ufrn}`
+  const canonicalUrl = `https://upforge.org/ufrn/${ufrn}`
   const title = `${ufrn} — ${startup.name} | UpForge Registry`
   const description = `${ufrn} is the UpForge Registry Number for ${startup.name}, a verified ${startup.category ?? "startup"} from ${startup.city ?? startup.country_name ?? "India"}. Official registry record.`
 
@@ -132,7 +132,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: canonicalUrl,
-      images: [{ url: "https://www.upforge.org/og/startup-default.png", width: 1200, height: 630 }],
+      images: [{ url: "https://upforge.org/og/startup-default.png", width: 1200, height: 630 }],
     },
     // Multiple meta tags to maximise UFRN discoverability
     other: {
@@ -155,14 +155,14 @@ function buildDefinedTermSchema(ufrn: string, canonicalUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "DefinedTerm",
-    "@id": `https://www.upforge.org/ufrn/${ufrn}#term`,
+    "@id": `https://upforge.org/ufrn/${ufrn}#term`,
     name: ufrn,
     termCode: ufrn,
     inDefinedTermSet: {
       "@type": "DefinedTermSet",
-      "@id": "https://www.upforge.org/registry#ufrn-system",
+      "@id": "https://upforge.org/registry#ufrn-system",
       name: "UpForge Registry Number System",
-      url: "https://www.upforge.org/registry",
+      url: "https://upforge.org/registry",
       description:
         "UFRN (UpForge Registry Number) is a globally unique identifier assigned to every verified startup in the UpForge Global Registry. Format: UFRN-YYYY-CC-NNNNN.",
     },
@@ -181,7 +181,7 @@ function buildOrganisationSchema(startup: Startup, canonicalUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": `https://www.upforge.org/startup/${startup.slug}#organization`,
+    "@id": `https://upforge.org/startup/${startup.slug}#organization`,
     name: startup.name,
     url: startup.website ?? canonicalUrl,
     logo: startup.logo_url,
@@ -227,7 +227,7 @@ function buildDatasetSchema(startup: Startup, canonicalUrl: string) {
     creator: {
       "@type": "Organization",
       name: "UpForge",
-      url: "https://www.upforge.org",
+      url: "https://upforge.org",
     },
     keywords: [
       startup.ufrn,
@@ -242,7 +242,7 @@ function buildDatasetSchema(startup: Startup, canonicalUrl: string) {
     isPartOf: {
       "@type": "DataCatalog",
       name: "UpForge Global Startup Registry",
-      url: "https://www.upforge.org/registry",
+      url: "https://upforge.org/registry",
     },
   }
 }
@@ -256,14 +256,14 @@ function buildWebPageSchema(startup: Startup, canonicalUrl: string) {
     name: `${startup.ufrn} — ${startup.name} | UpForge`,
     dateModified: new Date().toISOString(),
     mainEntity: {
-      "@id": `https://www.upforge.org/startup/${startup.slug}#organization`,
+      "@id": `https://upforge.org/startup/${startup.slug}#organization`,
     },
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home",     item: "https://www.upforge.org" },
-        { "@type": "ListItem", position: 2, name: "Registry", item: "https://www.upforge.org/registry" },
-        { "@type": "ListItem", position: 3, name: "UFRN",     item: "https://www.upforge.org/ufrn" },
+        { "@type": "ListItem", position: 1, name: "Home",     item: "https://upforge.org" },
+        { "@type": "ListItem", position: 2, name: "Registry", item: "https://upforge.org/registry" },
+        { "@type": "ListItem", position: 3, name: "UFRN",     item: "https://upforge.org/ufrn" },
         { "@type": "ListItem", position: 4, name: startup.ufrn!, item: canonicalUrl },
       ],
     },
@@ -280,7 +280,7 @@ export default async function UFRNPage({ params }: PageProps) {
   if (!startup) notFound()
 
   const ufrn = startup.ufrn!
-  const canonicalUrl = `https://www.upforge.org/ufrn/${ufrn}`
+  const canonicalUrl = `https://upforge.org/ufrn/${ufrn}`
 
   // If someone typed a non-canonical form (e.g. lowercase), redirect to canonical
   if (rawUfrnId !== ufrn) {

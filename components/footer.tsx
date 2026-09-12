@@ -135,7 +135,7 @@ function NewsletterForm() {
   );
 }
 
-const SITE_URL = "https://www.upforge.org";
+const SITE_URL = "https://upforge.org";
 
 const TRUST_ITEMS = [
   { icon: Shield, label: "Independent Registry" },
@@ -413,7 +413,7 @@ export function Footer() {
               <p className="text-[12px] text-muted-foreground">
                 Need the full global startup database?{" "}
                 <a
-                  href="https://www.upforge.org/registry"
+                  href="https://upforge.org/registry"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--accent-gold)] hover:underline font-semibold"
@@ -485,7 +485,7 @@ export function Footer() {
               Independent startup intelligence platform · Verified company and
               founder data · Daily updates across India and global markets ·{" "}
               <a
-                href="https://www.upforge.org"
+                href="https://upforge.org"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[var(--accent-gold)]"

@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   title: "Editorial Standards & Corrections Policy | UpForge Journal",
   description:
     "Explore the editorial standards governing the UpForge journal. Learn about our accuracy workflows, research independence, and corrections framework.",
-  alternates: { canonical: "https://www.upforge.org/editorial-standards" },
+  alternates: { canonical: "https://upforge.org/editorial-standards" },
   openGraph: {
     title: "Editorial Standards & Corrections Policy | UpForge Journal",
     description:
       "Operational standards for the UpForge editorial team: independence guidelines, research checks, and correction logs.",
-    url: "https://www.upforge.org/editorial-standards",
+    url: "https://upforge.org/editorial-standards",
     siteName: "UpForge",
-    images: [{ url: "https://www.upforge.org/og-editorial-standards.png", width: 1200, height: 630 }],
+    images: [{ url: "https://upforge.org/og-editorial-standards.png", width: 1200, height: 630 }],
     locale: "en_US",
     type: "website",
   },
@@ -28,15 +28,15 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.upforge.org/editorial-standards",
-      "url": "https://www.upforge.org/editorial-standards",
+      "@id": "https://upforge.org/editorial-standards",
+      "url": "https://upforge.org/editorial-standards",
       "name": "Editorial Standards & Corrections Policy",
       "description": "The operational guidelines, research validation workflow, and corrections logs policy of the UpForge journal.",
       "breadcrumb": {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.upforge.org" },
-          { "@type": "ListItem", "position": 2, "name": "Editorial Standards", "item": "https://www.upforge.org/editorial-standards" }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://upforge.org" },
+          { "@type": "ListItem", "position": 2, "name": "Editorial Standards", "item": "https://upforge.org/editorial-standards" }
         ]
       }
     }

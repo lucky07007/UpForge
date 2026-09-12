@@ -17,11 +17,11 @@ export const metadata: Metadata = {
     "Indian startup trends",
     "startup ecosystem ranking",
   ],
-  alternates: { canonical: "https://www.upforge.org/blog/india-startup-ecosystem-2026" },
+  alternates: { canonical: "https://upforge.org/blog/india-startup-ecosystem-2026" },
   openGraph: {
     title: "India Startup Ecosystem 2026: Complete State of the Nation Report | UpForge",
     description: "650,000 startups. 125 unicorns. $3.44B raised in Q1. The definitive data-driven picture of India's startup landscape in 2026.",
-    url: "https://www.upforge.org/blog/india-startup-ecosystem-2026",
+    url: "https://upforge.org/blog/india-startup-ecosystem-2026",
     siteName: "UpForge",
     type: "article",
     locale: "en",
@@ -53,15 +53,15 @@ const articleJsonLd = {
   "author": {
     "@type": "Person",
     "name": "Lucky Tiwari",
-    "url": "https://www.upforge.org/about"
+    "url": "https://upforge.org/about"
   },
   "publisher": {
     "@type": "Organization",
     "name": "UpForge",
-    "url": "https://www.upforge.org",
-    "logo": { "@type": "ImageObject", "url": "https://www.upforge.org/logo.jpg" }
+    "url": "https://upforge.org",
+    "logo": { "@type": "ImageObject", "url": "https://upforge.org/logo.jpg" }
   },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.upforge.org/blog/india-startup-ecosystem-2026" },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://upforge.org/blog/india-startup-ecosystem-2026" },
   "articleSection": "Ecosystem Report",
   "inLanguage": "en-US",
   "wordCount": 4200,

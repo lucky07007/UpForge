@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: LocaleLayoutProps) {
   const isValid = locales.includes(locale as any)
   if (!isValid) notFound()
 
-  const baseUrl = 'https://www.upforge.org'
+  const baseUrl = 'https://upforge.org'
 
   return {
     alternates: {

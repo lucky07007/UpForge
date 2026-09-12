@@ -113,20 +113,39 @@ export function StartupLogo({ name, logo_url, website, size, className = "" }: {
   const currentSrc = sources[stage]
 
   if (currentSrc) {
+    const handleError = () => {
+      if (stage < sources.length - 1) {
+        setStage(stage + 1)
+      } else {
+        setStage(99)
+      }
+    }
+
+    // Tiny generated initials avatars do not need an image optimizer.
+    if (currentSrc.startsWith("data:")) {
+      return (
+        <img
+          src={currentSrc}
+          alt={`${name} logo`}
+          className={`h-full w-full object-contain ${className}`}
+          loading="lazy"
+          onError={handleError}
+        />
+      )
+    }
+
     return (
-      <img
-        src={currentSrc}
-        alt={name + " logo"}
-        loading="lazy"
-        className={`object-contain w-full h-full ${className}`}
-        onError={() => {
-          if (stage < sources.length - 1) {
-            setStage(stage + 1)
-          } else {
-            setStage(99)
-          }
-        }}
-      />
+      <div className="relative h-full w-full">
+        <Image
+          src={currentSrc}
+          alt={`${name} logo`}
+          fill
+          sizes={`${size ?? 112}px`}
+          className={`object-contain ${className}`}
+          loading="lazy"
+          onError={handleError}
+        />
+      </div>
     )
   }
 

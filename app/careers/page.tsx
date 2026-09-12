@@ -7,17 +7,17 @@ export const metadata: Metadata = {
   description:
     "Explore career and internship opportunities at UpForge. Learn about our application process and discover how you can contribute to a growing startup.",
   alternates: {
-    canonical: "https://www.upforge.org/careers",
+    canonical: "https://upforge.org/careers",
   },
   openGraph: {
     title: "Careers at UpForge | Build With Us",
     description:
       "Explore career and internship opportunities at UpForge. Learn about our transparent application process and join our growing team.",
-    url: "https://www.upforge.org/careers",
+    url: "https://upforge.org/careers",
     siteName: "UpForge",
     images: [
       {
-        url: "https://www.upforge.org/og/global-registry.png",
+        url: "https://upforge.org/og/global-registry.png",
         width: 1200,
         height: 630,
       },
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "Careers at UpForge | Build With Us",
     description:
       "Join a growing startup where your ideas, skills, and initiative create real impact.",
-    images: ["https://www.upforge.org/og/global-registry.png"],
+    images: ["https://upforge.org/og/global-registry.png"],
   },
   robots: {
     index: true,
@@ -49,13 +49,13 @@ export default function CareersPage() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://www.upforge.org",
+        item: "https://upforge.org",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Careers",
-        item: "https://www.upforge.org/careers",
+        item: "https://upforge.org/careers",
       },
     ],
   }
@@ -66,7 +66,7 @@ export default function CareersPage() {
     name: "Careers at UpForge | Build With Us",
     description:
       "Explore career and internship opportunities at UpForge. Learn about our application process and discover how you can contribute to a growing startup.",
-    url: "https://www.upforge.org/careers",
+    url: "https://upforge.org/careers",
   }
 
   return (

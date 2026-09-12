@@ -10,7 +10,7 @@ import { CountryFilterSection } from "@/components/founder-stories/country-filte
 export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
-  const canonicalUrl = "https://www.upforge.org/founder-stories"
+  const canonicalUrl = "https://upforge.org/founder-stories"
 
   return {
     title: "Verified Founder Intelligence — The Founder Chronicle | UpForge",
@@ -55,12 +55,12 @@ export default async function FounderStoriesPage() {
     "@type": "CollectionPage",
     "name": "The Founder Chronicle — UpForge",
     "description": "Editorial profiles of startup founders building the future economy",
-    "url": "https://www.upforge.org/founder-stories",
+    "url": "https://upforge.org/founder-stories",
     "numberOfItems": FOUNDERS.length,
     "itemListElement": FOUNDERS.map((founder, index) => ({
       "@type": "ListItem",
       "position": index + 1,
-      "url": `https://www.upforge.org/founder-stories/${founder.slug}`,
+      "url": `https://upforge.org/founder-stories/${founder.slug}`,
       "name": `${founder.name} — ${founder.role} of ${founder.company}`
     }))
   }

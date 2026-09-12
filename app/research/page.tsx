@@ -68,15 +68,15 @@ async function getResearchData() {
 export async function generateMetadata(): Promise<Metadata> {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const canonicalUrl = isOrg ? "https://www.upforge.org/research" : "https://www.upforge.in/research"
+  const canonicalUrl = isOrg ? "https://upforge.org/research" : "https://www.upforge.in/research"
 
   return {
     title: "Startup Research & Market Intelligence | UpForge Global Registry",
     description: "Research verified startups worldwide. Compare AI models, SaaS tools, and startup solutions. Access UFRN-verified data on thousands of companies. Free, forever.",
     keywords: ["startup research", "market intelligence", "startup database", "verified startups", "UFRN lookup", "AI comparison", "tool comparison"],
-    alternates: { canonical: canonicalUrl, languages: { 'en': 'https://www.upforge.org/research', 'x-default': 'https://www.upforge.org/research' } },
-    openGraph: { title: "Startup Research & Intelligence | UpForge", description: "Verified data on thousands of startups.", url: canonicalUrl, siteName: "UpForge", locale: "en", type: "website", images: [{ url: "https://www.upforge.org/og/research.png", width: 1200, height: 630 }] },
-    twitter: { card: "summary_large_image", site: "@UpForgeHQ", title: "Startup Research — UpForge", description: "Verified startup intelligence.", images: ["https://www.upforge.org/og/research.png"] },
+    alternates: { canonical: canonicalUrl, languages: { 'en': 'https://upforge.org/research', 'x-default': 'https://upforge.org/research' } },
+    openGraph: { title: "Startup Research & Intelligence | UpForge", description: "Verified data on thousands of startups.", url: canonicalUrl, siteName: "UpForge", locale: "en", type: "website", images: [{ url: "https://upforge.org/og/research.png", width: 1200, height: 630 }] },
+    twitter: { card: "summary_large_image", site: "@UpForgeHQ", title: "Startup Research — UpForge", description: "Verified startup intelligence.", images: ["https://upforge.org/og/research.png"] },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } }
   }
 }
@@ -84,7 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ResearchPage() {
   const domain = await getDomain()
   const isOrg = domain === "org"
-  const baseUrl = isOrg ? "https://www.upforge.org" : "https://www.upforge.in"
+  const baseUrl = isOrg ? "https://upforge.org" : "https://www.upforge.in"
   
   const { topCategories, totalStartups, totalCountries } = await getResearchData()
 
